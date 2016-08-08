@@ -5,7 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ml.puredark.hviewer.MainActivity">
+    tools:context="ml.puredark.hviewer.activities.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"

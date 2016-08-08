@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 23
@@ -24,7 +25,30 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
-    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:cardview-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+
+    //butterknife
+    compile 'com.jakewharton:butterknife:8.2.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    //Pull Load More
+    compile("com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9") {
+        exclude group: 'com.android.support'
+    }
+
+    // image related
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.makeramen:roundedimageview:2.2.0'
+    compile 'com.bm.photoview:library:1.4.0'
+
+    // http library
+    compile 'com.loopj.android:android-async-http:1.4.9'
+
+    // gson library
+    compile 'com.google.code.gson:gson:2.4'
 }
