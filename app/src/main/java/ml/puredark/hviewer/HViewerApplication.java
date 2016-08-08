@@ -12,15 +12,8 @@ import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.imageaware.ImageAware;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,9 +29,6 @@ public class HViewerApplication extends Application {
     //服务器地址
     public static String serverHost = "";
 
-    //默认头像的载入Option
-    public static  DisplayImageOptions avatarOptions;
-
     public static List<Collection> histories;
     public static List<Collection> favourites;
 
@@ -48,53 +38,12 @@ public class HViewerApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-
-        initImageLoader(getApplicationContext());
     }
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-
-    private void initImageLoader(Context context) {
-        // This configuration tuning is custom. You can tune every option, you may tune some of them,
-        // or you can create default configuration by
-        //  ImageLoaderConfiguration.createDefault(this);
-        // method.
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                        .cacheInMemory(true)
-                        .cacheOnDisk(true)
-                        .bitmapConfig(Bitmap.Config.RGB_565)                //设置为RGB565比起默认的ARGB_8888要节省大量的内存
-                        .delayBeforeLoading(100)
-                        //.showImageForEmptyUri(R.drawable.img_default)    //设置图片Uri为空或是错误的时候显示的图片
-                        //.showImageOnFail(R.drawable.img_default)         //设置图片加载/解码过程中错误时候显示的图片
-                        .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                        .threadPriority(Thread.NORM_PRIORITY - 2)
-                        .defaultDisplayImageOptions(defaultOptions)
-                        .denyCacheImageMultipleSizesInMemory()
-                        .diskCacheFileNameGenerator(new Md5FileNameGenerator())
-                        .diskCacheSize(100 * 1024 * 1024) // 100 MiB
-                        .memoryCache(new LruMemoryCache(10 * 1024 * 1024))
-                        .memoryCacheSize(10 * 1024 * 1024)
-                        .tasksProcessingOrder(QueueProcessingType.FIFO)
-                        //.writeDebugLogs() // Remove for release app
-                        .build();
-
-        // Initialize ImageLoader with configuration.
-        ImageLoader.getInstance().init(config);
-
-
-        //设置默认头像的Option
-        avatarOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .showImageForEmptyUri(R.drawable.avatar)    //设置图片Uri为空或是错误的时候显示的图片
-                .showImageOnFail(R.drawable.avatar)         //设置图片加载/解码过程中错误时候显示的图片
-                //.displayer(new FadeInBitmapDisplayer(300))  //图片加载好后渐入的动画时间
-                .build();                                   //构建完成
-    }
 
     public static String getVersionName() throws Exception
     {
@@ -122,8 +71,7 @@ public class HViewerApplication extends Application {
     public static void loadImageFromUrl(ImageView imageView, String url){
         imageView.setImageBitmap(null);
         if(url!=null) {
-            ImageAware imageAware = new ImageViewAware(imageView, false);
-            ImageLoader.getInstance().displayImage(url, imageAware);
+            Glide.with(mContext).load(url).into(imageView);
         }
     }
 

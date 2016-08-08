@@ -5,42 +5,20 @@ import java.lang.reflect.Field;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Collection extends AbstractDataProvider.Data{
-	public final static int TYPE_ARTICLE = 1;
-	public final static int TYPE_PICTURE = 2;
-	public final static int TYPE_VIDEO = 3;
-	public final static int TYPE_PERSON = 4;
+	public final static int TYPE_PICTURE = 1;
 	public int cid, type;
 	public String title, author, cover, description, datetime;
-	public String categoryTitle;
-	public int category, subcategory;
-	public boolean isFromLocal = false;
-
-	public Collection(String title, String cover, int type, boolean isFromLocal){
-		this.title = title;
-		this.cover = cover;
-		this.type = type;
-		this.isFromLocal = isFromLocal;
-		author = "佚名";
-		description = "";
-		datetime = "";
-        categoryTitle = "";
-	}
 	
-	public Collection(int cid, String title, String author, String cover, String description, String datetime, int type, int category, int subcategory){
+	public Collection(int cid, String title, String author, String cover, String description, String datetime, int type){
 		this.cid = cid;
 		this.title = title;
 		this.author = author;
 		this.cover = cover;
 		this.description = description;
 		this.datetime = datetime;
-		this.type = type;
-		this.category = category;
-		this.subcategory = subcategory;
+        this.type = type;
 	}
 
-	public void setCategoryTitle(String title){
-		this.categoryTitle = title;
-	}
 
 	@Override
 	public int getId() {
