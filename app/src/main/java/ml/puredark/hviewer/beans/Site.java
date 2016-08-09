@@ -1,8 +1,8 @@
 package ml.puredark.hviewer.beans;
 
-import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
-public class Site extends ListDataProvider.Data{
+public class Site extends AbstractDataProvider.Data{
 	public int rid;
 	public String title;
 	public String indexUrl;

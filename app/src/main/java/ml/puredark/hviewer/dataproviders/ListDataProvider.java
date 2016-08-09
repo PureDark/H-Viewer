@@ -20,7 +20,7 @@ public class ListDataProvider<T extends AbstractDataProvider.Data> extends Abstr
         return items;
     }
 
-    public Data getItem(int index) {
+    public T getItem(int index) {
         if (index < 0 || index >= getCount()) {
             throw new IndexOutOfBoundsException("index = " + index);
         }
