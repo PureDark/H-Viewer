@@ -2,12 +2,9 @@ package ml.puredark.hviewer.dataproviders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
-public class DataProvider<T extends DataProvider.Data> {
-
-    public static abstract class Data {
-        public abstract int getId();
-    }
+public class DataProvider<T extends AbstractDataProvider.Data> extends AbstractDataProvider<T> {
 
     private List<T> items;
 
@@ -44,11 +41,11 @@ public class DataProvider<T extends DataProvider.Data> {
         items.add(item);
     }
 
-    public void addItem(int position, Data item) {
-        items.add(position, (T) item);
+    public void addItem(int position, T item) {
+        items.add(position, item);
     }
 
-    public void addAll(java.util.Collection items) {
+    public void addAll(Collection items) {
         this.items.addAll(items);
     }
 }
