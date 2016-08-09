@@ -1,8 +1,8 @@
 package ml.puredark.hviewer.beans;
 
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
-public class Tag extends DataProvider.Data{
+public class Tag extends ListDataProvider.Data{
 	public int tid;
 	public String title;
 

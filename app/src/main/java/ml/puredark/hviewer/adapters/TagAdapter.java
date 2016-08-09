@@ -10,12 +10,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class TagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private DataProvider mProvider;
+    private ListDataProvider mProvider;
 
-    public TagAdapter(DataProvider mProvider) {
+    public TagAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(true);
     }
@@ -53,11 +53,11 @@ public class TagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-    public void setDataProvider(DataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public DataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 

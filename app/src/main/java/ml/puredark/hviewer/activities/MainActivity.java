@@ -22,7 +22,7 @@ import ml.puredark.hviewer.adapters.SiteAdapter;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         rule.rating = new Selector("nothing", "html", null);
 
         sites.add(new Site(1, "腾讯漫画", "http://ac.qq.com/Jump", rule));
-        DataProvider<Site> dataProvider = new DataProvider<>(sites);
+        ListDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         final SiteAdapter adapter = new SiteAdapter(dataProvider);
         rvRule.setAdapter(adapter);
 

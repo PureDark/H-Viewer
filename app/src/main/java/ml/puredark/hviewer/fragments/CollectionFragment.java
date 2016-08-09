@@ -18,7 +18,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 
@@ -58,7 +58,7 @@ public class CollectionFragment extends MyFragment {
         ButterKnife.bind(this, rootView);
 
         List<Collection> collections = new ArrayList<>();
-        DataProvider<Collection> dataProvider = new DataProvider<>(collections);
+        ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
         adapter = new CollectionAdapter(dataProvider);
         rvCollection.setAdapter(adapter);
 

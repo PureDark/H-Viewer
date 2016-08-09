@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 
-public class DataProvider<T extends AbstractDataProvider.Data> extends AbstractDataProvider<T> {
+public class ListDataProvider<T extends AbstractDataProvider.Data> extends AbstractDataProvider<T> {
 
     private List<T> items;
 
-    public DataProvider(List<T> items) {
+    public ListDataProvider(List<T> items) {
         this.items = items;
     }
 

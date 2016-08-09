@@ -12,17 +12,17 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private DataProvider mProvider;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
     }
 
-    public PictureAdapter(DataProvider mProvider) {
+    public PictureAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(true);
     }
@@ -63,11 +63,11 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.mItemClickListener = listener;
     }
 
-    public void setDataProvider(DataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public DataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 

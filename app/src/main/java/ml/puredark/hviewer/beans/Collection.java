@@ -3,9 +3,9 @@ package ml.puredark.hviewer.beans;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
-public class Collection extends DataProvider.Data{
+public class Collection extends ListDataProvider.Data{
 	public int cid;
 	public String title, uploader, cover, category, datetime;
 	public float rating;

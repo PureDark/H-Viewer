@@ -16,17 +16,17 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.dataproviders.DataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private DataProvider mProvider;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
     }
 
-    public CollectionAdapter(DataProvider mProvider) {
+    public CollectionAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(true);
     }
@@ -75,11 +75,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mItemClickListener = listener;
     }
 
-    public void setDataProvider(DataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public DataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
@@ -104,7 +104,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ButterKnife.bind(this, view);
             rvTags.setAdapter(
                     new TagAdapter(
-                            new DataProvider<>(
+                            new ListDataProvider<>(
                                     new ArrayList<Tag>()
                             )
                     )
