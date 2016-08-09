@@ -76,11 +76,23 @@ public class MainActivity extends AppCompatActivity {
         rule.rating = new Selector("nothing", "html", null);
 
         sites.add(new Site(1, "腾讯漫画", "http://ac.qq.com/Jump", rule));
+
+        rule = new Rule();
+        rule.item = new Selector("#ig .ig", null, null);
+        rule.title = new Selector("table.it tr:eq(0) a", "html", null);
+        rule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null);
+        rule.cover = new Selector("td.ii img", "attr", "src");
+        rule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null);
+        rule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null);
+        rule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null);
+        rule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "split", ",");
+
+        sites.add(new Site(2, "Lofi E-hentai", "http://hakugyokurou.net/api/proxy.php?url=http://lofi.e-hentai.org", rule));
+
+
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         final SiteAdapter adapter = new SiteAdapter(dataProvider);
         rvRule.setAdapter(adapter);
-
-        Log.d("MainActivity", "adapter.getItemCount():" + adapter.getItemCount());
 
         adapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override

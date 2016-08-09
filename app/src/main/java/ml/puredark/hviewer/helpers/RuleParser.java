@@ -13,6 +13,8 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Tag;
 
+import static android.R.attr.tag;
+
 /**
  * Created by PureDark on 2016/8/9.
  */
@@ -77,8 +79,24 @@ public class RuleParser {
             float rating = 0;
             if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
                 rating = Float.parseFloat(ratingStr);
+            } else {
+                rating = Math.min(ratingStr.replace(" ", "").length(), 5);
             }
             List<Tag> tags = new ArrayList<>();
+            if (rule.tags != null) {
+                temp = element.select(rule.tags.selector);
+                for (Element tagElement : temp) {
+                    if ("split".equals(rule.tags.fun)) {
+                        String[] tagsStr = tagElement.html().split(rule.tags.param);
+                        for (String tagStr : tagsStr) {
+                            tags.add(new Tag(tags.size() + 1, tagStr));
+                        }
+                    } else {
+                        String tagStr = tagElement.html();
+                        tags.add(new Tag(tags.size() + 1, tagStr));
+                    }
+                }
+            }
             List<Picture> pictures = new ArrayList<>();
 
             Collection collection = new Collection(cid, title, uploader, cover, category, datetime, rating, tags, pictures);
