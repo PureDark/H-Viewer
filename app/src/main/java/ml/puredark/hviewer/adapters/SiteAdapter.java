@@ -12,10 +12,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.dataproviders.DataProvider;
 
 public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private AbstractDataProvider mProvider;
+    private DataProvider mProvider;
     private OnItemClickListener mItemClickListener;
     public int selectedRid = 0;
 
@@ -23,7 +23,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onItemClick(View v, int position);
     }
 
-    public SiteAdapter(AbstractDataProvider mProvider) {
+    public SiteAdapter(DataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(true);
     }
@@ -99,11 +99,11 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mItemClickListener = listener;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(DataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public DataProvider getDataProvider() {
         return mProvider;
     }
 

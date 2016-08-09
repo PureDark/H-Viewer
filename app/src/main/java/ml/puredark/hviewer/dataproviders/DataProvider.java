@@ -1,30 +1,28 @@
 package ml.puredark.hviewer.dataproviders;
 
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import ml.puredark.hviewer.beans.Tag;
+public class DataProvider<T extends DataProvider.Data> {
 
-public class TagDataProvider extends AbstractDataProvider {
-    private List<Tag> items;
+    public static abstract class Data {
+        public abstract int getId();
+    }
 
-    public TagDataProvider(List<Tag> items) {
+    private List<T> items;
+
+    public DataProvider(List<T> items) {
         this.items = items;
     }
 
-    @Override
     public int getCount() {
         return items.size();
     }
 
-    @Override
-    public List<Tag> getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    @Override
     public Data getItem(int index) {
         if (index < 0 || index >= getCount()) {
             throw new IndexOutOfBoundsException("index = " + index);
@@ -33,28 +31,24 @@ public class TagDataProvider extends AbstractDataProvider {
         return items.get(index);
     }
 
-    @Override
     public void removeItem(int position) {
         items.remove(position);
     }
 
-    @Override
     public void clear() {
         items = new ArrayList<>();
     }
 
-    @Override
-    public void addItem(Data item) {
-        items.add((Tag) item);
+    public void addItem(T item) {
+
+        items.add(item);
     }
 
-    @Override
     public void addItem(int position, Data item) {
-        items.add(position, (Tag) item);
+        items.add(position, (T) item);
     }
 
-    @Override
-    public void addAll(Collection items) {
+    public void addAll(java.util.Collection items) {
         this.items.addAll(items);
     }
 }

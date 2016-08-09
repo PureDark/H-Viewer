@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.activities;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,7 +22,7 @@ import ml.puredark.hviewer.adapters.SiteAdapter;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.dataproviders.SiteDataProvider;
+import ml.puredark.hviewer.dataproviders.DataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         rule.rating = new Selector("nothing", "html", null);
 
         sites.add(new Site(1, "腾讯漫画", "http://ac.qq.com/Jump", rule));
-        SiteDataProvider dataProvider = new SiteDataProvider(sites);
+        DataProvider<Site> dataProvider = new DataProvider<>(sites);
         final SiteAdapter adapter = new SiteAdapter(dataProvider);
         rvRule.setAdapter(adapter);
 
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
             HViewerApplication.temp = site;
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
-
     }
 
     @Override
