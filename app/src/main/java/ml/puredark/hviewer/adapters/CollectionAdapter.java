@@ -16,17 +16,18 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ListDataProvider mProvider;
+    private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
     }
 
-    public CollectionAdapter(ListDataProvider mProvider) {
+    public CollectionAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(true);
     }
@@ -75,11 +76,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mItemClickListener = listener;
     }
 
-    public void setDataProvider(ListDataProvider mProvider) {
+    public void setDataProvider(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public ListDataProvider getDataProvider() {
+    public AbstractDataProvider getDataProvider() {
         return mProvider;
     }
 
