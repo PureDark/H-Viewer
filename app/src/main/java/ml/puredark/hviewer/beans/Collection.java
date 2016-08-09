@@ -1,22 +1,28 @@
 package ml.puredark.hviewer.beans;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Collection extends AbstractDataProvider.Data{
-	public final static int TYPE_PICTURE = 1;
-	public int cid, type;
-	public String title, author, cover, description, datetime;
+	public int cid;
+	public String title, uploader, cover, category, datetime;
+	public float rating;
+	public List<Tag> tags;
+	public List<Picture> pictures;
 	
-	public Collection(int cid, String title, String author, String cover, String description, String datetime, int type){
+	public Collection(int cid, String title, String uploader, String cover, String category,
+					  String datetime, float rating, List<Tag> tags, List<Picture> pictures){
 		this.cid = cid;
 		this.title = title;
-		this.author = author;
+		this.uploader = uploader;
 		this.cover = cover;
-		this.description = description;
+		this.category = category;
 		this.datetime = datetime;
-        this.type = type;
+		this.rating = rating;
+		this.tags = tags;
+		this.pictures = pictures;
 	}
 
 

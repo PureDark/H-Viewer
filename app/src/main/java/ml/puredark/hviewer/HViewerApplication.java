@@ -6,7 +6,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
@@ -14,11 +13,13 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class HViewerApplication extends Application {
@@ -29,6 +30,7 @@ public class HViewerApplication extends Application {
     //服务器地址
     public static String serverHost = "";
 
+    public static List<Site> sites;
     public static List<Collection> histories;
     public static List<Collection> favourites;
 
@@ -38,6 +40,15 @@ public class HViewerApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+
+        String historyStr = (String) SharedPreferencesUtil.getData(this, "History", "[]");
+        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<Collection>>(){}.getType());
+
+        String favouriteStr = (String) SharedPreferencesUtil.getData(this, "Favourite", "[]");
+        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<Collection>>(){}.getType());
+
+        String ruleStr = (String) SharedPreferencesUtil.getData(this, "Site", "[]");
+        sites = new Gson().fromJson(ruleStr, new TypeToken<ArrayList<Site>>(){}.getType());
     }
 
     static {
@@ -146,6 +157,36 @@ public class HViewerApplication extends Application {
                 return true;
         }
         return false;
+    }
+
+
+    public static void saveRules() {
+        SharedPreferencesUtil.saveData(mContext, "Site", new Gson().toJson(sites));
+    }
+
+    public static void addRule(Site item) {
+        if(item==null)return;
+        deleteRule(item);
+        sites.add(0, item);
+        saveRules();
+    }
+
+    public static void deleteRule(Site item) {
+        for(int i = 0, size = sites.size(); i<size; i++){
+            if(sites.get(i).rid == item.rid){
+                sites.remove(i);
+                size--;
+                i--;
+            }
+        }
+        saveRules();
+    }
+
+    public static List<Site> getSites() {
+        if(sites ==null)
+            return new ArrayList<>();
+        else
+            return sites;
     }
 
 }
