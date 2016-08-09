@@ -3,7 +3,7 @@ package ml.puredark.hviewer.dataproviders;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractDataProvider<T extends DataProvider.Data> {
+public abstract class AbstractDataProvider<T extends AbstractDataProvider.Data> {
 
     public static abstract class Data {
         public abstract int getId();
