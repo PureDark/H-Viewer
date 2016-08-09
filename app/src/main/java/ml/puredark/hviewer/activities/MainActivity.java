@@ -67,25 +67,14 @@ public class MainActivity extends AppCompatActivity {
         sites.clear();
 
         Rule rule = new Rule();
-        rule.item = new Selector("ul.Japan-comic-content.clearfix li.comic-content-item", null, null);
-        rule.title = new Selector(".comic-text .Japan-comic-title", "attr", "title");
-        rule.uploader = new Selector(".comic-text .Japan-comic-mask .japan-comic-a", "html", null);
-        rule.cover = new Selector(".comic-text .Japan-comic-title img", "attr", "src");
-        rule.category = new Selector("nothing", "html", null);
-        rule.datetime = new Selector("nothing", "html", null);
-        rule.rating = new Selector("nothing", "html", null);
-
-        sites.add(new Site(1, "腾讯漫画", "http://ac.qq.com/Jump", rule));
-
-        rule = new Rule();
-        rule.item = new Selector("#ig .ig", null, null);
-        rule.title = new Selector("table.it tr:eq(0) a", "html", null);
-        rule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null);
-        rule.cover = new Selector("td.ii img", "attr", "src");
-        rule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null);
-        rule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null);
-        rule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null);
-        rule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "split", ",");
+        rule.item = new Selector("#ig .ig", null, null, null);
+        rule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
+        rule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
+        rule.cover = new Selector("td.ii img", "attr", "src", null);
+        rule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
+        rule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
+        rule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
+        rule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
 
         sites.add(new Site(2, "Lofi E-hentai", "http://hakugyokurou.net/api/proxy.php?url=http://lofi.e-hentai.org", rule));
 
@@ -105,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (sites.size() > 0) {
-            Site site = sites.get(0);
+        if (sites.size() > 1) {
+            Site site = sites.get(1);
             adapter.selectedRid = site.rid;
             adapter.notifyDataSetChanged();
             HViewerApplication.temp = site;
