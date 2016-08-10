@@ -4,11 +4,12 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Picture extends AbstractDataProvider.Data{
 	public int pid;
-	public String url;
+	public String thumbnail, url;
 	
-	public Picture(int pid, String url){
+	public Picture(int pid, String url, String thumbnail){
 		this.pid = pid;
-		this.url = url;
+        this.url = url;
+		this.thumbnail = thumbnail;
 	}
 
 	@Override

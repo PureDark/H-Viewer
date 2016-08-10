@@ -1,14 +1,15 @@
 package ml.puredark.hviewer.beans;
 
 public class Rule{
-	public Selector item, title, uploader, cover, category, datetime, rating, tags, pictures;
+	public Selector item, url, title, uploader, cover, category, datetime, rating, tags, pictures;
 
     public Rule(){
     }
 
-	public Rule(Selector item, Selector title, Selector uploader, Selector cover, Selector category,
+	public Rule(Selector item, Selector url, Selector title, Selector uploader, Selector cover, Selector category,
 				Selector datetime, Selector rating, Selector tags, Selector pictures){
 		this.item = item;
+        this.url = url;
 		this.title = title;
 		this.uploader = uploader;
 		this.cover = cover;

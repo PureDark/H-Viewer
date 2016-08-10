@@ -9,8 +9,9 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "0.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -22,6 +23,8 @@ android {
 
 repositories {
     maven { url "https://jitpack.io" }
+    maven { url "http://kodbiro.github.io/repo/" }
+    maven { url "http://dl.bintray.com/glomadrian/maven" }
     jcenter()
 }
 
@@ -52,4 +55,13 @@ dependencies {
     compile 'com.github.jhy:jsoup:jsoup-1.9.2'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    compile 'com.github.chemouna:shadow-layout:b014ac2237'
+    compile 'com.github.clans:fab:1.6.1'
+    compile 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
+
+
+    // Zxing libraries
+    compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
+    compile 'com.google.zxing:core:3.2.0'
 }

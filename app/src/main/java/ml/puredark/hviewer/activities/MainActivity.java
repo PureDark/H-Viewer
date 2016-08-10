@@ -66,17 +66,22 @@ public class MainActivity extends AppCompatActivity {
         List<Site> sites = HViewerApplication.getSites();
         sites.clear();
 
-        Rule rule = new Rule();
-        rule.item = new Selector("#ig .ig", null, null, null);
-        rule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
-        rule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
-        rule.cover = new Selector("td.ii img", "attr", "src", null);
-        rule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
-        rule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
-        rule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
-        rule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
+        Rule indexRule = new Rule();
+        indexRule.item = new Selector("#ig .ig", null, null, null);
+        indexRule.url = new Selector("td.ii a", "attr", "href", null);
+        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
+        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
+        indexRule.cover = new Selector("td.ii img", "attr", "src", null);
+        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
+        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
+        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
+        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
 
-        sites.add(new Site(2, "Lofi E-hentai", "http://hakugyokurou.net/api/proxy.php?url=http://lofi.e-hentai.org", rule));
+        Rule galleryRule = new Rule();
+        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+
+        sites.add(new Site(1, "Lofi E-hentai", "http://hakugyokurou.net/api/proxy.php?url=http://lofi.e-hentai.org",
+                indexRule, galleryRule, null));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
@@ -91,11 +96,12 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 HViewerApplication.temp = site;
                 replaceFragment(CollectionFragment.newInstance(), site.title);
+                drawer.closeDrawer(GravityCompat.START);
             }
         });
 
-        if (sites.size() > 1) {
-            Site site = sites.get(1);
+        if (sites.size() > 0) {
+            Site site = sites.get(0);
             adapter.selectedRid = site.rid;
             adapter.notifyDataSetChanged();
             HViewerApplication.temp = site;

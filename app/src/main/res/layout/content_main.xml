@@ -73,6 +73,6 @@
         app:borderWidth="0dp"
         app:fabSize="mini"
         app:rippleColor="@color/white_50"
-        android:src="@drawable/ic_search_white"/>
+        android:src="@drawable/selector_search"/>
 
 </android.support.design.widget.CoordinatorLayout>

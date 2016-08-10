@@ -16,16 +16,16 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class HViewerApplication extends Application {
     public static Context mContext;
-    // 全局变量，用于跨Activity传输复杂对象
-    public static Object temp;
+    // 全局变量，用于跨Activity传递复杂对象的引用
+    public static Object temp, temp2;
 
     //服务器地址
     public static String serverHost = "";

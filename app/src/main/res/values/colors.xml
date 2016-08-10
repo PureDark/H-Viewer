@@ -175,10 +175,13 @@
     <color name="gray_60">#99808080</color>
 
 
+    <color name="button_pressed">@color/white_20</color>
     <color name="nav_color">#dd6030</color>
 
     <color name="colorPrimary">#1A9481</color>
+    <color name="colorPrimaryLight">#9BCC93</color>
     <color name="colorPrimaryDark">#225378</color>
     <color name="colorAccent">#6A7059</color>
-    <color name="colorSecondary">#9BCC93</color>
+    <color name="colorAccentLight">#FDEEA7</color>
+
 </resources>

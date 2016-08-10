@@ -8,7 +8,6 @@
     tools:openDrawer="start">
 
     <include
-        android:fitsSystemWindows="false"
         layout="@layout/content_main" />
 
     <include layout="@layout/nav_main"

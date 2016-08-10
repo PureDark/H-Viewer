@@ -1,10 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_collection"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ml.puredark.hviewer.activities.CollectionActivity">
+    tools:context=".activities.CollectionActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_height="@dimen/collection_app_bar_height"
+        android:layout_width="match_parent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:titleEnabled="true"
+            app:expandedTitleGravity="center"
+            app:layout_scrollFlags="scroll|snap"
+            app:contentScrim="?attr/colorPrimary">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_collapseMode="parallax" >
+                <ml.puredark.hviewer.customs.ScalingImageView
+                    android:id="@+id/backdrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:src="@null"/>
+            </ScrollView>
+            <View
+                android:id="@+id/hover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:alpha="0.8"
+                android:scaleType="fitXY"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginBottom="40dp"
+                android:layout_gravity="bottom">
+
+            </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="@dimen/tool_bar_height"
+                android:layout_width="match_parent"
+                android:paddingLeft="-16dp"
+                app:contentInsetStart="0dp"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+                    <ImageView
+                        android:id="@+id/btn_return"
+                        android:layout_width="@dimen/tool_bar_height"
+                        android:layout_height="@dimen/tool_bar_height"
+                        android:scaleType="fitXY"
+                        android:padding="16dp"
+                        android:background="@drawable/bg_button"/>
+                </LinearLayout>
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false">
+
+        <ml.puredark.hviewer.customs.ExTabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@color/white"
+            app:tabBackground="@color/transparent"
+            app:tabIndicatorColor="@color/colorPrimary"
+            app:tabIndicatorHeight="2dp"
+            app:tabSelectedTextColor="@color/colorPrimaryDark"
+            app:tabTextColor="@color/colorPrimaryDark"
+            app:tabMode="scrollable"
+            app:tabTitleArray="目录,相关信息"
+            app:tabIcon1="@drawable/selector_gallery"
+            app:tabIcon2="@drawable/selector_description"
+            />
+
+        <ml.puredark.hviewer.customs.ExViewPager
+            android:id="@+id/view_pager"
+            android:layout_below="@id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:pagerCurrItem="1"
+            app:pagerLayout1="@layout/view_collection_index"
+            app:pagerLayout2="@layout/view_collection_desciption"/>
+
+        <View
+            android:id="@+id/shadowDown"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_below="@id/tab_layout"
+            android:background="@drawable/shadow_bottom" />
+    </RelativeLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="16dp"
+        app:menu_colorNormal="@color/colorAccent"
+        app:menu_colorPressed="@color/colorAccent"
+        app:menu_colorRipple="@color/white_50"
+        app:menu_labels_ellipsize="end"
+        app:menu_labels_singleLine="true"
+        app:menu_fab_label="操作"
+        app:menu_fab_show_animation="@anim/show_from_bottom"
+        app:menu_fab_hide_animation="@anim/hide_to_bottom">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_favor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_favourite"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_size="mini"
+            app:fab_label="收藏" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_download"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_size="mini"
+            app:fab_label="下载" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</android.support.design.widget.CoordinatorLayout>

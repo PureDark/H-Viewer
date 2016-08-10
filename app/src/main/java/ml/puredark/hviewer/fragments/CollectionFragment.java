@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.activities.CollectionActivity;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
@@ -62,6 +64,16 @@ public class CollectionFragment extends MyFragment {
         if (site != null) {
             getCollections(site);
         }
+        adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                Collection collection = (Collection) adapter.getDataProvider().getItem(position);
+                HViewerApplication.temp = site;
+                HViewerApplication.temp2 = collection;
+                Intent intent = new Intent(CollectionFragment.this.getContext(), CollectionActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -71,7 +83,7 @@ public class CollectionFragment extends MyFragment {
             @Override
             public void onSuccess(String result) {
 
-                List<Collection> collections = RuleParser.getCollections(result, site.rule);
+                List<Collection> collections = RuleParser.getCollections(result, site.indexRule);
                 adapter.getDataProvider().clear();
                 adapter.getDataProvider().addAll(collections);
                 adapter.notifyDataSetChanged();
