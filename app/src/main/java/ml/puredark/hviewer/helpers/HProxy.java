@@ -16,6 +16,9 @@ public class HProxy {
         int protocolEndPos = target.indexOf(":");
         int hostStartPos = protocolEndPos + 3;
         int hostEndPos = target.indexOf("/", hostStartPos);
+        if (hostEndPos == -1) {
+            hostEndPos = target.length();
+        }
 
         this.mProxyUrl = PROXY_ADDRESSS + target.substring(hostEndPos);
     }
