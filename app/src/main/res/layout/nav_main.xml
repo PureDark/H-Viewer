@@ -48,6 +48,29 @@
         android:paddingTop="@dimen/half_padding"
         android:paddingBottom="@dimen/half_padding"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/btn_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:scaleType="centerInside"
+                tools:src="@drawable/ic_exit_to_app_black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/half_margin"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:text="设置 " />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/btn_exit"
             android:layout_width="match_parent"
