@@ -1,99 +1,104 @@
 package ml.puredark.hviewer.helpers;
 
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
+import java.io.IOException;
 
-
-
-import cz.msebera.android.httpclient.Header;
 import ml.puredark.hviewer.HViewerApplication;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HViewerHttpClient {
+    private static Handler mHandler = new Handler(Looper.getMainLooper());
+    private static OkHttpClient mClient = new OkHttpClient();
 
-    public static void get(String url, String paramsString, OnResponseListener callback){
+    public static void post(String url, String paramsString, final OnResponseListener callback) {
         String[] paramStrings = paramsString.split("&");
-        RequestParams params = new RequestParams();
-        for(String paramString : paramStrings){
+        FormBody.Builder formBody = new FormBody.Builder();
+        for (String paramString : paramStrings) {
             String[] pram = paramString.split("=");
-            if(pram.length!=2)continue;
-            params.put(pram[0], pram[1]);
+            if (pram.length != 2) continue;
+            formBody.add(pram[0], pram[1]);
         }
-        getReturnText(url, params, callback);
+        RequestBody requestBody = formBody.build();
+        post(url, requestBody, callback);
     }
 
-    public static void get(String url, OnResponseListener callback){
-        getReturnText(url, null, callback);
-    }
-    public static void post(String url, String paramsString, OnResponseListener callback){
-        String[] paramStrings = paramsString.split("&");
-        RequestParams params = new RequestParams();
-        for(String paramString : paramStrings){
-            String[] pram = paramString.split("=");
-            if(pram.length!=2)continue;
-            params.put(pram[0], pram[1]);
-        }
-        postReturnText(url, params, callback);
-    }
-
-    public static void post(String url, RequestParams params, OnResponseListener callback){
-        postReturnText(url, params, callback);
-    }
-
-    private static void getReturnText(String url, final RequestParams params, final OnResponseListener callBack){
-        if(HViewerApplication.isNetworkAvailable())
-            HttpClient.get(url, params, new TextHttpResponseHandler() {
-
+    public static void get(String url, final OnResponseListener callback) {
+        if (HViewerApplication.isNetworkAvailable()) {
+            Request request = new HRequestBuilder()
+                    .url(url)
+                    .build();
+            mClient.newCall(request).enqueue(new HCallback() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    callBack.onSuccess(responseString);
+                void onFailure(IOException e) {
+                    callback.onFailure(new HttpError(1009));
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    callBack.onFailure(new HttpError(1009));
+                void onResponse(String body) {
+                    callback.onSuccess(body);
                 }
-
             });
-        else
-            callBack.onFailure(new HttpError(1009));
+        } else {
+            callback.onFailure(new HttpError(1009));
+        }
     }
 
-    private static void postReturnText(String url, final RequestParams params, final OnResponseListener callBack){
-        if(HViewerApplication.isNetworkAvailable())
-            HttpClient.post(url, params, new TextHttpResponseHandler() {
-
+    public static void post(String url, RequestBody body, final OnResponseListener callback) {
+        if (HViewerApplication.isNetworkAvailable()) {
+            Request request = new HRequestBuilder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            mClient.newCall(request).enqueue(new HCallback() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    callBack.onSuccess(responseString);
+                void onFailure(IOException e) {
+                    callback.onFailure(new HttpError(1009));
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    callBack.onFailure(new HttpError(1009));
-                    Log.d("HViewerHttpClient", responseString);
+                void onResponse(String body) {
+                    callback.onSuccess(body);
                 }
-
             });
-        else
-            callBack.onFailure(new HttpError(1009));
+        } else {
+            callback.onFailure(new HttpError(1009));
+        }
     }
 
+    // UI Thread Handler
+    public static abstract class HCallback implements Callback {
+        abstract void onFailure(IOException e);
+        abstract void onResponse(String body);
 
-    public static class HttpClient {
-        private static AsyncHttpClient client = new AsyncHttpClient();
-
-        public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-            client.get(url, params, responseHandler);
+        @Override
+        public void onFailure(Call call, final IOException e) {
+            e.printStackTrace();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onFailure(e);
+                }
+            });
         }
 
-        public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-            client.post(url, params, responseHandler);
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            final String body = response.body().string();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onResponse(body);
+                }
+            });
         }
-
     }
 
     public interface OnResponseListener {
@@ -101,32 +106,40 @@ public class HViewerHttpClient {
         void onFailure(HttpError error);
     }
 
-
-    //对错误码的预定义
-    public static class HttpError{
-        //错误码常量定义
-        public static final int ERROR_UNKNOWN                = 1000;  //未知错误
-        public static final int ERROR_NETWORK                = 1009;  //网络错误
+    // Pre-define error code
+    public static class HttpError {
+        // Error code constants
+        public static final int ERROR_UNKNOWN = 1000;  //未知错误
+        public static final int ERROR_NETWORK = 1009;  //网络错误
 
         private int errorCode;
         private String errorString = "";
 
-        public HttpError(int errorCode){
+        public HttpError(int errorCode) {
             this.errorCode = errorCode;
-            switch(errorCode){
-                case ERROR_UNKNOWN:errorString="未知错误";break;
-                case ERROR_NETWORK:errorString="网络错误，请重试";break;
-                default:errorString="未定义的错误码";break;
+            switch (errorCode) {
+                case ERROR_UNKNOWN:
+                    errorString = "未知错误";
+                    break;
+                case ERROR_NETWORK:
+                    errorString = "网络错误，请重试";
+                    break;
+                default:
+                    errorString = "未定义的错误码";
+                    break;
             }
         }
-        public int getErrorCode(){
+
+        public int getErrorCode() {
             return this.errorCode;
         }
-        public String getErrorString(){
+
+        public String getErrorString() {
             return this.errorString;
         }
+
         @Override
-        public String toString(){
+        public String toString() {
             return errorCode + " : " + errorString;
         }
     }
