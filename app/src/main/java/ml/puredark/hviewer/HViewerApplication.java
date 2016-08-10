@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatDelegate;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class HViewerApplication extends Application {
@@ -42,13 +45,16 @@ public class HViewerApplication extends Application {
         mContext = this;
 
         String historyStr = (String) SharedPreferencesUtil.getData(this, "History", "[]");
-        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<Collection>>(){}.getType());
+        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<Collection>>() {
+        }.getType());
 
         String favouriteStr = (String) SharedPreferencesUtil.getData(this, "Favourite", "[]");
-        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<Collection>>(){}.getType());
+        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<Collection>>() {
+        }.getType());
 
         String ruleStr = (String) SharedPreferencesUtil.getData(this, "Site", "[]");
-        sites = new Gson().fromJson(ruleStr, new TypeToken<ArrayList<Site>>(){}.getType());
+        sites = new Gson().fromJson(ruleStr, new TypeToken<ArrayList<Site>>() {
+        }.getType());
     }
 
     static {
@@ -56,10 +62,9 @@ public class HViewerApplication extends Application {
     }
 
 
-    public static String getVersionName() throws Exception
-    {
+    public static String getVersionName() throws Exception {
         PackageManager packageManager = mContext.getPackageManager();
-        PackageInfo packInfo = packageManager.getPackageInfo(mContext.getPackageName(),0);
+        PackageInfo packInfo = packageManager.getPackageInfo(mContext.getPackageName(), 0);
         String version = packInfo.versionName;
         return version;
     }
@@ -79,10 +84,18 @@ public class HViewerApplication extends Application {
         return false;
     }
 
-    public static void loadImageFromUrl(ImageView imageView, String url){
+    public static void loadImageFromUrl(ImageView imageView, String url) {
         imageView.setImageBitmap(null);
-        if(url!=null) {
-            Glide.with(mContext).load(url).into(imageView);
+        if (url != null) {
+            if (HProxy.isEnabled()) {
+                HProxy proxy = new HProxy(url);
+                GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
+                        .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
+                        .build());
+                Glide.with(mContext).load(glideUrl).into(imageView);
+            } else {
+                Glide.with(mContext).load(url).into(imageView);
+            }
         }
     }
 
@@ -92,7 +105,7 @@ public class HViewerApplication extends Application {
     }
 
     public static void addHistory(Collection item) {
-        if(item==null)return;
+        if (item == null) return;
         deleteHistory(item);
         histories.add(0, item);
         trimHistory();
@@ -100,8 +113,8 @@ public class HViewerApplication extends Application {
     }
 
     public static void deleteHistory(Collection item) {
-        for(int i=0,size=histories.size();i<size;i++){
-            if(histories.get(i).equals(item)){
+        for (int i = 0, size = histories.size(); i < size; i++) {
+            if (histories.get(i).equals(item)) {
                 histories.remove(i);
                 size--;
                 i--;
@@ -118,7 +131,7 @@ public class HViewerApplication extends Application {
     }
 
     public static void trimHistory() {
-        while(histories.size()>20)
+        while (histories.size() > 20)
             histories.remove(20);
     }
 
@@ -127,15 +140,15 @@ public class HViewerApplication extends Application {
     }
 
     public static void addFavourite(Collection item) {
-        if(item==null)return;
+        if (item == null) return;
         deleteFavourite(item);
         favourites.add(0, item);
         saveFavourite();
     }
 
     public static void deleteFavourite(Collection item) {
-        for(int i=0,size=favourites.size();i<size;i++){
-            if(favourites.get(i).equals(item)){
+        for (int i = 0, size = favourites.size(); i < size; i++) {
+            if (favourites.get(i).equals(item)) {
                 favourites.remove(i);
                 size--;
                 i--;
@@ -145,15 +158,15 @@ public class HViewerApplication extends Application {
     }
 
     public static List<Collection> getFavourite() {
-        if(favourites==null)
+        if (favourites == null)
             return new ArrayList<>();
         else
             return favourites;
     }
 
     public static boolean isFavourite(Collection item) {
-        for(int i=0,size=favourites.size();i<size;i++){
-            if(favourites.get(i).equals(item))
+        for (int i = 0, size = favourites.size(); i < size; i++) {
+            if (favourites.get(i).equals(item))
                 return true;
         }
         return false;
@@ -165,15 +178,15 @@ public class HViewerApplication extends Application {
     }
 
     public static void addRule(Site item) {
-        if(item==null)return;
+        if (item == null) return;
         deleteRule(item);
         sites.add(0, item);
         saveRules();
     }
 
     public static void deleteRule(Site item) {
-        for(int i = 0, size = sites.size(); i<size; i++){
-            if(sites.get(i).rid == item.rid){
+        for (int i = 0, size = sites.size(); i < size; i++) {
+            if (sites.get(i).rid == item.rid) {
                 sites.remove(i);
                 size--;
                 i--;
@@ -183,7 +196,7 @@ public class HViewerApplication extends Application {
     }
 
     public static List<Site> getSites() {
-        if(sites ==null)
+        if (sites == null)
             return new ArrayList<>();
         else
             return sites;
