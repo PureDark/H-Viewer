@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="HProxy 设置"
+        android:key="pref_proxy_settings">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:title="启用 HProxy"
+            android:summary="关于 HProxy 的信息请参阅应用主页"
+            android:key="pref_proxy_enabled" />
+
+        <CheckBoxPreference
+            android:key="pref_proxy_request"
+            android:title="普通请求"
+            android:summary="在获取相册列表时使用 HProxy"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
+            android:key="pref_proxy_picture"
+            android:title="图片"
+            android:summary="在下载图片时使用 HProxy"
+            android:defaultValue="true" />
+
+        <EditTextPreference
+            android:defaultValue="test"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="更改 HProxy 服务器"
+            android:key="edit_text_preference_1" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="关于"
+        android:key="pref_proxy_settings">
+
+        <Preference
+            android:key="dialog_preference"
+            android:title="检查更新" />
+
+        <Preference
+            android:key="dialog_preference"
+            android:title="开源协议" />
+        <Preference
+            android:key="dialog_preference"
+            android:title="关于 H-Viewer" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

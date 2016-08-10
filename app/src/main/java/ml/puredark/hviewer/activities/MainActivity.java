@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
@@ -8,7 +9,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +17,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.adapters.SiteAdapter;
@@ -128,4 +129,9 @@ public class MainActivity extends AppCompatActivity {
         currFragment = fragment;
     }
 
+    @OnClick(R.id.btn_setting)
+    void btnSetting_onClick() {
+        Intent intent = new Intent(this, SettingActivity.class);
+        startActivity(intent);
+    }
 }
