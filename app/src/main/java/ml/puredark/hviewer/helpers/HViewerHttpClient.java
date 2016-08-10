@@ -8,6 +8,7 @@ import java.io.IOException;
 import ml.puredark.hviewer.HViewerApplication;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -21,6 +22,18 @@ import okhttp3.Response;
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static OkHttpClient mClient = new OkHttpClient();
+
+    public static void post(String url, String paramsString, final OnResponseListener callback) {
+        String[] paramStrings = paramsString.split("&");
+        FormBody.Builder formBody = new FormBody.Builder();
+        for (String paramString : paramStrings) {
+            String[] pram = paramString.split("=");
+            if (pram.length != 2) continue;
+            formBody.add(pram[0], pram[1]);
+        }
+        RequestBody requestBody = formBody.build();
+        post(url, requestBody, callback);
+    }
 
     public static void get(String url, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
