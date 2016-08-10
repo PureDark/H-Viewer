@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,8 +17,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.ExViewPager;
+import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.RuleParser;
 
 
 public class PictureViewerActivity extends AppCompatActivity {
@@ -29,16 +34,20 @@ public class PictureViewerActivity extends AppCompatActivity {
 
     private List<Picture> pictures;
 
+    private Site site;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_viewer);
         ButterKnife.bind(this);
 
-        if (HViewerApplication.temp instanceof List<?>)
-            pictures = (List<Picture>) HViewerApplication.temp;
+        if (HViewerApplication.temp instanceof Site)
+            site = (Site) HViewerApplication.temp;
+        if (HViewerApplication.temp2 instanceof List<?>)
+            pictures = (List<Picture>) HViewerApplication.temp2;
 
-        if (pictures == null || pictures.size()==0) {
+        if (site == null || pictures == null || pictures.size()==0) {
             finish();
             return;
         }
@@ -96,8 +105,23 @@ public class PictureViewerActivity extends AppCompatActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View view = getLayoutInflater().inflate(R.layout.view_picture_viewer, null);
-            ImageView imageView = (ImageView) view.findViewById(R.id.iv_picture);
-            HViewerApplication.loadImageFromUrl(imageView, pictures.get(position).url);
+            final ImageView imageView = (ImageView) view.findViewById(R.id.iv_picture);
+            final Picture picture = pictures.get(position);
+            if(picture.pic!=null){
+                HViewerApplication.loadImageFromUrl(imageView, picture.pic);
+            }else
+                HViewerHttpClient.get(picture.url, new HViewerHttpClient.OnResponseListener() {
+                    @Override
+                    public void onSuccess(String result) {
+                        picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector);
+                        HViewerApplication.loadImageFromUrl(imageView, picture.pic);
+                    }
+
+                    @Override
+                    public void onFailure(HViewerHttpClient.HttpError error) {
+
+                    }
+                });
             views[position] = view;
             container.addView(view, 0);
             return view;

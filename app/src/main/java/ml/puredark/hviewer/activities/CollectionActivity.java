@@ -15,6 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,14 +34,17 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.adapters.PictureAdapter;
+import ml.puredark.hviewer.adapters.TagAdapter;
 import ml.puredark.hviewer.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
@@ -48,8 +52,6 @@ import ml.puredark.hviewer.helpers.RuleParser;
 
 public class CollectionActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
     @BindView(R.id.backdrop)
     ScalingImageView backdrop;
     @BindView(R.id.toolbar)
@@ -74,6 +76,8 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
     private RecyclerView rvIndex;
 
     private PictureAdapter pictureAdapter;
+
+    private CollectionViewHolder holder;
 
 
     //是否动画中
@@ -101,8 +105,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         HViewerApplication.addHistory(collection);
 
         toolbar.setTitle(collection.title);
-        tvTitle.setText(collection.title);
-
         setSupportActionBar(toolbar);
 
         /* 为返回按钮加载图标 */
@@ -153,6 +155,8 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         List<View> views = new ArrayList<>();
         View viewIndex = getLayoutInflater().inflate(R.layout.view_collection_index, null);
         View viewDescription = getLayoutInflater().inflate(R.layout.view_collection_desciption, null);
+        holder = new CollectionViewHolder(viewDescription);
+
         views.add(viewIndex);
         views.add(viewDescription);
         List<String> titles = new ArrayList<>();
@@ -172,12 +176,41 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                HViewerApplication.temp = pictureAdapter.getDataProvider().getItems();
+                HViewerApplication.temp = site;
+                HViewerApplication.temp2 = pictureAdapter.getDataProvider().getItems();
                 Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
                 intent.putExtra("position", position);
                 startActivity(intent);
             }
         });
+    }
+
+
+    public class CollectionViewHolder {
+        @BindView(R.id.tv_title)
+        TextView tvTitle;
+        @BindView(R.id.tv_uploader)
+        TextView tvUploader;
+        @BindView(R.id.tv_category)
+        TextView tvCategory;
+        @BindView(R.id.rv_tags)
+        RecyclerView rvTags;
+        @BindView(R.id.rb_rating)
+        RatingBar rbRating;
+        @BindView(R.id.tv_submittime)
+        TextView tvSubmittime;
+
+        public CollectionViewHolder(View view) {
+            ButterKnife.bind(this, view);
+            rvTags.setAdapter(
+                    new TagAdapter(
+                            new ListDataProvider<>(
+                                    new ArrayList<Tag>()
+                            )
+                    )
+            );
+        }
+
     }
 
     private void getCollectionDetail() {
@@ -190,6 +223,15 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                 toolbar.setTitle(collection.title);
                 pictureAdapter.setDataProvider(new ListDataProvider((collection).pictures));
                 pictureAdapter.notifyDataSetChanged();
+
+                holder.tvTitle.setText(collection.title);
+                holder.tvUploader.setText(collection.uploader);
+                holder.tvCategory.setText(collection.category);
+                TagAdapter adapter = (TagAdapter)holder.rvTags.getAdapter();
+                adapter.getDataProvider().addAll(collection.tags);
+                adapter.notifyDataSetChanged();
+                holder.rbRating.setRating(collection.rating);
+                holder.tvSubmittime.setText(collection.datetime);
             }
 
             @Override
@@ -252,9 +294,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         } else {
             fabMenu.showMenu(true);
         }
-        float collapseDistance = (float) verticalOffset / appBarLayout.getTotalScrollRange();
-        tvTitle.setScaleX(1 + (collapseDistance * 0.5f));
-        tvTitle.setScaleY(1 + (collapseDistance * 0.5f));
 
     }
 

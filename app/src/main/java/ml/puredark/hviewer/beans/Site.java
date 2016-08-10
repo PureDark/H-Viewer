@@ -7,15 +7,15 @@ public class Site extends AbstractDataProvider.Data{
 	public String title;
 	public String indexUrl;
 	public Rule indexRule, galleryRule;
-	public Selector picture;
+	public Selector picUrlSelector;
 
-	public Site(int rid, String title, String indexUrl, Rule indexRule, Rule galleryRule, Selector picture){
+	public Site(int rid, String title, String indexUrl, Rule indexRule, Rule galleryRule, Selector picUrlSelector){
 		this.rid = rid;
 		this.title = title;
 		this.indexUrl = indexUrl;
 		this.indexRule = indexRule;
         this.galleryRule = galleryRule;
-        this.picture = picture;
+        this.picUrlSelector = picUrlSelector;
 	}
 
 	@Override

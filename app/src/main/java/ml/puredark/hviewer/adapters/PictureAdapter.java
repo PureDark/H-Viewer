@@ -41,7 +41,7 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Picture picture = (Picture) mProvider.getItem(position);
         PictureViewHolder holder = (PictureViewHolder) viewHolder;
-        HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.url);
+        HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail);
     }
 
     @Override

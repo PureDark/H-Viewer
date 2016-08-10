@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.puredark.lessonlearningplus.customs.PinchImageView
+    <ml.puredark.hviewer.customs.PinchImageView
         android:id="@+id/iv_picture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

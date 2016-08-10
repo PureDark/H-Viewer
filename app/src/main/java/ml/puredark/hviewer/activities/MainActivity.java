@@ -80,8 +80,10 @@ public class MainActivity extends AppCompatActivity {
         Rule galleryRule = new Rule();
         galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
 
+        Selector pic = new Selector("img#sm", "attr", "src", null);
+
         sites.add(new Site(1, "Lofi E-hentai", "http://lofi.e-hentai.org",
-                indexRule, galleryRule, null));
+                indexRule, galleryRule, pic));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);

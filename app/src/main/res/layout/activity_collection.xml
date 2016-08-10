@@ -19,7 +19,9 @@
             android:layout_height="match_parent"
             android:clipChildren="false"
             android:clipToPadding="false"
-            app:titleEnabled="false"
+            app:titleEnabled="true"
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:expandedTitleGravity="fill_vertical"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary">
             <ScrollView
@@ -42,16 +44,6 @@
                 android:background="@color/colorPrimary"
                 android:alpha="0.8"
                 android:scaleType="fitXY"/>
-
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                tools:text="测试超长的标题名称长到可以换行的程度看看会不会出问题！"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
