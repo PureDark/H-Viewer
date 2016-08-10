@@ -13,21 +13,20 @@
         android:layout_height="@dimen/collection_app_bar_height"
         android:layout_width="match_parent"
         android:theme="@style/AppTheme.AppBarOverlay">
-        <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
+        <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false"
             android:clipToPadding="false"
-            app:titleEnabled="true"
-            app:expandedTitleGravity="center"
-            app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded"
+            app:titleEnabled="false"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary">
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_collapseMode="parallax" >
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.8">
                 <ml.puredark.hviewer.customs.ScalingImageView
                     android:id="@+id/backdrop"
                     android:layout_width="match_parent"
@@ -44,14 +43,15 @@
                 android:alpha="0.8"
                 android:scaleType="fitXY"/>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
-                android:layout_marginBottom="40dp"
-                android:layout_gravity="bottom">
-
-            </LinearLayout>
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                tools:text="测试超长的标题名称长到可以换行的程度看看会不会出问题！"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -76,7 +76,7 @@
                         android:background="@drawable/bg_button"/>
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
-        </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
+        </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout

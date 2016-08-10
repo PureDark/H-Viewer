@@ -15,6 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +48,8 @@ import ml.puredark.hviewer.helpers.RuleParser;
 
 public class CollectionActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
     @BindView(R.id.backdrop)
     ScalingImageView backdrop;
     @BindView(R.id.toolbar)
@@ -98,6 +101,8 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         HViewerApplication.addHistory(collection);
 
         toolbar.setTitle(collection.title);
+        tvTitle.setText(collection.title);
+
         setSupportActionBar(toolbar);
 
         /* 为返回按钮加载图标 */
@@ -247,6 +252,9 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         } else {
             fabMenu.showMenu(true);
         }
+        float collapseDistance = (float) verticalOffset / appBarLayout.getTotalScrollRange();
+        tvTitle.setScaleX(1 + (collapseDistance * 0.5f));
+        tvTitle.setScaleY(1 + (collapseDistance * 0.5f));
 
     }
 
