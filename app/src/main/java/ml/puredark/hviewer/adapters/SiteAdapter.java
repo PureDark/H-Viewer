@@ -45,7 +45,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         RuleViewHolder holder = (RuleViewHolder) viewHolder;
         Log.d("SiteAdapter", site.title);
         int rID = R.drawable.ic_filter_9_plus_black;
-        switch(position){
+        switch (position) {
             case 0:
                 rID = R.drawable.ic_filter_1_black;
                 break;
@@ -76,7 +76,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         holder.ivIcon.setImageResource(rID);
         holder.tvTitle.setText(site.title);
-        if(selectedRid== site.rid)
+        if (selectedRid == site.rid)
             holder.container.setBackgroundResource(R.color.black_10);
         else
             holder.container.setBackground(null);
@@ -123,7 +123,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });

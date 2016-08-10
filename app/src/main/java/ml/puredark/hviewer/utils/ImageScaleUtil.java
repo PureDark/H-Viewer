@@ -19,7 +19,7 @@ import java.security.MessageDigest;
 /**
  * Created by PureDark on 2016/5/11.
  */
-public class ImageScaleUtils {
+public class ImageScaleUtil {
 
     /**
      * 压缩图片宽高

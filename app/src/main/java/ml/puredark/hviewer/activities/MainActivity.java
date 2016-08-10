@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.nav_header_view)
     LinearLayout navHeaderView;
-    @BindView(R.id.rv_rule)
-    RecyclerView rvRule;
+    @BindView(R.id.rv_site)
+    RecyclerView rvSite;
     @BindView(R.id.btn_exit)
     LinearLayout btnExit;
 
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         Rule indexRule = new Rule();
         indexRule.item = new Selector("#ig .ig", null, null, null);
-        indexRule.url = new Selector("td.ii a", "attr", "href", null);
+        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)");
         indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
         indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
         indexRule.cover = new Selector("td.ii img", "attr", "src", null);
@@ -82,13 +82,35 @@ public class MainActivity extends AppCompatActivity {
 
         Selector pic = new Selector("img#sm", "attr", "src", null);
 
-        sites.add(new Site(1, "Lofi E-hentai", "http://lofi.e-hentai.org",
+        sites.add(new Site(1, "Lofi.E-hentai",
+                        "http://lofi.e-hentai.org/?page={page:0}",
+                        "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
+                        indexRule, galleryRule, pic));
+
+        indexRule = new Rule();
+        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
+        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
+        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
+        indexRule.uploader = new Selector("td.itu div a", "html", null, null);
+        indexRule.cover = new Selector("td.itd div div.it2", "html", null, null);
+        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
+        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
+        indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
+
+        galleryRule = new Rule();
+        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+
+        pic = new Selector("img#sm", "attr", "src", null);
+
+        sites.add(new Site(2, "G.E-hentai",
+                "http://g.e-hentai.org/?page={page:0}",
+                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
                 indexRule, galleryRule, pic));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         final SiteAdapter adapter = new SiteAdapter(dataProvider);
-        rvRule.setAdapter(adapter);
+        rvSite.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override

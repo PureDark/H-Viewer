@@ -3,12 +3,15 @@ package ml.puredark.hviewer.helpers;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,18 +20,26 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.utils.MathUtil;
 
-import static android.R.attr.rating;
-import static android.R.attr.tag;
 import static java.util.regex.Pattern.DOTALL;
-import static ml.puredark.hviewer.HViewerApplication.temp;
-import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
+import static ml.puredark.hviewer.utils.MathUtil.computeString;
 
 /**
  * Created by PureDark on 2016/8/9.
  */
 
 public class RuleParser {
+
+    public static Map<String, String> parseUrl(String url) {
+        Map<String, String> map = new HashMap<>();
+        Pattern pattern = Pattern.compile("\\{(.*?):(.*?)\\}", DOTALL);
+        Matcher matcher = pattern.matcher(url);
+        while (matcher.find()) {
+            map.put(matcher.group(1), matcher.group(2));
+        }
+        return map;
+    }
 
     public static List<Collection> getCollections(String html, Rule rule) {
         List<Collection> collections = new ArrayList<>();
@@ -67,42 +78,42 @@ public class RuleParser {
     public static Collection getCollectionDetail(Collection collection, Element element, Rule rule) {
         Elements temp;
 
-        String url = "";
-        if(rule.url!=null) {
-            temp = element.select(rule.url.selector);
-            if ("attr".equals(rule.url.fun)) {
-                url = temp.attr(rule.url.param);
-            } else if ("html".equals(rule.url.fun)) {
-                url = temp.html();
+        String idCode = "";
+        if (rule.idCode != null) {
+            temp = element.select(rule.idCode.selector);
+            if ("attr".equals(rule.idCode.fun)) {
+                idCode = temp.attr(rule.idCode.param);
+            } else if ("html".equals(rule.idCode.fun)) {
+                idCode = temp.html();
             }
-            if (rule.url.regex != null) {
-                Pattern pattern = Pattern.compile(rule.url.regex, DOTALL);
-                Matcher matcher = pattern.matcher(url);
+            if (rule.idCode.regex != null) {
+                Pattern pattern = Pattern.compile(rule.idCode.regex, DOTALL);
+                Matcher matcher = pattern.matcher(idCode);
                 if (matcher.find()) {
-                    url = matcher.group();
+                    idCode = matcher.group(1);
                 }
             }
         }
 
         String title = "";
-        if(rule.title!=null) {
+        if (rule.title != null) {
             temp = element.select(rule.title.selector);
             if ("attr".equals(rule.title.fun)) {
                 title = temp.attr(rule.title.param);
             } else if ("html".equals(rule.title.fun)) {
                 title = temp.html();
             }
-            if (rule.title.regex != null && url != null) {
+            if (rule.title.regex != null && title != null) {
                 Pattern pattern = Pattern.compile(rule.title.regex, DOTALL);
                 Matcher matcher = pattern.matcher(title);
                 if (matcher.find()) {
-                    title = matcher.group();
+                    title = matcher.group(1);
                 }
             }
         }
 
         String uploader = "";
-        if(rule.uploader!=null) {
+        if (rule.uploader != null) {
             temp = element.select(rule.uploader.selector);
             if ("attr".equals(rule.uploader.fun)) {
                 uploader = temp.attr(rule.uploader.param);
@@ -113,13 +124,13 @@ public class RuleParser {
                 Pattern pattern = Pattern.compile(rule.uploader.regex, DOTALL);
                 Matcher matcher = pattern.matcher(uploader);
                 if (matcher.find()) {
-                    uploader = matcher.group();
+                    uploader = matcher.group(1);
                 }
             }
         }
 
         String cover = "";
-        if(rule.cover!=null) {
+        if (rule.cover != null) {
             temp = element.select(rule.cover.selector);
             if ("attr".equals(rule.cover.fun)) {
                 cover = temp.attr(rule.cover.param);
@@ -130,13 +141,13 @@ public class RuleParser {
                 Pattern pattern = Pattern.compile(rule.cover.regex, DOTALL);
                 Matcher matcher = pattern.matcher(cover);
                 if (matcher.find()) {
-                    cover = matcher.group();
+                    cover = matcher.group(1);
                 }
             }
         }
 
         String category = "";
-        if(rule.category!=null) {
+        if (rule.category != null) {
             temp = element.select(rule.category.selector);
             if ("attr".equals(rule.category.fun)) {
                 category = temp.attr(rule.category.param);
@@ -147,13 +158,13 @@ public class RuleParser {
                 Pattern pattern = Pattern.compile(rule.category.regex, DOTALL);
                 Matcher matcher = pattern.matcher(category);
                 if (matcher.find()) {
-                    category = matcher.group();
+                    category = matcher.group(1);
                 }
             }
         }
 
         String datetime = "";
-        if(rule.datetime!=null) {
+        if (rule.datetime != null) {
             temp = element.select(rule.datetime.selector);
             if ("attr".equals(rule.datetime.fun)) {
                 datetime = temp.attr(rule.datetime.param);
@@ -164,15 +175,16 @@ public class RuleParser {
                 Pattern pattern = Pattern.compile(rule.datetime.regex, DOTALL);
                 Matcher matcher = pattern.matcher(datetime);
                 if (matcher.find()) {
-                    datetime = matcher.group();
+                    datetime = matcher.group(1);
                 }
             }
         }
 
         String ratingStr = "";
-        if(rule.rating!=null) {
+        float rating = 0;
+        if (rule.rating != null) {
             temp = element.select(rule.rating.selector);
-            if ("attr".equals(rule.rating.fun)) {
+            if (rule.rating.fun != null && rule.rating.fun.contains("attr")) {
                 ratingStr = temp.attr(rule.rating.param);
             } else if ("html".equals(rule.rating.fun)) {
                 ratingStr = temp.html();
@@ -181,16 +193,31 @@ public class RuleParser {
                 Pattern pattern = Pattern.compile(rule.rating.regex, DOTALL);
                 Matcher matcher = pattern.matcher(ratingStr);
                 if (matcher.find()) {
-                    ratingStr = matcher.group();
+                    ratingStr = matcher.group(1);
                 }
             }
-        }
 
-        float rating = 0;
-        if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
-            rating = Float.parseFloat(ratingStr);
-        } else {
-            rating = Math.min(ratingStr.replace(" ", "").length(), 5);
+            if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
+                rating = Float.parseFloat(ratingStr);
+            } else if(StringUtil.isNumeric(ratingStr)){
+                rating = Float.parseFloat(ratingStr);
+            } else {
+                rating = Math.min(ratingStr.replace(" ", "").length(), 5);
+            }
+
+            if(rule.rating.fun != null ){
+                Pattern pattern0 = Pattern.compile("\\|\\|(.*?)", DOTALL);
+                Matcher matcher0 = pattern0.matcher(rule.rating.fun);
+                if (matcher0.find()) {
+                    String exp = matcher0.group(1);
+                    exp = exp.replace("{1}", ""+rating);
+                    String result = MathUtil.computeString(exp);
+                    try{
+                        rating = Float.parseFloat(result);
+                    }catch (NumberFormatException e){
+                    }
+                }
+            }
         }
 
 
@@ -211,7 +238,7 @@ public class RuleParser {
                     Pattern pattern = Pattern.compile(rule.tags.regex, DOTALL);
                     Matcher matcher = pattern.matcher(tagStr);
                     while (matcher.find()) {
-                        tags.add(new Tag(tags.size() + 1, matcher.group()));
+                        tags.add(new Tag(tags.size() + 1, matcher.group(1)));
                     }
                 } else {
                     tags.add(new Tag(tags.size() + 1, tagStr));
@@ -232,14 +259,11 @@ public class RuleParser {
                 } else {
                     pictureStr = pictureElement.toString();
                 }
-                Log.d("RuleParser", "pictureStr:" + pictureStr);
 
                 if (rule.pictures.regex != null && pictureStr != null) {
-                    Log.d("RuleParser", "pictures.regex:" + rule.pictures.regex);
                     Pattern pattern = Pattern.compile(rule.pictures.regex, DOTALL);
                     Matcher matcher = pattern.matcher(pictureStr);
                     while (matcher.find()) {
-                        Log.d("RuleParser", "matcher.groupCount():" + matcher.groupCount());
                         pictures.add(new Picture(pictures.size() + 1, matcher.group(1), matcher.group(2)));
                     }
                 } else {
@@ -248,8 +272,8 @@ public class RuleParser {
             }
         }
 
-        if (url != null && !url.equals(""))
-            collection.url = url;
+        if (idCode != null && !idCode.equals(""))
+            collection.idCode = idCode;
         if (title != null && !title.equals(""))
             collection.title = title;
         if (uploader != null && !uploader.equals(""))
@@ -272,15 +296,15 @@ public class RuleParser {
     public static String getPictureUrl(String html, Selector selector) {
         Document doc = Jsoup.parse(html);
         String url = null;
-        if(selector!=null) {
-             Elements temp = doc.select(selector.selector);
+        if (selector != null) {
+            Elements temp = doc.select(selector.selector);
             if ("attr".equals(selector.fun)) {
                 url = temp.attr(selector.param);
             } else if ("html".equals(selector.fun)) {
                 url = temp.html();
             }
             if (selector.regex != null && url != null) {
-                Pattern pattern = Pattern.compile(selector.regex, Pattern.DOTALL);
+                Pattern pattern = Pattern.compile(selector.regex, DOTALL);
                 Matcher matcher = pattern.matcher(url);
                 if (matcher.find()) {
                     url = matcher.group();

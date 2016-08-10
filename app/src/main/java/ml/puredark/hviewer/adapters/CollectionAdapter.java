@@ -52,7 +52,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.tvCategory.setText(collection.category);
         TagAdapter adapter = (TagAdapter)holder.rvTags.getAdapter();
         adapter.getDataProvider().clear();
-        adapter.getDataProvider().addAll(collection.tags);
+        if(collection.tags!=null)
+            adapter.getDataProvider().addAll(collection.tags);
         holder.rbRating.setRating(collection.rating);
         holder.tvSubmittime.setText(collection.datetime);
     }

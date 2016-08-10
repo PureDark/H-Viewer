@@ -7,7 +7,7 @@
     android:background="@color/bgcolor"
     android:orientation="horizontal">
 
-    <android.support.v7.widget.RecyclerView
+    <com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView
         android:id="@+id/rv_index"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,6 +19,6 @@
         app:layoutManager="GridLayoutManager"
         app:spanCount="3"
         tools:listitem="@layout/item_picture_index">
-    </android.support.v7.widget.RecyclerView>
+    </com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView>
 
 </LinearLayout>

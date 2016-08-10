@@ -24,9 +24,11 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionMenu;
 import com.nineoldandroids.animation.ValueAnimator;
+import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +46,6 @@ import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
@@ -73,11 +74,14 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     private Collection collection;
 
-    private RecyclerView rvIndex;
+    private PullLoadMoreRecyclerView rvIndex;
 
     private PictureAdapter pictureAdapter;
 
     private CollectionViewHolder holder;
+
+    private int startPage;
+    private int currPage;
 
 
     //是否动画中
@@ -102,6 +106,17 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
             return;
         }
 
+        //解析URL模板
+        Map<String, String> map = RuleParser.parseUrl(site.galleryUrl);
+        String pageStr = map.get("page");
+        try {
+            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+            currPage = startPage;
+        } catch (NumberFormatException e) {
+            startPage = 0;
+            currPage = startPage;
+        }
+
         HViewerApplication.addHistory(collection);
 
         toolbar.setTitle(collection.title);
@@ -111,43 +126,44 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         btnReturnIcon = new DrawerArrowDrawable(this);
         btnReturnIcon.setColor(getResources().getColor(R.color.white));
         btnReturn.setImageDrawable(btnReturnIcon);
+        btnReturnIcon.setProgress(1f);
 
         initCover(collection.cover);
         initTabAndViewPager();
-        getCollectionDetail();
+        getCollectionDetail(startPage);
     }
 
     private void initCover(String cover) {
-        if(cover==null)return;
-        Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
-            @Override
-            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        /* 给背景封面加上高斯模糊 */
-                        final Bitmap overlay = FastBlur.doBlur(resource.copy(Bitmap.Config.ARGB_8888, true), 2, true);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                backdrop.setImageBitmap(overlay);
-                                /* 让背景的封面大图来回缓慢移动 */
-                                float targetY = (backdrop.getHeight() > backdrop.getWidth()) ? -0.4f : 0f;
-                                Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, targetY);
-                                translateAnimation.setDuration(30000);
-                                translateAnimation.setRepeatCount(-1);
-                                translateAnimation.setRepeatMode(Animation.REVERSE);
-                                translateAnimation.setInterpolator(new LinearInterpolator());
-                                backdrop.startAnimation(translateAnimation);
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
+        if (cover != null)
+            Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            /* 给背景封面加上高斯模糊 */
+                            final Bitmap overlay = FastBlur.doBlur(resource.copy(Bitmap.Config.ARGB_8888, true), 2, true);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    backdrop.setImageBitmap(overlay);
+                                    /* 让背景的封面大图来回缓慢移动 */
+                                    float targetY = (backdrop.getHeight() > backdrop.getWidth()) ? -0.4f : 0f;
+                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
+                                    translateAnimation.setDuration(30000);
+                                    translateAnimation.setRepeatCount(-1);
+                                    translateAnimation.setRepeatMode(Animation.REVERSE);
+                                    translateAnimation.setInterpolator(new LinearInterpolator());
+                                    backdrop.startAnimation(translateAnimation);
+                                }
+                            });
+                        }
+                    }).start();
+                }
+            });
     }
 
     private void initTabAndViewPager() {
@@ -168,8 +184,8 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         tabLayout.setupWithViewPager(viewPager);
 
         //初始化相册目录
-        rvIndex = (RecyclerView) viewIndex.findViewById(R.id.rv_index);
-        List<Picture> pictures = (collection.pictures != null) ? collection.pictures : new ArrayList<Picture>();
+        rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
+        List<Picture> pictures = new ArrayList<>();
         pictureAdapter = new PictureAdapter(new ListDataProvider(pictures));
         rvIndex.setAdapter(pictureAdapter);
 
@@ -183,6 +199,25 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                 startActivity(intent);
             }
         });
+
+
+        rvIndex.setGridLayout(3);
+        rvIndex.setPullRefreshEnable(true);
+
+        //下拉刷新和加载更多
+        rvIndex.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+            @Override
+            public void onRefresh() {
+                currPage = 1;
+                getCollectionDetail(currPage);
+            }
+
+            @Override
+            public void onLoadMore() {
+                getCollectionDetail(currPage + 1);
+            }
+        });
+
     }
 
 
@@ -213,30 +248,47 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     }
 
-    private void getCollectionDetail() {
-        HViewerHttpClient.get(collection.url, new HViewerHttpClient.OnResponseListener() {
+    private void getCollectionDetail(final int page) {
+        String url = site.galleryUrl.replaceFirst("\\{idCode:\\}", collection.idCode);
+        url = url.replaceFirst("\\{page:" + startPage + "\\}", "" + page);
+        HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
-                Log.d("CollectionActivity", site.galleryRule+" "+result);
                 collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule);
                 initCover(collection.cover);
                 toolbar.setTitle(collection.title);
-                pictureAdapter.setDataProvider(new ListDataProvider((collection).pictures));
-                pictureAdapter.notifyDataSetChanged();
 
                 holder.tvTitle.setText(collection.title);
                 holder.tvUploader.setText(collection.uploader);
                 holder.tvCategory.setText(collection.category);
-                TagAdapter adapter = (TagAdapter)holder.rvTags.getAdapter();
-                adapter.getDataProvider().addAll(collection.tags);
+                TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
+                if(collection.tags!=null)
+                    adapter.getDataProvider().addAll(collection.tags);
                 adapter.notifyDataSetChanged();
                 holder.rbRating.setRating(collection.rating);
                 holder.tvSubmittime.setText(collection.datetime);
+
+                if (collection.pictures != null && collection.pictures.size() > 0) {
+                    if (page == startPage) {
+                        pictureAdapter.getDataProvider().clear();
+                        pictureAdapter.getDataProvider().addAll(collection.pictures);
+                        pictureAdapter.notifyDataSetChanged();
+                        currPage = page;
+                    }else if(!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))){
+                        pictureAdapter.getDataProvider().addAll(collection.pictures);
+                        pictureAdapter.notifyDataSetChanged();
+                        currPage = page;
+                        ArrayList arrayList = new ArrayList();
+                        arrayList.contains(collection);
+                    }
+                }
+                rvIndex.setPullLoadMoreCompleted();
             }
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
                 Toast.makeText(CollectionActivity.this, error.getErrorString(), Toast.LENGTH_SHORT).show();
+                rvIndex.setPullLoadMoreCompleted();
             }
         });
     }

@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,14 +30,20 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 
+import static ml.puredark.hviewer.helpers.RuleParser.parseUrl;
+import static okhttp3.Protocol.get;
+
 public class CollectionFragment extends MyFragment {
 
     @BindView(R.id.rv_collection)
-    RecyclerView rvCollection;
+    PullLoadMoreRecyclerView rvCollection;
 
     CollectionAdapter adapter;
 
     private Site site;
+
+    private int startPage;
+    private int currPage;
 
     public CollectionFragment() {
     }
@@ -49,6 +60,7 @@ public class CollectionFragment extends MyFragment {
         if (HViewerApplication.temp instanceof Site)
             site = (Site) HViewerApplication.temp;
 
+
     }
 
     @Override
@@ -57,12 +69,40 @@ public class CollectionFragment extends MyFragment {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
         ButterKnife.bind(this, rootView);
 
+
         List<Collection> collections = new ArrayList<>();
         AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
         adapter = new CollectionAdapter(dataProvider);
         rvCollection.setAdapter(adapter);
+
+        rvCollection.setLinearLayout();
+        rvCollection.setPullRefreshEnable(true);
+
+        //下拉刷新和加载更多
+        rvCollection.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+            @Override
+            public void onRefresh() {
+                currPage=1;
+                getCollections(currPage);
+            }
+
+            @Override
+            public void onLoadMore() {
+                getCollections(currPage+1);
+            }
+        });
+
         if (site != null) {
-            getCollections(site);
+            Map<String, String> map = RuleParser.parseUrl(site.indexUrl);
+            String pageStr = map.get("page");
+            try {
+                startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+                currPage = startPage;
+            }catch (NumberFormatException e){
+                startPage = 0;
+                currPage = startPage;
+            }
+            getCollections(startPage);
         }
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
             @Override
@@ -78,20 +118,30 @@ public class CollectionFragment extends MyFragment {
         return rootView;
     }
 
-    private void getCollections(final Site site){
-        HViewerHttpClient.get(site.indexUrl, new HViewerHttpClient.OnResponseListener() {
+    private void getCollections(final int page) {
+        String url = site.indexUrl.replaceFirst("\\{page:"+startPage+"\\}", ""+page);
+        HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
-
                 List<Collection> collections = RuleParser.getCollections(result, site.indexRule);
-                adapter.getDataProvider().clear();
-                adapter.getDataProvider().addAll(collections);
-                adapter.notifyDataSetChanged();
+                if(collections.size()>0){
+                    if(page==startPage){
+                        adapter.getDataProvider().clear();
+                    }
+                    adapter.getDataProvider().addAll(collections);
+                    adapter.notifyDataSetChanged();
+                    currPage = page;
+                }
+                rvCollection.setPullLoadMoreCompleted();
+                for(Collection c:collections){
+                    Log.d("CollectionFragment", c.cid+" "+c.cover);
+                }
             }
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
                 Toast.makeText(getContext(), error.getErrorString(), Toast.LENGTH_SHORT).show();
+                rvCollection.setPullLoadMoreCompleted();
             }
         });
     }

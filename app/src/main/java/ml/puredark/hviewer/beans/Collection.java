@@ -8,21 +8,20 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class Collection extends AbstractDataProvider.Data {
     public int cid;
+    public String idCode;
     public String title, uploader, cover, category, datetime;
     public float rating;
     public List<Tag> tags;
     public List<Picture> pictures;
 
-    public String url;
-
     public Collection(int cid){
         this.cid = cid;
     }
 
-    public Collection(int cid, String url, String title, String uploader, String cover, String category,
+    public Collection(int cid, String idCode, String title, String uploader, String cover, String category,
                       String datetime, float rating, List<Tag> tags, List<Picture> pictures) {
         this.cid = cid;
-        this.url = url;
+        this.idCode = idCode;
         this.title = title;
         this.uploader = uploader;
         this.cover = cover;

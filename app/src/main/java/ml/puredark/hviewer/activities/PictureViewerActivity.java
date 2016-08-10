@@ -77,7 +77,7 @@ public class PictureViewerActivity extends AppCompatActivity {
         };
         viewPager.addOnPageChangeListener(listener);
 
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(3);
 
         viewPager.setCurrentItem(position);
     }

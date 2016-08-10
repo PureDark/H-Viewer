@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
+    <com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView
         android:id="@+id/rv_collection"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,6 +16,7 @@
         android:paddingBottom="@dimen/half_padding"
         app:layoutManager="LinearLayoutManager"
         android:orientation="vertical"
+        android:scrollbars="vertical"
         tools:listitem="@layout/item_collection"/>
 
 </LinearLayout>

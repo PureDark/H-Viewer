@@ -21,7 +21,7 @@ import android.view.View;
 
 import com.nineoldandroids.view.ViewHelper;
 
-public class ViewUtils {
+public class ViewUtil {
     public static boolean hitTest(View v, int x, int y) {
         final int tx = (int) (ViewCompat.getTranslationX(v) + 0.5f);
         final int ty = (int) (ViewCompat.getTranslationY(v) + 0.5f);

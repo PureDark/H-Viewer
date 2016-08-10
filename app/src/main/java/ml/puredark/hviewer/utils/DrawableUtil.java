@@ -18,7 +18,7 @@ package ml.puredark.hviewer.utils;
 
 import android.graphics.drawable.Drawable;
 
-public class DrawableUtils {
+public class DrawableUtil {
     private static final int[] EMPTY_STATE = new int[] {};
 
     public static void clearState(Drawable drawable) {
