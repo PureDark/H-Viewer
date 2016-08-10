@@ -32,7 +32,7 @@ public class HViewerHttpClient {
 
     public static void get(String url, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
-            Request request = new HViewerRequestBuilder()
+            Request request = new HRequestBuilder()
                     .url(url)
                     .build();
             mClient.newCall(request).enqueue(new HCallback() {
@@ -53,7 +53,7 @@ public class HViewerHttpClient {
 
     public static void post(String url, RequestBody body, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
-            Request request = new HViewerRequestBuilder()
+            Request request = new HRequestBuilder()
                     .url(url)
                     .post(body)
                     .build();

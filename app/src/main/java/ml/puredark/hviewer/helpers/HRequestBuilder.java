@@ -2,11 +2,11 @@ package ml.puredark.hviewer.helpers;
 
 import okhttp3.Request;
 
-public class HViewerRequestBuilder extends Request.Builder {
+public class HRequestBuilder extends Request.Builder {
 
 
     @Override
-    public HViewerRequestBuilder url(String url) {
+    public HRequestBuilder url(String url) {
         if (HProxy.isEnabled()) {
             HProxy proxy = new HProxy(url);
             this.header(proxy.getHeaderKey(), proxy.getHeaderValue());
