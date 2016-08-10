@@ -179,8 +179,8 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         HViewerHttpClient.get(collection.url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
+                Log.d("CollectionActivity", site.galleryRule+" "+result);
                 collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule);
-                Log.d("CollectionActivity", "collecion.pictures.size():" + collection.pictures.size());
                 initCover(collection.cover);
                 toolbar.setTitle(collection.title);
                 pictureAdapter.setDataProvider(new ListDataProvider((collection).pictures));

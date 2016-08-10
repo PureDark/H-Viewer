@@ -64,108 +64,124 @@ public class RuleParser {
     }
 
     public static Collection getCollectionDetail(Collection collection, Element element, Rule rule) {
+        Elements temp;
+
         String url = "";
-        Elements temp = element.select(rule.url.selector);
-        if ("attr".equals(rule.url.fun)) {
-            url = temp.attr(rule.url.param);
-        } else if ("html".equals(rule.url.fun)) {
-            url = temp.html();
-        }
-        if (rule.url.regex != null) {
-            Pattern pattern = Pattern.compile(rule.url.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(url);
-            if (matcher.find()) {
-                url = matcher.group();
+        if(rule.url!=null) {
+            temp = element.select(rule.url.selector);
+            if ("attr".equals(rule.url.fun)) {
+                url = temp.attr(rule.url.param);
+            } else if ("html".equals(rule.url.fun)) {
+                url = temp.html();
+            }
+            if (rule.url.regex != null) {
+                Pattern pattern = Pattern.compile(rule.url.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(url);
+                if (matcher.find()) {
+                    url = matcher.group();
+                }
             }
         }
 
         String title = "";
-        temp = element.select(rule.title.selector);
-        if ("attr".equals(rule.title.fun)) {
-            title = temp.attr(rule.title.param);
-        } else if ("html".equals(rule.title.fun)) {
-            title = temp.html();
-        }
-        if (rule.title.regex != null && url != null) {
-            Pattern pattern = Pattern.compile(rule.title.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(title);
-            if (matcher.find()) {
-                title = matcher.group();
+        if(rule.title!=null) {
+            temp = element.select(rule.title.selector);
+            if ("attr".equals(rule.title.fun)) {
+                title = temp.attr(rule.title.param);
+            } else if ("html".equals(rule.title.fun)) {
+                title = temp.html();
+            }
+            if (rule.title.regex != null && url != null) {
+                Pattern pattern = Pattern.compile(rule.title.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(title);
+                if (matcher.find()) {
+                    title = matcher.group();
+                }
             }
         }
 
         String uploader = "";
-        temp = element.select(rule.uploader.selector);
-        if ("attr".equals(rule.uploader.fun)) {
-            uploader = temp.attr(rule.uploader.param);
-        } else if ("html".equals(rule.uploader.fun)) {
-            uploader = temp.html();
-        }
-        if (rule.uploader.regex != null && uploader != null) {
-            Pattern pattern = Pattern.compile(rule.uploader.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(uploader);
-            if (matcher.find()) {
-                uploader = matcher.group();
+        if(rule.uploader!=null) {
+            temp = element.select(rule.uploader.selector);
+            if ("attr".equals(rule.uploader.fun)) {
+                uploader = temp.attr(rule.uploader.param);
+            } else if ("html".equals(rule.uploader.fun)) {
+                uploader = temp.html();
+            }
+            if (rule.uploader.regex != null && uploader != null) {
+                Pattern pattern = Pattern.compile(rule.uploader.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(uploader);
+                if (matcher.find()) {
+                    uploader = matcher.group();
+                }
             }
         }
 
         String cover = "";
-        temp = element.select(rule.cover.selector);
-        if ("attr".equals(rule.cover.fun)) {
-            cover = temp.attr(rule.cover.param);
-        } else if ("html".equals(rule.cover.fun)) {
-            cover = temp.html();
-        }
-        if (rule.cover.regex != null && cover != null) {
-            Pattern pattern = Pattern.compile(rule.cover.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(cover);
-            if (matcher.find()) {
-                cover = matcher.group();
+        if(rule.cover!=null) {
+            temp = element.select(rule.cover.selector);
+            if ("attr".equals(rule.cover.fun)) {
+                cover = temp.attr(rule.cover.param);
+            } else if ("html".equals(rule.cover.fun)) {
+                cover = temp.html();
+            }
+            if (rule.cover.regex != null && cover != null) {
+                Pattern pattern = Pattern.compile(rule.cover.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(cover);
+                if (matcher.find()) {
+                    cover = matcher.group();
+                }
             }
         }
 
         String category = "";
-        temp = element.select(rule.category.selector);
-        if ("attr".equals(rule.category.fun)) {
-            category = temp.attr(rule.category.param);
-        } else if ("html".equals(rule.category.fun)) {
-            category = temp.html();
-        }
-        if (rule.category.regex != null && category != null) {
-            Pattern pattern = Pattern.compile(rule.category.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(category);
-            if (matcher.find()) {
-                category = matcher.group();
+        if(rule.category!=null) {
+            temp = element.select(rule.category.selector);
+            if ("attr".equals(rule.category.fun)) {
+                category = temp.attr(rule.category.param);
+            } else if ("html".equals(rule.category.fun)) {
+                category = temp.html();
+            }
+            if (rule.category.regex != null && category != null) {
+                Pattern pattern = Pattern.compile(rule.category.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(category);
+                if (matcher.find()) {
+                    category = matcher.group();
+                }
             }
         }
 
         String datetime = "";
-        temp = element.select(rule.datetime.selector);
-        if ("attr".equals(rule.datetime.fun)) {
-            datetime = temp.attr(rule.datetime.param);
-        } else if ("html".equals(rule.datetime.fun)) {
-            datetime = temp.html();
-        }
-        if (rule.datetime.regex != null && datetime != null) {
-            Pattern pattern = Pattern.compile(rule.datetime.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(datetime);
-            if (matcher.find()) {
-                datetime = matcher.group();
+        if(rule.datetime!=null) {
+            temp = element.select(rule.datetime.selector);
+            if ("attr".equals(rule.datetime.fun)) {
+                datetime = temp.attr(rule.datetime.param);
+            } else if ("html".equals(rule.datetime.fun)) {
+                datetime = temp.html();
+            }
+            if (rule.datetime.regex != null && datetime != null) {
+                Pattern pattern = Pattern.compile(rule.datetime.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(datetime);
+                if (matcher.find()) {
+                    datetime = matcher.group();
+                }
             }
         }
 
         String ratingStr = "";
-        temp = element.select(rule.rating.selector);
-        if ("attr".equals(rule.rating.fun)) {
-            ratingStr = temp.attr(rule.rating.param);
-        } else if ("html".equals(rule.rating.fun)) {
-            ratingStr = temp.html();
-        }
-        if (rule.rating.regex != null && ratingStr != null) {
-            Pattern pattern = Pattern.compile(rule.rating.regex, Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(ratingStr);
-            if (matcher.find()) {
-                ratingStr = matcher.group();
+        if(rule.rating!=null) {
+            temp = element.select(rule.rating.selector);
+            if ("attr".equals(rule.rating.fun)) {
+                ratingStr = temp.attr(rule.rating.param);
+            } else if ("html".equals(rule.rating.fun)) {
+                ratingStr = temp.html();
+            }
+            if (rule.rating.regex != null && ratingStr != null) {
+                Pattern pattern = Pattern.compile(rule.rating.regex, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(ratingStr);
+                if (matcher.find()) {
+                    ratingStr = matcher.group();
+                }
             }
         }
 
@@ -203,13 +219,10 @@ public class RuleParser {
         }
 
         List<Picture> pictures = new ArrayList<>();
-        Log.d("RuleParser", "rule.pictures="+rule.pictures.regex);
         if (rule.pictures != null) {
-            Log.d("RuleParser", "rule.pictures");
 
             temp = element.select(rule.pictures.selector);
             for (Element pictureElement : temp) {
-                Log.d("RuleParser", "pictureElement:" + pictureElement);
                 String pictureStr;
                 if ("attr".equals(rule.pictures.fun)) {
                     pictureStr = pictureElement.attr(rule.pictures.param);
@@ -218,12 +231,14 @@ public class RuleParser {
                 } else {
                     pictureStr = pictureElement.toString();
                 }
+                Log.d("RuleParser", "pictureStr:" + pictureStr);
 
                 if (rule.pictures.regex != null && pictureStr != null) {
                     Log.d("RuleParser", "pictures.regex:" + rule.pictures.regex);
                     Pattern pattern = Pattern.compile(rule.pictures.regex, Pattern.DOTALL);
                     Matcher matcher = pattern.matcher(pictureStr);
-                    while (matcher.find()&&matcher.groupCount()>2) {
+                    while (matcher.find()) {
+                        Log.d("RuleParser", "matcher.groupCount():" + matcher.groupCount());
                         pictures.add(new Picture(pictures.size() + 1, matcher.group(1), matcher.group(2)));
                     }
                 } else {

@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         Rule galleryRule = new Rule();
         galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
 
-        sites.add(new Site(1, "Lofi E-hentai", "http://hakugyokurou.net/api/proxy.php?url=http://lofi.e-hentai.org",
+        sites.add(new Site(1, "Lofi E-hentai", "http://lofi.e-hentai.org",
                 indexRule, galleryRule, null));
 
 

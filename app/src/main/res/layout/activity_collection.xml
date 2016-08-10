@@ -13,7 +13,7 @@
         android:layout_height="@dimen/collection_app_bar_height"
         android:layout_width="match_parent"
         android:theme="@style/AppTheme.AppBarOverlay">
-        <android.support.design.widget.CollapsingToolbarLayout
+        <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -21,7 +21,8 @@
             android:clipToPadding="false"
             app:titleEnabled="true"
             app:expandedTitleGravity="center"
-            app:layout_scrollFlags="scroll|snap"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary">
             <ScrollView
                 android:layout_width="match_parent"
@@ -75,7 +76,7 @@
                         android:background="@drawable/bg_button"/>
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.CollapsingToolbarLayout>
+        </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
