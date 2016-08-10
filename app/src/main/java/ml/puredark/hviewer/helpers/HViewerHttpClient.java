@@ -14,11 +14,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-//import com.loopj.android.http.AsyncHttpClient;
-//import com.loopj.android.http.AsyncHttpResponseHandler;
-//import com.loopj.android.http.RequestParams;
-//import com.loopj.android.http.TextHttpResponseHandler;
-
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static OkHttpClient mClient = new OkHttpClient();
@@ -37,7 +32,7 @@ public class HViewerHttpClient {
 
     public static void get(String url, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
-            Request request = new Request.Builder()
+            Request request = new HViewerRequestBuilder()
                     .url(url)
                     .build();
             mClient.newCall(request).enqueue(new HCallback() {
@@ -58,7 +53,7 @@ public class HViewerHttpClient {
 
     public static void post(String url, RequestBody body, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
-            Request request = new Request.Builder()
+            Request request = new HViewerRequestBuilder()
                     .url(url)
                     .post(body)
                     .build();
