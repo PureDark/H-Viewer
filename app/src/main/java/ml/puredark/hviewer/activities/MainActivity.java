@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,6 +34,11 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+
+import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED;
+import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE;
+import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -176,6 +182,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        boolean a1 = (boolean) SharedPreferencesUtil.getData(
+                HViewerApplication.mContext, KEY_PREF_PROXY_ENABLED, false);
+        boolean a2= (boolean) SharedPreferencesUtil.getData(
+                HViewerApplication.mContext, KEY_PREF_PROXY_REQUEST, false);
+        boolean a3 = (boolean) SharedPreferencesUtil.getData(
+                HViewerApplication.mContext, KEY_PREF_PROXY_PICTURE, false);
+
+        Log.d("SettingFragment", "pref_proxy_enabled:" + a1);
+        Log.d("SettingFragment", "pref_proxy_request:" + a2);
+        Log.d("SettingFragment", "pref_proxy_picture:" + a3);
     }
 
     @Override

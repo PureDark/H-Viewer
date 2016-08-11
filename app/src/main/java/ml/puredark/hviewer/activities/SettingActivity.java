@@ -7,6 +7,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.ImageView;
 
 import butterknife.BindView;
@@ -16,6 +17,10 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+
+import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED;
+import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE;
+import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -41,6 +46,7 @@ public class SettingActivity extends AppCompatActivity {
         btnReturnIcon.setColor(getResources().getColor(R.color.white));
         btnReturn.setImageDrawable(btnReturnIcon);
         btnReturnIcon.setProgress(1f);
+
     }
 
     @OnClick(R.id.btn_return)
@@ -63,31 +69,15 @@ public class SettingActivity extends AppCompatActivity {
         public void onCreate(final Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
             getPreferenceManager().setSharedPreferencesName(SharedPreferencesUtil.FILE_NAME);
+            addPreferencesFromResource(R.xml.preferences);
             getPreferenceScreen().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(this);
-
-
-            updateProxyOptions(HProxy.isEnabled());
-
-            boolean a1 = (boolean) SharedPreferencesUtil.getData(
-                    HViewerApplication.mContext, KEY_PREF_PROXY_ENABLED, false);
-            boolean a2 = getPreferenceManager().getSharedPreferences()
-                    .getBoolean(KEY_PREF_PROXY_ENABLED, false);
         }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals(KEY_PREF_PROXY_ENABLED)) {
-                updateProxyOptions(sharedPreferences.getBoolean(key, true));
-            }
         }
 
-        public void updateProxyOptions(boolean isEnabled) {
-            getPreferenceScreen().findPreference(KEY_PREF_PROXY_REQUEST).setEnabled(isEnabled);
-            getPreferenceScreen().findPreference(KEY_PREF_PROXY_PICTURE).setEnabled(isEnabled);
-            getPreferenceScreen().findPreference(KEY_PREF_PROXY_SERVER).setEnabled(isEnabled);
-        }
     }
 }

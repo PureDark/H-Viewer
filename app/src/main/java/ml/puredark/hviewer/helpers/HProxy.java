@@ -5,6 +5,7 @@ import ml.puredark.hviewer.activities.SettingActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class HProxy {
+    private static final String PROXY_ADDRESSS = "https://h-viewer-proxy.herokuapp.com";
     private String mTarget;
     private String mProxyUrl;
 
@@ -24,8 +25,13 @@ public class HProxy {
     }
 
     private static String getProxyServer() {
-        return (String) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_PROXY_SERVER, false);
+//        return PROXY_ADDRESSS;
+        String proxy = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_PROXY_SERVER, "");
+        if (proxy.startsWith("http://") || proxy.startsWith("https://"))
+            return proxy;
+        else
+            return PROXY_ADDRESSS;
     }
 
     public HProxy(String target) {
