@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,11 +23,12 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
+        void onItemLongClick(View v, int position);
     }
 
     public SiteAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
-        setHasStableIds(true);
+        setHasStableIds(false);
     }
 
 
@@ -133,6 +135,14 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View v) {
                     if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
+            container.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (mItemClickListener != null)
+                        mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                    return true;
                 }
             });
         }

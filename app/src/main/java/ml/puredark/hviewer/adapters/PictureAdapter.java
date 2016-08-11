@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public PictureAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
-        setHasStableIds(true);
+        setHasStableIds(false);
     }
 
 

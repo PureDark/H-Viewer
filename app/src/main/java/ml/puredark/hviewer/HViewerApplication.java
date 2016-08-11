@@ -181,7 +181,7 @@ public class HViewerApplication extends Application {
     public static void addSite(Site item) {
         if (item == null) return;
         deleteSite(item);
-        sites.add(0, item);
+        sites.add(item);
         saveSites();
     }
 

@@ -27,9 +27,7 @@ public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManage
         int rvHeight = getHeight();
         if (rvWidth > 0 && rvHeight > 0) {
             int childrenWidth1st = 0;
-            int childrenHeight1st = 0;
             int childrenWidth2nd = 0;
-            int childrenHeight2nd = 0;
             View firstView = findViewByPosition(0);
             if (firstView == null)
                 return;
@@ -44,22 +42,12 @@ public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManage
                 if (view != null) {
                     if(firstY == (int) view.getY()){
                         childrenWidth1st += view.getWidth();
-                        childrenHeight1st += view.getHeight();
                     }else if(secoundY == (int) view.getY()){
                         childrenWidth2nd += view.getWidth();
-                        childrenHeight2nd += view.getHeight();
                     }
                 }
             }
-            if (getOrientation() == VERTICAL && (childrenHeight1st > rvHeight || childrenHeight2nd > rvHeight )) {
-                Handler handler = new Handler();
-                final Runnable r = new Runnable() {
-                    public void run() {
-                        setSpanCount(getSpanCount() + 1);
-                    }
-                };
-                handler.post(r);
-            } else if (getOrientation() == HORIZONTAL && (childrenWidth1st > rvWidth || childrenWidth2nd > rvWidth)) {
+            if (getOrientation() == HORIZONTAL && (childrenWidth1st > rvWidth || childrenWidth2nd > rvWidth)) {
                 Handler handler = new Handler();
                 final Runnable r = new Runnable() {
                     public void run() {

@@ -29,7 +29,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public CollectionAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
-        setHasStableIds(true);
+        setHasStableIds(false);
     }
 
 

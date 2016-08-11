@@ -16,10 +16,10 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="ActivityTransition" parent="@android:style/Animation.Activity">
-        <item name="android:activityOpenEnterAnimation">@anim/in_from_right</item>
+        <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@anim/no_anim</item>
         <item name="android:activityCloseEnterAnimation">@anim/no_anim</item>
-        <item name="android:activityCloseExitAnimation">@anim/out_to_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
     </style>
 
 </resources>

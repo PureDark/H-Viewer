@@ -26,7 +26,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionMenu;
-import com.nineoldandroids.animation.ValueAnimator;
+import com.nineoldandroids.animation.Animator;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
@@ -137,6 +138,9 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         initCover(collection.cover);
         initTabAndViewPager();
         getCollectionDetail(startPage);
+
+        //加入历史记录
+        HViewerApplication.addHistory(collection);
     }
 
     private void initCover(String cover) {
@@ -194,6 +198,13 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         List<Picture> pictures = new ArrayList<>();
         pictureAdapter = new PictureAdapter(new ListDataProvider(pictures));
         rvIndex.setAdapter(pictureAdapter);
+
+        rvIndex.getRecyclerView().setClipToPadding(false);
+        rvIndex.getRecyclerView().setPadding(
+                DensityUtil.dp2px(this, 8),
+                DensityUtil.dp2px(this, 16),
+                DensityUtil.dp2px(this, 8),
+                DensityUtil.dp2px(this, 16));
 
         pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
             @Override
@@ -260,7 +271,7 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     private void getCollectionDetail(final int page) {
         final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", collection.idCode)
-                                            .replaceAll("\\{page:" + startPage + "\\}", "" + page);
+                .replaceAll("\\{page:" + startPage + "\\}", "" + page);
         HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
@@ -271,7 +282,7 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                 holder.tvUploader.setText(collection.uploader);
                 holder.tvCategory.setText(collection.category);
                 TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-                if(collection.tags!=null) {
+                if (collection.tags != null) {
                     adapter.getDataProvider().clear();
                     adapter.getDataProvider().addAll(collection.tags);
                 }
@@ -287,7 +298,7 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                         pictureAdapter.notifyDataSetChanged();
                         currPage = page;
                         getCollectionDetail(currPage + 1);
-                    }else if(!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))){
+                    } else if (!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))) {
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
                         currPage = page;
@@ -323,8 +334,35 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     @Override
     public void onBackPressed() {
-        if (animating) return;
-        super.onBackPressed();
+        if (animating)
+            return;
+        else
+            AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+//                    Log.d("AnimationOnActivityStar", "onAnimationStart!");
+                    animating = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+//                    Log.d("AnimationOnActivityStar", "onAnimationEnd!");
+                    animating = false;
+                    finish();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+//                    Log.d("AnimationOnActivityStar", "onAnimationCancel!");
+                    animating = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+//                    Log.d("AnimationOnActivityStar", "onAnimationRepeat!");
+                }
+            });
+        //super.onBackPressed();
     }
 
     @Override
@@ -359,35 +397,5 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
             fabMenu.showMenu(true);
         }
 
-    }
-
-    //TODO add custom entry and exit animations
-    private class AnimationOnActivityStart {
-
-        public AnimationOnActivityStart() {
-        }
-
-        public void start() {
-            animating = true;
-        }
-
-        public void reverse() {
-            animating = true;
-
-        }
-
-        ValueAnimator getArrowAnimator(boolean show) {
-            float start = (show) ? 0f : 1f;
-            float end = (show) ? 1f : 0f;
-            ValueAnimator animator = ValueAnimator.ofFloat(start, end);
-            animator.setDuration(500);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    btnReturnIcon.setProgress((Float) animation.getAnimatedValue());
-                }
-            });
-            return animator;
-        }
     }
 }

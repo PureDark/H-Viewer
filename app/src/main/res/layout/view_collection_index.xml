@@ -11,11 +11,6 @@
         android:id="@+id/rv_index"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="@dimen/half_padding"
-        android:paddingRight="@dimen/half_padding"
-        android:paddingTop="@dimen/uni_padding"
-        android:paddingBottom="@dimen/uni_padding"
-        android:clipToPadding="false"
         app:layoutManager="GridLayoutManager"
         app:spanCount="3"
         tools:listitem="@layout/item_picture_index">

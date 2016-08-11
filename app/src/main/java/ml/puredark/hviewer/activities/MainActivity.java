@@ -3,6 +3,7 @@ package ml.puredark.hviewer.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -85,68 +86,68 @@ public class MainActivity extends AppCompatActivity {
 
         List<Site> sites = HViewerApplication.getSites();
 
-//        sites.clear();
-//
-//        Rule indexRule = new Rule();
-//        indexRule.item = new Selector("#ig .ig", null, null, null);
-//        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)");
-//        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
-//        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
-//        indexRule.cover = new Selector("td.ii img", "attr", "src", null);
-//        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
-//        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
-//        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
-//        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
-//
-//        Rule galleryRule = new Rule();
-//        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
-//
-//        Selector pic = new Selector("img#sm", "attr", "src", null);
-//
-//        sites.add(new Site(1, "Lofi.E-hentai",
-//                "http://lofi.e-hentai.org/?page={page:0}",
-//                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
-//                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
-//                indexRule, galleryRule, pic));
-//
-//        indexRule = new Rule();
-//        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
-//        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
-//        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
-//        indexRule.uploader = new Selector("td.itu div a", "html", null, null);
-//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)");
-//        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
-//        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
-//        indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
-//
-//        galleryRule = new Rule();
-//        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
-//
-//        pic = new Selector("img#sm", "attr", "src", null);
-//
-//        sites.add(new Site(2, "G.E-hentai",
-//                "http://g.e-hentai.org/?page={page:0}",
-//                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
-//                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
-//                indexRule, galleryRule, pic));
-//
-//        indexRule = new Rule();
-//        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null);
-//        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)");
-//        indexRule.title = new Selector("div.info div.title a", "html", null, null);
-//        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null);
-//        indexRule.datetime = new Selector("div.info div.info_col ", "html", null, "(\\d{4}-\\d{2}-\\d{2})");
-//
-//        galleryRule = new Rule();
-//        galleryRule.pictures = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", "html", null, "<a.*?href=\"(.*?)\".*?<img.*?data-original=\"(.*?)\"");
-//
-//        pic = new Selector("img#picarea", "attr", "src", null);
-//
-//        sites.add(new Site(3, "绅士漫画",
-//                "http://www.wnacg.org/albums-index-page-{page:1}.html",
-//                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
-//                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
-//                indexRule, galleryRule, pic));
+        sites.clear();
+
+        Rule indexRule = new Rule();
+        indexRule.item = new Selector("#ig .ig", null, null, null);
+        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)");
+        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
+        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
+        indexRule.cover = new Selector("td.ii img", "attr", "src", null);
+        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
+        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
+        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
+        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
+
+        Rule galleryRule = new Rule();
+        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+
+        Selector pic = new Selector("img#sm", "attr", "src", null);
+
+        sites.add(new Site(1, "Lofi.E-hentai",
+                "http://lofi.e-hentai.org/?page={page:0}",
+                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
+                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
+                indexRule, galleryRule, pic));
+
+        indexRule = new Rule();
+        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
+        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
+        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
+        indexRule.uploader = new Selector("td.itu div a", "html", null, null);
+        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)");
+        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
+        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
+        indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
+
+        galleryRule = new Rule();
+        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+
+        pic = new Selector("img#sm", "attr", "src", null);
+
+        sites.add(new Site(2, "G.E-hentai",
+                "http://g.e-hentai.org/?page={page:0}",
+                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
+                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
+                indexRule, galleryRule, pic));
+
+        indexRule = new Rule();
+        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null);
+        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)");
+        indexRule.title = new Selector("div.info div.title a", "html", null, null);
+        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null);
+        indexRule.datetime = new Selector("div.info div.info_col ", "html", null, "(\\d{4}-\\d{2}-\\d{2})");
+
+        galleryRule = new Rule();
+        galleryRule.pictures = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", "html", null, "<a.*?href=\"(.*?)\".*?<img.*?data-original=\"(.*?)\"");
+
+        pic = new Selector("img#picarea", "attr", "src", null);
+
+        sites.add(new Site(3, "绅士漫画",
+                "http://www.wnacg.org/albums-index-page-{page:1}.html",
+                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
+                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
+                indexRule, galleryRule, pic));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
@@ -167,6 +168,26 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(CollectionFragment.newInstance(), site.title);
                 }
                 drawer.closeDrawer(GravityCompat.START);
+            }
+
+            @Override
+            public void onItemLongClick(View v, int position) {
+                final Site site = (Site) adapter.getDataProvider().getItem(position);
+                new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
+                        .setMessage("删除后将无法恢复")
+                        .setPositiveButton("确定",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                HViewerApplication.deleteSite(site);
+                                List<Site> sites = HViewerApplication.getSites();
+                                adapter.setDataProvider(new ListDataProvider(sites));
+                                adapter.notifyDataSetChanged();
+                            }
+                        }).setNegativeButton("取消",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).show();
             }
         });
 
@@ -206,9 +227,15 @@ public class MainActivity extends AppCompatActivity {
                 adapter.setDataProvider(new ListDataProvider(sites));
                 adapter.selectedSid = sid;
                 adapter.notifyDataSetChanged();
-                Site site = sites.get(sites.size()-1);
+                final Site site = sites.get(sites.size()-1);
                 HViewerApplication.temp = site;
-                replaceFragment(CollectionFragment.newInstance(), site.title);
+                Handler handler = new Handler();
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        replaceFragment(CollectionFragment.newInstance(), site.title);
+                    }
+                };
+                handler.post(r);
             }
         }
     }

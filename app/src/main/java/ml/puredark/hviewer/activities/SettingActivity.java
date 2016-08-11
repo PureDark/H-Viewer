@@ -7,20 +7,17 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.ImageView;
+
+import com.nineoldandroids.animation.Animator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.HProxy;
+import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED;
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE;
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -30,6 +27,9 @@ public class SettingActivity extends AppCompatActivity {
     ImageView btnReturn;
 
     private DrawerArrowDrawable btnReturnIcon;
+
+    //是否动画中
+    private boolean animating = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +47,41 @@ public class SettingActivity extends AppCompatActivity {
         btnReturn.setImageDrawable(btnReturnIcon);
         btnReturnIcon.setProgress(1f);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (animating)
+            return;
+        else
+            AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    animating = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animating = false;
+                    finish();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    animating = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+        //super.onBackPressed();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (animating) return false;
+        return super.dispatchTouchEvent(event);
     }
 
     @OnClick(R.id.btn_return)
@@ -80,4 +115,5 @@ public class SettingActivity extends AppCompatActivity {
         }
 
     }
+
 }
