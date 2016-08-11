@@ -1,15 +1,20 @@
 package ml.puredark.hviewer.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -63,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-
         List<Site> sites = HViewerApplication.getSites();
         sites.clear();
 
@@ -84,16 +88,17 @@ public class MainActivity extends AppCompatActivity {
         Selector pic = new Selector("img#sm", "attr", "src", null);
 
         sites.add(new Site(1, "Lofi.E-hentai",
-                        "http://lofi.e-hentai.org/?page={page:0}",
-                        "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
-                        indexRule, galleryRule, pic));
+                "http://lofi.e-hentai.org/?page={page:0}",
+                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
+                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
+                indexRule, galleryRule, pic));
 
         indexRule = new Rule();
         indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
         indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
         indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
         indexRule.uploader = new Selector("td.itu div a", "html", null, null);
-        indexRule.cover = new Selector("td.itd div div.it2", "html", null, null);
+        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)");
         indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
         indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
         indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
@@ -106,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         sites.add(new Site(2, "G.E-hentai",
                 "http://g.e-hentai.org/?page={page:0}",
                 "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
+                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
                 indexRule, galleryRule, pic));
 
         indexRule = new Rule();
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         sites.add(new Site(3, "绅士漫画",
                 "http://www.wnacg.org/albums-index-page-{page:1}.html",
                 "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
+                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
                 indexRule, galleryRule, pic));
 
 
@@ -151,6 +158,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick(R.id.fab_search)
+    void search(){
+        final EditText inputSearch = new EditText(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Server").setIcon(R.drawable.ic_search_white).setView(inputSearch)
+                .setNegativeButton("取消", null);
+        builder.setPositiveButton("搜索", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String keyword = inputSearch.getText().toString();
+                if (!"".equals(keyword) && currFragment != null)
+                    currFragment.onSearch(keyword);
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -170,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_setting)
     void btnSetting_onClick() {
+        drawer.closeDrawer(GravityCompat.START);
         Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
     }

@@ -210,11 +210,11 @@ public class RuleParser {
             }
 
             if (rule.rating.fun != null) {
-                Pattern pattern0 = Pattern.compile("\\|\\|(.*?)", DOTALL);
+                Pattern pattern0 = Pattern.compile("\\|\\|(.*)", DOTALL);
                 Matcher matcher0 = pattern0.matcher(rule.rating.fun);
                 if (matcher0.find()) {
                     String exp = matcher0.group(1);
-                    exp = exp.replace("{1}", "" + rating);
+                    exp = exp.replace("{1}", "" + (int)rating);
                     String result = MathUtil.computeString(exp);
                     try {
                         rating = Float.parseFloat(result);
