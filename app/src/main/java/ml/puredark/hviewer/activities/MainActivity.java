@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -34,13 +36,16 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
+import ml.puredark.hviewer.utils.FileUtils;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED;
 import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE;
 import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST;
 
 public class MainActivity extends AppCompatActivity {
+    private static int RESULT_ADD_SITE;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
@@ -79,68 +84,69 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
 
         List<Site> sites = HViewerApplication.getSites();
-        sites.clear();
 
-        Rule indexRule = new Rule();
-        indexRule.item = new Selector("#ig .ig", null, null, null);
-        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)");
-        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
-        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
-        indexRule.cover = new Selector("td.ii img", "attr", "src", null);
-        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
-        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
-        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
-        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
-
-        Rule galleryRule = new Rule();
-        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
-
-        Selector pic = new Selector("img#sm", "attr", "src", null);
-
-        sites.add(new Site(1, "Lofi.E-hentai",
-                "http://lofi.e-hentai.org/?page={page:0}",
-                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
-                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
-                indexRule, galleryRule, pic));
-
-        indexRule = new Rule();
-        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
-        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
-        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
-        indexRule.uploader = new Selector("td.itu div a", "html", null, null);
-        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)");
-        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
-        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
-        indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
-
-        galleryRule = new Rule();
-        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
-
-        pic = new Selector("img#sm", "attr", "src", null);
-
-        sites.add(new Site(2, "G.E-hentai",
-                "http://g.e-hentai.org/?page={page:0}",
-                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
-                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
-                indexRule, galleryRule, pic));
-
-        indexRule = new Rule();
-        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null);
-        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)");
-        indexRule.title = new Selector("div.info div.title a", "html", null, null);
-        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null);
-        indexRule.datetime = new Selector("div.info div.info_col ", "html", null, "(\\d{4}-\\d{2}-\\d{2})");
-
-        galleryRule = new Rule();
-        galleryRule.pictures = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", "html", null, "<a.*?href=\"(.*?)\".*?<img.*?data-original=\"(.*?)\"");
-
-        pic = new Selector("img#picarea", "attr", "src", null);
-
-        sites.add(new Site(3, "绅士漫画",
-                "http://www.wnacg.org/albums-index-page-{page:1}.html",
-                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
-                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
-                indexRule, galleryRule, pic));
+//        sites.clear();
+//
+//        Rule indexRule = new Rule();
+//        indexRule.item = new Selector("#ig .ig", null, null, null);
+//        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)");
+//        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
+//        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
+//        indexRule.cover = new Selector("td.ii img", "attr", "src", null);
+//        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
+//        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
+//        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
+//        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
+//
+//        Rule galleryRule = new Rule();
+//        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+//
+//        Selector pic = new Selector("img#sm", "attr", "src", null);
+//
+//        sites.add(new Site(1, "Lofi.E-hentai",
+//                "http://lofi.e-hentai.org/?page={page:0}",
+//                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
+//                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
+//                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
+//        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
+//        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
+//        indexRule.uploader = new Selector("td.itu div a", "html", null, null);
+//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)");
+//        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
+//        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
+//        indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
+//
+//        galleryRule = new Rule();
+//        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+//
+//        pic = new Selector("img#sm", "attr", "src", null);
+//
+//        sites.add(new Site(2, "G.E-hentai",
+//                "http://g.e-hentai.org/?page={page:0}",
+//                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
+//                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
+//                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null);
+//        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)");
+//        indexRule.title = new Selector("div.info div.title a", "html", null, null);
+//        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null);
+//        indexRule.datetime = new Selector("div.info div.info_col ", "html", null, "(\\d{4}-\\d{2}-\\d{2})");
+//
+//        galleryRule = new Rule();
+//        galleryRule.pictures = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", "html", null, "<a.*?href=\"(.*?)\".*?<img.*?data-original=\"(.*?)\"");
+//
+//        pic = new Selector("img#picarea", "attr", "src", null);
+//
+//        sites.add(new Site(3, "绅士漫画",
+//                "http://www.wnacg.org/albums-index-page-{page:1}.html",
+//                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
+//                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
+//                indexRule, galleryRule, pic));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
@@ -150,26 +156,32 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                Site site = (Site) adapter.getDataProvider().getItem(position);
-                adapter.selectedRid = site.rid;
-                adapter.notifyDataSetChanged();
-                HViewerApplication.temp = site;
-                replaceFragment(CollectionFragment.newInstance(), site.title);
+                if (position == adapter.getItemCount() - 1) {
+                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
+                    startActivityForResult(intent, RESULT_ADD_SITE);
+                } else {
+                    Site site = (Site) adapter.getDataProvider().getItem(position);
+                    adapter.selectedSid = site.sid;
+                    adapter.notifyDataSetChanged();
+                    HViewerApplication.temp = site;
+                    replaceFragment(CollectionFragment.newInstance(), site.title);
+                }
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
 
         if (sites.size() > 0) {
             Site site = sites.get(0);
-            adapter.selectedRid = site.rid;
+            adapter.selectedSid = site.sid;
             adapter.notifyDataSetChanged();
             HViewerApplication.temp = site;
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
+
     }
 
     @OnClick(R.id.fab_search)
-    void search(){
+    void search() {
         final EditText inputSearch = new EditText(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Server").setIcon(R.drawable.ic_search_white).setView(inputSearch)
@@ -185,19 +197,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-
-        boolean a1 = (boolean) SharedPreferencesUtil.getData(
-                HViewerApplication.mContext, KEY_PREF_PROXY_ENABLED, false);
-        boolean a2= (boolean) SharedPreferencesUtil.getData(
-                HViewerApplication.mContext, KEY_PREF_PROXY_REQUEST, false);
-        boolean a3 = (boolean) SharedPreferencesUtil.getData(
-                HViewerApplication.mContext, KEY_PREF_PROXY_PICTURE, false);
-
-        Log.d("SettingFragment", "pref_proxy_enabled:" + a1);
-        Log.d("SettingFragment", "pref_proxy_request:" + a2);
-        Log.d("SettingFragment", "pref_proxy_picture:" + a3);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == RESULT_ADD_SITE) {
+                int sid = data.getIntExtra("sid", 0);
+                List<Site> sites = HViewerApplication.getSites();
+                SiteAdapter adapter = ((SiteAdapter) rvSite.getAdapter());
+                adapter.setDataProvider(new ListDataProvider(sites));
+                adapter.selectedSid = sid;
+                adapter.notifyDataSetChanged();
+                Site site = sites.get(sites.size()-1);
+                HViewerApplication.temp = site;
+                replaceFragment(CollectionFragment.newInstance(), site.title);
+            }
+        }
     }
 
     @Override

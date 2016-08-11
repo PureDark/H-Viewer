@@ -20,10 +20,10 @@
             android:key="pref_proxy_picture"
             android:title="图片"
             android:summary="在下载图片时使用 HProxy"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
         <EditTextPreference
-            android:defaultValue="test"
+            android:defaultValue=""
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="更改 HProxy 服务器"

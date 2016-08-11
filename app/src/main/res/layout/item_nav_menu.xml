@@ -8,6 +8,7 @@
     android:paddingRight="@dimen/uni_padding"
     android:paddingTop="@dimen/half_padding"
     android:paddingBottom="@dimen/half_padding"
+    android:background="@drawable/bg_button"
     android:orientation="horizontal">
     <LinearLayout
         android:layout_width="wrap_content"

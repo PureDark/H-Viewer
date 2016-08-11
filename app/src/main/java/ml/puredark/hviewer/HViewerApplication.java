@@ -174,26 +174,26 @@ public class HViewerApplication extends Application {
     }
 
 
-    public static void saveRules() {
+    public static void saveSites() {
         SharedPreferencesUtil.saveData(mContext, "Site", new Gson().toJson(sites));
     }
 
-    public static void addRule(Site item) {
+    public static void addSite(Site item) {
         if (item == null) return;
-        deleteRule(item);
+        deleteSite(item);
         sites.add(0, item);
-        saveRules();
+        saveSites();
     }
 
-    public static void deleteRule(Site item) {
+    public static void deleteSite(Site item) {
         for (int i = 0, size = sites.size(); i < size; i++) {
-            if (sites.get(i).rid == item.rid) {
+            if (sites.get(i).sid == item.sid) {
                 sites.remove(i);
                 size--;
                 i--;
             }
         }
-        saveRules();
+        saveSites();
     }
 
     public static List<Site> getSites() {

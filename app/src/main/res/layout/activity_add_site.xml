@@ -40,7 +40,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:textAppearance="@style/ActionBar.Title"
-                    android:text="设置"/>
+                    android:text="添加新站点"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -51,23 +51,45 @@
         android:background="@color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/uni_padding"
-            android:orientation="vertical">
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:met_baseColor="#0056d3"
-                android:hint="Basic"/>
-        </LinearLayout>
-
         <View
             android:id="@+id/shadowDown"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:background="@drawable/shadow_bottom" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/uni_padding"
+            android:orientation="vertical"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/input_site"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="16"
+                app:met_baseColor="@color/colorPrimaryDark"
+                app:met_primaryColor="@color/colorAccent"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelText="站点规则"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_clearButton="true"
+                android:gravity="top"
+                android:textSize="11sp"
+                android:hint="在这输入新的规则">
+                <requestFocus />
+            </com.rengwuxian.materialedittext.MaterialEditText>
+
+            <com.gc.materialdesign.views.ButtonFlat
+                android:id="@+id/btn_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_gravity="center"
+                android:background="@color/colorPrimary"
+                android:text="确 认 添 加" />
+        </LinearLayout>
     </RelativeLayout>
 
 
