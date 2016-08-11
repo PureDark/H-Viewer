@@ -21,9 +21,13 @@ import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.utils.MathUtil;
+import ml.puredark.hviewer.utils.RegexValidateUtil;
 
+import static android.R.attr.host;
 import static java.util.regex.Pattern.DOTALL;
+import static ml.puredark.hviewer.HViewerApplication.temp;
 import static ml.puredark.hviewer.utils.MathUtil.computeString;
+import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -41,8 +45,7 @@ public class RuleParser {
         return map;
     }
 
-    public static List<Collection> getCollections(String html, Rule rule) {
-        List<Collection> collections = new ArrayList<>();
+    public static List<Collection> getCollections(List<Collection> collections, String html, Rule rule, String sourceUrl) {
         Document doc = Jsoup.parse(html);
         Elements elements = doc.select(rule.item.selector);
         for (Element element : elements) {
@@ -63,19 +66,19 @@ public class RuleParser {
             }
 
             Collection collection = new Collection(collections.size() + 1);
-            collection = getCollectionDetail(collection, element, rule);
+            collection = getCollectionDetail(collection, element, rule, sourceUrl);
 
             collections.add(collection);
         }
         return collections;
     }
 
-    public static Collection getCollectionDetail(Collection collection, String html, Rule rule) {
+    public static Collection getCollectionDetail(Collection collection, String html, Rule rule, String sourceUrl) {
         Document element = Jsoup.parse(html);
-        return getCollectionDetail(collection, element, rule);
+        return getCollectionDetail(collection, element, rule, sourceUrl);
     }
 
-    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule) {
+    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) {
         Elements temp;
 
         String idCode = "";
@@ -144,6 +147,7 @@ public class RuleParser {
                     cover = matcher.group(1);
                 }
             }
+            cover = RegexValidateUtil.getAbsoluteUrlFromRelative(cover, sourceUrl);
         }
 
         String category = "";
@@ -199,22 +203,22 @@ public class RuleParser {
 
             if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
                 rating = Float.parseFloat(ratingStr);
-            } else if(StringUtil.isNumeric(ratingStr)){
+            } else if (StringUtil.isNumeric(ratingStr)) {
                 rating = Float.parseFloat(ratingStr);
             } else {
                 rating = Math.min(ratingStr.replace(" ", "").length(), 5);
             }
 
-            if(rule.rating.fun != null ){
+            if (rule.rating.fun != null) {
                 Pattern pattern0 = Pattern.compile("\\|\\|(.*?)", DOTALL);
                 Matcher matcher0 = pattern0.matcher(rule.rating.fun);
                 if (matcher0.find()) {
                     String exp = matcher0.group(1);
-                    exp = exp.replace("{1}", ""+rating);
+                    exp = exp.replace("{1}", "" + rating);
                     String result = MathUtil.computeString(exp);
-                    try{
+                    try {
                         rating = Float.parseFloat(result);
-                    }catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                     }
                 }
             }
@@ -229,7 +233,7 @@ public class RuleParser {
                 if ("attr".equals(rule.tags.fun)) {
                     tagStr = tagElement.attr(rule.tags.param);
                 } else if ("html".equals(rule.tags.fun)) {
-                    tagStr = temp.html();
+                    tagStr = tagElement.html();
                 } else {
                     continue;
                 }
@@ -250,12 +254,13 @@ public class RuleParser {
         if (rule.pictures != null) {
 
             temp = element.select(rule.pictures.selector);
+            Log.d("RuleParser", "temp.size():" + temp.size());
             for (Element pictureElement : temp) {
                 String pictureStr;
                 if ("attr".equals(rule.pictures.fun)) {
                     pictureStr = pictureElement.attr(rule.pictures.param);
                 } else if ("html".equals(rule.pictures.fun)) {
-                    pictureStr = temp.html();
+                    pictureStr = pictureElement.html();
                 } else {
                     pictureStr = pictureElement.toString();
                 }
@@ -263,10 +268,13 @@ public class RuleParser {
                 if (rule.pictures.regex != null && pictureStr != null) {
                     Pattern pattern = Pattern.compile(rule.pictures.regex, DOTALL);
                     Matcher matcher = pattern.matcher(pictureStr);
-                    while (matcher.find()) {
-                        pictures.add(new Picture(pictures.size() + 1, matcher.group(1), matcher.group(2)));
+                    if (matcher.find()) {
+                        String url = RegexValidateUtil.getAbsoluteUrlFromRelative(matcher.group(1), sourceUrl);
+                        String thumbnail = RegexValidateUtil.getAbsoluteUrlFromRelative(matcher.group(2), sourceUrl);
+                        pictures.add(new Picture(pictures.size() + 1, url, thumbnail));
                     }
                 } else {
+                    pictureStr = RegexValidateUtil.getAbsoluteUrlFromRelative(pictureStr, sourceUrl);
                     pictures.add(new Picture(pictures.size() + 1, pictureStr, ""));
                 }
             }
@@ -293,7 +301,7 @@ public class RuleParser {
         return collection;
     }
 
-    public static String getPictureUrl(String html, Selector selector) {
+    public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
         Document doc = Jsoup.parse(html);
         String url = null;
         if (selector != null) {
@@ -307,9 +315,10 @@ public class RuleParser {
                 Pattern pattern = Pattern.compile(selector.regex, DOTALL);
                 Matcher matcher = pattern.matcher(url);
                 if (matcher.find()) {
-                    url = matcher.group();
+                    url = matcher.group(1);
                 }
             }
+            url = RegexValidateUtil.getAbsoluteUrlFromRelative(url, sourceUrl);
         }
         return url;
     }

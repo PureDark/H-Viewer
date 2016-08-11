@@ -108,6 +108,23 @@ public class MainActivity extends AppCompatActivity {
                 "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
                 indexRule, galleryRule, pic));
 
+        indexRule = new Rule();
+        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null);
+        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)");
+        indexRule.title = new Selector("div.info div.title a", "html", null, null);
+        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null);
+        indexRule.datetime = new Selector("div.info div.info_col ", "html", null, "(\\d{4}-\\d{2}-\\d{2})");
+
+        galleryRule = new Rule();
+        galleryRule.pictures = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", "html", null, "<a.*?href=\"(.*?)\".*?<img.*?data-original=\"(.*?)\"");
+
+        pic = new Selector("img#picarea", "attr", "src", null);
+
+        sites.add(new Site(3, "绅士漫画",
+                "http://www.wnacg.org/albums-index-page-{page:1}.html",
+                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
+                indexRule, galleryRule, pic));
+
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         final SiteAdapter adapter = new SiteAdapter(dataProvider);

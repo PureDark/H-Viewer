@@ -1,8 +1,10 @@
 package ml.puredark.hviewer.beans;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.utils.RegexValidateUtil;
 
 public class Picture extends AbstractDataProvider.Data{
 	public int pid;
@@ -29,7 +31,7 @@ public class Picture extends AbstractDataProvider.Data{
 			Field[] fs = Picture.class.getDeclaredFields();
 			try {
 				for (Field f : fs) {
-					if ("pid".equals(f.getName()))
+					if ("pid".equals(f.getName())||"pic".equals(f.getName()))
 						continue;
 					f.setAccessible(true);
 					Object v1 = f.get(this);

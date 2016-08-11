@@ -13,6 +13,7 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.utils.RegexValidateUtil;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AbstractDataProvider mProvider;

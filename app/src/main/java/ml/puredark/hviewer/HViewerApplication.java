@@ -85,6 +85,7 @@ public class HViewerApplication extends Application {
     }
 
     public static void loadImageFromUrl(ImageView imageView, String url) {
+
         imageView.setImageBitmap(null);
         if (url != null) {
             if (HProxy.isEnabled()) {

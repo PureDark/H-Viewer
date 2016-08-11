@@ -113,7 +113,7 @@ public class PictureViewerActivity extends AppCompatActivity {
                 HViewerHttpClient.get(picture.url, new HViewerHttpClient.OnResponseListener() {
                     @Override
                     public void onSuccess(String result) {
-                        picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector);
+                        picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector, picture.url);
                         HViewerApplication.loadImageFromUrl(imageView, picture.pic);
                     }
 

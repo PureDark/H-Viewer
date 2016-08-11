@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.utils;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 /**
@@ -12,6 +13,18 @@ public class DensityUtil
     {
         /** cannot be instantiated **/
         throw new UnsupportedOperationException("cannot be instantiated");
+    }
+
+    public static int getScreenWidth(Context context){
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+        return screenWidth;
+    }
+
+    public static int getScreenHeight(Context context){
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        int screenHeight = dm.heightPixels;
+        return screenHeight;
     }
 
     /**

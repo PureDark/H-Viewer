@@ -27,6 +27,7 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.8">
                 <ml.puredark.hviewer.customs.ScalingImageView
@@ -98,7 +99,7 @@
             android:layout_below="@id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:pagerCurrItem="1"
+            app:pagerCurrItem="0"
             app:pagerLayout1="@layout/view_collection_index"
             app:pagerLayout2="@layout/view_collection_desciption"/>
 

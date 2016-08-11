@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -42,13 +45,16 @@ import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
+import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
+import ml.puredark.hviewer.utils.DensityUtil;
 
 
 public class CollectionActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -134,7 +140,7 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
     }
 
     private void initCover(String cover) {
-        if (cover != null)
+        if (cover != null && !CollectionActivity.this.isDestroyed())
             Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -200,9 +206,11 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
             }
         });
 
-
-        rvIndex.setGridLayout(3);
+        //根据item宽度自动设置spanCount
+        GridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, DensityUtil.dp2px(this, 100));
+        rvIndex.getRecyclerView().setLayoutManager(layoutManager);
         rvIndex.setPullRefreshEnable(true);
+        rvIndex.setPushRefreshEnable(false);
 
         //下拉刷新和加载更多
         rvIndex.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
@@ -214,7 +222,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
             @Override
             public void onLoadMore() {
-                getCollectionDetail(currPage + 1);
             }
         });
 
@@ -244,29 +251,34 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                             )
                     )
             );
+            StaggeredGridLayoutManager layoutManager =
+                    new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
+            rvTags.setLayoutManager(layoutManager);
         }
 
     }
 
     private void getCollectionDetail(final int page) {
-        String url = site.galleryUrl.replaceFirst("\\{idCode:\\}", collection.idCode);
-        url = url.replaceFirst("\\{page:" + startPage + "\\}", "" + page);
+        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", collection.idCode)
+                                            .replaceAll("\\{page:" + startPage + "\\}", "" + page);
         HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
-                collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule);
-                initCover(collection.cover);
+                collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule, url);
                 toolbar.setTitle(collection.title);
 
                 holder.tvTitle.setText(collection.title);
                 holder.tvUploader.setText(collection.uploader);
                 holder.tvCategory.setText(collection.category);
                 TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-                if(collection.tags!=null)
+                if(collection.tags!=null) {
+                    adapter.getDataProvider().clear();
                     adapter.getDataProvider().addAll(collection.tags);
+                }
                 adapter.notifyDataSetChanged();
                 holder.rbRating.setRating(collection.rating);
                 holder.tvSubmittime.setText(collection.datetime);
+                Log.d("MyTest", "adapter.getItemCount():" + adapter.getItemCount());
 
                 if (collection.pictures != null && collection.pictures.size() > 0) {
                     if (page == startPage) {
@@ -274,12 +286,12 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
                         currPage = page;
+                        getCollectionDetail(currPage + 1);
                     }else if(!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))){
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
                         currPage = page;
-                        ArrayList arrayList = new ArrayList();
-                        arrayList.contains(collection);
+                        getCollectionDetail(currPage + 1);
                     }
                 }
                 rvIndex.setPullLoadMoreCompleted();

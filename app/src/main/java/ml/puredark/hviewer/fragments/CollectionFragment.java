@@ -119,23 +119,22 @@ public class CollectionFragment extends MyFragment {
     }
 
     private void getCollections(final int page) {
-        String url = site.indexUrl.replaceFirst("\\{page:"+startPage+"\\}", ""+page);
+        final String url = site.indexUrl.replaceFirst("\\{page:"+startPage+"\\}", ""+page);
         HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
-                List<Collection> collections = RuleParser.getCollections(result, site.indexRule);
-                if(collections.size()>0){
-                    if(page==startPage){
-                        adapter.getDataProvider().clear();
-                    }
-                    adapter.getDataProvider().addAll(collections);
-                    adapter.notifyDataSetChanged();
+                if(page==startPage){
+                    adapter.getDataProvider().clear();
+                }
+                List<Collection> collections = adapter.getDataProvider().getItems();
+                int oldSize = collections.size();
+                collections = RuleParser.getCollections(collections, result, site.indexRule, url);
+                int newSize = collections.size();
+                adapter.notifyDataSetChanged();
+                if(newSize>oldSize){
                     currPage = page;
                 }
                 rvCollection.setPullLoadMoreCompleted();
-                for(Collection c:collections){
-                    Log.d("CollectionFragment", c.cid+" "+c.cover);
-                }
             }
 
             @Override
