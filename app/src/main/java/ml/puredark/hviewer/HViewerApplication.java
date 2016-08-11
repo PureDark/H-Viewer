@@ -88,7 +88,7 @@ public class HViewerApplication extends Application {
 
         imageView.setImageBitmap(null);
         if (url != null) {
-            if (HProxy.isEnabled()) {
+            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
                 GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
                         .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())

@@ -27,24 +27,24 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="更改 HProxy 服务器"
-            android:key="edit_text_preference_1" />
+            android:key="pref_proxy_server" />
 
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="关于"
-        android:key="pref_proxy_settings">
+        android:key="pref_about">
 
         <Preference
-            android:key="dialog_preference"
+            android:key="pref_about_upgrade"
             android:title="检查更新" />
 
         <Preference
-            android:key="dialog_preference"
+            android:key="pref_about_license"
             android:title="开源协议" />
         <Preference
-            android:key="dialog_preference"
+            android:key="pref_about_about"
             android:title="关于 H-Viewer" />
     </PreferenceCategory>
 

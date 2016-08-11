@@ -1,13 +1,31 @@
 package ml.puredark.hviewer.helpers;
 
-public class HProxy {
-    private final String PROXY_ADDRESSS = "https://h-viewer-proxy.herokuapp.com";
+import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.activities.SettingActivity;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+public class HProxy {
     private String mTarget;
     private String mProxyUrl;
 
     public static boolean isEnabled() {
-        return true;
+        return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED, false);
+    }
+
+    public static boolean isAllowRequest() {
+        return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST, false);
+    }
+
+    public static boolean isAllowPicture() {
+        return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE, false);
+    }
+
+    private static String getProxyServer() {
+        return (String) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_PROXY_SERVER, false);
     }
 
     public HProxy(String target) {
@@ -20,7 +38,7 @@ public class HProxy {
             hostEndPos = target.length();
         }
 
-        this.mProxyUrl = PROXY_ADDRESSS + target.substring(hostEndPos);
+        this.mProxyUrl = getProxyServer() + target.substring(hostEndPos);
     }
 
     public String getProxyUrl() {

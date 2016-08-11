@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Initialize user settings
+        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        // User interface
         setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

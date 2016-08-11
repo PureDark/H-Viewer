@@ -6,7 +6,7 @@ import android.content.SharedPreferences.Editor;
 
 public class SharedPreferencesUtil {
     //存储的sharedpreferences文件名
-    private static final String FILE_NAME = "cached_data";
+    public static final String FILE_NAME = "cached_data";
 
     /**
      * 保存数据到文件
