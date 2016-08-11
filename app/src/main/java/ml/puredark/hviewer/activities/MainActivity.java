@@ -218,9 +218,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_setting)
-    void btnSetting_onClick() {
+    void openSetting() {
         drawer.closeDrawer(GravityCompat.START);
         Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.btn_exit)
+    void exit() {
+        finish();
     }
 }

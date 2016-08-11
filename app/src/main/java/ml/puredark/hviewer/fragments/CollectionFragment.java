@@ -123,13 +123,10 @@ public class CollectionFragment extends MyFragment {
     }
 
     private void getCollections(String keyword, final int page) {
-        Log.d("CollectionFragment", "indexUrl"+site.indexUrl);
         this.keyword = keyword;
         String chooseUrl = (keyword==null)?site.indexUrl:site.searchUrl;
-        final String url = chooseUrl.replaceFirst("\\{page:"+startPage+"\\}", ""+page)
-                                    .replaceFirst("\\{keyword:\\}", keyword);
-        Log.d("CollectionFragment", "chooseUrl"+chooseUrl);
-        Log.d("CollectionFragment", "url"+url);
+        final String url = chooseUrl.replaceAll("\\{page:"+startPage+"\\}", ""+page)
+                                    .replaceAll("\\{keyword:\\}", keyword);
         HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {

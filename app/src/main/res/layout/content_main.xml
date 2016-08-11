@@ -19,16 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:contentScrim="?attr/colorPrimary">
+            app:contentScrim="?attr/colorPrimaryDark">
 
             <ImageView
                 android:id="@+id/backdrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@null"
-                android:background="@color/colorPrimary"
-                android:alpha="1.0"
+                android:src="@drawable/backdrop"
+                android:background="@color/colorPrimaryDark"
+                android:alpha="0.8"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar
@@ -71,7 +71,6 @@
         app:borderWidth="0dp"
         app:fabSize="normal"
         app:rippleColor="@color/white_50"
-        app:backgroundTint="#89c9e5"
         android:src="@drawable/selector_search"/>
 
 </android.support.design.widget.CoordinatorLayout>

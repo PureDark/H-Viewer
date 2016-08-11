@@ -59,6 +59,7 @@
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:met_baseColor="#0056d3"
                 android:hint="Basic"/>
         </LinearLayout>
 
