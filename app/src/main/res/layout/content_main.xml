@@ -41,6 +41,7 @@
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -71,8 +72,9 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:borderWidth="0dp"
-        app:fabSize="mini"
+        app:fabSize="normal"
         app:rippleColor="@color/white_50"
+        app:backgroundTint="#89c9e5"
         android:src="@drawable/selector_search"/>
 
 </android.support.design.widget.CoordinatorLayout>
