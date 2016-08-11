@@ -178,10 +178,10 @@
     <color name="button_pressed">@color/white_20</color>
     <color name="nav_color">#dd6030</color>
 
-    <color name="colorPrimary">#1A9481</color>
-    <color name="colorPrimaryLight">#9BCC93</color>
-    <color name="colorPrimaryDark">#225378</color>
-    <color name="colorAccent">#1A9481</color>
-    <color name="colorAccentLight">#FDEEA7</color>
+    <color name="colorPrimary">#1abc9c</color>
+    <color name="colorPrimaryLight">#76ffe5</color>
+    <color name="colorPrimaryDark">#16a085</color>
+    <color name="colorAccent">#1abc9c</color>
+    <color name="colorAccentLight">#76ffe5</color>
 
 </resources>
