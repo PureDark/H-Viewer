@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 
@@ -24,19 +25,41 @@ public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManage
         super.onLayoutCompleted(state);
         int rvWidth = getWidth();
         int rvHeight = getHeight();
-        int childrenWidth = 0;
-        int childrenHeight = 0;
-        for (int i = 0; i < getItemCount(); i+=getSpanCount()) {
-            View view = findViewByPosition(i);
-            if(view!=null){
-                childrenWidth += view.getWidth();
-                childrenHeight += view.getHeight();
-            }
-        }
         if (rvWidth > 0 && rvHeight > 0) {
-            if (getOrientation() == VERTICAL && childrenHeight > rvHeight) {
-                setSpanCount(getSpanCount() + 1);
-            } else if (getOrientation() == HORIZONTAL && childrenWidth > rvWidth) {
+            int childrenWidth1st = 0;
+            int childrenHeight1st = 0;
+            int childrenWidth2nd = 0;
+            int childrenHeight2nd = 0;
+            View firstView = findViewByPosition(0);
+            if (firstView == null)
+                return;
+            View secoundView = findViewByPosition(1);
+            if (secoundView == null)
+                return;
+
+            int firstY = (int) firstView.getY();
+            int secoundY = (int) secoundView.getY();
+            for (int i = 0; i < getItemCount(); i++) {
+                View view = findViewByPosition(i);
+                if (view != null) {
+                    if(firstY == (int) view.getY()){
+                        childrenWidth1st += view.getWidth();
+                        childrenHeight1st += view.getHeight();
+                    }else if(secoundY == (int) view.getY()){
+                        childrenWidth2nd += view.getWidth();
+                        childrenHeight2nd += view.getHeight();
+                    }
+                }
+            }
+            if (getOrientation() == VERTICAL && (childrenHeight1st > rvHeight || childrenHeight2nd > rvHeight )) {
+                Handler handler = new Handler();
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        setSpanCount(getSpanCount() + 1);
+                    }
+                };
+                handler.post(r);
+            } else if (getOrientation() == HORIZONTAL && (childrenWidth1st > rvWidth || childrenWidth2nd > rvWidth)) {
                 Handler handler = new Handler();
                 final Runnable r = new Runnable() {
                     public void run() {
