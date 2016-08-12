@@ -12,15 +12,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -37,13 +32,6 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
-import ml.puredark.hviewer.utils.FileUtils;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
-
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED;
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE;
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST;
 
 public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE;
@@ -158,8 +146,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View v, int position) {
                 if (position == adapter.getItemCount() - 1) {
-                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
-                    startActivityForResult(intent, RESULT_ADD_SITE);
+                    //Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
+                    //startActivityForResult(intent, RESULT_ADD_SITE);
+                    Intent intent = new Intent(MainActivity.this, AddFeedActivity.class);
+                    startActivity(intent);
                 } else {
                     Site site = (Site) adapter.getDataProvider().getItem(position);
                     adapter.selectedSid = site.sid;

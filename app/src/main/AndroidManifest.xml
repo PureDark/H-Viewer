@@ -35,7 +35,8 @@
             android:name=".activities.PictureViewerActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.SettingActivity" />
-        <activity android:name=".activities.AddSiteActivity"></activity>
+        <activity android:name=".activities.AddSiteActivity" />
+        <activity android:name=".activities.AddFeedActivity"></activity>
     </application>
 
 </manifest>
