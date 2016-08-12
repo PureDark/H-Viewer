@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,10 +14,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
 
@@ -28,16 +37,19 @@ import ml.puredark.hviewer.adapters.SiteAdapter;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.customs.AppBarStateChangeListener;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private static int RESULT_ADD_SITE;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
+    @BindView(R.id.app_bar)
+    AppBarLayout appBar;
     @BindView(R.id.backdrop)
     ImageView backdrop;
     @BindView(R.id.toolbar)
@@ -51,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvSite;
     @BindView(R.id.btn_exit)
     LinearLayout btnExit;
+
+    @BindView(R.id.search_view)
+    MaterialSearchView searchView;
 
     //记录当前加载的是哪个Fragment
     private MyFragment currFragment;
@@ -67,10 +82,61 @@ public class MainActivity extends AppCompatActivity {
         // User interface
         setSupportActionBar(toolbar);
 
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        //appbar折叠时显示搜索按钮和搜索框，否则隐藏
+        appBar.addOnOffsetChangedListener(new AppBarStateChangeListener() {
+            private Animation fadeIn = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in);
+            private Animation fadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
+
+            @Override
+            public void onStateChanged(AppBarLayout appBarLayout, State state) {
+                if(state==State.COLLAPSED){
+                    if(toolbar.getMenu().size()>0)
+                        toolbar.getMenu().getItem(0).setVisible(true);
+                    searchView.animate().alpha(1f).setDuration(300);
+                }else{
+                    if(toolbar.getMenu().size()>0)
+                        toolbar.getMenu().getItem(0).setVisible(false);
+                    searchView.animate().alpha(0f).setDuration(300);
+                }
+            }
+        });
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String keyword) {
+                Log.d("MainActivity", "onQueryTextSubmit="+keyword);
+                HViewerApplication.addSearchHistory(keyword);
+                if (!"".equals(keyword) && currFragment != null)
+                    currFragment.onSearch(keyword);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                String[] suggestions = HViewerApplication.getSearchHistory(newText);
+                searchView.setSuggestions(suggestions);
+                for(String val : suggestions)
+                    Log.d("MainActivity", "history="+val);
+                return true;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+            }
+        });
 
         List<Site> sites = HViewerApplication.getSites();
 
@@ -163,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 final Site site = (Site) adapter.getDataProvider().getItem(position);
                 new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
                         .setMessage("删除后将无法恢复")
-                        .setPositiveButton("确定",new DialogInterface.OnClickListener() {
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 HViewerApplication.deleteSite(site);
@@ -171,11 +237,11 @@ public class MainActivity extends AppCompatActivity {
                                 adapter.setDataProvider(new ListDataProvider(sites));
                                 adapter.notifyDataSetChanged();
                             }
-                        }).setNegativeButton("取消",new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        }).show();
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
             }
         });
 
@@ -189,11 +255,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
+        //一开始隐藏搜索按钮
+        item.setVisible(false);
+
+        return true;
+    }
+
     @OnClick(R.id.fab_search)
     void search() {
         final EditText inputSearch = new EditText(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Server").setIcon(R.drawable.ic_search_white).setView(inputSearch)
+        builder.setTitle("Search").setIcon(R.drawable.ic_search_white).setView(inputSearch)
                 .setNegativeButton("取消", null);
         builder.setPositiveButton("搜索", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
@@ -215,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter.setDataProvider(new ListDataProvider(sites));
                 adapter.selectedSid = sid;
                 adapter.notifyDataSetChanged();
-                final Site site = sites.get(sites.size()-1);
+                final Site site = sites.get(sites.size() - 1);
                 HViewerApplication.temp = site;
                 Handler handler = new Handler();
                 final Runnable r = new Runnable() {
@@ -232,6 +311,8 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
         } else {
             super.onBackPressed();
         }
@@ -256,4 +337,5 @@ public class MainActivity extends AppCompatActivity {
     void exit() {
         finish();
     }
+
 }

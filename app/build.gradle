@@ -39,25 +39,40 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
+    //Google offical
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:cardview-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
+
+    //material widget
     compile 'com.github.rengwuxian:MaterialEditText:2.1.4'
     compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.2.2'
+    compile 'com.github.vajro:MaterialDesignLibrary:1.6'
+    compile 'com.github.clans:fab:1.6.1'
+    compile 'com.balysv:material-ripple:1.0.2'
+    compile 'com.github.MiguelCatalan:MaterialSearchView:v1.4.0'
+    compile 'com.lapism:searchview:3.4.1'
+
+    //butter knife
     compile 'com.jakewharton:butterknife:8.2.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    //image
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.makeramen:roundedimageview:2.2.0'
+
+    //format, gson, jsoup, etc
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.github.vajro:MaterialDesignLibrary:1.6'
-    compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.jhy:jsoup:jsoup-1.9.2'
+
+    //http
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.github.clans:fab:1.6.1'
+
+    //zxing
     compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     compile 'com.google.zxing:core:3.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
 
     testCompile 'junit:junit:4.12'
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
 }
