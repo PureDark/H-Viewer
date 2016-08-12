@@ -146,10 +146,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View v, int position) {
                 if (position == adapter.getItemCount() - 1) {
-                    //Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
-                    //startActivityForResult(intent, RESULT_ADD_SITE);
-                    Intent intent = new Intent(MainActivity.this, AddFeedActivity.class);
-                    startActivity(intent);
+                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
+                    startActivityForResult(intent, RESULT_ADD_SITE);
                 } else {
                     Site site = (Site) adapter.getDataProvider().getItem(position);
                     adapter.selectedSid = site.sid;

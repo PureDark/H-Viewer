@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.nineoldandroids.animation.Animator;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
 
@@ -26,6 +27,7 @@ public class AddFeedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_feed);
+        ButterKnife.bind(this);
 
         /* 为返回按钮加载图标 */
         btnReturnIcon = new DrawerArrowDrawable(this);
