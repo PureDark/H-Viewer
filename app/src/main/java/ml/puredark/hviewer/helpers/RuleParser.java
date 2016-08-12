@@ -111,8 +111,31 @@ public class RuleParser {
         if (rule.tags != null) {
             temp = element.select(rule.tags.selector);
             for (Element tagElement : temp) {
-                String tagStr = parseSingleProperty(tagElement, rule.tags, sourceUrl, false, true);
-                tags.add(new Tag(tags.size() + 1, tagStr));
+                String tagStr;
+                if ("attr".equals(rule.tags.fun)) {
+                    tagStr = tagElement.attr(rule.tags.param);
+                } else if ("html".equals(rule.tags.fun)) {
+                    tagStr = tagElement.html();
+                } else {
+                    tagStr = tagElement.toString();
+                }
+                if (rule.tags.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.tags.regex, DOTALL);
+                    Matcher matcher = pattern.matcher(tagStr);
+                    while (matcher.find() && matcher.groupCount() >= 1) {
+                        if (rule.tags.replacement != null) {
+                            tagStr = rule.tags.replacement;
+                            for (int i = 1; i <= matcher.groupCount(); i++)
+                                tagStr = tagStr.replaceAll("\\$" + i, matcher.group(i));
+                            tags.add(new Tag(tags.size() + 1, tagStr));
+                        } else {
+                            tagStr = matcher.group(1);
+                            tags.add(new Tag(tags.size() + 1, tagStr));
+                        }
+                    }
+                }else{
+                    tags.add(new Tag(tags.size() + 1, tagStr));
+                }
             }
         }
 
@@ -161,28 +184,30 @@ public class RuleParser {
 
         if (selector != null) {
             Element temp = (mutiple) ? element.clone() : element.select(selector.selector).first();
-            if ("attr".equals(selector.fun)) {
-                prop = temp.attr(selector.param);
-            } else if ("html".equals(selector.fun)) {
-                prop = temp.html();
-            } else {
-                prop = temp.toString();
-            }
-            if (selector.regex != null) {
-                Pattern pattern = Pattern.compile(selector.regex, DOTALL);
-                Matcher matcher = pattern.matcher(prop);
-                if (matcher.find() && matcher.groupCount() >= 1) {
-                    if (selector.replacement != null) {
-                        prop = selector.replacement;
-                        for (int i = 1; i <= matcher.groupCount(); i++)
-                            prop = prop.replaceAll("\\$" + i, matcher.group(i));
-                    } else {
-                        prop = matcher.group(1);
+            if(temp!=null) {
+                if ("attr".equals(selector.fun)) {
+                    prop = temp.attr(selector.param);
+                } else if ("html".equals(selector.fun)) {
+                    prop = temp.html();
+                } else {
+                    prop = temp.toString();
+                }
+                if (selector.regex != null) {
+                    Pattern pattern = Pattern.compile(selector.regex, DOTALL);
+                    Matcher matcher = pattern.matcher(prop);
+                    if (matcher.find() && matcher.groupCount() >= 1) {
+                        if (selector.replacement != null) {
+                            prop = selector.replacement;
+                            for (int i = 1; i <= matcher.groupCount(); i++)
+                                prop = prop.replaceAll("\\$" + i, matcher.group(i));
+                        } else {
+                            prop = matcher.group(1);
+                        }
                     }
                 }
+                if (isUrl)
+                    prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
             }
-            if (isUrl)
-                prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
         }
         return prop;
     }

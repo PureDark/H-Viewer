@@ -46,9 +46,6 @@ import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 
-import static ml.puredark.hviewer.R.string.suggestions;
-import static ml.puredark.hviewer.holders.SearchHistoryHolder.searchHistories;
-
 public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE = 1;
 
@@ -184,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-(\\d+)px -(\\d+)px", "5-$1/16-($2-1)/40");
 
         galleryRule = new Rule();
+        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
         galleryRule.pictureUrl = new Selector("div#gtd div.gdtm div a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("div#gtd div.gdtm div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
 
