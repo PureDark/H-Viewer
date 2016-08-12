@@ -124,8 +124,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
             currPage = startPage;
         }
 
-        HViewerApplication.addHistory(collection);
-
         toolbar.setTitle(collection.title);
         setSupportActionBar(toolbar);
 
@@ -140,7 +138,7 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         getCollectionDetail(startPage);
 
         //加入历史记录
-        HViewerApplication.addHistory(collection);
+        HViewerApplication.historyHolder.addHistory(collection);
     }
 
     private void initCover(String cover) {
@@ -324,7 +322,7 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        HViewerApplication.addFavourite(collection);
+        HViewerApplication.favouriteHolder.addFavourite(collection);
     }
 
     @OnClick(R.id.fab_download)

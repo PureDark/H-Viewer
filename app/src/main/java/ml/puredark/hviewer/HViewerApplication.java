@@ -14,30 +14,23 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.helpers.HProxy;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.holders.FavouriteHolder;
+import ml.puredark.hviewer.holders.HistoryHolder;
+import ml.puredark.hviewer.holders.SearchHistoryHolder;
+import ml.puredark.hviewer.holders.SearchSuggestionHolder;
+import ml.puredark.hviewer.holders.SiteHolder;
 
 public class HViewerApplication extends Application {
     public static Context mContext;
     // 全局变量，用于跨Activity传递复杂对象的引用
     public static Object temp, temp2;
 
-    //服务器地址
-    public static String serverHost = "";
-
-    public static List<Site> sites;
-    public static List<Collection> histories;
-    public static List<Collection> favourites;
-    public static List<String> searchHistories;
+    public static SiteHolder siteHolder;
+    public static HistoryHolder historyHolder;
+    public static FavouriteHolder favouriteHolder;
+    public static SearchHistoryHolder searchHistoryHolder;
+    public static SearchSuggestionHolder searchSuggestionHolder;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")
@@ -46,21 +39,11 @@ public class HViewerApplication extends Application {
         super.onCreate();
         mContext = this;
 
-        String historyStr = (String) SharedPreferencesUtil.getData(this, "History", "[]");
-        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<Collection>>() {
-        }.getType());
-
-        String favouriteStr = (String) SharedPreferencesUtil.getData(this, "Favourite", "[]");
-        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<Collection>>() {
-        }.getType());
-
-        String ruleStr = (String) SharedPreferencesUtil.getData(this, "Site", "[]");
-        sites = new Gson().fromJson(ruleStr, new TypeToken<ArrayList<Site>>() {
-        }.getType());
-
-        String searchHistoryStr = (String) SharedPreferencesUtil.getData(this, "SearchHistory", "[]");
-        searchHistories = new Gson().fromJson(searchHistoryStr, new TypeToken<ArrayList<String>>() {
-        }.getType());
+        siteHolder = new SiteHolder(this);
+        historyHolder = new HistoryHolder(this);
+        favouriteHolder = new FavouriteHolder(this);
+        searchHistoryHolder = new SearchHistoryHolder(this);
+        searchSuggestionHolder = new SearchSuggestionHolder(this);
 
     }
 
@@ -107,159 +90,5 @@ public class HViewerApplication extends Application {
         }
     }
 
-
-    public static void saveHistory() {
-        SharedPreferencesUtil.saveData(mContext, "History", new Gson().toJson(histories));
-    }
-
-    public static void addHistory(Collection item) {
-        if (item == null) return;
-        deleteHistory(item);
-        histories.add(0, item);
-        trimHistory();
-        saveHistory();
-    }
-
-    public static void deleteHistory(Collection item) {
-        for (int i = 0, size = histories.size(); i < size; i++) {
-            if (histories.get(i).equals(item)) {
-                histories.remove(i);
-                size--;
-                i--;
-            }
-        }
-        saveHistory();
-    }
-
-    public static void trimHistory() {
-        while (histories.size() > 20)
-            histories.remove(20);
-    }
-
-    public static List<Collection> getHistory() {
-        if (histories == null)
-            return new ArrayList<>();
-        else
-            return histories;
-    }
-
-    public static void saveFavourite() {
-        SharedPreferencesUtil.saveData(mContext, "Favourite", new Gson().toJson(favourites));
-    }
-
-    public static void addFavourite(Collection item) {
-        if (item == null) return;
-        deleteFavourite(item);
-        favourites.add(0, item);
-        saveFavourite();
-    }
-
-    public static void deleteFavourite(Collection item) {
-        for (int i = 0, size = favourites.size(); i < size; i++) {
-            if (favourites.get(i).equals(item)) {
-                favourites.remove(i);
-                size--;
-                i--;
-            }
-        }
-        saveFavourite();
-    }
-
-    public static List<Collection> getFavourite() {
-        if (favourites == null)
-            return new ArrayList<>();
-        else
-            return favourites;
-    }
-
-    public static boolean isFavourite(Collection item) {
-        for (int i = 0, size = favourites.size(); i < size; i++) {
-            if (favourites.get(i).equals(item))
-                return true;
-        }
-        return false;
-    }
-
-
-    public static void saveSites() {
-        SharedPreferencesUtil.saveData(mContext, "Site", new Gson().toJson(sites));
-    }
-
-    public static void addSite(Site item) {
-        if (item == null) return;
-        deleteSite(item);
-        sites.add(item);
-        saveSites();
-    }
-
-    public static void deleteSite(Site item) {
-        for (int i = 0, size = sites.size(); i < size; i++) {
-            if (sites.get(i).sid == item.sid) {
-                sites.remove(i);
-                size--;
-                i--;
-            }
-        }
-        saveSites();
-    }
-
-    public static List<Site> getSites() {
-        if (sites == null)
-            return new ArrayList<>();
-        else
-            return sites;
-    }
-
-
-    public static void saveSearchHistory() {
-        SharedPreferencesUtil.saveData(mContext, "SearchHistory", new Gson().toJson(searchHistories));
-    }
-
-    public static void addSearchHistory(String item) {
-        if (item == null) return;
-        deleteSearchHistory(item);
-        searchHistories.add(0, item);
-        trimSearchHistory();
-        saveSearchHistory();
-    }
-
-    public static void deleteSearchHistory(String item) {
-        for (int i = 0, size = searchHistories.size(); i < size; i++) {
-            if (searchHistories.get(i).equals(item)) {
-                searchHistories.remove(i);
-                size--;
-                i--;
-            }
-        }
-        saveSearchHistory();
-    }
-
-    public static void trimSearchHistory() {
-        while (searchHistories.size() > 100)
-            searchHistories.remove(100);
-    }
-
-    public static List<String> getSearchHistory() {
-        if (searchHistories == null)
-            return new ArrayList<>();
-        else
-            return searchHistories;
-    }
-
-    public static String[] getSearchHistory(String query) {
-        List<String> keywords = new ArrayList<>();
-        if (searchHistories == null)
-            return new String[0];
-        else {
-            for(String keyword: searchHistories){
-                if(keyword.startsWith(query))
-                    keywords.add(keyword);
-            }
-            Collections.sort(keywords, String.CASE_INSENSITIVE_ORDER);
-            String[] kwStrings = new String[keywords.size()];
-            kwStrings = keywords.toArray(kwStrings);
-            return kwStrings;
-        }
-    }
 
 }

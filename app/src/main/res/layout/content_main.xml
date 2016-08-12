@@ -44,12 +44,6 @@
 
         </android.support.design.widget.AppBarLayout>
 
-    <com.miguelcatalan.materialsearchview.MaterialSearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_collapseMode="pin"/>
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -80,5 +74,11 @@
         app:fabSize="normal"
         app:rippleColor="@color/white_50"
         android:src="@drawable/selector_search"/>
+
+    <com.miguelcatalan.materialsearchview.MaterialSearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_collapseMode="pin"/>
 
 </android.support.design.widget.CoordinatorLayout>

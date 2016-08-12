@@ -52,7 +52,6 @@ dependencies {
     compile 'com.github.clans:fab:1.6.1'
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.MiguelCatalan:MaterialSearchView:v1.4.0'
-    compile 'com.lapism:searchview:3.4.1'
 
     //butter knife
     compile 'com.jakewharton:butterknife:8.2.1'

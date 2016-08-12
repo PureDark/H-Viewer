@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -34,6 +35,7 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.adapters.SiteAdapter;
+import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
@@ -42,6 +44,8 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
+
+import static ml.puredark.hviewer.R.string.suggestions;
 
 public class MainActivity extends AppCompatActivity{
     private static int RESULT_ADD_SITE;
@@ -109,8 +113,7 @@ public class MainActivity extends AppCompatActivity{
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String keyword) {
-                Log.d("MainActivity", "onQueryTextSubmit="+keyword);
-                HViewerApplication.addSearchHistory(keyword);
+                HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
                 if (!"".equals(keyword) && currFragment != null)
                     currFragment.onSearch(keyword);
                 return true;
@@ -118,10 +121,20 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                String[] suggestions = HViewerApplication.getSearchHistory(newText);
-                searchView.setSuggestions(suggestions);
-                for(String val : suggestions)
-                    Log.d("MainActivity", "history="+val);
+                List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory(newText);
+                if(!"".equals(newText)) {
+                    List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion(newText);
+                    histories.addAll(suggestions);
+                }
+                Collections.sort(histories, String.CASE_INSENSITIVE_ORDER);
+                int size = Math.min(10,histories.size());
+                String[] kwStrings = new String[size];
+                for(int i=0;i<size;i++){
+                    kwStrings[i] = histories.get(i);
+                }
+                for(String kw:kwStrings)
+                    Log.d("suggestion", "kw="+kw);
+                searchView.setSuggestions(kwStrings);
                 return true;
             }
         });
@@ -138,7 +151,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        List<Site> sites = HViewerApplication.getSites();
+        List<Site> sites = HViewerApplication.siteHolder.getSites();
 
         sites.clear();
 
@@ -232,8 +245,8 @@ public class MainActivity extends AppCompatActivity{
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                HViewerApplication.deleteSite(site);
-                                List<Site> sites = HViewerApplication.getSites();
+                                HViewerApplication.siteHolder.deleteSite(site);
+                                List<Site> sites = HViewerApplication.siteHolder.getSites();
                                 adapter.setDataProvider(new ListDataProvider(sites));
                                 adapter.notifyDataSetChanged();
                             }
@@ -289,7 +302,7 @@ public class MainActivity extends AppCompatActivity{
         if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_ADD_SITE) {
                 int sid = data.getIntExtra("sid", 0);
-                List<Site> sites = HViewerApplication.getSites();
+                List<Site> sites = HViewerApplication.siteHolder.getSites();
                 SiteAdapter adapter = ((SiteAdapter) rvSite.getAdapter());
                 adapter.setDataProvider(new ListDataProvider(sites));
                 adapter.selectedSid = sid;

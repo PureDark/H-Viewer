@@ -61,11 +61,11 @@ public class AddSiteActivity extends AppCompatActivity {
         String rule = inputSite.getText().toString();
         try {
             Site newSite = new Gson().fromJson(rule, Site.class);
-            int sid = HViewerApplication.getSites().size() + 1;
+            int sid = HViewerApplication.siteHolder.getSites().size() + 1;
             newSite.sid = sid;
             if(newSite.indexRule==null||newSite.galleryRule==null)
                 Toast.makeText(this, "输入的规则缺少信息", Toast.LENGTH_SHORT).show();
-            HViewerApplication.addSite(newSite);
+            HViewerApplication.siteHolder.addSite(newSite);
             Intent intent = new Intent();
             intent.putExtra("sid", sid);
             setResult(RESULT_OK, intent);
