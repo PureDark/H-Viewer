@@ -19,6 +19,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-sites.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
