@@ -8,7 +8,7 @@ import android.widget.ImageView;
 /**
  * An ImageView which works as if adjustViewBounds=true and
  * only changes the height.
- *
+ * <p>
  * Usage example:
  * <pre>&lt;com.triposo.barone.ScalingImageView
  *   android:layout_width="match_parent"

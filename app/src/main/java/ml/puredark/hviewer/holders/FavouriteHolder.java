@@ -19,7 +19,7 @@ public class FavouriteHolder {
     private Context mContext;
     private List<Collection> favourites;
 
-    public FavouriteHolder(Context context){
+    public FavouriteHolder(Context context) {
         this.mContext = context;
         String favouriteStr = (String) SharedPreferencesUtil.getData(context, "Favourite", "[]");
         favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<Collection>>() {

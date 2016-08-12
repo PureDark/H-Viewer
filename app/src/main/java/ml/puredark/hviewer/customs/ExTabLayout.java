@@ -43,10 +43,12 @@ public class ExTabLayout extends TabLayout {
             public int getCount() {
                 return tabRealStrArr.length;
             }
+
             @Override
             public boolean isViewFromObject(View view, Object object) {
                 return view == object;
             }
+
             @Override
             public CharSequence getPageTitle(int position) {
                 return tabRealStrArr[position];
@@ -57,19 +59,19 @@ public class ExTabLayout extends TabLayout {
     }
 
     private String[] getTabRealStrArr(String tabStrArr) {
-        if(tabStrArr!=null&&!tabStrArr.equals(""))
+        if (tabStrArr != null && !tabStrArr.equals(""))
             return tabStrArr.split(",");
         else
             return new String[0];
     }
 
-    private void setIcons(TypedArray a){
+    private void setIcons(TypedArray a) {
         int length = this.getTabCount();
-        for(int i=0; i<length; i++){
+        for (int i = 0; i < length; i++) {
             TabLayout.Tab tab = getTabAt(i);
             tab.setCustomView(R.layout.item_tab);
             Drawable icon = null;
-            switch (i){
+            switch (i) {
                 case 0:
                     icon = a.getDrawable(R.styleable.ExTabLayout_tabIcon1);
                     break;

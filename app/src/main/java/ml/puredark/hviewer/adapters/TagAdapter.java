@@ -52,13 +52,12 @@ public class TagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return 0;
     }
 
+    public AbstractDataProvider getDataProvider() {
+        return mProvider;
+    }
 
     public void setDataProvider(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
-    }
-
-    public AbstractDataProvider getDataProvider() {
-        return mProvider;
     }
 
     public class TagViewHolder extends RecyclerView.ViewHolder {

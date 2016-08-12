@@ -19,7 +19,7 @@ public class HistoryHolder {
     private Context mContext;
     private List<Collection> histories;
 
-    public HistoryHolder(Context context){
+    public HistoryHolder(Context context) {
         this.mContext = context;
         String historyStr = (String) SharedPreferencesUtil.getData(context, "History", "[]");
         histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<Collection>>() {

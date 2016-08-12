@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="HProxy 设置"
-        android:key="pref_proxy_settings">
+        android:key="pref_proxy_settings"
+        android:title="HProxy 设置">
 
         <SwitchPreference
             android:defaultValue="false"
-            android:title="启用 HProxy"
+            android:key="pref_proxy_enabled"
             android:summary="关于 HProxy 的信息请参阅应用主页"
-            android:key="pref_proxy_enabled" />
+            android:title="启用 HProxy" />
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_proxy_request"
-            android:title="普通请求"
             android:summary="在获取相册列表时使用 HProxy"
-            android:defaultValue="true" />
+            android:title="普通请求" />
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_proxy_picture"
-            android:title="图片"
             android:summary="在下载图片时使用 HProxy"
-            android:defaultValue="false" />
+            android:title="图片" />
 
         <EditTextPreference
             android:defaultValue=""
+            android:key="pref_proxy_server"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="更改 HProxy 服务器"
-            android:key="pref_proxy_server" />
+            android:title="更改 HProxy 服务器" />
 
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="关于"
-        android:key="pref_about">
+        android:key="pref_about"
+        android:title="关于">
 
         <Preference
             android:key="pref_about_upgrade"

@@ -4,12 +4,10 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 
 import java.util.List;
 
@@ -17,7 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.ExViewPager;
@@ -47,12 +44,12 @@ public class PictureViewerActivity extends AppCompatActivity {
         if (HViewerApplication.temp2 instanceof List<?>)
             pictures = (List<Picture>) HViewerApplication.temp2;
 
-        if (site == null || pictures == null || pictures.size()==0) {
+        if (site == null || pictures == null || pictures.size() == 0) {
             finish();
             return;
         }
 
-        tvCount.setText((1)+"/"+pictures.size());
+        tvCount.setText((1) + "/" + pictures.size());
 
         int position = getIntent().getIntExtra("position", 0);
 
@@ -67,7 +64,7 @@ public class PictureViewerActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                tvCount.setText((position+1)+"/"+pictures.size());
+                tvCount.setText((position + 1) + "/" + pictures.size());
             }
 
             @Override
@@ -107,9 +104,9 @@ public class PictureViewerActivity extends AppCompatActivity {
             View view = getLayoutInflater().inflate(R.layout.view_picture_viewer, null);
             final ImageView imageView = (ImageView) view.findViewById(R.id.iv_picture);
             final Picture picture = pictures.get(position);
-            if(picture.pic!=null){
+            if (picture.pic != null) {
                 HViewerApplication.loadImageFromUrl(imageView, picture.pic);
-            }else
+            } else
                 HViewerHttpClient.get(picture.url, new HViewerHttpClient.OnResponseListener() {
                     @Override
                     public void onSuccess(String result) {

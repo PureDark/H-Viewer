@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
+
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.holders.FavouriteHolder;
 import ml.puredark.hviewer.holders.HistoryHolder;
@@ -32,25 +33,9 @@ public class HViewerApplication extends Application {
     public static SearchHistoryHolder searchHistoryHolder;
     public static SearchSuggestionHolder searchSuggestionHolder;
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    @SuppressWarnings("unused")
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mContext = this;
-
-        siteHolder = new SiteHolder(this);
-        historyHolder = new HistoryHolder(this);
-        favouriteHolder = new FavouriteHolder(this);
-        searchHistoryHolder = new SearchHistoryHolder(this);
-        searchSuggestionHolder = new SearchSuggestionHolder(this);
-
-    }
-
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
-
 
     public static String getVersionName() throws Exception {
         PackageManager packageManager = mContext.getPackageManager();
@@ -88,6 +73,21 @@ public class HViewerApplication extends Application {
                 Glide.with(mContext).load(url).into(imageView);
             }
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    @SuppressWarnings("unused")
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = this;
+
+        siteHolder = new SiteHolder(this);
+        historyHolder = new HistoryHolder(this);
+        favouriteHolder = new FavouriteHolder(this);
+        searchHistoryHolder = new SearchHistoryHolder(this);
+        searchSuggestionHolder = new SearchSuggestionHolder(this);
+
     }
 
 

@@ -11,9 +11,9 @@
         android:id="@+id/rv_collection"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
         android:orientation="vertical"
         android:scrollbars="vertical"
-        tools:listitem="@layout/item_collection"/>
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/item_collection" />
 
 </LinearLayout>

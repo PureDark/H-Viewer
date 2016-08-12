@@ -73,9 +73,16 @@ public class HViewerHttpClient {
         }
     }
 
+    public interface OnResponseListener {
+        void onSuccess(String result);
+
+        void onFailure(HttpError error);
+    }
+
     // UI Thread Handler
     public static abstract class HCallback implements Callback {
         abstract void onFailure(IOException e);
+
         abstract void onResponse(String body);
 
         @Override
@@ -99,11 +106,6 @@ public class HViewerHttpClient {
                 }
             });
         }
-    }
-
-    public interface OnResponseListener {
-        void onSuccess(String result);
-        void onFailure(HttpError error);
     }
 
     // Pre-define error code

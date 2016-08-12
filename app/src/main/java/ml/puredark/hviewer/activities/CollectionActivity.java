@@ -46,10 +46,10 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
+import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
-import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.FastBlur;
@@ -236,37 +236,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     }
 
-
-    public class CollectionViewHolder {
-        @BindView(R.id.tv_title)
-        TextView tvTitle;
-        @BindView(R.id.tv_uploader)
-        TextView tvUploader;
-        @BindView(R.id.tv_category)
-        TextView tvCategory;
-        @BindView(R.id.rv_tags)
-        RecyclerView rvTags;
-        @BindView(R.id.rb_rating)
-        RatingBar rbRating;
-        @BindView(R.id.tv_submittime)
-        TextView tvSubmittime;
-
-        public CollectionViewHolder(View view) {
-            ButterKnife.bind(this, view);
-            rvTags.setAdapter(
-                    new TagAdapter(
-                            new ListDataProvider<>(
-                                    new ArrayList<Tag>()
-                            )
-                    )
-            );
-            StaggeredGridLayoutManager layoutManager =
-                    new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
-            rvTags.setLayoutManager(layoutManager);
-        }
-
-    }
-
     private void getCollectionDetail(final int page) {
         final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", collection.idCode)
                 .replaceAll("\\{page:" + startPage + "\\}", "" + page);
@@ -313,7 +282,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
             }
         });
     }
-
 
     @OnClick(R.id.btn_return)
     void back() {
@@ -393,6 +361,36 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
             fabMenu.hideMenu(true);
         } else {
             fabMenu.showMenu(true);
+        }
+
+    }
+
+    public class CollectionViewHolder {
+        @BindView(R.id.tv_title)
+        TextView tvTitle;
+        @BindView(R.id.tv_uploader)
+        TextView tvUploader;
+        @BindView(R.id.tv_category)
+        TextView tvCategory;
+        @BindView(R.id.rv_tags)
+        RecyclerView rvTags;
+        @BindView(R.id.rb_rating)
+        RatingBar rbRating;
+        @BindView(R.id.tv_submittime)
+        TextView tvSubmittime;
+
+        public CollectionViewHolder(View view) {
+            ButterKnife.bind(this, view);
+            rvTags.setAdapter(
+                    new TagAdapter(
+                            new ListDataProvider<>(
+                                    new ArrayList<Tag>()
+                            )
+                    )
+            );
+            StaggeredGridLayoutManager layoutManager =
+                    new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
+            rvTags.setLayoutManager(layoutManager);
         }
 
     }

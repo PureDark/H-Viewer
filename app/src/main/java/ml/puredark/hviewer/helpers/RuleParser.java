@@ -23,11 +23,7 @@ import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.utils.MathUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 
-import static android.R.attr.host;
 import static java.util.regex.Pattern.DOTALL;
-import static ml.puredark.hviewer.HViewerApplication.temp;
-import static ml.puredark.hviewer.utils.MathUtil.computeString;
-import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -214,7 +210,7 @@ public class RuleParser {
                 Matcher matcher0 = pattern0.matcher(rule.rating.fun);
                 if (matcher0.find()) {
                     String exp = matcher0.group(1);
-                    exp = exp.replace("{1}", "" + (int)rating);
+                    exp = exp.replace("{1}", "" + (int) rating);
                     String result = MathUtil.computeString(exp);
                     try {
                         rating = Float.parseFloat(result);

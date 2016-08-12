@@ -69,18 +69,17 @@ public class RegexValidateUtil {
             return getHostFromUrl(host) + url;
         else if (url.startsWith("./"))
             return geCurrDirFromUrl(host) + url;
-        else if (url.startsWith("../")){
+        else if (url.startsWith("../")) {
             Pattern p = Pattern.compile("(https?://[\\w./]*/).*/", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(url);
-            String prefix = (matcher.find())?matcher.group(1):"";
+            String prefix = (matcher.find()) ? matcher.group(1) : "";
             return prefix + url.substring(3);
-        }
-        else if (url.startsWith("../../")){
+        } else if (url.startsWith("../../")) {
             Pattern p = Pattern.compile("(https?://[\\w./]*/).*/.*/", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(url);
-            String prefix = (matcher.find())?matcher.group(1):"";
+            String prefix = (matcher.find()) ? matcher.group(1) : "";
             return prefix + url.substring(6);
-        }else
+        } else
             return url;
     }
 }

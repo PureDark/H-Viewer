@@ -6,10 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
@@ -17,8 +15,8 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
  */
 
 public class SearchHistoryHolder {
-    private Context mContext;
     public static List<String> searchHistories;
+    private Context mContext;
 
     public SearchHistoryHolder(Context context) {
         this.mContext = context;

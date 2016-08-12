@@ -7,17 +7,17 @@ import java.util.Random;
  */
 
 public class RandomUtil {
-    public static int[] randomArray(int min,int max,int n){
-        int len = max-min+1;
+    public static int[] randomArray(int min, int max, int n) {
+        int len = max - min + 1;
 
-        if(max < min || n > len){
+        if (max < min || n > len) {
             return null;
         }
 
         //初始化给定范围的待选数组
         int[] source = new int[len];
-        for (int i = min; i < min+len; i++){
-            source[i-min] = i;
+        for (int i = min; i < min + len; i++) {
+            source[i - min] = i;
         }
 
         int[] result = new int[n];

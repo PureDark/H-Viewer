@@ -1,11 +1,9 @@
 package ml.puredark.hviewer.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,20 +15,14 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public int selectedSid = 0;
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
-    public int selectedSid = 0;
-
-    public interface OnItemClickListener {
-        void onItemClick(View v, int position);
-        void onItemLongClick(View v, int position);
-    }
 
     public SiteAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
-
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,10 +36,10 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         RuleViewHolder holder = (RuleViewHolder) viewHolder;
-        if(position==getItemCount()-1){
+        if (position == getItemCount() - 1) {
             holder.ivIcon.setImageResource(R.drawable.ic_add_black);
             holder.tvTitle.setText("添加新站点");
-        }else{
+        } else {
             Site site = (Site) mProvider.getItem(position);
             int rID = R.drawable.ic_filter_9_plus_black;
             switch (position) {
@@ -91,12 +83,12 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return (mProvider == null) ? 1 : mProvider.getCount()+1;
+        return (mProvider == null) ? 1 : mProvider.getCount() + 1;
     }
 
     @Override
     public long getItemId(int position) {
-        if(position==getItemCount()-1)
+        if (position == getItemCount() - 1)
             return 0;
         else
             return (mProvider == null) ? 0 : mProvider.getItem(position).getId();
@@ -111,12 +103,18 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mItemClickListener = listener;
     }
 
+    public AbstractDataProvider getDataProvider() {
+        return mProvider;
+    }
+
     public void setDataProvider(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public AbstractDataProvider getDataProvider() {
-        return mProvider;
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
+
+        void onItemLongClick(View v, int position);
     }
 
     public class RuleViewHolder extends RecyclerView.ViewHolder {

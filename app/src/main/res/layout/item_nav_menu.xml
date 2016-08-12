@@ -4,12 +4,13 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_button"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/half_padding"
     android:paddingLeft="@dimen/uni_padding"
     android:paddingRight="@dimen/uni_padding"
-    android:paddingTop="@dimen/half_padding"
-    android:paddingBottom="@dimen/half_padding"
-    android:background="@drawable/bg_button"
-    android:orientation="horizontal">
+    android:paddingTop="@dimen/half_padding">
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

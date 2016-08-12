@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,8 +34,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.adapters.MySearchAdapter;
 import ml.puredark.hviewer.adapters.SiteAdapter;
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
@@ -47,7 +47,7 @@ import ml.puredark.hviewer.fragments.MyFragment;
 
 import static ml.puredark.hviewer.R.string.suggestions;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE;
 
     @BindView(R.id.drawer_layout)
@@ -99,42 +99,55 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
-                if(state==State.COLLAPSED){
-                    if(toolbar.getMenu().size()>0)
+                if (state == State.COLLAPSED) {
+                    if (toolbar.getMenu().size() > 0)
                         toolbar.getMenu().getItem(0).setVisible(true);
                     searchView.animate().alpha(1f).setDuration(300);
-                }else{
-                    if(toolbar.getMenu().size()>0)
+                } else {
+                    if (toolbar.getMenu().size() > 0)
                         toolbar.getMenu().getItem(0).setVisible(false);
                     searchView.animate().alpha(0f).setDuration(300);
                 }
             }
         });
+
+        initSearchSuggestions();
+
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String keyword) {
-                HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
+                String[] keywords = keyword.split("//s+");
+                for (String k : keywords)
+                    HViewerApplication.searchHistoryHolder.addSearchHistory(k);
                 if (!"".equals(keyword) && currFragment != null)
                     currFragment.onSearch(keyword);
                 return true;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory(newText);
-                if(!"".equals(newText)) {
-                    List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion(newText);
-                    histories.addAll(suggestions);
-                }
-                Collections.sort(histories, String.CASE_INSENSITIVE_ORDER);
-                int size = Math.min(10,histories.size());
+            public boolean onQueryTextChange(final String newText) {
+                List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
+                List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
+                suggestions.addAll(histories);
+                Collections.sort(suggestions, String.CASE_INSENSITIVE_ORDER);
+                int size = suggestions.size();
                 String[] kwStrings = new String[size];
-                for(int i=0;i<size;i++){
-                    kwStrings[i] = histories.get(i);
-                }
-                for(String kw:kwStrings)
-                    Log.d("suggestion", "kw="+kw);
-                searchView.setSuggestions(kwStrings);
+                kwStrings = suggestions.toArray(kwStrings);
+                final MySearchAdapter adapter = new MySearchAdapter(MainActivity.this, kwStrings);
+                searchView.setAdapter(adapter);
+
+                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String[] keywords = newText.toString().split(" ");
+                        String keyword = "";
+                        for(int i=0;i<keywords.length-1;i++)
+                            keyword +=keywords[i]+" ";
+
+                        keyword += adapter.getItem(position);
+                        searchView.setQuery(keyword, false);
+                    }
+                });
                 return true;
             }
         });
@@ -266,6 +279,26 @@ public class MainActivity extends AppCompatActivity{
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
 
+    }
+
+    private void initSearchSuggestions(){
+        List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
+        List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
+        suggestions.addAll(histories);
+        Collections.sort(suggestions, String.CASE_INSENSITIVE_ORDER);
+        int size = suggestions.size();
+        String[] kwStrings = new String[size];
+        kwStrings = suggestions.toArray(kwStrings);
+        final MySearchAdapter adapter = new MySearchAdapter(this, kwStrings);
+        searchView.setAdapter(adapter);
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String keyword = (String) adapter.getItem(position);
+                searchView.setQuery(keyword, false);
+            }
+        });
     }
 
     @Override

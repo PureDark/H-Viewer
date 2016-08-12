@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Tag;
@@ -23,15 +22,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public interface OnItemClickListener {
-        void onItemClick(View v, int position);
-    }
-
     public CollectionAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
-
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -46,13 +40,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Collection collection = (Collection) mProvider.getItem(position);
         CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover);
+//        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover);
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
         holder.tvCategory.setText(collection.category);
-        TagAdapter adapter = (TagAdapter)holder.rvTags.getAdapter();
+        TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
         adapter.getDataProvider().clear();
-        if(collection.tags!=null)
+        if (collection.tags != null)
             adapter.getDataProvider().addAll(collection.tags);
         holder.rbRating.setRating(collection.rating);
         holder.tvSubmittime.setText(collection.datetime);
@@ -77,12 +71,16 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mItemClickListener = listener;
     }
 
+    public AbstractDataProvider getDataProvider() {
+        return mProvider;
+    }
+
     public void setDataProvider(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public AbstractDataProvider getDataProvider() {
-        return mProvider;
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
     }
 
     public class CollectionViewHolder extends RecyclerView.ViewHolder {

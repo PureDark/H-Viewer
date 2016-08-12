@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
@@ -10,17 +9,17 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="@dimen/tool_bar_height"
             android:layout_width="match_parent"
-            app:layout_collapseMode="pin"
+            android:layout_height="@dimen/tool_bar_height"
             android:paddingLeft="-16dp"
             app:contentInsetStart="0dp"
+            app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
@@ -28,19 +27,21 @@
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
                 android:clipToPadding="false">
+
                 <ImageView
                     android:id="@+id/btn_return"
                     android:layout_width="@dimen/tool_bar_height"
                     android:layout_height="@dimen/tool_bar_height"
-                    android:scaleType="fitXY"
+                    android:background="@drawable/bg_button"
                     android:padding="16dp"
-                    android:background="@drawable/bg_button"/>
+                    android:scaleType="fitXY" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:textAppearance="@style/ActionBar.Title"
-                    android:text="添加新站点"/>
+                    android:text="添加新站点"
+                    android:textAppearance="@style/ActionBar.Title" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -60,24 +61,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/uni_padding"
-            android:orientation="vertical"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:orientation="vertical"
+            android:padding="@dimen/uni_padding">
+
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/input_site"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="16"
-                app:met_baseColor="@color/colorPrimaryDark"
-                app:met_primaryColor="@color/colorAccent"
-                app:met_floatingLabel="highlight"
-                app:met_floatingLabelText="站点规则"
-                app:met_floatingLabelAlwaysShown="true"
-                app:met_clearButton="true"
                 android:gravity="top"
+                android:hint="在这输入新的规则"
+                android:lines="16"
                 android:textSize="11sp"
-                android:hint="在这输入新的规则">
+                app:met_baseColor="@color/colorPrimaryDark"
+                app:met_clearButton="true"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="站点规则"
+                app:met_primaryColor="@color/colorAccent">
+
                 <requestFocus />
             </com.rengwuxian.materialedittext.MaterialEditText>
 
@@ -85,8 +88,8 @@
                 android:id="@+id/btn_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_gravity="center"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@color/colorPrimary"
                 android:text="确 认 添 加" />
         </LinearLayout>

@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -17,10 +16,10 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
  */
 
 public class SiteHolder {
-    private Context mContext;
     public static List<Site> sites;
+    private Context mContext;
 
-    public SiteHolder(Context context){
+    public SiteHolder(Context context) {
         this.mContext = context;
         String siteStr = (String) SharedPreferencesUtil.getData(context, "Site", "[]");
         sites = new Gson().fromJson(siteStr, new TypeToken<ArrayList<Site>>() {

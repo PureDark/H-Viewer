@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
-import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class Collection extends AbstractDataProvider.Data {
     public int cid;
@@ -14,7 +13,7 @@ public class Collection extends AbstractDataProvider.Data {
     public List<Tag> tags;
     public List<Picture> pictures;
 
-    public Collection(int cid){
+    public Collection(int cid) {
         this.cid = cid;
     }
 
@@ -49,8 +48,8 @@ public class Collection extends AbstractDataProvider.Data {
             try {
                 for (Field f : fs) {
                     if ("cid".equals(f.getName())
-                       ||"tags".equals(f.getName())
-                       ||"pictures".equals(f.getName()))
+                            || "tags".equals(f.getName())
+                            || "pictures".equals(f.getName()))
                         continue;
                     f.setAccessible(true);
                     Object v1 = f.get(this);

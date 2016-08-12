@@ -2,31 +2,31 @@
 
     <declare-styleable name="ExTabLayout">
 
-        <attr name="tabTitleArray" format="string"  />
-        <attr name="tabIcon1" format="reference"  />
-        <attr name="tabIcon2" format="reference"  />
-        <attr name="tabIcon3" format="reference"  />
-        <attr name="tabIcon4" format="reference"  />
-        <attr name="tabIcon5" format="reference"  />
+        <attr name="tabTitleArray" format="string" />
+        <attr name="tabIcon1" format="reference" />
+        <attr name="tabIcon2" format="reference" />
+        <attr name="tabIcon3" format="reference" />
+        <attr name="tabIcon4" format="reference" />
+        <attr name="tabIcon5" format="reference" />
 
     </declare-styleable>
 
     <declare-styleable name="ExViewPager">
 
-        <attr name="pagerCurrItem" format="integer"  />
-        <attr name="pagerLayout1" format="reference"  />
-        <attr name="pagerLayout2" format="reference"  />
-        <attr name="pagerLayout3" format="reference"  />
-        <attr name="pagerLayout4" format="reference"  />
-        <attr name="pagerLayout5" format="reference"  />
+        <attr name="pagerCurrItem" format="integer" />
+        <attr name="pagerLayout1" format="reference" />
+        <attr name="pagerLayout2" format="reference" />
+        <attr name="pagerLayout3" format="reference" />
+        <attr name="pagerLayout4" format="reference" />
+        <attr name="pagerLayout5" format="reference" />
 
     </declare-styleable>
 
     <declare-styleable name="PullLoadMoreRecyclerView">
 
-        <attr name="PLR_listitem" format="reference"  />
-        <attr name="PLR_layoutManager" format="string"  />
-        <attr name="PLR_spanCount" format="integer"  />
+        <attr name="PLR_listitem" format="reference" />
+        <attr name="PLR_layoutManager" format="string" />
+        <attr name="PLR_spanCount" format="integer" />
 
     </declare-styleable>
 

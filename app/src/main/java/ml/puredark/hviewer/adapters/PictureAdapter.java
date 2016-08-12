@@ -1,12 +1,10 @@
 package ml.puredark.hviewer.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -14,21 +12,15 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
-import ml.puredark.hviewer.utils.RegexValidateUtil;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public interface OnItemClickListener {
-        void onItemClick(View v, int position);
-    }
-
     public PictureAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
-
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -65,12 +57,16 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.mItemClickListener = listener;
     }
 
+    public AbstractDataProvider getDataProvider() {
+        return mProvider;
+    }
+
     public void setDataProvider(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
-    public AbstractDataProvider getDataProvider() {
-        return mProvider;
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
     }
 
     public class PictureViewHolder extends RecyclerView.ViewHolder {

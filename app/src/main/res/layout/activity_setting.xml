@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
@@ -10,17 +9,17 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="@dimen/tool_bar_height"
             android:layout_width="match_parent"
-            app:layout_collapseMode="pin"
+            android:layout_height="@dimen/tool_bar_height"
             android:paddingLeft="-16dp"
             app:contentInsetStart="0dp"
+            app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
@@ -28,29 +27,31 @@
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
                 android:clipToPadding="false">
+
                 <ImageView
                     android:id="@+id/btn_return"
                     android:layout_width="@dimen/tool_bar_height"
                     android:layout_height="@dimen/tool_bar_height"
-                    android:scaleType="fitXY"
+                    android:background="@drawable/bg_button"
                     android:padding="16dp"
-                    android:background="@drawable/bg_button"/>
+                    android:scaleType="fitXY" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:textAppearance="@style/ActionBar.Title"
-                    android:text="设置"/>
+                    android:text="设置"
+                    android:textAppearance="@style/ActionBar.Title" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
         android:id="@+id/setting_content"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
 
     </LinearLayout>
 

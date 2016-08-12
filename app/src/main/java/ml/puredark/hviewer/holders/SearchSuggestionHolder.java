@@ -6,10 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 
@@ -18,8 +16,8 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
  */
 
 public class SearchSuggestionHolder {
-    private Context mContext;
     public static List<String> searchSuggestions;
+    private Context mContext;
 
     public SearchSuggestionHolder(Context context) {
         this.mContext = context;
@@ -50,6 +48,13 @@ public class SearchSuggestionHolder {
             }
         }
         saveSearchSuggestion();
+    }
+
+    public List<String> getSearchSuggestion() {
+        if(searchSuggestions==null)
+            return new ArrayList<>();
+        else
+            return searchSuggestions;
     }
 
     public List<String> getSearchSuggestion(String query) {

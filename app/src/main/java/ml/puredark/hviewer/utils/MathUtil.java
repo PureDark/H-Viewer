@@ -11,7 +11,8 @@ public class MathUtil {
 
     /**
      * 格式化日期
-     * @param obj 日期对象
+     *
+     * @param obj    日期对象
      * @param format 格式化字符串
      * @return
      */
@@ -33,7 +34,8 @@ public class MathUtil {
 
     /**
      * 格式化数字
-     * @param obj 数字对象
+     *
+     * @param obj    数字对象
      * @param format 格式化字符串
      * @return
      */
@@ -65,6 +67,7 @@ public class MathUtil {
 
     /**
      * 计算字符串四则运算表达式
+     *
      * @param string
      * @return
      */
@@ -102,6 +105,7 @@ public class MathUtil {
 
     /**
      * 计算不包含括号的表达式
+     *
      * @param string
      * @return
      */
@@ -150,6 +154,7 @@ public class MathUtil {
 
     /**
      * 执行乘除法
+     *
      * @param string
      * @return
      */
@@ -180,6 +185,7 @@ public class MathUtil {
 
     /**
      * 执行加减法
+     *
      * @param string
      * @return
      */
@@ -210,6 +216,7 @@ public class MathUtil {
 
     /**
      * 执行负数运算
+     *
      * @param string
      * @return
      */

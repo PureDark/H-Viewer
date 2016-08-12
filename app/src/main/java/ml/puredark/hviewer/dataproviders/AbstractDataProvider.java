@@ -5,10 +5,6 @@ import java.util.List;
 
 public abstract class AbstractDataProvider<T extends AbstractDataProvider.Data> {
 
-    public static abstract class Data {
-        public abstract int getId();
-    }
-
     public abstract int getCount();
 
     public abstract List getItems();
@@ -24,4 +20,8 @@ public abstract class AbstractDataProvider<T extends AbstractDataProvider.Data> 
     public abstract void addItem(int position, T item);
 
     public abstract void addAll(Collection items);
+
+    public static abstract class Data {
+        public abstract int getId();
+    }
 }

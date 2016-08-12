@@ -1,8 +1,8 @@
 package ml.puredark.hviewer.dataproviders;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 public class ListDataProvider<T extends AbstractDataProvider.Data> extends AbstractDataProvider<T> {
 

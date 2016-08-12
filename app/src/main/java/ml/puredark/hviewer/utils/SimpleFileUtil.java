@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
  * 文件读写工具类
  *
  * @author bear
- *
  */
 public class SimpleFileUtil {
 
@@ -33,10 +32,8 @@ public class SimpleFileUtil {
     /**
      * 向文件中写入数据
      *
-     * @param filePath
-     *            目标文件全路径
-     * @param data
-     *            要写入的数据
+     * @param filePath 目标文件全路径
+     * @param data     要写入的数据
      * @return true表示写入成功  false表示写入失败
      */
     public static boolean writeBytes(String filePath, byte[] data) {
@@ -76,12 +73,9 @@ public class SimpleFileUtil {
     /**
      * 向文件中写入字符串String类型的内容
      *
-     * @param file
-     *            文件路径
-     * @param content
-     *            文件内容
-     * @param charset
-     *            写入时候所使用的字符集
+     * @param file    文件路径
+     * @param content 文件内容
+     * @param charset 写入时候所使用的字符集
      */
     public static void writeString(String file, String content, String charset) {
         try {
@@ -96,10 +90,8 @@ public class SimpleFileUtil {
     /**
      * 从文件中读取数据，返回类型是字符串String类型
      *
-     * @param file
-     *            文件路径
-     * @param charset
-     *            读取文件时使用的字符集，如utf-8、GBK等
+     * @param file    文件路径
+     * @param charset 读取文件时使用的字符集，如utf-8、GBK等
      * @return
      */
     public static String readString(String file, String charset) {

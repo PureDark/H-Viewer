@@ -27,7 +27,7 @@ public class ImageScaleUtil {
     public static Bitmap getScaledImage(String srcPath, int width, int height) {
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
         newOpts.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(srcPath,newOpts);//此时返回bm为空
+        Bitmap bitmap = BitmapFactory.decodeFile(srcPath, newOpts);//此时返回bm为空
 
         newOpts.inJustDecodeBounds = false;
         int w = newOpts.outWidth;
@@ -60,7 +60,7 @@ public class ImageScaleUtil {
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         int options = 100;
         //循环判断如果压缩后图片是否大于 size kb且质量比例大于50%,大于继续压缩
-        while ( baos.toByteArray().length / 1024>size && options>50) {
+        while (baos.toByteArray().length / 1024 > size && options > 50) {
             //重置baos即清空baos
             baos.reset();
             //这里压缩options%，把压缩后的数据存放到baos中
@@ -90,17 +90,17 @@ public class ImageScaleUtil {
         return Bitmap.createBitmap(bitmap, retX, retY, wh, wh, null, false);
     }
 
-    public static void saveToFile(Context context, Bitmap bitmap, String destPath){
-        ImageView iv=new ImageView(context);
+    public static void saveToFile(Context context, Bitmap bitmap, String destPath) {
+        ImageView iv = new ImageView(context);
         iv.setImageBitmap(bitmap);
-        File file=new File(destPath);
+        File file = new File(destPath);
         try {
-            FileOutputStream out=new FileOutputStream(file);
-            if(bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)){
+            FileOutputStream out = new FileOutputStream(file);
+            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)) {
                 out.flush();
                 out.close();
             }
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,7 +115,7 @@ public class ImageScaleUtil {
         byte[] buffer = new byte[1024];
         int count = 0;
         try {
-            while((count = fis.read(buffer)) >= 0){
+            while ((count = fis.read(buffer)) >= 0) {
                 baos.write(buffer, 0, count);
             }
         } catch (IOException e) {
@@ -139,7 +139,7 @@ public class ImageScaleUtil {
             BigInteger bi = new BigInteger(1, messageDigest.digest());
             md5 = bi.toString(16);
             return md5;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";

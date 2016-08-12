@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_below="@id/tab_layout"
-    android:background="@color/bgcolor"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_below="@id/tab_layout"
+    android:background="@color/bgcolor">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/half_padding"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/half_padding">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
                 android:gravity="center_vertical"
-                android:textSize="14sp"
+                android:maxLines="1"
                 android:textColor="@color/black"
+                android:textSize="14sp"
                 tools:text="本子名称" />
 
             <LinearLayout
@@ -37,8 +38,8 @@
                     android:id="@+id/tv_uploader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
                     android:textColor="@color/grey"
+                    android:textSize="12sp"
                     tools:text="mifukata" />
             </LinearLayout>
 
@@ -51,10 +52,11 @@
                     android:id="@+id/tv_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
                     android:textColor="@color/grey"
+                    android:textSize="12sp"
                     tools:text="Game CG Sets" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,11 +66,11 @@
                     android:id="@+id/rv_tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    app:layoutManager="StaggeredGridLayoutManager"
                     android:orientation="horizontal"
+                    app:layoutManager="StaggeredGridLayoutManager"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     app:spanCount="2"
-                    tools:listitem="@layout/item_tag"/>
+                    tools:listitem="@layout/item_tag" />
             </LinearLayout>
 
         </LinearLayout>
@@ -77,16 +79,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="3dp">
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal">
 
             <RatingBar
-                style="?android:attr/ratingBarStyleSmall"
                 android:id="@+id/rb_rating"
+                style="?android:attr/ratingBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:numStars="5"
                 tools:rating="2.5" />
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -98,8 +101,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:maxLines="1"
-                android:textSize="12sp"
                 android:textColor="@color/grey"
+                android:textSize="12sp"
                 tools:text="2014-03-18 15:20" />
         </LinearLayout>
     </LinearLayout>

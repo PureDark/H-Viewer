@@ -14,34 +14,36 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <ml.puredark.hviewer.customs.ExViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/black_90"
                 app:pagerCurrItem="0"
-                app:pagerLayout1="@layout/view_picture_viewer"/>
+                app:pagerLayout1="@layout/view_picture_viewer" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="50dp"
                 android:layout_alignParentBottom="true"
+                android:background="@color/black_10"
                 android:gravity="center_vertical"
-                android:paddingTop="@dimen/uni_padding"
+                android:minHeight="50dp"
+                android:orientation="horizontal"
                 android:paddingBottom="@dimen/uni_padding"
                 android:paddingLeft="36dp"
                 android:paddingRight="36dp"
-                android:background="@color/black_10"
-                android:orientation="horizontal">
+                android:paddingTop="@dimen/uni_padding">
+
                 <TextView
                     android:id="@+id/tv_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:textSize="14sp"
                     android:textColor="@color/white"
-                    tools:text="10/12"/>
+                    android:textSize="14sp"
+                    tools:text="10/12" />
             </LinearLayout>
         </RelativeLayout>
 

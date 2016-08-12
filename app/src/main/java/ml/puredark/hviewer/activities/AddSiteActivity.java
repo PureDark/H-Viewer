@@ -52,25 +52,25 @@ public class AddSiteActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_return)
-    void back(){
+    void back() {
         onBackPressed();
     }
 
     @OnClick(R.id.btn_add)
-    void add(){
+    void add() {
         String rule = inputSite.getText().toString();
         try {
             Site newSite = new Gson().fromJson(rule, Site.class);
             int sid = HViewerApplication.siteHolder.getSites().size() + 1;
             newSite.sid = sid;
-            if(newSite.indexRule==null||newSite.galleryRule==null)
+            if (newSite.indexRule == null || newSite.galleryRule == null)
                 Toast.makeText(this, "输入的规则缺少信息", Toast.LENGTH_SHORT).show();
             HViewerApplication.siteHolder.addSite(newSite);
             Intent intent = new Intent();
             intent.putExtra("sid", sid);
             setResult(RESULT_OK, intent);
             finish();
-        }catch (JsonSyntaxException e){
+        } catch (JsonSyntaxException e) {
             Toast.makeText(this, "输入规则格式错误", Toast.LENGTH_SHORT).show();
         }
     }
