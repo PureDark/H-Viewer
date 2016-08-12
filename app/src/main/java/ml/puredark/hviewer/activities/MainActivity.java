@@ -74,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
     //记录当前加载的是哪个Fragment
     private MyFragment currFragment;
 
+    //当前搜索的查询关键字
+    private String currQuery;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,38 +119,19 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String keyword) {
+                currQuery = keyword;
                 String[] keywords = keyword.split("//s+");
                 for (String k : keywords)
                     HViewerApplication.searchHistoryHolder.addSearchHistory(k);
                 if (!"".equals(keyword) && currFragment != null)
                     currFragment.onSearch(keyword);
+                initSearchSuggestions();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(final String newText) {
-                List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
-                List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
-                suggestions.addAll(histories);
-                Collections.sort(suggestions, String.CASE_INSENSITIVE_ORDER);
-                int size = suggestions.size();
-                String[] kwStrings = new String[size];
-                kwStrings = suggestions.toArray(kwStrings);
-                final MySearchAdapter adapter = new MySearchAdapter(MainActivity.this, kwStrings);
-                searchView.setAdapter(adapter);
-
-                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String[] keywords = newText.toString().split(" ");
-                        String keyword = "";
-                        for(int i=0;i<keywords.length-1;i++)
-                            keyword +=keywords[i]+" ";
-
-                        keyword += adapter.getItem(position);
-                        searchView.setQuery(keyword, false);
-                    }
-                });
+                currQuery = newText;
                 return true;
             }
         });
@@ -295,7 +279,12 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String keyword = (String) adapter.getItem(position);
+                String[] keywords = currQuery.toString().split(" ");
+                String keyword = "";
+                for(int i=0;i<keywords.length-1;i++)
+                    keyword +=keywords[i]+" ";
+
+                keyword += adapter.getItem(position);
                 searchView.setQuery(keyword, false);
             }
         });
