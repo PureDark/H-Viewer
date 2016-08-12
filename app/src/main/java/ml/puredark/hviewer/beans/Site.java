@@ -4,8 +4,8 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Site extends AbstractDataProvider.Data {
     public int sid;
-    public String title;
-    public String indexUrl, galleryUrl, searchUrl;
+    public String title = "";
+    public String indexUrl = "", galleryUrl = "", searchUrl = "";
     public Rule indexRule, galleryRule;
     public Selector picUrlSelector;
 

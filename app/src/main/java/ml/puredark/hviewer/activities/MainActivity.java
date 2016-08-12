@@ -44,11 +44,13 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
+import ml.puredark.hviewer.holders.SearchHistoryHolder;
 
 import static ml.puredark.hviewer.R.string.suggestions;
+import static ml.puredark.hviewer.holders.SearchHistoryHolder.searchHistories;
 
 public class MainActivity extends AppCompatActivity {
-    private static int RESULT_ADD_SITE;
+    private static int RESULT_ADD_SITE = 1;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
@@ -118,9 +120,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String keyword) {
                 currQuery = keyword;
-                String[] keywords = keyword.split("//s+");
-                for (String k : keywords)
-                    HViewerApplication.searchHistoryHolder.addSearchHistory(k);
+                HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
                 if (!"".equals(keyword) && currFragment != null)
                     currFragment.onSearch(keyword);
                 initSearchSuggestions();
@@ -151,20 +151,21 @@ public class MainActivity extends AppCompatActivity {
         sites.clear();
 
         Rule indexRule = new Rule();
-        indexRule.item = new Selector("#ig .ig", null, null, null);
-        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)");
-        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null);
-        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)");
-        indexRule.cover = new Selector("td.ii img", "attr", "src", null);
-        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null);
-        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})");
-        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null);
-        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)");
+        indexRule.item = new Selector("#ig .ig", null, null, null, null);
+        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)", null);
+        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null, null);
+        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)", null);
+        indexRule.cover = new Selector("td.ii img", "attr", "src", null, null);
+        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null, null);
+        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})", null);
+        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null, null);
+        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)", null);
 
         Rule galleryRule = new Rule();
-        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+        galleryRule.pictureUrl = new Selector("#gh .gi a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("#gh .gi a img", "attr", "src", null, null);
 
-        Selector pic = new Selector("img#sm", "attr", "src", null);
+        Selector pic = new Selector("img#sm", "attr", "src", null, null);
 
         sites.add(new Site(1, "Lofi.E-hentai",
                 "http://lofi.e-hentai.org/?page={page:0}",
@@ -173,19 +174,20 @@ public class MainActivity extends AppCompatActivity {
                 indexRule, galleryRule, pic));
 
         indexRule = new Rule();
-        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null);
-        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)");
-        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null);
-        indexRule.uploader = new Selector("td.itu div a", "html", null, null);
-        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)");
-        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null);
-        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null);
-        indexRule.rating = new Selector("td.itd div div.it4 div", "attr||5-{1}/16", "style", "background-position:-(\\d+)px");
+        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
+        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
+        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
+        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
+        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
+        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
+        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null, null);
+        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-(\\d+)px -(\\d+)px", "5-$1/16-($2-1)/40");
 
         galleryRule = new Rule();
-        galleryRule.pictures = new Selector("#gh .gi a", null, null, "<a.*?href=\"(.*?)\".*?<img.*?src=\"(.*?)\"");
+        galleryRule.pictureUrl = new Selector("div#gtd div.gdtm div a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("div#gtd div.gdtm div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
 
-        pic = new Selector("img#sm", "attr", "src", null);
+        pic = new Selector("img#sm", "attr", "src", null, null);
 
         sites.add(new Site(2, "G.E-hentai",
                 "http://g.e-hentai.org/?page={page:0}",
@@ -194,16 +196,17 @@ public class MainActivity extends AppCompatActivity {
                 indexRule, galleryRule, pic));
 
         indexRule = new Rule();
-        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null);
-        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)");
-        indexRule.title = new Selector("div.info div.title a", "html", null, null);
-        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null);
-        indexRule.datetime = new Selector("div.info div.info_col ", "html", null, "(\\d{4}-\\d{2}-\\d{2})");
+        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null, null);
+        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)", null);
+        indexRule.title = new Selector("div.info div.title a", "html", null, null, null);
+        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null, null);
+        indexRule.datetime = new Selector("div.info div.info_col", "html", null, "(\\d{4}-\\d{2}-\\d{2})", null);
 
         galleryRule = new Rule();
-        galleryRule.pictures = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", "html", null, "<a.*?href=\"(.*?)\".*?<img.*?data-original=\"(.*?)\"");
+        galleryRule.pictureUrl = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box a img", "attr", "data-original", null, null);
 
-        pic = new Selector("img#picarea", "attr", "src", null);
+        pic = new Selector("img#picarea", "attr", "src", null, null);
 
         sites.add(new Site(3, "绅士漫画",
                 "http://www.wnacg.org/albums-index-page-{page:1}.html",
@@ -267,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
         List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
         suggestions.addAll(histories);
+        suggestions = SearchHistoryHolder.removeDuplicate(suggestions);
         Collections.sort(suggestions, String.CASE_INSENSITIVE_ORDER);
         int size = suggestions.size();
         String[] kwStrings = new String[size];

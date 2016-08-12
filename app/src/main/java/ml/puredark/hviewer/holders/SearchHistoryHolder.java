@@ -1,12 +1,15 @@
 package ml.puredark.hviewer.holders;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -21,10 +24,19 @@ public class SearchHistoryHolder {
     public SearchHistoryHolder(Context context) {
         this.mContext = context;
         String searchHistoryStr = (String) SharedPreferencesUtil.getData(context, "SearchHistory", "[]");
-        searchHistories = new Gson().fromJson(searchHistoryStr, new TypeToken<ArrayList<String>>() {
+        searchHistories = new Gson().fromJson(searchHistoryStr, new TypeToken<List<String>>() {
         }.getType());
+        for (String l : searchHistories)
+            Log.d("SearchHistoryHolder", "keyword="+l);
+        searchHistories = removeDuplicate(searchHistories);
+        Log.d("SearchHistoryHolder", "!!removeDuplicate!!");
+        for (String l : searchHistories)
+            Log.d("SearchHistoryHolder", "keyword="+l);
     }
 
+    public static List<String> removeDuplicate(List<String> srcList){
+        return new ArrayList(new HashSet(srcList));
+    }
 
     public void saveSearchHistory() {
         SharedPreferencesUtil.saveData(mContext, "SearchHistory", new Gson().toJson(searchHistories));

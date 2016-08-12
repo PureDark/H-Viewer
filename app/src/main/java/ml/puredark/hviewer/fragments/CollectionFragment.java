@@ -143,7 +143,7 @@ public class CollectionFragment extends MyFragment {
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                Toast.makeText(getContext(), error.getErrorString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), error.getErrorString(), Toast.LENGTH_SHORT).show();
                 rvCollection.setPullLoadMoreCompleted();
             }
         });

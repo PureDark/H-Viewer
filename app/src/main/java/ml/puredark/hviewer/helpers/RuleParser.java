@@ -77,146 +77,32 @@ public class RuleParser {
     public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) {
         Elements temp;
 
-        String idCode = "";
-        if (rule.idCode != null) {
-            temp = element.select(rule.idCode.selector);
-            if ("attr".equals(rule.idCode.fun)) {
-                idCode = temp.attr(rule.idCode.param);
-            } else if ("html".equals(rule.idCode.fun)) {
-                idCode = temp.html();
-            }
-            if (rule.idCode.regex != null) {
-                Pattern pattern = Pattern.compile(rule.idCode.regex, DOTALL);
-                Matcher matcher = pattern.matcher(idCode);
-                if (matcher.find()) {
-                    idCode = matcher.group(1);
-                }
-            }
-        }
+        String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false, false);
 
-        String title = "";
-        if (rule.title != null) {
-            temp = element.select(rule.title.selector);
-            if ("attr".equals(rule.title.fun)) {
-                title = temp.attr(rule.title.param);
-            } else if ("html".equals(rule.title.fun)) {
-                title = temp.html();
-            }
-            if (rule.title.regex != null && title != null) {
-                Pattern pattern = Pattern.compile(rule.title.regex, DOTALL);
-                Matcher matcher = pattern.matcher(title);
-                if (matcher.find()) {
-                    title = matcher.group(1);
-                }
-            }
-        }
+        String title = parseSingleProperty(element, rule.title, sourceUrl, false, false);
 
-        String uploader = "";
-        if (rule.uploader != null) {
-            temp = element.select(rule.uploader.selector);
-            if ("attr".equals(rule.uploader.fun)) {
-                uploader = temp.attr(rule.uploader.param);
-            } else if ("html".equals(rule.uploader.fun)) {
-                uploader = temp.html();
-            }
-            if (rule.uploader.regex != null && uploader != null) {
-                Pattern pattern = Pattern.compile(rule.uploader.regex, DOTALL);
-                Matcher matcher = pattern.matcher(uploader);
-                if (matcher.find()) {
-                    uploader = matcher.group(1);
-                }
-            }
-        }
+        String uploader = parseSingleProperty(element, rule.uploader, sourceUrl, false, false);
 
-        String cover = "";
-        if (rule.cover != null) {
-            temp = element.select(rule.cover.selector);
-            if ("attr".equals(rule.cover.fun)) {
-                cover = temp.attr(rule.cover.param);
-            } else if ("html".equals(rule.cover.fun)) {
-                cover = temp.html();
-            }
-            if (rule.cover.regex != null && cover != null) {
-                Pattern pattern = Pattern.compile(rule.cover.regex, DOTALL);
-                Matcher matcher = pattern.matcher(cover);
-                if (matcher.find()) {
-                    cover = matcher.group(1);
-                }
-            }
-            cover = RegexValidateUtil.getAbsoluteUrlFromRelative(cover, sourceUrl);
-        }
+        String cover = parseSingleProperty(element, rule.cover, sourceUrl, true, false);
 
-        String category = "";
-        if (rule.category != null) {
-            temp = element.select(rule.category.selector);
-            if ("attr".equals(rule.category.fun)) {
-                category = temp.attr(rule.category.param);
-            } else if ("html".equals(rule.category.fun)) {
-                category = temp.html();
-            }
-            if (rule.category.regex != null && category != null) {
-                Pattern pattern = Pattern.compile(rule.category.regex, DOTALL);
-                Matcher matcher = pattern.matcher(category);
-                if (matcher.find()) {
-                    category = matcher.group(1);
-                }
-            }
-        }
+        String category = parseSingleProperty(element, rule.category, sourceUrl, false, false);
 
-        String datetime = "";
-        if (rule.datetime != null) {
-            temp = element.select(rule.datetime.selector);
-            if ("attr".equals(rule.datetime.fun)) {
-                datetime = temp.attr(rule.datetime.param);
-            } else if ("html".equals(rule.datetime.fun)) {
-                datetime = temp.html();
-            }
-            if (rule.datetime.regex != null && datetime != null) {
-                Pattern pattern = Pattern.compile(rule.datetime.regex, DOTALL);
-                Matcher matcher = pattern.matcher(datetime);
-                if (matcher.find()) {
-                    datetime = matcher.group(1);
-                }
-            }
-        }
+        String datetime = parseSingleProperty(element, rule.datetime, sourceUrl, false, false);
 
-        String ratingStr = "";
-        float rating = 0;
-        if (rule.rating != null) {
-            temp = element.select(rule.rating.selector);
-            if (rule.rating.fun != null && rule.rating.fun.contains("attr")) {
-                ratingStr = temp.attr(rule.rating.param);
-            } else if ("html".equals(rule.rating.fun)) {
-                ratingStr = temp.html();
-            }
-            if (rule.rating.regex != null && ratingStr != null) {
-                Pattern pattern = Pattern.compile(rule.rating.regex, DOTALL);
-                Matcher matcher = pattern.matcher(ratingStr);
-                if (matcher.find()) {
-                    ratingStr = matcher.group(1);
-                }
-            }
+        String ratingStr = parseSingleProperty(element, rule.rating, sourceUrl, false, false);
 
-            if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
-                rating = Float.parseFloat(ratingStr);
-            } else if (StringUtil.isNumeric(ratingStr)) {
-                rating = Float.parseFloat(ratingStr);
-            } else {
+        float rating;
+
+        if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
+            rating = Float.parseFloat(ratingStr);
+        } else if (StringUtil.isNumeric(ratingStr)) {
+            rating = Float.parseFloat(ratingStr);
+        } else {
+            String result = MathUtil.computeString(ratingStr);
+            try {
+                rating = Float.parseFloat(result);
+            } catch (NumberFormatException e) {
                 rating = Math.min(ratingStr.replace(" ", "").length(), 5);
-            }
-
-            if (rule.rating.fun != null) {
-                Pattern pattern0 = Pattern.compile("\\|\\|(.*)", DOTALL);
-                Matcher matcher0 = pattern0.matcher(rule.rating.fun);
-                if (matcher0.find()) {
-                    String exp = matcher0.group(1);
-                    exp = exp.replace("{1}", "" + (int) rating);
-                    String result = MathUtil.computeString(exp);
-                    try {
-                        rating = Float.parseFloat(result);
-                    } catch (NumberFormatException e) {
-                    }
-                }
             }
         }
 
@@ -225,55 +111,28 @@ public class RuleParser {
         if (rule.tags != null) {
             temp = element.select(rule.tags.selector);
             for (Element tagElement : temp) {
-                String tagStr;
-                if ("attr".equals(rule.tags.fun)) {
-                    tagStr = tagElement.attr(rule.tags.param);
-                } else if ("html".equals(rule.tags.fun)) {
-                    tagStr = tagElement.html();
-                } else {
-                    continue;
-                }
-
-                if (rule.tags.regex != null && tagStr != null) {
-                    Pattern pattern = Pattern.compile(rule.tags.regex, DOTALL);
-                    Matcher matcher = pattern.matcher(tagStr);
-                    while (matcher.find()) {
-                        tags.add(new Tag(tags.size() + 1, matcher.group(1)));
-                    }
-                } else {
-                    tags.add(new Tag(tags.size() + 1, tagStr));
-                }
+                String tagStr = parseSingleProperty(tagElement, rule.tags, sourceUrl, false, true);
+                tags.add(new Tag(tags.size() + 1, tagStr));
             }
         }
 
         List<Picture> pictures = new ArrayList<>();
-        if (rule.pictures != null) {
+        if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
 
-            temp = element.select(rule.pictures.selector);
-            Log.d("RuleParser", "temp.size():" + temp.size());
+            temp = element.select(rule.pictureUrl.selector);
             for (Element pictureElement : temp) {
-                String pictureStr;
-                if ("attr".equals(rule.pictures.fun)) {
-                    pictureStr = pictureElement.attr(rule.pictures.param);
-                } else if ("html".equals(rule.pictures.fun)) {
-                    pictureStr = pictureElement.html();
-                } else {
-                    pictureStr = pictureElement.toString();
-                }
-
-                if (rule.pictures.regex != null && pictureStr != null) {
-                    Pattern pattern = Pattern.compile(rule.pictures.regex, DOTALL);
-                    Matcher matcher = pattern.matcher(pictureStr);
-                    if (matcher.find()) {
-                        String url = RegexValidateUtil.getAbsoluteUrlFromRelative(matcher.group(1), sourceUrl);
-                        String thumbnail = RegexValidateUtil.getAbsoluteUrlFromRelative(matcher.group(2), sourceUrl);
-                        pictures.add(new Picture(pictures.size() + 1, url, thumbnail));
-                    }
-                } else {
-                    pictureStr = RegexValidateUtil.getAbsoluteUrlFromRelative(pictureStr, sourceUrl);
-                    pictures.add(new Picture(pictures.size() + 1, pictureStr, ""));
-                }
+                String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true, true);
+                pictures.add(new Picture(pictures.size() + 1, pictureUrl, ""));
             }
+
+            temp = element.select(rule.pictureThumbnail.selector);
+            int i = 0;
+            for (Element pictureElement : temp) {
+                String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true, true);
+                if (i < pictures.size())
+                    pictures.get(i++).thumbnail = pictureThumbnail;
+            }
+
         }
 
         if (idCode != null && !idCode.equals(""))
@@ -297,26 +156,40 @@ public class RuleParser {
         return collection;
     }
 
-    public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
-        Document doc = Jsoup.parse(html);
-        String url = null;
+    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl, boolean mutiple) {
+        String prop = "";
+
         if (selector != null) {
-            Elements temp = doc.select(selector.selector);
+            Element temp = (mutiple) ? element.clone() : element.select(selector.selector).first();
             if ("attr".equals(selector.fun)) {
-                url = temp.attr(selector.param);
+                prop = temp.attr(selector.param);
             } else if ("html".equals(selector.fun)) {
-                url = temp.html();
+                prop = temp.html();
+            } else {
+                prop = temp.toString();
             }
-            if (selector.regex != null && url != null) {
+            if (selector.regex != null) {
                 Pattern pattern = Pattern.compile(selector.regex, DOTALL);
-                Matcher matcher = pattern.matcher(url);
-                if (matcher.find()) {
-                    url = matcher.group(1);
+                Matcher matcher = pattern.matcher(prop);
+                if (matcher.find() && matcher.groupCount() >= 1) {
+                    if (selector.replacement != null) {
+                        prop = selector.replacement;
+                        for (int i = 1; i <= matcher.groupCount(); i++)
+                            prop = prop.replaceAll("\\$" + i, matcher.group(i));
+                    } else {
+                        prop = matcher.group(1);
+                    }
                 }
             }
-            url = RegexValidateUtil.getAbsoluteUrlFromRelative(url, sourceUrl);
+            if (isUrl)
+                prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
         }
-        return url;
+        return prop;
+    }
+
+    public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
+        Document doc = Jsoup.parse(html);
+        return parseSingleProperty(doc, selector, sourceUrl, true, false);
     }
 
 }

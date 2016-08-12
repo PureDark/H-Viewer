@@ -3,12 +3,15 @@ package ml.puredark.hviewer.adapters;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Filter;
 
 import com.miguelcatalan.materialsearchview.SearchAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ml.puredark.hviewer.holders.SearchHistoryHolder.searchHistories;
 
 /**
  * Created by PureDark on 2016/8/12.
@@ -43,7 +46,7 @@ public class MySearchAdapter extends SearchAdapter {
                     List<String> searchData = new ArrayList<>();
 
                     for (String string : suggestions) {
-                        if (string.toLowerCase().startsWith(keyword.toLowerCase())) {
+                        if (string.toLowerCase().startsWith(keyword.toLowerCase()) && string.length() != keyword.length()) {
                             searchData.add(string);
                         }
                     }

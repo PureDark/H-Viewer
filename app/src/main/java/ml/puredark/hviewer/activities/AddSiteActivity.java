@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.nineoldandroids.animation.Animator;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -49,6 +50,15 @@ public class AddSiteActivity extends AppCompatActivity {
         btnReturnIcon.setColor(getResources().getColor(R.color.white));
         btnReturn.setImageDrawable(btnReturnIcon);
         btnReturnIcon.setProgress(1f);
+
+
+        IntentIntegrator integrator = new IntentIntegrator(AddSiteActivity.this);
+        integrator.setCaptureActivity(MyCaptureActivity.class);
+        integrator.setOrientationLocked(true);
+        integrator.setPrompt("请扫描书籍条形码");
+        integrator.addExtra("SCAN_WIDTH", 640);
+        integrator.addExtra("SCAN_HEIGHT", 240);
+        integrator.initiateScan(IntentIntegrator.PRODUCT_CODE_TYPES);
     }
 
     @OnClick(R.id.btn_return)

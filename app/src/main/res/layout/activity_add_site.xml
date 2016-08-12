@@ -18,13 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/tool_bar_height"
             android:paddingLeft="-16dp"
+            android:paddingRight="16dp"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
@@ -39,9 +40,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
                     android:text="添加新站点"
                     android:textAppearance="@style/ActionBar.Title" />
+
+                <ImageView
+                    android:layout_width="@dimen/tool_bar_height"
+                    android:layout_height="@dimen/tool_bar_height"
+                    android:background="@drawable/bg_button"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/ic_qrcode_scan_white"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -58,12 +67,43 @@
             android:layout_height="4dp"
             android:background="@drawable/shadow_bottom" />
 
+
         <LinearLayout
+            android:id="@+id/view_add_site_qrcode"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:orientation="vertical"
+            android:padding="@dimen/uni_padding">
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/input_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="在这输入新的规则"
+                android:lines="16"
+                android:textSize="11sp"
+                app:met_baseColor="@color/colorPrimaryDark"
+                app:met_clearButton="true"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="站点规则"
+                app:met_primaryColor="@color/colorAccent">
+            </com.rengwuxian.materialedittext.MaterialEditText>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/view_add_site_json"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:visibility="gone"
             android:padding="@dimen/uni_padding">
 
             <com.rengwuxian.materialedittext.MaterialEditText
@@ -80,8 +120,6 @@
                 app:met_floatingLabelAlwaysShown="true"
                 app:met_floatingLabelText="站点规则"
                 app:met_primaryColor="@color/colorAccent">
-
-                <requestFocus />
             </com.rengwuxian.materialedittext.MaterialEditText>
 
             <com.gc.materialdesign.views.ButtonFlat

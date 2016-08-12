@@ -7,8 +7,8 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Collection extends AbstractDataProvider.Data {
     public int cid;
-    public String idCode;
-    public String title, uploader, cover, category, datetime;
+    public String idCode = "";
+    public String title = "", uploader = "", cover = "", category = "", datetime = "";
     public float rating;
     public List<Tag> tags;
     public List<Picture> pictures;
