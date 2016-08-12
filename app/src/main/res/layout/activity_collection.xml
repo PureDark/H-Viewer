@@ -111,8 +111,7 @@
     <RelativeLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="false">
+        android:layout_height="match_parent">
 
         <ml.puredark.hviewer.customs.ExTabLayout
             android:id="@+id/tab_layout"
@@ -130,22 +129,21 @@
             app:tabIcon2="@drawable/selector_description"
             />
 
+        <ml.puredark.hviewer.customs.ExViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tab_layout"
+            app:pagerCurrItem="0"
+            app:pagerLayout1="@layout/view_collection_index"
+            app:pagerLayout2="@layout/view_collection_desciption"/>
+
         <View
             android:id="@+id/shadowDown"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_below="@id/tab_layout"
             android:background="@drawable/shadow_bottom" />
-
-        <ml.puredark.hviewer.customs.ExViewPager
-            android:id="@+id/view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:pagerCurrItem="0"
-            app:pagerLayout1="@layout/view_collection_index"
-            app:pagerLayout2="@layout/view_collection_desciption"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
