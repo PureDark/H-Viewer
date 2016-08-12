@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
+import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class SettingActivity extends AppCompatActivity {
@@ -89,8 +90,7 @@ public class SettingActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-    public static class SettingFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener
-    {
+    public static class SettingFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
         public static final String KEY_PREF_PROXY_ENABLED = "pref_proxy_enabled";
         public static final String KEY_PREF_PROXY_REQUEST = "pref_proxy_request";
         public static final String KEY_PREF_PROXY_PICTURE = "pref_proxy_picture";
@@ -101,17 +101,27 @@ public class SettingActivity extends AppCompatActivity {
         public static final String KEY_PREF_ABOUT_ABOUT = "pref_about_about";
 
         @Override
-        public void onCreate(final Bundle savedInstanceState)
-        {
+        public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName(SharedPreferencesUtil.FILE_NAME);
             addPreferencesFromResource(R.xml.preferences);
             getPreferenceScreen().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(this);
+
+            updateProxyOptions(HProxy.isEnabled());
         }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(KEY_PREF_PROXY_ENABLED)) {
+                updateProxyOptions(sharedPreferences.getBoolean(key, true));
+            }
+        }
+
+        public void updateProxyOptions(boolean isEnabled) {
+            getPreferenceScreen().findPreference(KEY_PREF_PROXY_REQUEST).setEnabled(isEnabled);
+            getPreferenceScreen().findPreference(KEY_PREF_PROXY_PICTURE).setEnabled(isEnabled);
+            getPreferenceScreen().findPreference(KEY_PREF_PROXY_SERVER).setEnabled(isEnabled);
         }
 
     }
