@@ -97,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
         //appbar折叠时显示搜索按钮和搜索框，否则隐藏
         appBar.addOnOffsetChangedListener(new AppBarStateChangeListener() {
-            private Animation fadeIn = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in);
-            private Animation fadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
 
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
@@ -305,18 +303,9 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_search)
     void search() {
-        final EditText inputSearch = new EditText(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Search").setIcon(R.drawable.ic_search_white).setView(inputSearch)
-                .setNegativeButton("取消", null);
-        builder.setPositiveButton("搜索", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                String keyword = inputSearch.getText().toString();
-                if (!"".equals(keyword) && currFragment != null)
-                    currFragment.onSearch(keyword);
-            }
-        });
-        builder.show();
+        appBar.setExpanded(false);
+        searchView.showSearch();
+        searchView.requestFocus();
     }
 
     @Override
