@@ -76,42 +76,6 @@
         </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="12dp"
-        android:layout_marginRight="16dp"
-        app:menu_colorNormal="@color/colorAccent"
-        app:menu_colorPressed="@color/colorAccent"
-        app:menu_colorRipple="@color/white_50"
-        app:menu_fab_hide_animation="@anim/hide_to_bottom"
-        app:menu_fab_label="操作"
-        app:menu_fab_show_animation="@anim/show_from_bottom"
-        app:menu_labels_ellipsize="end"
-        app:menu_labels_singleLine="true">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_favor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_favourite"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_label="收藏"
-            app:fab_size="mini" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_download"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_download"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_label="下载"
-            app:fab_size="mini" />
-
-    </com.github.clans.fab.FloatingActionMenu>
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -148,5 +112,41 @@
             android:layout_below="@id/tab_layout"
             android:background="@drawable/shadow_bottom" />
     </RelativeLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="16dp"
+        app:menu_colorNormal="@color/colorAccent"
+        app:menu_colorPressed="@color/colorAccent"
+        app:menu_colorRipple="@color/white_50"
+        app:menu_fab_hide_animation="@anim/hide_to_bottom"
+        app:menu_fab_label="操作"
+        app:menu_fab_show_animation="@anim/show_from_bottom"
+        app:menu_labels_ellipsize="end"
+        app:menu_labels_singleLine="true">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_favor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_favourite"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_label="收藏"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_download"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_label="下载"
+            app:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

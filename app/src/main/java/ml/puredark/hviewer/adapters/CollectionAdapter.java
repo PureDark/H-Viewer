@@ -41,7 +41,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Collection collection = (Collection) mProvider.getItem(position);
         CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-//        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover);
+        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover);
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
         holder.tvCategory.setText(collection.category);

@@ -20,17 +20,12 @@ import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends AnimationActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.btn_return)
     ImageView btnReturn;
-
-    private DrawerArrowDrawable btnReturnIcon;
-
-    //是否动画中
-    private boolean animating = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,46 +38,8 @@ public class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         /* 为返回按钮加载图标 */
-        btnReturnIcon = new DrawerArrowDrawable(this);
-        btnReturnIcon.setColor(getResources().getColor(R.color.white));
-        btnReturn.setImageDrawable(btnReturnIcon);
-        btnReturnIcon.setProgress(1f);
+        setReturnButton(btnReturn);
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (animating)
-            return;
-        else
-            AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    animating = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animating = false;
-                    finish();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animating = false;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
-        //super.onBackPressed();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (animating) return false;
-        return super.dispatchTouchEvent(event);
     }
 
     @OnClick(R.id.btn_return)

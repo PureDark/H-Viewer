@@ -17,8 +17,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tool_bar_height"
-            android:paddingLeft="-16dp"
-            android:paddingRight="16dp"
+            android:paddingStart="-16dp"
+            android:paddingEnd="16dp"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay">
@@ -38,7 +38,7 @@
                     android:scaleType="fitXY" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
@@ -46,6 +46,7 @@
                     android:textAppearance="@style/ActionBar.Title" />
 
                 <ImageView
+                    android:id="@+id/btn_qr_scan"
                     android:layout_width="@dimen/tool_bar_height"
                     android:layout_height="@dimen/tool_bar_height"
                     android:background="@drawable/bg_button"
@@ -67,35 +68,6 @@
             android:layout_height="4dp"
             android:background="@drawable/shadow_bottom" />
 
-
-        <LinearLayout
-            android:id="@+id/view_add_site_qrcode"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:orientation="vertical"
-            android:padding="@dimen/uni_padding">
-
-
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/input_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top"
-                android:hint="在这输入新的规则"
-                android:lines="16"
-                android:textSize="11sp"
-                app:met_baseColor="@color/colorPrimaryDark"
-                app:met_clearButton="true"
-                app:met_floatingLabel="highlight"
-                app:met_floatingLabelAlwaysShown="true"
-                app:met_floatingLabelText="站点规则"
-                app:met_primaryColor="@color/colorAccent">
-            </com.rengwuxian.materialedittext.MaterialEditText>
-        </LinearLayout>
-
-
         <LinearLayout
             android:id="@+id/view_add_site_json"
             android:layout_width="match_parent"
@@ -111,27 +83,45 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top"
-                android:hint="在这输入新的规则"
-                android:lines="16"
-                android:textSize="11sp"
+                android:hint="在这粘贴新的规则，或点击右上角扫描二维码"
+                android:minLines="10"
+                android:maxLines="18"
+                android:textSize="13sp"
                 app:met_baseColor="@color/colorPrimaryDark"
                 app:met_clearButton="true"
                 app:met_floatingLabel="highlight"
                 app:met_floatingLabelAlwaysShown="true"
                 app:met_floatingLabelText="站点规则"
-                app:met_primaryColor="@color/colorAccent">
-            </com.rengwuxian.materialedittext.MaterialEditText>
+                app:met_floatingLabelTextSize="16sp"
+                app:met_primaryColor="@color/colorPrimaryDark"/>
 
             <com.gc.materialdesign.views.ButtonFlat
-                android:id="@+id/btn_add"
+                android:id="@+id/btn_parse_json"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@color/colorPrimary"
-                android:text="确 认 添 加" />
+                android:text="分析规则" />
         </LinearLayout>
+
+        <include layout="@layout/view_site_details"
+            android:visibility="visible"
+            android:id="@+id/view_site_details"/>
+
     </RelativeLayout>
 
-
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/selector_check"
+        app:fab_colorNormal="@color/colorAccentDark"
+        app:fab_colorPressed="@color/colorAccent"
+        app:fab_colorRipple="@color/colorAccentLight"
+        app:fab_size="mini"
+        app:fab_elevationCompat="8dp"/>
 </android.support.design.widget.CoordinatorLayout>

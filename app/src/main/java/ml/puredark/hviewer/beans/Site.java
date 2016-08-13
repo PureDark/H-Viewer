@@ -9,6 +9,9 @@ public class Site extends AbstractDataProvider.Data {
     public Rule indexRule, galleryRule;
     public Selector picUrlSelector;
 
+    public Site(){
+    }
+
     public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl, Rule indexRule, Rule galleryRule, Selector picUrlSelector) {
         this.sid = sid;
         this.title = title;

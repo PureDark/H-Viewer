@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.Collections;
@@ -45,6 +46,7 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE = 1;
@@ -261,6 +263,8 @@ public class MainActivity extends AppCompatActivity {
             HViewerApplication.temp = site;
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
+
+        //SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
     }
 

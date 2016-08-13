@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 
@@ -25,6 +26,7 @@ public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManage
         int rvWidth = getWidth();
         int rvHeight = getHeight();
         if (rvWidth > 0 && rvHeight > 0) {
+            rvWidth -= 100;
             int childrenWidth1st = 0;
             int childrenWidth2nd = 0;
             View firstView = findViewByPosition(0);

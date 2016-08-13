@@ -3,6 +3,7 @@ package ml.puredark.hviewer.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
@@ -57,8 +58,10 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
 
+import static android.R.attr.delay;
 
-public class CollectionActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+
+public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
 
     @BindView(R.id.backdrop)
     ScalingImageView backdrop;
@@ -75,8 +78,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
     @BindView(R.id.fab_menu)
     FloatingActionMenu fabMenu;
 
-    private DrawerArrowDrawable btnReturnIcon;
-
     private Site site;
 
     private Collection collection;
@@ -89,10 +90,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
 
     private int startPage;
     private int currPage;
-
-
-    //是否动画中
-    private boolean animating = false;
 
 
     @Override
@@ -128,10 +125,9 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
         setSupportActionBar(toolbar);
 
         /* 为返回按钮加载图标 */
-        btnReturnIcon = new DrawerArrowDrawable(this);
-        btnReturnIcon.setColor(getResources().getColor(R.color.white));
-        btnReturn.setImageDrawable(btnReturnIcon);
-        btnReturnIcon.setProgress(1f);
+        setReturnButton(btnReturn);
+        setAppBar(appBar);
+        setFabMenu(fabMenu);
 
         initCover(collection.cover);
         initTabAndViewPager();
@@ -256,7 +252,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
                 adapter.notifyDataSetChanged();
                 holder.rbRating.setRating(collection.rating);
                 holder.tvSubmittime.setText(collection.datetime);
-                Log.d("MyTest", "adapter.getItemCount():" + adapter.getItemCount());
 
                 if (collection.pictures != null && collection.pictures.size() > 0) {
                     if (page == startPage) {
@@ -296,73 +291,6 @@ public class CollectionActivity extends AppCompatActivity implements AppBarLayou
     @OnClick(R.id.fab_download)
     void download() {
         //TODO download
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (animating)
-            return;
-        else
-            AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-//                    Log.d("AnimationOnActivityStar", "onAnimationStart!");
-                    animating = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-//                    Log.d("AnimationOnActivityStar", "onAnimationEnd!");
-                    animating = false;
-                    finish();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-//                    Log.d("AnimationOnActivityStar", "onAnimationCancel!");
-                    animating = false;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-//                    Log.d("AnimationOnActivityStar", "onAnimationRepeat!");
-                }
-            });
-        //super.onBackPressed();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        appBar.addOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        appBar.removeOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        appBar.removeOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (animating) return false;
-        return super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        if (verticalOffset != 0) {
-            fabMenu.hideMenu(true);
-        } else {
-            fabMenu.showMenu(true);
-        }
-
     }
 
     public class CollectionViewHolder {

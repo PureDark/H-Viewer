@@ -51,4 +51,16 @@
         <item name="android:hint">@string/search_hint</item>
     </style>
 
+    <style name="EditTextAddSite">
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:inputType">text</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textSize">13sp</item>
+        <item name="met_baseColor">@color/black</item>
+        <item name="met_primaryColor">@color/colorAccent</item>
+        <item name="met_floatingLabel">highlight</item>
+        <item name="met_floatingLabelAlwaysShown">true</item>
+    </style>
+
 </resources>
