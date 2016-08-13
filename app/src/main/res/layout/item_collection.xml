@@ -40,9 +40,16 @@
         </RelativeLayout>
 
         <com.balysv.materialripple.MaterialRippleLayout
+            android:id="@+id/ripple_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:mrl_rippleOverlay="true"
+            app:mrl_rippleColor="@color/black"
             app:mrl_rippleAlpha="0.1"
+            app:mrl_rippleDimension="10dp"
+            app:mrl_rippleDuration="250"
+            app:mrl_rippleFadeDuration="75"
+            app:mrl_rippleHover="true"
             app:mrl_rippleDelayClick="true">
 
             <LinearLayout

@@ -95,9 +95,9 @@ public class AddSiteActivity extends AnimationActivity {
             return;
         }
 
+        HViewerApplication.temp = newSite;
         HViewerApplication.siteHolder.addSite(newSite);
         Intent intent = new Intent();
-        intent.putExtra("sid", newSite.sid);
         setResult(RESULT_OK, intent);
         finish();
     }

@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +43,9 @@ import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 
+import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
+
 
 public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE = 1;
@@ -63,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout navHeaderView;
     @BindView(R.id.rv_site)
     RecyclerView rvSite;
-    @BindView(R.id.btn_exit)
-    LinearLayout btnExit;
 
     @BindView(R.id.search_view)
     MaterialSearchView searchView;
@@ -238,21 +239,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemLongClick(View v, int position) {
                 final Site site = (Site) adapter.getDataProvider().getItem(position);
-                new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
-                        .setMessage("删除后将无法恢复")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("操作")
+                        .setItems(new String[]{"编辑", "删除"}, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                HViewerApplication.siteHolder.deleteSite(site);
-                                List<Site> sites = HViewerApplication.siteHolder.getSites();
-                                adapter.setDataProvider(new ListDataProvider(sites));
-                                adapter.notifyDataSetChanged();
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (i == 0) {
+                                    temp = site;
+                                    Intent intent = new Intent(MainActivity.this, ModifySiteActivity.class);
+                                    startActivityForResult(intent, RESULT_MODIFY_SITE);
+                                } else if (i == 1) {
+                                    new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
+                                            .setMessage("删除后将无法恢复")
+                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    siteHolder.deleteSite(site);
+                                                    adapter.notifyDataSetChanged();
+                                                }
+                                            }).setNegativeButton("取消", null).show();
+                                }
                             }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                }).show();
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
             }
         });
 
@@ -268,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initSearchSuggestions(){
+    private void initSearchSuggestions() {
         List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
         List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
         suggestions.addAll(histories);
@@ -285,8 +295,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String[] keywords = currQuery.toString().split(" ");
                 String keyword = "";
-                for(int i=0;i<keywords.length-1;i++)
-                    keyword +=keywords[i]+" ";
+                for (int i = 0; i < keywords.length - 1; i++)
+                    keyword += keywords[i] + " ";
 
                 keyword += adapter.getItem(position);
                 searchView.setQuery(keyword, false);
@@ -318,8 +328,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_ADD_SITE) {
-                if(HViewerApplication.temp instanceof Site) {
-                    final Site site = (Site) HViewerApplication.temp;
+                if (temp instanceof Site) {
+                    final Site site = (Site) temp;
                     SiteAdapter adapter = ((SiteAdapter) rvSite.getAdapter());
                     adapter.selectedSid = site.sid;
                     adapter.notifyDataSetChanged();
@@ -331,17 +341,18 @@ public class MainActivity extends AppCompatActivity {
                     };
                     handler.post(r);
                 }
-            }else if (requestCode == RESULT_MODIFY_SITE) {
-                rvSite.getAdapter().notifyDataSetChanged();
-                if(HViewerApplication.temp instanceof Site) {
-                    final Site site = (Site) HViewerApplication.temp;
+            } else if (requestCode == RESULT_MODIFY_SITE) {
+                if (temp instanceof Site) {
+                    final Site newSite = (Site) temp;
+                    rvSite.getAdapter().notifyDataSetChanged();
                     Handler handler = new Handler();
                     final Runnable r = new Runnable() {
                         public void run() {
-                            replaceFragment(CollectionFragment.newInstance(), site.title);
+                            replaceFragment(CollectionFragment.newInstance(), newSite.title);
                         }
                     };
                     handler.post(r);
+                    Log.d("MainActivity", "MODIFY SUCCESS");
                 }
             }
         }

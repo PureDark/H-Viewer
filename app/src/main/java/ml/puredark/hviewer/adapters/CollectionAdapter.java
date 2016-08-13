@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.balysv.materialripple.MaterialRippleLayout;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -85,6 +87,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public class CollectionViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ripple_layout)
+        MaterialRippleLayout rippleLayout;
         @BindView(R.id.iv_cover)
         ImageView ivCover;
         @BindView(R.id.tv_title)
@@ -111,6 +115,12 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     )
             );
             view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
+            rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mItemClickListener.onItemClick(v, getAdapterPosition());

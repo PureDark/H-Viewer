@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -63,14 +65,24 @@ public class ModifySiteActivity extends AnimationActivity {
 
     @OnClick(R.id.fab_submit)
     void submit() {
-        Site site = holder.fromEditTextToSite();
-        if(site==null){
+        Site newSite = holder.fromEditTextToSite();
+        newSite.sid = site.sid;
+        if(newSite==null){
             Toast.makeText(this, "规则缺少必要参数，请检查", Toast.LENGTH_SHORT).show();
             return;
         }
+        HViewerApplication.temp = newSite;
+
+        List<Site> sites = HViewerApplication.siteHolder.getSites();
+        for (int i = 0; i < sites.size(); i++) {
+            Site currSite = sites.get(i);
+            if (currSite.sid == newSite.sid) {
+                sites.remove(i);
+                sites.add(i, newSite);
+            }
+        }
 
         Intent intent = new Intent();
-        intent.putExtra("sid", site.sid);
         setResult(RESULT_OK, intent);
         finish();
     }

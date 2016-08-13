@@ -8,11 +8,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.balysv.materialripple.MaterialRippleLayout;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+
+import static ml.puredark.hviewer.R.id.container;
 
 public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int selectedSid = 0;
@@ -119,7 +123,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public class RuleViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.container)
-        LinearLayout container;
+        MaterialRippleLayout container;
         @BindView(R.id.iv_icon)
         ImageView ivIcon;
         @BindView(R.id.tv_title)

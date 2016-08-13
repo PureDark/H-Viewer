@@ -47,59 +47,83 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
+        <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/btn_setting"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_button"
-            android:gravity="center_vertical"
-            android:paddingBottom="@dimen/half_padding"
-            android:paddingLeft="@dimen/uni_padding"
-            android:paddingRight="@dimen/uni_padding"
-            android:paddingTop="@dimen/half_padding">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/ic_settings_black" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:mrl_rippleOverlay="true"
+            app:mrl_rippleColor="@color/black"
+            app:mrl_rippleAlpha="0.1"
+            app:mrl_rippleDimension="10dp"
+            app:mrl_rippleDuration="250"
+            app:mrl_rippleFadeDuration="75"
+            app:mrl_rippleHover="true"
+            app:mrl_rippleDelayClick="true">
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/half_margin"
-                android:text="设置"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-        </LinearLayout>
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/half_padding"
+                android:paddingLeft="@dimen/uni_padding"
+                android:paddingRight="@dimen/uni_padding"
+                android:paddingTop="@dimen/half_padding">
 
-        <LinearLayout
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/ic_settings_black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/half_margin"
+                    android:text="设置"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.balysv.materialripple.MaterialRippleLayout>
+
+
+        <com.balysv.materialripple.MaterialRippleLayout
             android:id="@+id/btn_exit"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_button"
-            android:gravity="center_vertical"
-            android:paddingBottom="@dimen/half_padding"
-            android:paddingLeft="@dimen/uni_padding"
-            android:paddingRight="@dimen/uni_padding"
-            android:paddingTop="@dimen/half_padding">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/ic_exit_to_app_black" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:mrl_rippleOverlay="true"
+            app:mrl_rippleColor="@color/black"
+            app:mrl_rippleAlpha="0.1"
+            app:mrl_rippleDimension="10dp"
+            app:mrl_rippleDuration="250"
+            app:mrl_rippleFadeDuration="75"
+            app:mrl_rippleHover="true"
+            app:mrl_rippleDelayClick="true">
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/half_margin"
-                android:text="退出"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-        </LinearLayout>
+                android:background="@drawable/bg_button"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/half_padding"
+                android:paddingLeft="@dimen/uni_padding"
+                android:paddingRight="@dimen/uni_padding"
+                android:paddingTop="@dimen/half_padding">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/ic_exit_to_app_black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/half_margin"
+                    android:text="退出"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.balysv.materialripple.MaterialRippleLayout>
 
     </LinearLayout>
 </LinearLayout>

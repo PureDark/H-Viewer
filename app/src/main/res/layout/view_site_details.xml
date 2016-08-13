@@ -445,12 +445,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/half_padding"
+            android:visibility="gone"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14sp"
             android:text="图片跳转URL（可选）"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/half_padding"
             android:orientation="horizontal">
             <com.rengwuxian.materialedittext.MaterialEditText
@@ -484,12 +486,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/half_padding"
+            android:visibility="gone"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14sp"
             android:text="图片缩略图URL（可选）"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/half_padding"
             android:orientation="horizontal">
             <com.rengwuxian.materialedittext.MaterialEditText
@@ -571,12 +575,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/half_padding"
+            android:visibility="gone"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14sp"
             android:text="特征码（可选）"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/half_padding"
             android:orientation="horizontal">
             <com.rengwuxian.materialedittext.MaterialEditText
