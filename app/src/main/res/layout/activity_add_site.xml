@@ -112,7 +112,7 @@
     </RelativeLayout>
 
     <com.github.clans.fab.FloatingActionButton
-        android:id="@+id/fab_add"
+        android:id="@+id/fab_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"

@@ -17,14 +17,15 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tool_bar_height"
-            android:paddingLeft="-16dp"
+            android:paddingStart="-16dp"
+            android:paddingEnd="16dp"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
@@ -37,10 +38,11 @@
                     android:scaleType="fitXY" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="添加订阅"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="编辑站点"
                     android:textAppearance="@style/ActionBar.Title" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
@@ -58,16 +60,23 @@
             android:layout_height="4dp"
             android:background="@drawable/shadow_bottom" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:orientation="vertical"
-            android:padding="@dimen/uni_padding">
+        <include layout="@layout/view_site_details"
+            android:visibility="visible"
+            android:id="@+id/view_site_details"/>
 
-        </LinearLayout>
     </RelativeLayout>
 
-
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/selector_check"
+        app:fab_colorNormal="@color/colorAccentDark"
+        app:fab_colorPressed="@color/colorAccent"
+        app:fab_colorRipple="@color/colorAccentLight"
+        app:fab_size="mini"
+        app:fab_elevationCompat="8dp"/>
 </android.support.design.widget.CoordinatorLayout>

@@ -34,9 +34,11 @@
         <activity
             android:name=".activities.PictureViewerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.SettingActivity"
+        <activity
+            android:name=".activities.SettingActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.AddSiteActivity"
+        <activity
+            android:name=".activities.AddSiteActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.MyCaptureActivity"
@@ -44,6 +46,7 @@
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".activities.ModifySiteActivity"></activity>
     </application>
 
 </manifest>

@@ -16,7 +16,7 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
  */
 
 public class SiteHolder {
-    public static List<Site> sites;
+    private static List<Site> sites;
     private Context mContext;
 
     public SiteHolder(Context context) {

@@ -1,7 +1,5 @@
 package ml.puredark.hviewer.helpers;
 
-import android.util.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
@@ -77,19 +75,19 @@ public class RuleParser {
     public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) {
         Elements temp;
 
-        String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false, false);
+        String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false);
 
-        String title = parseSingleProperty(element, rule.title, sourceUrl, false, false);
+        String title = parseSingleProperty(element, rule.title, sourceUrl, false);
 
-        String uploader = parseSingleProperty(element, rule.uploader, sourceUrl, false, false);
+        String uploader = parseSingleProperty(element, rule.uploader, sourceUrl, false);
 
-        String cover = parseSingleProperty(element, rule.cover, sourceUrl, true, false);
+        String cover = parseSingleProperty(element, rule.cover, sourceUrl, true);
 
-        String category = parseSingleProperty(element, rule.category, sourceUrl, false, false);
+        String category = parseSingleProperty(element, rule.category, sourceUrl, false);
 
-        String datetime = parseSingleProperty(element, rule.datetime, sourceUrl, false, false);
+        String datetime = parseSingleProperty(element, rule.datetime, sourceUrl, false);
 
-        String ratingStr = parseSingleProperty(element, rule.rating, sourceUrl, false, false);
+        String ratingStr = parseSingleProperty(element, rule.rating, sourceUrl, false);
 
         float rating;
 
@@ -133,29 +131,20 @@ public class RuleParser {
                             tags.add(new Tag(tags.size() + 1, tagStr));
                         }
                     }
-                }else{
+                } else {
                     tags.add(new Tag(tags.size() + 1, tagStr));
                 }
             }
         }
 
         List<Picture> pictures = new ArrayList<>();
-        if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
-
-            temp = element.select(rule.pictureUrl.selector);
+        if (rule.item != null && rule.pictureUrl != null && rule.pictureThumbnail != null) {
+            temp = element.select(rule.item.selector);
             for (Element pictureElement : temp) {
-                String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true, true);
-                pictures.add(new Picture(pictures.size() + 1, pictureUrl, ""));
+                String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true);
+                String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true);
+                pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail));
             }
-
-            temp = element.select(rule.pictureThumbnail.selector);
-            int i = 0;
-            for (Element pictureElement : temp) {
-                String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true, true);
-                if (i < pictures.size())
-                    pictures.get(i++).thumbnail = pictureThumbnail;
-            }
-
         }
 
         if (idCode != null && !idCode.equals(""))
@@ -179,12 +168,12 @@ public class RuleParser {
         return collection;
     }
 
-    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl, boolean mutiple) {
+    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl) {
         String prop = "";
 
         if (selector != null) {
-            Element temp = (mutiple) ? element.clone() : element.select(selector.selector).first();
-            if(temp!=null) {
+            Elements temp = element.select(selector.selector);
+            if (temp != null) {
                 if ("attr".equals(selector.fun)) {
                     prop = temp.attr(selector.param);
                 } else if ("html".equals(selector.fun)) {
@@ -214,7 +203,7 @@ public class RuleParser {
 
     public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
         Document doc = Jsoup.parse(html);
-        return parseSingleProperty(doc, selector, sourceUrl, true, false);
+        return parseSingleProperty(doc, selector, sourceUrl, true);
     }
 
 }

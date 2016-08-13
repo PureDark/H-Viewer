@@ -18,7 +18,7 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
  */
 
 public class SearchHistoryHolder {
-    public static List<String> searchHistories;
+    private static List<String> searchHistories;
     private Context mContext;
 
     public SearchHistoryHolder(Context context) {

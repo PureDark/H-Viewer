@@ -13,18 +13,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.Collections;
@@ -46,10 +41,12 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
+
+import static ml.puredark.hviewer.HViewerApplication.temp;
 
 public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE = 1;
+    private static int RESULT_MODIFY_SITE = 2;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
@@ -161,8 +158,9 @@ public class MainActivity extends AppCompatActivity {
         indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)", null);
 
         Rule galleryRule = new Rule();
-        galleryRule.pictureUrl = new Selector("#gh .gi a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("#gh .gi a img", "attr", "src", null, null);
+        galleryRule.item = new Selector("#gh .gi", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a img", "attr", "src", null, null);
 
         Selector pic = new Selector("img#sm", "attr", "src", null, null);
 
@@ -184,8 +182,9 @@ public class MainActivity extends AppCompatActivity {
 
         galleryRule = new Rule();
         galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-        galleryRule.pictureUrl = new Selector("div#gtd div.gdtm div a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("div#gtd div.gdtm div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
+        galleryRule.item = new Selector("div#gtd div.gdtm", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
 
         pic = new Selector("img#sm", "attr", "src", null, null);
 
@@ -203,8 +202,9 @@ public class MainActivity extends AppCompatActivity {
         indexRule.datetime = new Selector("div.info div.info_col", "html", null, "(\\d{4}-\\d{2}-\\d{2})", null);
 
         galleryRule = new Rule();
-        galleryRule.pictureUrl = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box a img", "attr", "data-original", null, null);
+        galleryRule.item = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-original", null, null);
 
         pic = new Selector("img#picarea", "attr", "src", null, null);
 
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     Site site = (Site) adapter.getDataProvider().getItem(position);
                     adapter.selectedSid = site.sid;
                     adapter.notifyDataSetChanged();
-                    HViewerApplication.temp = site;
+                    temp = site;
                     replaceFragment(CollectionFragment.newInstance(), site.title);
                 }
                 drawer.closeDrawer(GravityCompat.START);
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
             Site site = sites.get(0);
             adapter.selectedSid = site.sid;
             adapter.notifyDataSetChanged();
-            HViewerApplication.temp = site;
+            temp = site;
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
 
@@ -318,21 +318,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_ADD_SITE) {
-                int sid = data.getIntExtra("sid", 0);
-                List<Site> sites = HViewerApplication.siteHolder.getSites();
-                SiteAdapter adapter = ((SiteAdapter) rvSite.getAdapter());
-                adapter.setDataProvider(new ListDataProvider(sites));
-                adapter.selectedSid = sid;
-                adapter.notifyDataSetChanged();
-                final Site site = sites.get(sites.size() - 1);
-                HViewerApplication.temp = site;
-                Handler handler = new Handler();
-                final Runnable r = new Runnable() {
-                    public void run() {
-                        replaceFragment(CollectionFragment.newInstance(), site.title);
-                    }
-                };
-                handler.post(r);
+                if(HViewerApplication.temp instanceof Site) {
+                    final Site site = (Site) HViewerApplication.temp;
+                    SiteAdapter adapter = ((SiteAdapter) rvSite.getAdapter());
+                    adapter.selectedSid = site.sid;
+                    adapter.notifyDataSetChanged();
+                    Handler handler = new Handler();
+                    final Runnable r = new Runnable() {
+                        public void run() {
+                            replaceFragment(CollectionFragment.newInstance(), site.title);
+                        }
+                    };
+                    handler.post(r);
+                }
+            }else if (requestCode == RESULT_MODIFY_SITE) {
+                rvSite.getAdapter().notifyDataSetChanged();
+                if(HViewerApplication.temp instanceof Site) {
+                    final Site site = (Site) HViewerApplication.temp;
+                    Handler handler = new Handler();
+                    final Runnable r = new Runnable() {
+                        public void run() {
+                            replaceFragment(CollectionFragment.newInstance(), site.title);
+                        }
+                    };
+                    handler.post(r);
+                }
             }
         }
     }

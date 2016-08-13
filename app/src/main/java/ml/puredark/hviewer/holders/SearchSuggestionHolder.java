@@ -16,7 +16,7 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
  */
 
 public class SearchSuggestionHolder {
-    public static List<String> searchSuggestions;
+    private static List<String> searchSuggestions;
     private Context mContext;
 
     public SearchSuggestionHolder(Context context) {
