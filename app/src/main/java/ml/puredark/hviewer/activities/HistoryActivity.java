@@ -25,6 +25,7 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 import static ml.puredark.hviewer.HViewerApplication.favouriteHolder;
+import static ml.puredark.hviewer.HViewerApplication.historyHolder;
 
 public class HistoryActivity extends AnimationActivity {
 
@@ -78,7 +79,7 @@ public class HistoryActivity extends AnimationActivity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                favouriteHolder.deleteFavourite(collection);
+                                historyHolder.deleteHistory(collection);
                                 adapter.notifyDataSetChanged();
                             }
                         }).setNegativeButton("取消", null).show();

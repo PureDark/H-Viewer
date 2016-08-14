@@ -87,7 +87,7 @@ public class CollectionFragment extends MyFragment {
             @Override
             public void onRefresh() {
                 keyword = null;
-                currPage = 1;
+                currPage = startPage;
                 getCollections(null, currPage);
             }
 
@@ -133,7 +133,6 @@ public class CollectionFragment extends MyFragment {
         String chooseUrl = (keyword == null) ? site.indexUrl : site.searchUrl;
         final String url = chooseUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
                 .replaceAll("\\{keyword:\\}", keyword);
-        Log.d("CollectionFragment", url);
         HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {

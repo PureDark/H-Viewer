@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.helpers;
 
+import android.text.Html;
+
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
@@ -20,6 +22,7 @@ import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.utils.MathUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
+import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
 
@@ -198,7 +201,7 @@ public class RuleParser {
                     prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
             }
         }
-        return prop;
+        return StringEscapeUtils.unescapeHtml(prop);
     }
 
     public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
