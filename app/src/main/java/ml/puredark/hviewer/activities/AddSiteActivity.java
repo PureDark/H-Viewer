@@ -25,6 +25,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.SitePropViewHolder;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 

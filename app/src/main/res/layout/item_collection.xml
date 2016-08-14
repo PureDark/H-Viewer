@@ -7,12 +7,12 @@
     android:layout_marginLeft="4dp"
     android:layout_marginRight="4dp"
     android:gravity="center"
+    android:elevation="4dp"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="2dp"
     app:cardElevation="4dp"
     app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="false"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -16,11 +16,12 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/tool_bar_height"
+            android:layout_height="wrap_content"
             android:paddingStart="-16dp"
             android:paddingEnd="16dp"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
+            android:fitsSystemWindows="true"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout

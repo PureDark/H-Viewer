@@ -1,12 +1,15 @@
 package ml.puredark.hviewer.activities;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,6 +46,7 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
@@ -53,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private static int RESULT_MODIFY_SITE = 2;
 
     @BindView(R.id.content)
-    CoordinatorLayout content;
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
     @BindView(R.id.app_bar)
@@ -85,9 +90,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        // Initialize user settings
-        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        MDStatusBarCompat.setCollapsingToolbar(this, coordinatorLayout, appBar, backdrop, toolbar);
 
         // User interface
         setSupportActionBar(toolbar);
@@ -128,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 searchView.setSuggestions(new String[0]);
                 isSuggestionEmpty = true;
                 searchView.clearFocus();
-                searchView.hideKeyboard(content);
+                searchView.hideKeyboard(coordinatorLayout);
                 searchView.dismissSuggestions();
                 return true;
             }

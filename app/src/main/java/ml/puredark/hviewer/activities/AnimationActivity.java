@@ -13,6 +13,7 @@ import com.nineoldandroids.animation.Animator;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
 /**
  * Created by PureDark on 2016/8/13.
@@ -33,6 +34,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MDStatusBarCompat.setOrdinaryToolBar(this);
 
         /* 返回按钮图标 */
         btnReturnIcon = new DrawerArrowDrawable(this);

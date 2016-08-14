@@ -16,10 +16,11 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/tool_bar_height"
+            android:layout_height="wrap_content"
             android:paddingLeft="-16dp"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
+            android:fitsSystemWindows="true"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
@@ -50,7 +51,7 @@
         android:id="@+id/setting_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:orientation="vertical">
 
     </LinearLayout>

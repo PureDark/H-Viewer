@@ -185,4 +185,6 @@
     <color name="colorAccentLight">#76ffe5</color>
     <color name="colorAccentDark">#16a085</color>
 
+    <color name="statusBar">#30000000</color>
+
 </resources>
