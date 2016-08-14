@@ -19,15 +19,15 @@
             android:layout_height="@dimen/tool_bar_height"
             android:paddingStart="-16dp"
             android:paddingEnd="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipChildren="false"
-                android:clipToPadding="false">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/btn_return"
@@ -46,11 +46,19 @@
                     android:textAppearance="@style/ActionBar.Title" />
 
                 <ImageView
+                    android:id="@+id/btn_json_input"
+                    android:layout_width="@dimen/tool_bar_height"
+                    android:layout_height="@dimen/tool_bar_height"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_button"
+                    app:srcCompat="@drawable/ic_json_white"/>
+
+                <ImageView
                     android:id="@+id/btn_qr_scan"
                     android:layout_width="@dimen/tool_bar_height"
                     android:layout_height="@dimen/tool_bar_height"
+                    android:padding="16dp"
                     android:background="@drawable/bg_button"
-                    android:scaleType="centerInside"
                     app:srcCompat="@drawable/ic_qrcode_scan_white"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>

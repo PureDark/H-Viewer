@@ -2,9 +2,7 @@ package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -16,9 +14,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.rengwuxian.materialedittext.MaterialEditText;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +40,9 @@ public class AddSiteActivity extends AnimationActivity {
     @BindView(R.id.btn_parse_json)
     ButtonFlat btnParseJson;
 
+    @BindView(R.id.fab_submit)
+    FloatingActionButton fabSubmit;
+
     private SitePropViewHolder holder;
 
 
@@ -67,6 +65,19 @@ public class AddSiteActivity extends AnimationActivity {
         onBackPressed();
     }
 
+    @OnClick(R.id.btn_json_input)
+    void switchBetweenJsonAndDetail() {
+        if (viewAddSiteJson.getVisibility() == View.GONE) {
+            viewAddSiteJson.setVisibility(View.VISIBLE);
+            viewSiteDetails.setVisibility(View.GONE);
+            fabSubmit.setVisibility(View.GONE);
+        } else {
+            viewAddSiteJson.setVisibility(View.GONE);
+            viewSiteDetails.setVisibility(View.VISIBLE);
+            fabSubmit.setVisibility(View.VISIBLE);
+        }
+    }
+
     @OnClick(R.id.btn_qr_scan)
     void scan() {
         IntentIntegrator integrator = new IntentIntegrator(AddSiteActivity.this);
@@ -85,12 +96,13 @@ public class AddSiteActivity extends AnimationActivity {
         if (newSite == null)
             return;
         holder.fillSitePropEditText(newSite);
+        switchBetweenJsonAndDetail();
     }
 
     @OnClick(R.id.fab_submit)
     void submit() {
         Site newSite = holder.fromEditTextToSite();
-        if(newSite==null){
+        if (newSite == null) {
             Toast.makeText(this, "规则缺少必要参数，请检查", Toast.LENGTH_SHORT).show();
             return;
         }

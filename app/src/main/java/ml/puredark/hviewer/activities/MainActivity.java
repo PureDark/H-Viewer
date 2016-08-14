@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private static int RESULT_ADD_SITE = 1;
     private static int RESULT_MODIFY_SITE = 2;
 
+    @BindView(R.id.content)
+    CoordinatorLayout content;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
     @BindView(R.id.app_bar)
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     //当前搜索的查询关键字
     private String currQuery;
+    private boolean isSuggestionEmpty = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,26 +124,20 @@ public class MainActivity extends AppCompatActivity {
                 HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
                 if (!"".equals(keyword) && currFragment != null)
                     currFragment.onSearch(keyword);
-                initSearchSuggestions();
+                searchView.setSuggestions(new String[0]);
+                isSuggestionEmpty = true;
+                searchView.clearFocus();
+                searchView.hideKeyboard(content);
+                searchView.dismissSuggestions();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(final String newText) {
+                if(isSuggestionEmpty)
+                    initSearchSuggestions();
                 currQuery = newText;
-                return true;
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                return false;
             }
         });
 
@@ -302,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 searchView.setQuery(keyword, false);
             }
         });
+        isSuggestionEmpty = false;
     }
 
     @Override
