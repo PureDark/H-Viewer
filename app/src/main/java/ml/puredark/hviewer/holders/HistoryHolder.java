@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
@@ -22,7 +23,7 @@ public class HistoryHolder {
     public HistoryHolder(Context context) {
         this.mContext = context;
         String historyStr = (String) SharedPreferencesUtil.getData(context, "History", "[]");
-        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<Collection>>() {
+        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<LocalCollection>>() {
         }.getType());
     }
 
@@ -30,7 +31,7 @@ public class HistoryHolder {
         SharedPreferencesUtil.saveData(mContext, "History", new Gson().toJson(histories));
     }
 
-    public void addHistory(Collection item) {
+    public void addHistory(LocalCollection item) {
         if (item == null) return;
         deleteHistory(item);
         histories.add(0, item);
@@ -54,7 +55,7 @@ public class HistoryHolder {
             histories.remove(20);
     }
 
-    public List<Collection> getHistory() {
+    public List<Collection> getHistories() {
         if (histories == null)
             return new ArrayList<>();
         else

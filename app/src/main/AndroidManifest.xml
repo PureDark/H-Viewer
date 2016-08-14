@@ -46,7 +46,12 @@
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".activities.ModifySiteActivity"></activity>
+        <activity android:name=".activities.ModifySiteActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.FavouriteActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.HistoryActivity"
+            android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>

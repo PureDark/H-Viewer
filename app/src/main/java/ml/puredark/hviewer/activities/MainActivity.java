@@ -103,13 +103,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
+                int size = toolbar.getMenu().size();
                 if (state == State.COLLAPSED) {
-                    if (toolbar.getMenu().size() > 0)
-                        toolbar.getMenu().getItem(0).setVisible(true);
+                    if (size > 1)
+                        toolbar.getMenu().getItem(size - 1).setVisible(true);
                     searchView.animate().alpha(1f).setDuration(300);
                 } else {
-                    if (toolbar.getMenu().size() > 0)
-                        toolbar.getMenu().getItem(0).setVisible(false);
+                    if (size > 1)
+                        toolbar.getMenu().getItem(size - 1).setVisible(false);
                     searchView.animate().alpha(0f).setDuration(300);
                 }
             }
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(final String newText) {
-                if(isSuggestionEmpty)
+                if (isSuggestionEmpty)
                     initSearchSuggestions();
                 currQuery = newText;
                 return false;
@@ -235,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemLongClick(View v, int position) {
+            public boolean onItemLongClick(View v, int position) {
                 final Site site = (Site) adapter.getDataProvider().getItem(position);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("操作")
@@ -261,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setNegativeButton("取消", null)
                         .show();
+                return true;
             }
         });
 
@@ -314,6 +316,23 @@ public class MainActivity extends AppCompatActivity {
         item.setVisible(false);
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_history:
+                intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_favourite:
+                intent = new Intent(MainActivity.this, FavouriteActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @OnClick(R.id.fab_search)

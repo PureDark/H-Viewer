@@ -118,7 +118,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
 
-        void onItemLongClick(View v, int position);
+        boolean onItemLongClick(View v, int position);
     }
 
     public class RuleViewHolder extends RecyclerView.ViewHolder {
@@ -143,8 +143,9 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public boolean onLongClick(View v) {
                     if (mItemClickListener != null)
-                        mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    return true;
+                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                    else
+                        return false;
                 }
             });
         }

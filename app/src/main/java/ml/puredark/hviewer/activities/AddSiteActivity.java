@@ -15,6 +15,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -23,6 +25,8 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.SitePropViewHolder;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+
+import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 
 public class AddSiteActivity extends AnimationActivity {
 
@@ -108,7 +112,7 @@ public class AddSiteActivity extends AnimationActivity {
         }
 
         HViewerApplication.temp = newSite;
-        HViewerApplication.siteHolder.addSite(newSite);
+        siteHolder.addSite(newSite);
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         finish();
@@ -138,7 +142,8 @@ public class AddSiteActivity extends AnimationActivity {
     private Site parseSite(String json) {
         try {
             Site site = new Gson().fromJson(json, Site.class);
-            int sid = HViewerApplication.siteHolder.getSites().size() + 1;
+            List<Site> sites = siteHolder.getSites();
+            int sid = sites.get(sites.size()-1).sid+1;
             site.sid = sid;
             if (site.indexRule == null || site.galleryRule == null)
                 Toast.makeText(this, "输入的规则缺少信息", Toast.LENGTH_SHORT).show();

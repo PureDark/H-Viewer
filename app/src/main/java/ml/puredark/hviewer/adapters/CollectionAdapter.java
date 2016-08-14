@@ -43,7 +43,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Collection collection = (Collection) mProvider.getItem(position);
         CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-//        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover);
+        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover);
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
         holder.tvCategory.setText(collection.category);
@@ -84,6 +84,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
+        boolean onItemLongClick(View v, int position);
     }
 
     public class CollectionViewHolder extends RecyclerView.ViewHolder {
@@ -117,13 +118,33 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mItemClickListener.onItemClick(v, getAdapterPosition());
+                    if(mItemClickListener!=null)
+                        mItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(mItemClickListener!=null)
+                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                    else
+                        return false;
                 }
             });
             rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(mItemClickListener!=null)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
+            rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(mItemClickListener!=null)
+                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                    else
+                        return false;
                 }
             });
         }

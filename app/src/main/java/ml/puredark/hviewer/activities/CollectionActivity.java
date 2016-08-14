@@ -3,17 +3,12 @@ package ml.puredark.hviewer.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -27,7 +22,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionMenu;
-import com.nineoldandroids.animation.Animator;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
@@ -43,10 +37,10 @@ import ml.puredark.hviewer.adapters.PictureAdapter;
 import ml.puredark.hviewer.adapters.TagAdapter;
 import ml.puredark.hviewer.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
@@ -57,8 +51,6 @@ import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
-
-import static android.R.attr.delay;
 
 
 public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -109,6 +101,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             finish();
             return;
         }
+        collection = new LocalCollection(collection, site);
 
         //解析URL模板
         Map<String, String> map = RuleParser.parseUrl(site.galleryUrl);
@@ -134,7 +127,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         getCollectionDetail(startPage);
 
         //加入历史记录
-        HViewerApplication.historyHolder.addHistory(collection);
+        HViewerApplication.historyHolder.addHistory((LocalCollection) collection);
     }
 
     private void initCover(String cover) {
@@ -285,7 +278,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        HViewerApplication.favouriteHolder.addFavourite(collection);
+        HViewerApplication.favouriteHolder.addFavourite((LocalCollection) collection);
     }
 
     @OnClick(R.id.fab_download)

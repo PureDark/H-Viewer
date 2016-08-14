@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
@@ -22,7 +23,7 @@ public class FavouriteHolder {
     public FavouriteHolder(Context context) {
         this.mContext = context;
         String favouriteStr = (String) SharedPreferencesUtil.getData(context, "Favourite", "[]");
-        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<Collection>>() {
+        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<LocalCollection>>() {
         }.getType());
     }
 
@@ -30,7 +31,7 @@ public class FavouriteHolder {
         SharedPreferencesUtil.saveData(mContext, "Favourite", new Gson().toJson(favourites));
     }
 
-    public void addFavourite(Collection item) {
+    public void addFavourite(LocalCollection item) {
         if (item == null) return;
         deleteFavourite(item);
         favourites.add(0, item);
@@ -48,7 +49,7 @@ public class FavouriteHolder {
         saveFavourite();
     }
 
-    public List<Collection> getFavourite() {
+    public List<Collection> getFavourites() {
         if (favourites == null)
             return new ArrayList<>();
         else

@@ -1,6 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_history"
+        android:icon="@drawable/selector_history"
+        android:orderInCategory="100"
+        android:title="历史记录"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_favourite"
+        android:icon="@drawable/selector_favourite"
+        android:orderInCategory="100"
+        android:title="收藏夹"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/selector_search"
         android:orderInCategory="100"

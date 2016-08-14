@@ -27,4 +27,5 @@ public class Site extends AbstractDataProvider.Data {
     public int getId() {
         return sid;
     }
+
 }

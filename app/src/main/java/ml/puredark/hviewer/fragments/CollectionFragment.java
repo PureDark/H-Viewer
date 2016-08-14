@@ -1,8 +1,10 @@
 package ml.puredark.hviewer.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.activities.CollectionActivity;
+import ml.puredark.hviewer.activities.FavouriteActivity;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
@@ -28,6 +31,8 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
+
+import static ml.puredark.hviewer.HViewerApplication.favouriteHolder;
 
 public class CollectionFragment extends MyFragment {
 
@@ -112,6 +117,11 @@ public class CollectionFragment extends MyFragment {
                 HViewerApplication.temp2 = collection;
                 Intent intent = new Intent(CollectionFragment.this.getContext(), CollectionActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            public boolean onItemLongClick(View v, int position) {
+                return false;
             }
         });
 
