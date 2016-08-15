@@ -21,7 +21,7 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-x86-android-23
 
-script: ./gradlew build
+script: ./gradlew build connectedCheck
 
 jdk:
   - oraclejdk8
