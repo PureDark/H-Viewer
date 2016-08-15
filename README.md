@@ -1,5 +1,5 @@
 # H-Viewer
-![](https://travis-ci.org/PureDark/H-Viewer.svg?branch=master)
+[![Build Status](https://travis-ci.org/PureDark/H-Viewer.svg?branch=master)](https://travis-ci.org/PureDark/H-Viewer)
 
 An android feed reader application which fetch data with selector and regular expression.
 
