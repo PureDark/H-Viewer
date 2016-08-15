@@ -18,7 +18,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -54,6 +53,7 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
+import ml.puredark.hviewer.activities.PictureViewerActivity.PicturePagerAdapter;
 
 
 public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -83,6 +83,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     private PictureAdapter pictureAdapter;
 
+    private PicturePagerAdapter picturePagerAdapter;
+
     private CollectionViewHolder holder;
 
     private int startPage;
@@ -95,6 +97,14 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         setContentView(R.layout.activity_collection);
         ButterKnife.bind(this);
         MDStatusBarCompat.setCollapsingToolbar(this, coordinatorLayout, appBar, backdrop, toolbar);
+
+        setSupportActionBar(toolbar);
+        setContainer(coordinatorLayout);
+
+        /* 为返回按钮加载图标 */
+        setReturnButton(btnReturn);
+        setAppBar(appBar);
+        setFabMenu(fabMenu);
 
         //获取传递过来的Collection实例
         if (HViewerApplication.temp instanceof Site)
@@ -121,12 +131,6 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         }
 
         toolbar.setTitle(collection.title);
-        setSupportActionBar(toolbar);
-
-        /* 为返回按钮加载图标 */
-        setReturnButton(btnReturn);
-        setAppBar(appBar);
-        setFabMenu(fabMenu);
 
         initCover(collection.cover);
         initTabAndViewPager();
@@ -203,8 +207,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                HViewerApplication.temp = site;
-                HViewerApplication.temp2 = pictureAdapter.getDataProvider().getItems();
+                picturePagerAdapter = new PicturePagerAdapter(site, pictureAdapter.getDataProvider().getItems());
+                HViewerApplication.temp = picturePagerAdapter;
                 Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
                 intent.putExtra("position", position);
                 startActivity(intent);
@@ -221,7 +225,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         rvIndex.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
             @Override
             public void onRefresh() {
-                currPage = 1;
+                currPage = startPage;
                 getCollectionDetail(currPage);
             }
 
@@ -235,7 +239,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     private void getCollectionDetail(final int page) {
         final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", collection.idCode)
                 .replaceAll("\\{page:" + startPage + "\\}", "" + page);
-        HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
+        HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
                 collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule, url);
@@ -258,11 +262,15 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                         pictureAdapter.getDataProvider().clear();
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
+                        if(picturePagerAdapter!=null)
+                            picturePagerAdapter.notifyDataSetChanged();
                         currPage = page;
                         getCollectionDetail(currPage + 1);
                     } else if (!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))) {
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
+                        if(picturePagerAdapter!=null)
+                            picturePagerAdapter.notifyDataSetChanged();
                         currPage = page;
                         getCollectionDetail(currPage + 1);
                     }
@@ -272,7 +280,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                Toast.makeText(CollectionActivity.this, error.getErrorString(), Toast.LENGTH_SHORT).show();
+                showSnackBar(error.getErrorString());
                 rvIndex.setPullLoadMoreCompleted();
             }
         });
@@ -286,11 +294,18 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @OnClick(R.id.fab_favor)
     void favor() {
         HViewerApplication.favouriteHolder.addFavourite((LocalCollection) collection);
+        showSnackBar("收藏成功！");
     }
 
     @OnClick(R.id.fab_download)
     void download() {
         //TODO download
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        picturePagerAdapter = null;
     }
 
     public class CollectionViewHolder {

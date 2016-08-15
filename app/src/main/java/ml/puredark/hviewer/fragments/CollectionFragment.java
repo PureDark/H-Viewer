@@ -1,15 +1,11 @@
 package ml.puredark.hviewer.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -21,18 +17,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.activities.AnimationActivity;
 import ml.puredark.hviewer.activities.CollectionActivity;
-import ml.puredark.hviewer.activities.FavouriteActivity;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
-
-import static ml.puredark.hviewer.HViewerApplication.favouriteHolder;
 
 public class CollectionFragment extends MyFragment {
 
@@ -75,6 +70,7 @@ public class CollectionFragment extends MyFragment {
         List<Collection> collections = new ArrayList<>();
         AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
         adapter = new CollectionAdapter(dataProvider);
+        adapter.setCookie(site.cookie);
         rvCollection.setAdapter(adapter);
 
         rvCollection.setLinearLayout();
@@ -133,7 +129,7 @@ public class CollectionFragment extends MyFragment {
         String chooseUrl = (keyword == null) ? site.indexUrl : site.searchUrl;
         final String url = chooseUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
                 .replaceAll("\\{keyword:\\}", keyword);
-        HViewerHttpClient.get(url, new HViewerHttpClient.OnResponseListener() {
+        HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
                 if (page == startPage) {
@@ -146,16 +142,26 @@ public class CollectionFragment extends MyFragment {
                 adapter.notifyDataSetChanged();
                 if (newSize > oldSize) {
                     currPage = page;
+                    addSearchSuggestions(collections);
                 }
                 rvCollection.setPullLoadMoreCompleted();
             }
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                Toast.makeText(getActivity(), error.getErrorString(), Toast.LENGTH_SHORT).show();
+                ((AnimationActivity)getActivity()).showSnackBar(error.getErrorString());
                 rvCollection.setPullLoadMoreCompleted();
             }
         });
+    }
+
+    private void addSearchSuggestions(List<Collection> collections){
+        for(Collection collection : collections){
+            for(Tag tag : collection.tags){
+                HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+            }
+        }
+        HViewerApplication.searchSuggestionHolder.removeDuplicate();
     }
 
 

@@ -24,6 +24,7 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
+    private String cookie;
 
     public CollectionAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
@@ -73,6 +74,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mItemClickListener = listener;
     }
+
+    public void setCookie(String cookie){}
 
     public AbstractDataProvider getDataProvider() {
         return mProvider;

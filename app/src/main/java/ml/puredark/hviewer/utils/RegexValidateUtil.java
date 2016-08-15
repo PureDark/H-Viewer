@@ -55,6 +55,15 @@ public class RegexValidateUtil {
             return "";
     }
 
+    public static String getDominFromUrl(String url) {
+        Pattern p = Pattern.compile("https?://([^/]*)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = p.matcher(url);
+        if (matcher.find())
+            return matcher.group(1);
+        else
+            return "";
+    }
+
     public static String geCurrDirFromUrl(String url) {
         Pattern p = Pattern.compile("https?://[\\w./]*/", Pattern.CASE_INSENSITIVE);
         Matcher matcher = p.matcher(url);

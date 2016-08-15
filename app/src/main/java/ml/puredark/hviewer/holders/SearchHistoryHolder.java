@@ -24,21 +24,17 @@ public class SearchHistoryHolder {
     public SearchHistoryHolder(Context context) {
         this.mContext = context;
         String searchHistoryStr = (String) SharedPreferencesUtil.getData(context, "SearchHistory", "[]");
-        searchHistories = new Gson().fromJson(searchHistoryStr, new TypeToken<List<String>>() {
+        searchHistories = new Gson().fromJson(searchHistoryStr, new TypeToken<ArrayList<String>>() {
         }.getType());
-        for (String l : searchHistories)
-            Log.d("SearchHistoryHolder", "keyword="+l);
-        searchHistories = removeDuplicate(searchHistories);
-        Log.d("SearchHistoryHolder", "!!removeDuplicate!!");
-        for (String l : searchHistories)
-            Log.d("SearchHistoryHolder", "keyword="+l);
+        removeDuplicate();
     }
 
-    public static List<String> removeDuplicate(List<String> srcList){
-        return new ArrayList(new HashSet(srcList));
+    public void removeDuplicate(){
+        searchHistories = new ArrayList(new HashSet(searchHistories));
     }
 
     public void saveSearchHistory() {
+        removeDuplicate();
         SharedPreferencesUtil.saveData(mContext, "SearchHistory", new Gson().toJson(searchHistories));
     }
 

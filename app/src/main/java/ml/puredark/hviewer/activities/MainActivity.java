@@ -1,34 +1,31 @@
 package ml.puredark.hviewer.activities;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,13 +44,12 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-import ml.puredark.hviewer.holders.SearchHistoryHolder;
 
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AnimationActivity {
     private static int RESULT_ADD_SITE = 1;
     private static int RESULT_MODIFY_SITE = 2;
 
@@ -94,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         // User interface
         setSupportActionBar(toolbar);
+        setContainer(coordinatorLayout);
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -121,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         initSearchSuggestions();
 
+        searchView.setSubmitOnClick(true);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String keyword) {
@@ -285,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
         List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
         suggestions.addAll(histories);
-        suggestions = SearchHistoryHolder.removeDuplicate(suggestions);
+        suggestions = new ArrayList(new HashSet(suggestions));
         Collections.sort(suggestions, String.CASE_INSENSITIVE_ORDER);
         int size = suggestions.size();
         String[] kwStrings = new String[size];
@@ -388,6 +386,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        HViewerApplication.siteHolder.saveSites();
+        HViewerApplication.searchHistoryHolder.saveSearchHistory();
+        HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
     }
 
     public void replaceFragment(MyFragment fragment, String tag) {

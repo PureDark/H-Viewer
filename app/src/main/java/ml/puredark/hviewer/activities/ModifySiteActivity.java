@@ -2,13 +2,11 @@ package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.github.clans.fab.FloatingActionButton;
 
 import java.util.List;
 
@@ -18,10 +16,13 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.customs.SitePropViewHolder;
+import ml.puredark.hviewer.helpers.SitePropViewHolder;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
 public class ModifySiteActivity extends AnimationActivity {
 
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.view_site_details)
     View viewSiteDetails;
     @BindView(R.id.btn_return)
@@ -38,8 +39,10 @@ public class ModifySiteActivity extends AnimationActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_site);
         ButterKnife.bind(this);
+        MDStatusBarCompat.setOrdinaryToolBar(this);
 
         setSupportActionBar(toolbar);
+        setContainer(coordinatorLayout);
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
 
@@ -68,7 +71,7 @@ public class ModifySiteActivity extends AnimationActivity {
         Site newSite = holder.fromEditTextToSite();
         newSite.sid = site.sid;
         if(newSite==null){
-            Toast.makeText(this, "规则缺少必要参数，请检查", Toast.LENGTH_SHORT).show();
+            showSnackBar("规则缺少必要参数，请检查");
             return;
         }
         HViewerApplication.temp = newSite;

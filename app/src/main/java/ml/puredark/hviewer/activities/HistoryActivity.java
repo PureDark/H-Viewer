@@ -3,13 +3,13 @@ package ml.puredark.hviewer.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -23,12 +23,14 @@ import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
-import static ml.puredark.hviewer.HViewerApplication.favouriteHolder;
 import static ml.puredark.hviewer.HViewerApplication.historyHolder;
 
 public class HistoryActivity extends AnimationActivity {
 
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.btn_return)
     ImageView btnReturn;
     @BindView(R.id.tv_title)
@@ -46,8 +48,10 @@ public class HistoryActivity extends AnimationActivity {
         setContentView(R.layout.activity_collection_list);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        setContainer(coordinatorLayout);
         setReturnButton(btnReturn);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        MDStatusBarCompat.setOrdinaryToolBar(this);
 
         tvTitle.setText("历史纪录");
 
@@ -67,7 +71,7 @@ public class HistoryActivity extends AnimationActivity {
                     Intent intent = new Intent(HistoryActivity.this, CollectionActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(HistoryActivity.this, "该收藏数据有误，无法打开", Toast.LENGTH_SHORT).show();
+                    showSnackBar("该历史数据有误，请删除重新添加");
                 }
             }
 

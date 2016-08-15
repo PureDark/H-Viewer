@@ -1,4 +1,4 @@
-package ml.puredark.hviewer.customs;
+package ml.puredark.hviewer.helpers;
 
 import android.view.View;
 import android.widget.EditText;
@@ -31,6 +31,8 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryUrl;
     @BindView(R.id.input_searchUrl)
     MaterialEditText inputSearchUrl;
+    @BindView(R.id.input_cookie)
+    MaterialEditText inputCookie;
     @BindView(R.id.input_picUrlSelector_selector)
     MaterialEditText inputPicUrlSekectorSelector;
     @BindView(R.id.input_picUrlSelector_regex)
@@ -198,6 +200,7 @@ public class SitePropViewHolder {
         inputIndexUrl.setText(site.indexUrl);
         inputGalleryUrl.setText(site.galleryUrl);
         inputSearchUrl.setText(site.searchUrl);
+        inputSearchUrl.setText(site.cookie);
         if (site.picUrlSelector != null) {
             inputPicUrlSekectorSelector.setText(joinSelector(site.picUrlSelector));
             inputPicUrlSekectorRegex.setText(site.picUrlSelector.regex);
@@ -325,6 +328,7 @@ public class SitePropViewHolder {
         site.indexUrl = loadString(inputIndexUrl);
         site.galleryUrl = loadString(inputGalleryUrl);
         site.searchUrl = loadString(inputSearchUrl);
+        site.cookie = loadString(inputCookie);
         site.picUrlSelector = loadSelector(inputPicUrlSekectorSelector, inputPicUrlSekectorRegex, inputPicUrlSekectorReplacement);
 
         //index rule

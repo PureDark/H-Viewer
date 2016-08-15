@@ -42,6 +42,13 @@
             style="@style/EditTextAddSite"
             app:met_clearButton="true"
             app:met_floatingLabelText="搜索URL"/>
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/input_cookie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EditTextAddSite"
+            app:met_clearButton="true"
+            app:met_floatingLabelText="COOKIE（可选）"/>
 
         <TextView
             android:layout_width="wrap_content"

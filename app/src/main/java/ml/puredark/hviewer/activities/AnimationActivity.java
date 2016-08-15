@@ -2,9 +2,12 @@ package ml.puredark.hviewer.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -23,6 +26,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
 
     private DrawerArrowDrawable btnReturnIcon;
 
+    private View container;
     private ImageView btnReturn;
     private AppBarLayout appBar;
     private FloatingActionMenu fabMenu;
@@ -34,7 +38,6 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
 
         /* 返回按钮图标 */
         btnReturnIcon = new DrawerArrowDrawable(this);
@@ -48,6 +51,10 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
         btnReturn.setImageDrawable(btnReturnIcon);
     }
 
+    protected void setContainer(View container) {
+        this.container = container;
+    }
+
     protected void setAppBar(AppBarLayout appBar) {
         this.appBar = appBar;
     }
@@ -56,12 +63,21 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
         this.fabMenu = fabMenu;
     }
 
+    public void showSnackBar(String content){
+        if(container==null)return;
+        Snackbar snackbar = Snackbar.make(
+                container,
+                content,
+                Snackbar.LENGTH_SHORT);
+        snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.colorAccentDark));
+        snackbar.show();
+    }
 
     @Override
     public void onBackPressed() {
         if (animating)
             return;
-        else
+        else if(btnReturnIcon!=null)
             AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -83,7 +99,8 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
                 public void onAnimationRepeat(Animator animation) {
                 }
             });
-        //super.onBackPressed();
+        else
+            super.onBackPressed();
     }
 
     @Override

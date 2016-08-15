@@ -9,18 +9,21 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:fitsSystemWindows="false">
 
             <ml.puredark.hviewer.customs.ExViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/black_90"
+                android:fitsSystemWindows="false"
                 app:pagerCurrItem="0"
                 app:pagerLayout1="@layout/view_picture_viewer" />
 

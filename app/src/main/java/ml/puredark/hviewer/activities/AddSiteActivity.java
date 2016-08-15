@@ -2,10 +2,10 @@ package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.gc.materialdesign.views.ButtonFlat;
 import com.github.clans.fab.FloatingActionButton;
@@ -23,14 +23,16 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.customs.SitePropViewHolder;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.helpers.SitePropViewHolder;
 
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 
 public class AddSiteActivity extends AnimationActivity {
 
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.view_add_site_json)
     View viewAddSiteJson;
     @BindView(R.id.view_site_details)
@@ -57,6 +59,9 @@ public class AddSiteActivity extends AnimationActivity {
         setContentView(R.layout.activity_add_site);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        MDStatusBarCompat.setOrdinaryToolBar(this);
+
+        setContainer(coordinatorLayout);
 
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
@@ -108,7 +113,7 @@ public class AddSiteActivity extends AnimationActivity {
     void submit() {
         Site newSite = holder.fromEditTextToSite();
         if (newSite == null) {
-            Toast.makeText(this, "规则缺少必要参数，请检查", Toast.LENGTH_SHORT).show();
+            showSnackBar("规则缺少必要参数，请检查");
             return;
         }
 
@@ -123,7 +128,7 @@ public class AddSiteActivity extends AnimationActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (result != null && result.getContents() != null) {
-            HViewerHttpClient.get(result.getContents(), new HViewerHttpClient.OnResponseListener() {
+            HViewerHttpClient.get(result.getContents(), null, new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String result) {
                     Site newSite = parseSite(result);
@@ -134,7 +139,7 @@ public class AddSiteActivity extends AnimationActivity {
 
                 @Override
                 public void onFailure(HViewerHttpClient.HttpError error) {
-                    Toast.makeText(AddSiteActivity.this, error.getErrorString(), Toast.LENGTH_SHORT).show();
+                    showSnackBar(error.getErrorString());
                 }
             });
         }
@@ -144,13 +149,13 @@ public class AddSiteActivity extends AnimationActivity {
         try {
             Site site = new Gson().fromJson(json, Site.class);
             List<Site> sites = siteHolder.getSites();
-            int sid = sites.get(sites.size()-1).sid+1;
+            int sid = sites.get(sites.size() - 1).sid + 1;
             site.sid = sid;
             if (site.indexRule == null || site.galleryRule == null)
-                Toast.makeText(this, "输入的规则缺少信息", Toast.LENGTH_SHORT).show();
+                showSnackBar("输入的规则缺少信息");
             return site;
         } catch (JsonSyntaxException e) {
-            Toast.makeText(this, "输入规则格式错误", Toast.LENGTH_SHORT).show();
+            showSnackBar("输入规则格式错误");
             return null;
         }
     }

@@ -4,11 +4,17 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
 import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -16,9 +22,23 @@ import okhttp3.Response;
 
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
-    private static OkHttpClient mClient = new OkHttpClient();
+    private static OkHttpClient mClient = new OkHttpClient.Builder()
+        .cookieJar(new CookieJar() {
+            private final HashMap<HttpUrl, List<Cookie>> cookieStore = new HashMap<>();
 
-    public static void post(String url, String paramsString, final OnResponseListener callback) {
+            @Override
+            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                cookieStore.put(url, cookies);
+            }
+
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl url) {
+                List<Cookie> cookies = cookieStore.get(url);
+                return cookies != null ? cookies : new ArrayList<Cookie>();
+            }
+        }).build();
+
+    public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {
         String[] paramStrings = paramsString.split("&");
         FormBody.Builder formBody = new FormBody.Builder();
         for (String paramString : paramStrings) {
@@ -27,12 +47,20 @@ public class HViewerHttpClient {
             formBody.add(pram[0], pram[1]);
         }
         RequestBody requestBody = formBody.build();
-        post(url, requestBody, callback);
+        post(url, requestBody, cookies, callback);
     }
 
-    public static void get(String url, final OnResponseListener callback) {
+    public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
-            Request request = new HRequestBuilder()
+            HRequestBuilder builder = new HRequestBuilder();
+            if(cookies!=null){
+                String cookieString = "";
+                for(Cookie cookie : cookies){
+                    cookieString += cookie.name()+"="+cookie.value()+"; ";
+                }
+                builder.addHeader("cookie", cookieString);
+            }
+            Request request = builder
                     .url(url)
                     .build();
             mClient.newCall(request).enqueue(new HCallback() {
@@ -51,9 +79,17 @@ public class HViewerHttpClient {
         }
     }
 
-    public static void post(String url, RequestBody body, final OnResponseListener callback) {
+    public static void post(String url, RequestBody body, List<Cookie> cookies, final OnResponseListener callback) {
         if (HViewerApplication.isNetworkAvailable()) {
-            Request request = new HRequestBuilder()
+            HRequestBuilder builder = new HRequestBuilder();
+            if(cookies!=null){
+                String cookieString = "";
+                for(Cookie cookie : cookies){
+                    cookieString += cookie.name()+"="+cookie.value()+"; ";
+                }
+                builder.addHeader("cookie", cookieString);
+            }
+            Request request = builder
                     .url(url)
                     .post(body)
                     .build();

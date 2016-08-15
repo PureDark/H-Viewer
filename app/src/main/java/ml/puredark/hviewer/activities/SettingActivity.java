@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
@@ -18,10 +19,13 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.helpers.HProxy;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class SettingActivity extends AnimationActivity {
 
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.btn_return)
@@ -33,10 +37,12 @@ public class SettingActivity extends AnimationActivity {
         setContentView(R.layout.activity_setting);
         getFragmentManager().beginTransaction().replace(R.id.setting_content, new SettingFragment()).commit();
         ButterKnife.bind(this);
+        MDStatusBarCompat.setOrdinaryToolBar(this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        setContainer(coordinatorLayout);
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
 
