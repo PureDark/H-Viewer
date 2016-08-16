@@ -23,9 +23,11 @@ public class DownloadTaskHolder {
 
     public DownloadTaskHolder(Context context) {
         this.mContext = context;
-        String downloadStr = (String) SharedPreferencesUtil.getData(context, "DownloadTask", "[]");
-        downloadTasks = new Gson().fromJson(downloadStr, new TypeToken<ArrayList<DownloadTask>>() {
-        }.getType());
+        if(downloadTasks==null) {
+            String downloadStr = (String) SharedPreferencesUtil.getData(context, "DownloadTask", "[]");
+            downloadTasks = new Gson().fromJson(downloadStr, new TypeToken<ArrayList<DownloadTask>>() {
+            }.getType());
+        }
     }
 
     public void saveDownloadTasks() {
@@ -34,7 +36,7 @@ public class DownloadTaskHolder {
 
     public void addDownloadTask(DownloadTask item) {
         if (item == null) return;
-        downloadTasks.add(0, item);
+        downloadTasks.add(item);
         saveDownloadTasks();
     }
 

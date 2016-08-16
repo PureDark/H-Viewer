@@ -2,7 +2,6 @@ package ml.puredark.hviewer.beans;
 
 public class Rule {
     public Selector item, idCode, title, uploader, cover, category, datetime, rating, tags, pictureUrl, pictureThumbnail;
-    public Selector description;
 
     public Rule() {
     }

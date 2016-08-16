@@ -19,6 +19,8 @@ public class SimpleFileUtil {
      */
     public static String createIfNotExist(String path) {
         File file = new File(path);
+        if(!file.getParentFile().exists())
+            file.getParentFile().mkdirs();
         if (!file.exists()) {
             try {
                 file.createNewFile();

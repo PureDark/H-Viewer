@@ -323,6 +323,10 @@ public class MainActivity extends AnimationActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
+            case R.id.action_download:
+                intent = new Intent(MainActivity.this, DownloadActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.action_history:
                 intent = new Intent(MainActivity.this, HistoryActivity.class);
                 startActivity(intent);
@@ -371,7 +375,6 @@ public class MainActivity extends AnimationActivity {
                         }
                     };
                     handler.post(r);
-                    Log.d("MainActivity", "MODIFY SUCCESS");
                 }
             }
         }

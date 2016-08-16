@@ -3,6 +3,7 @@ package ml.puredark.hviewer.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,6 @@ public class CollectionFragment extends MyFragment {
         List<Collection> collections = new ArrayList<>();
         AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
         adapter = new CollectionAdapter(dataProvider);
-        adapter.setCookie(site.cookie);
         rvCollection.setAdapter(adapter);
 
         rvCollection.setLinearLayout();
@@ -94,6 +94,7 @@ public class CollectionFragment extends MyFragment {
         });
 
         if (site != null) {
+            adapter.setCookie(site.cookie);
             Map<String, String> map = RuleParser.parseUrl(site.indexUrl);
             String pageStr = map.get("page");
             try {
@@ -157,8 +158,10 @@ public class CollectionFragment extends MyFragment {
 
     private void addSearchSuggestions(List<Collection> collections){
         for(Collection collection : collections){
-            for(Tag tag : collection.tags){
-                HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+            if(collection.tags!=null) {
+                for (Tag tag : collection.tags) {
+                    HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                }
             }
         }
         HViewerApplication.searchSuggestionHolder.removeDuplicate();

@@ -59,7 +59,7 @@
                 android:padding="@dimen/half_padding">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
@@ -85,7 +85,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/grey"
                             android:textSize="12sp"
-                            tools:text="by uploader" />
+                            tools:text="mifukata" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -103,19 +103,45 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp">
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom|right"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp">
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layoutManager="StaggeredGridLayoutManager"
-                            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                            app:spanCount="2"
-                            tools:listitem="@layout/item_tag" />
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/tv_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="16/32"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+                            <ImageView
+                                android:id="@+id/btn_start_pause"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:background="@drawable/bg_button"
+                                android:scaleType="fitXY"
+                                app:srcCompat="@drawable/ic_play_arrow_primary_dark_24dp"/>
+                            <TextView
+                                android:id="@+id/tv_percentage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:text="50%"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                        </RelativeLayout>
+
+                        <com.gc.materialdesign.views.ProgressBarDeterminate
+                            android:id="@+id/progress_bar"
+                            android:layout_marginTop="4dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:background="@color/colorPrimary" />
+
                     </LinearLayout>
 
                 </LinearLayout>

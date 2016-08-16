@@ -115,13 +115,13 @@ public class PictureViewerActivity extends AppCompatActivity {
             final ImageView imageView = (ImageView) view.findViewById(R.id.iv_picture);
             final Picture picture = pictures.get(position);
             if (picture.pic != null) {
-                HViewerApplication.loadImageFromUrl(imageView, picture.pic);
-            } else
+                HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
+            } else {
                 HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
                     @Override
                     public void onSuccess(String result) {
                         picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector, picture.url);
-                        HViewerApplication.loadImageFromUrl(imageView, picture.pic);
+                        HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
                     }
 
                     @Override
@@ -129,6 +129,7 @@ public class PictureViewerActivity extends AppCompatActivity {
 
                     }
                 });
+            }
             views[position] = view;
             container.addView(view, 0);
             return view;

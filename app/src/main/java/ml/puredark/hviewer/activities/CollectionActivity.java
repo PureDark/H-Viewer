@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.activities.PictureViewerActivity.PicturePagerAdapter;
 import ml.puredark.hviewer.adapters.PictureAdapter;
 import ml.puredark.hviewer.adapters.TagAdapter;
 import ml.puredark.hviewer.adapters.ViewPagerAdapter;
@@ -48,12 +49,12 @@ import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
-import ml.puredark.hviewer.activities.PictureViewerActivity.PicturePagerAdapter;
 
 
 public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -90,6 +91,10 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     private int startPage;
     private int currPage;
 
+    private boolean isIndexComplete = false;
+
+    private DownloadManager manager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +123,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             return;
         }
         collection = new LocalCollection(collection, site);
+
+        manager = new DownloadManager(this);
 
         //解析URL模板
         Map<String, String> map = RuleParser.parseUrl(site.galleryUrl);
@@ -195,6 +202,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
         List<Picture> pictures = new ArrayList<>();
         pictureAdapter = new PictureAdapter(new ListDataProvider(pictures));
+        pictureAdapter.setCookie(site.cookie);
         rvIndex.setAdapter(pictureAdapter);
 
         rvIndex.getRecyclerView().setClipToPadding(false);
@@ -262,18 +270,24 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                         pictureAdapter.getDataProvider().clear();
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
-                        if(picturePagerAdapter!=null)
+                        if (picturePagerAdapter != null)
                             picturePagerAdapter.notifyDataSetChanged();
                         currPage = page;
                         getCollectionDetail(currPage + 1);
                     } else if (!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))) {
                         pictureAdapter.getDataProvider().addAll(collection.pictures);
                         pictureAdapter.notifyDataSetChanged();
-                        if(picturePagerAdapter!=null)
+                        if (picturePagerAdapter != null)
                             picturePagerAdapter.notifyDataSetChanged();
                         currPage = page;
                         getCollectionDetail(currPage + 1);
+                    } else {
+                        isIndexComplete = true;
+                        collection.pictures = pictureAdapter.getDataProvider().getItems();
                     }
+                } else {
+                    isIndexComplete = true;
+                    collection.pictures = pictureAdapter.getDataProvider().getItems();
                 }
                 rvIndex.setPullLoadMoreCompleted();
             }
@@ -299,13 +313,26 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     @OnClick(R.id.fab_download)
     void download() {
-        //TODO download
+        if (isIndexComplete) {
+            if (!manager.createDownloadTask((LocalCollection) collection))
+                showSnackBar("下载任务已在列表中！");
+            else
+                showSnackBar("下载任务已添加");
+        } else {
+            showSnackBar("请等待目录加载完毕再下载！");
+        }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         picturePagerAdapter = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        manager.unbindService(this);
     }
 
     public class CollectionViewHolder {

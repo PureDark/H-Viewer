@@ -3,6 +3,7 @@ package ml.puredark.hviewer.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
@@ -90,37 +91,42 @@ public class ImageScaleUtil {
         return Bitmap.createBitmap(bitmap, retX, retY, wh, wh, null, false);
     }
 
-    public static void saveToFile(Context context, Bitmap bitmap, String destPath) {
+    public static void saveToFile(Context context, Bitmap bitmap, String destPath) throws IOException{
         ImageView iv = new ImageView(context);
         iv.setImageBitmap(bitmap);
+        destPath = createIfNotExist(destPath);
         File file = new File(destPath);
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)) {
-                out.flush();
-                out.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(destPath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Log.d("DownloadManager", "destPath.exsit="+file.exists());
+        FileInputStream fis;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
-        int count = 0;
-        try {
-            while ((count = fis.read(buffer)) >= 0) {
-                baos.write(buffer, 0, count);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        int count;
+        FileOutputStream out = new FileOutputStream(file);
+        if (bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)) {
+            out.flush();
+            out.close();
         }
+        fis = new FileInputStream(destPath);
+        while ((count = fis.read(buffer)) >= 0) {
+            baos.write(buffer, 0, count);
+        }
+    }
+
+    public static String createIfNotExist(String path) {
+        File file = new File(path);
+        if(!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+            Log.d("DownloadManager", "mkdirs!");
+        }
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                Log.d("DownloadManager", "createNewFile!");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return path;
     }
 
     public static String getFileMd5(File file) {

@@ -9,24 +9,21 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
-
-import java.util.ArrayList;
+import com.gc.materialdesign.views.ProgressBarDeterminate;
+import com.gc.materialdesign.views.ProgressBarIndeterminateDeterminate;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
-import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
-public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
-    private String cookie;
 
-    public CollectionAdapter(AbstractDataProvider mProvider) {
+    public DownloadTaskAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -34,26 +31,30 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_collection, parent, false);
+                .inflate(R.layout.item_download_task, parent, false);
         // 在这里对View的参数进行设置
-        CollectionViewHolder vh = new CollectionViewHolder(v);
+        DownloadTaskViewHolder vh = new DownloadTaskViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        Collection collection = (Collection) mProvider.getItem(position);
-        CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie);
-        holder.tvTitle.setText(collection.title);
-        holder.tvUploader.setText(collection.uploader);
-        holder.tvCategory.setText(collection.category);
-        TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-        adapter.getDataProvider().clear();
-        if (collection.tags != null)
-            adapter.getDataProvider().addAll(collection.tags);
-        holder.rbRating.setRating(collection.rating);
-        holder.tvSubmittime.setText(collection.datetime);
+        DownloadTask task = (DownloadTask) mProvider.getItem(position);
+        DownloadTaskViewHolder holder = (DownloadTaskViewHolder) viewHolder;
+        HViewerApplication.loadImageFromUrl(holder.ivCover, task.collection.cover, task.collection.site.cookie);
+        holder.tvTitle.setText(task.collection.title);
+        holder.tvUploader.setText(task.collection.uploader);
+        holder.tvCategory.setText(task.collection.category);
+        holder.rbRating.setRating(task.collection.rating);
+        holder.tvSubmittime.setText(task.collection.datetime);
+        holder.tvCount.setText(task.curPosition + "/" + task.collection.pictures.size());
+        int percent = (int) ((float) task.curPosition * 100 / task.collection.pictures.size());
+        holder.tvPercentage.setText(percent + "%");
+        holder.progressBar.setProgress(percent);
+        holder.btnStartPause.setImageResource(
+                (task.paused)
+                ?R.drawable.ic_play_arrow_primary_dark_24dp
+                :R.drawable.ic_pause_primary_dark);
     }
 
     @Override
@@ -75,10 +76,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mItemClickListener = listener;
     }
 
-    public void setCookie(String cookie){
-        this.cookie = cookie;
-    }
-
     public AbstractDataProvider getDataProvider() {
         return mProvider;
     }
@@ -89,12 +86,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
+
         boolean onItemLongClick(View v, int position);
     }
 
-    public class CollectionViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.ripple_layout)
-        MaterialRippleLayout rippleLayout;
+    public class DownloadTaskViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.iv_cover)
         ImageView ivCover;
         @BindView(R.id.tv_title)
@@ -103,34 +99,36 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView tvUploader;
         @BindView(R.id.tv_category)
         TextView tvCategory;
-        @BindView(R.id.rv_tags)
-        RecyclerView rvTags;
+        @BindView(R.id.tv_count)
+        TextView tvCount;
+        @BindView(R.id.btn_start_pause)
+        ImageView btnStartPause;
+        @BindView(R.id.tv_percentage)
+        TextView tvPercentage;
+        @BindView(R.id.progress_bar)
+        ProgressBarDeterminate progressBar;
         @BindView(R.id.rb_rating)
         RatingBar rbRating;
         @BindView(R.id.tv_submittime)
         TextView tvSubmittime;
+        @BindView(R.id.ripple_layout)
+        MaterialRippleLayout rippleLayout;
 
-        public CollectionViewHolder(View view) {
+        public DownloadTaskViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            rvTags.setAdapter(
-                    new TagAdapter(
-                            new ListDataProvider<>(
-                                    new ArrayList<Tag>()
-                            )
-                    )
-            );
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -139,14 +137,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
-                    mItemClickListener.onItemClick(v, getAdapterPosition());
+                    if (mItemClickListener != null)
+                        mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;

@@ -16,6 +16,7 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
+    private String cookie;
 
     public PictureAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
@@ -35,7 +36,7 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Picture picture = (Picture) mProvider.getItem(position);
         PictureViewHolder holder = (PictureViewHolder) viewHolder;
-        HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail);
+        HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail, cookie);
     }
 
     @Override
@@ -55,6 +56,10 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mItemClickListener = listener;
+    }
+
+    public void setCookie(String cookie){
+        this.cookie = cookie;
     }
 
     public AbstractDataProvider getDataProvider() {

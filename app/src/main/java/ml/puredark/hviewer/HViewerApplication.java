@@ -4,8 +4,10 @@ package ml.puredark.hviewer;
 import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
@@ -14,6 +16,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.holders.FavouriteHolder;
@@ -21,6 +25,7 @@ import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 import ml.puredark.hviewer.holders.SearchSuggestionHolder;
 import ml.puredark.hviewer.holders.SiteHolder;
+import ml.puredark.hviewer.services.DownloadService;
 
 public class HViewerApplication extends Application {
     public static Context mContext;
@@ -59,18 +64,37 @@ public class HViewerApplication extends Application {
         return false;
     }
 
-    public static void loadImageFromUrl(ImageView imageView, String url) {
-
+    public static void loadImageFromUrl(ImageView imageView, String url, String cookie) {
         imageView.setImageBitmap(null);
+        if (url != null && url.startsWith("http")) {
+            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
+                HProxy proxy = new HProxy(url);
+                GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
+                        .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
+                        .addHeader("cookie", cookie)
+                        .build());
+                Glide.with(mContext).load(glideUrl).into(imageView);
+            } else {
+                GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
+                        .addHeader("cookie", cookie)
+                        .build());
+                Glide.with(mContext).load(glideUrl).into(imageView);
+            }
+        }else{
+            Glide.with(mContext).load(url).into(imageView);
+        }
+    }
+
+    public static void loadBitmapFromUrl(String url, SimpleTarget listener){
         if (url != null) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
                 GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
                         .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
                         .build());
-                Glide.with(mContext).load(glideUrl).into(imageView);
+                Glide.with(mContext).load(glideUrl).asBitmap().into(listener);
             } else {
-                Glide.with(mContext).load(url).into(imageView);
+                Glide.with(mContext).load(url).asBitmap().into(listener);
             }
         }
     }
@@ -88,6 +112,7 @@ public class HViewerApplication extends Application {
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);
 
+        startService(new Intent(this, DownloadService.class));
     }
 
 

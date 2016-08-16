@@ -126,14 +126,14 @@ public class RuleParser {
                             tagStr = rule.tags.replacement;
                             for (int i = 1; i <= matcher.groupCount(); i++)
                                 tagStr = tagStr.replaceAll("\\$" + i, matcher.group(i));
-                            tags.add(new Tag(tags.size() + 1, tagStr));
+                            tags.add(new Tag(tags.size() + 1, tagStr.trim()));
                         } else {
                             tagStr = matcher.group(1);
-                            tags.add(new Tag(tags.size() + 1, tagStr));
+                            tags.add(new Tag(tags.size() + 1, tagStr.trim()));
                         }
                     }
                 } else {
-                    tags.add(new Tag(tags.size() + 1, tagStr));
+                    tags.add(new Tag(tags.size() + 1, tagStr.trim()));
                 }
             }
         }
