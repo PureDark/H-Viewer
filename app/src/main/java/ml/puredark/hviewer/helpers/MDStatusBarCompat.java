@@ -34,6 +34,7 @@ public class MDStatusBarCompat {
     public static void setOrdinaryToolBar(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
@@ -72,6 +73,7 @@ public class MDStatusBarCompat {
     public static void setToolbarTabLayout(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }
 
@@ -88,6 +90,9 @@ public class MDStatusBarCompat {
             coordinatorLayout.setFitsSystemWindows(true);
             setKKStatusBar(activity, R.color.statusBar);
         }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+        }
     }
 
     /**
@@ -100,6 +105,9 @@ public class MDStatusBarCompat {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
             setKKStatusBar(activity, R.color.statusBar);
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }
 
@@ -125,6 +133,9 @@ public class MDStatusBarCompat {
             toolbar.setLayoutParams(lp);
             setKKStatusBar(activity, R.color.statusBar);
             setCollapsingToolbarStatus(appBarLayout);
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }
 

@@ -9,7 +9,7 @@ public abstract class AbstractDataProvider<T extends AbstractDataProvider.Data> 
 
     public abstract List getItems();
 
-    public abstract Data getItem(int index);
+    public abstract T getItem(int index);
 
     public abstract void removeItem(int position);
 

@@ -68,7 +68,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
         Snackbar snackbar = Snackbar.make(
                 container,
                 content,
-                Snackbar.LENGTH_SHORT);
+                Snackbar.LENGTH_LONG);
         snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.colorAccentDark));
         snackbar.show();
     }

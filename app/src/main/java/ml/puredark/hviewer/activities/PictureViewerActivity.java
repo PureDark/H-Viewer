@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -25,6 +26,8 @@ import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
+
+import static ml.puredark.hviewer.services.DownloadService.ON_FAILURE;
 
 
 public class PictureViewerActivity extends AppCompatActivity {
@@ -76,7 +79,7 @@ public class PictureViewerActivity extends AppCompatActivity {
         };
         viewPager.addOnPageChangeListener(listener);
 
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(5);
 
         viewPager.setCurrentItem(position);
     }
@@ -117,22 +120,34 @@ public class PictureViewerActivity extends AppCompatActivity {
             if (picture.pic != null) {
                 HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
             } else {
-                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
-                    @Override
-                    public void onSuccess(String result) {
-                        picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector, picture.url);
-                        HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
-                    }
-
-                    @Override
-                    public void onFailure(HViewerHttpClient.HttpError error) {
-
-                    }
-                });
+                getPictureUrl(imageView, picture, site);
             }
             views[position] = view;
             container.addView(view, 0);
             return view;
         }
+
+        private void getPictureUrl(final ImageView imageView, final Picture picture, final Site site){
+            HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+
+                @Override
+                public void onSuccess(String result) {
+                    picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector, picture.url);
+                    picture.retries = 0;
+                    HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
+                }
+
+                @Override
+                public void onFailure(HViewerHttpClient.HttpError error) {
+                    if (picture.retries < 3) {
+                        getPictureUrl(imageView, picture, site);
+                        picture.retries++;
+                    } else {
+                        picture.retries = 0;
+                    }
+                }
+            });
+        }
     }
+
 }

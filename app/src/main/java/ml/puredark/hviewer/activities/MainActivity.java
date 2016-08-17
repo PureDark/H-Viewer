@@ -44,6 +44,7 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.holders.DownloadTaskHolder;
 
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
@@ -397,6 +398,7 @@ public class MainActivity extends AnimationActivity {
         HViewerApplication.siteHolder.saveSites();
         HViewerApplication.searchHistoryHolder.saveSearchHistory();
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
+        new DownloadTaskHolder(this).saveDownloadTasks();
     }
 
     public void replaceFragment(MyFragment fragment, String tag) {

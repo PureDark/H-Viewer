@@ -55,15 +55,15 @@
         <activity
             android:name=".activities.HistoryActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.DownloadActivity"></activity>
-
-
+        <activity android:name=".activities.DownloadActivity" />
 
         <service android:name=".services.DownloadService">
             <intent-filter>
                 <action android:name="ml.puredark.hviewer.services.DownloadService" />
             </intent-filter>
         </service>
+
+        <activity android:name=".activities.DownloadTaskActivity"></activity>
     </application>
 
 </manifest>

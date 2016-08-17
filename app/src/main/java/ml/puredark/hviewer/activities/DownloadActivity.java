@@ -37,6 +37,7 @@ import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.services.DownloadService;
@@ -64,16 +65,19 @@ public class DownloadActivity extends AnimationActivity {
     CoordinatorLayout coordinatorLayout;
 
     private RecyclerView rvDownloading, rvDownloaded;
-    private DownloadTaskAdapter downloadTaskAdapter;
+    private DownloadTaskAdapter downloadingTaskAdapter, downloadedTaskAdapter;
 
     private DownloadManager manager;
     private DownloadReceiver receiver;
+
+    private List<DownloadTask> downloadingTasks, downloadedTasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_list);
         ButterKnife.bind(this);
+        tvTitle.setText("下载管理");
         setSupportActionBar(toolbar);
         setContainer(coordinatorLayout);
         setReturnButton(btnReturn);
@@ -81,8 +85,11 @@ public class DownloadActivity extends AnimationActivity {
         MDStatusBarCompat.setToolbarTabLayout(this);
 
         manager = new DownloadManager(this);
+        downloadingTasks = new ArrayList<>();
+        downloadedTasks = new ArrayList<>();
 
         initTabAndViewPager();
+        distinguishDownloadTasks();
     }
 
     @OnClick(R.id.btn_return)
@@ -97,6 +104,7 @@ public class DownloadActivity extends AnimationActivity {
         downloadIntentFilter.addAction(DownloadService.ON_START);
         downloadIntentFilter.addAction(DownloadService.ON_PAUSE);
         downloadIntentFilter.addAction(DownloadService.ON_PROGRESS);
+        downloadIntentFilter.addAction(DownloadService.ON_COMPLETE);
         downloadIntentFilter.addAction(DownloadService.ON_FAILURE);
         receiver = new DownloadReceiver();
         registerReceiver(receiver, downloadIntentFilter);
@@ -132,30 +140,64 @@ public class DownloadActivity extends AnimationActivity {
 
         rvDownloading = (RecyclerView) viewDownloading.findViewById(R.id.rv_collection);
         rvDownloaded = (RecyclerView) viewDownloaded.findViewById(R.id.rv_collection);
-        List<DownloadTask> downloadTasks = manager.getDownloadTasks();
-        downloadTaskAdapter = new DownloadTaskAdapter(new ListDataProvider(downloadTasks));
-        rvDownloading.setAdapter(downloadTaskAdapter);
 
-        downloadTaskAdapter.setOnItemClickListener(new DownloadTaskAdapter.OnItemClickListener() {
+        downloadingTaskAdapter = new DownloadTaskAdapter(new ListDataProvider(downloadingTasks));
+        rvDownloading.setAdapter(downloadingTaskAdapter);
+
+        downloadingTaskAdapter.setOnItemClickListener(new DownloadTaskAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                DownloadTask task = (DownloadTask) downloadTaskAdapter.getDataProvider().getItem(position);
-                if(task.paused)
-                    manager.startDownload(task);
-                else
+                DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
+                if(task.status==DownloadTask.STATUS_DOWNLOADING) {
                     manager.pauseDownload();
+                }else if(task.status==DownloadTask.STATUS_IN_QUEUE){
+                    task.status = DownloadTask.STATUS_PAUSED;
+                }else if(task.status==DownloadTask.STATUS_PAUSED){
+                    task.status = DownloadTask.STATUS_IN_QUEUE;
+                    if(!manager.isDownloading())
+                        startNextTaskInQueue();
+                }
+                downloadingTaskAdapter.notifyDataSetChanged();
             }
 
             @Override
             public boolean onItemLongClick(View v, int position) {
-                final DownloadTask task = (DownloadTask) downloadTaskAdapter.getDataProvider().getItem(position);
+                final DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
                 new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
                         .setMessage("删除后将无法恢复")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 manager.deleteDownloadTask(task);
-                                downloadTaskAdapter.notifyDataSetChanged();
+                                distinguishDownloadTasks();
+                            }
+                        }).setNegativeButton("取消", null).show();
+                return true;
+            }
+        });
+
+        downloadedTaskAdapter = new DownloadTaskAdapter(new ListDataProvider(downloadedTasks));
+        rvDownloaded.setAdapter(downloadedTaskAdapter);
+
+        downloadedTaskAdapter.setOnItemClickListener(new DownloadTaskAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                DownloadTask task = (DownloadTask) downloadedTaskAdapter.getDataProvider().getItem(position);
+                HViewerApplication.temp = task;
+                Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public boolean onItemLongClick(View v, int position) {
+                final DownloadTask task = (DownloadTask) downloadedTaskAdapter.getDataProvider().getItem(position);
+                new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
+                        .setMessage("删除后将无法恢复")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                manager.deleteDownloadTask(task);
+                                distinguishDownloadTasks();
                             }
                         }).setNegativeButton("取消", null).show();
                 return true;
@@ -164,21 +206,55 @@ public class DownloadActivity extends AnimationActivity {
 
     }
 
+    private void distinguishDownloadTasks(){
+        List<DownloadTask> downloadTasks = manager.getDownloadTasks();
+        downloadingTaskAdapter.getDataProvider().clear();
+        downloadedTaskAdapter.getDataProvider().clear();
+        downloadingTasks = downloadingTaskAdapter.getDataProvider().getItems();
+        downloadedTasks = downloadedTaskAdapter.getDataProvider().getItems();
+        for(DownloadTask task : downloadTasks){
+            if(task.status==DownloadTask.STATUS_COMPLETED)
+                downloadedTasks.add(task);
+            else
+                downloadingTasks.add(task);
+        }
+        downloadingTaskAdapter.notifyDataSetChanged();
+        downloadedTaskAdapter.notifyDataSetChanged();
+    }
+
+    private void startNextTaskInQueue(){
+        for(DownloadTask task : downloadingTasks){
+            if(task.status==DownloadTask.STATUS_IN_QUEUE){
+                manager.startDownload(task);
+                break;
+            }
+        }
+    }
+
+
     public class DownloadReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(DownloadService.ON_START)||
-                    intent.getAction().equals(DownloadService.ON_PAUSE)||
                     intent.getAction().equals(DownloadService.ON_PROGRESS)) {
-                downloadTaskAdapter.notifyDataSetChanged();
-            }else if(intent.getAction().equals(DownloadService.ON_FAILURE)){
-                showSnackBar("下载失败，请重试");
-                downloadTaskAdapter.notifyDataSetChanged();
-            }else if(intent.getAction().equals(DownloadService.ON_COMPLETE)){
-                showSnackBar("任务下载成功");
-                downloadTaskAdapter.notifyDataSetChanged();
+                downloadingTaskAdapter.notifyDataSetChanged();
             }
+            else if(intent.getAction().equals(DownloadService.ON_PAUSE)) {
+                startNextTaskInQueue();
+            }
+            else if(intent.getAction().equals(DownloadService.ON_FAILURE)){
+                String message = intent.getStringExtra("message");
+                message = ("".equals(message))?"下载失败，请重试":message;
+                showSnackBar(message);
+                downloadingTaskAdapter.notifyDataSetChanged();
+            }
+            else if(intent.getAction().equals(DownloadService.ON_COMPLETE)){
+                showSnackBar("任务下载成功");
+                distinguishDownloadTasks();
+                startNextTaskInQueue();
+            }
+            Log.d("DownloadReceiver", intent.getAction());
         }
 
     }

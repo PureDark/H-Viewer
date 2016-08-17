@@ -48,6 +48,7 @@ public class Collection extends AbstractDataProvider.Data {
             try {
                 for (Field f : fs) {
                     if ("cid".equals(f.getName())
+                            || "cover".equals(f.getName())
                             || "tags".equals(f.getName())
                             || "pictures".equals(f.getName()))
                         continue;

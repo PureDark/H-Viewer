@@ -7,6 +7,7 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 public class Picture extends AbstractDataProvider.Data {
     public int pid;
     public String thumbnail, url, pic;
+    public int retries;
 
     public Picture(int pid, String url, String thumbnail) {
         this.pid = pid;
@@ -29,7 +30,7 @@ public class Picture extends AbstractDataProvider.Data {
             Field[] fs = Picture.class.getDeclaredFields();
             try {
                 for (Field f : fs) {
-                    if ("pid".equals(f.getName()) || "pic".equals(f.getName()))
+                    if ("pid".equals(f.getName()) || "pic".equals(f.getName()) || "retries".equals(f.getName()))
                         continue;
                     f.setAccessible(true);
                     Object v1 = f.get(this);

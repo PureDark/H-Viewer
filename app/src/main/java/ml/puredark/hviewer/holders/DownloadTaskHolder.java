@@ -31,6 +31,7 @@ public class DownloadTaskHolder {
     }
 
     public void saveDownloadTasks() {
+        setAllPaused();
         SharedPreferencesUtil.saveData(mContext, "DownloadTask", new Gson().toJson(downloadTasks));
     }
 
@@ -64,6 +65,12 @@ public class DownloadTaskHolder {
                 return true;
         }
         return false;
+    }
+
+    private void setAllPaused(){
+        for(DownloadTask task : downloadTasks){
+            task.status = DownloadTask.STATUS_PAUSED;
+        }
     }
 
 }

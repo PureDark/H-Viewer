@@ -96,7 +96,6 @@ public class ImageScaleUtil {
         iv.setImageBitmap(bitmap);
         destPath = createIfNotExist(destPath);
         File file = new File(destPath);
-        Log.d("DownloadManager", "destPath.exsit="+file.exists());
         FileInputStream fis;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -116,12 +115,10 @@ public class ImageScaleUtil {
         File file = new File(path);
         if(!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
-            Log.d("DownloadManager", "mkdirs!");
         }
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                Log.d("DownloadManager", "createNewFile!");
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

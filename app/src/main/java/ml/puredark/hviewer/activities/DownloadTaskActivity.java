@@ -2,15 +2,14 @@ package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -27,21 +26,17 @@ import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.activities.PictureViewerActivity.PicturePagerAdapter;
 import ml.puredark.hviewer.adapters.PictureAdapter;
 import ml.puredark.hviewer.adapters.TagAdapter;
 import ml.puredark.hviewer.adapters.ViewPagerAdapter;
-import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
-import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
@@ -51,13 +46,10 @@ import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.FastBlur;
-import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
 
-
-public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
+public class DownloadTaskActivity extends AnimationActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
@@ -76,25 +68,15 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @BindView(R.id.fab_menu)
     FloatingActionMenu fabMenu;
 
-    private Site site;
-
-    private Collection collection;
+    private DownloadTask task;
 
     private PullLoadMoreRecyclerView rvIndex;
 
     private PictureAdapter pictureAdapter;
 
-    private PicturePagerAdapter picturePagerAdapter;
+    private PictureViewerActivity.PicturePagerAdapter picturePagerAdapter;
 
     private CollectionViewHolder holder;
-
-    private int startPage;
-    private int currPage;
-
-    private boolean isIndexComplete = false;
-
-    private DownloadManager manager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,48 +91,29 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         setReturnButton(btnReturn);
         setAppBar(appBar);
         setFabMenu(fabMenu);
+        fabMenu.setVisibility(View.GONE);
 
         //获取传递过来的Collection实例
-        if (HViewerApplication.temp instanceof Site)
-            site = (Site) HViewerApplication.temp;
-        if (HViewerApplication.temp2 instanceof Collection)
-            collection = (Collection) HViewerApplication.temp2;
+        if (HViewerApplication.temp instanceof DownloadTask)
+            task = (DownloadTask) HViewerApplication.temp;
 
         //获取失败则结束此界面
-        if (site == null || collection == null) {
+        if (task == null || task.collection == null) {
             finish();
             return;
         }
-        collection = new LocalCollection(collection, site);
 
-        toolbar.setTitle(collection.title);
+        toolbar.setTitle(task.collection.title);
         setSupportActionBar(toolbar);
 
-        manager = new DownloadManager(this);
-
-        //解析URL模板
-        Map<String, String> map = RuleParser.parseUrl(site.galleryUrl);
-        String pageStr = map.get("page");
-        try {
-            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
-            currPage = startPage;
-        } catch (NumberFormatException e) {
-            startPage = 0;
-            currPage = startPage;
-        }
-
-        initCover(collection.cover);
+        initCover(task.collection.cover);
         initTabAndViewPager();
         refreshDescription();
-        getCollectionDetail(startPage);
-
-        //加入历史记录
-        HViewerApplication.historyHolder.addHistory((LocalCollection) collection);
     }
 
     private void initCover(String cover) {
-        if (cover != null && !CollectionActivity.this.isDestroyed())
-            Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
+        if (cover != null && !DownloadTaskActivity.this.isDestroyed())
+            Glide.with(DownloadTaskActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                     new Thread(new Runnable() {
@@ -200,9 +163,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
-        List<Picture> pictures = new ArrayList<>();
-        pictureAdapter = new PictureAdapter(new ListDataProvider(pictures));
-        pictureAdapter.setCookie(site.cookie);
+        pictureAdapter = new PictureAdapter(new ListDataProvider(task.collection.pictures));
+        pictureAdapter.setCookie(task.collection.site.cookie);
         rvIndex.setAdapter(pictureAdapter);
 
         rvIndex.getRecyclerView().setClipToPadding(false);
@@ -215,9 +177,9 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                picturePagerAdapter = new PicturePagerAdapter(site, pictureAdapter.getDataProvider().getItems());
+                picturePagerAdapter = new PictureViewerActivity.PicturePagerAdapter(task.collection.site, task.collection.pictures);
                 HViewerApplication.temp = picturePagerAdapter;
-                Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
+                Intent intent = new Intent(DownloadTaskActivity.this, PictureViewerActivity.class);
                 intent.putExtra("position", position);
                 startActivity(intent);
             }
@@ -226,82 +188,24 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         //根据item宽度自动设置spanCount
         GridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, DensityUtil.dp2px(this, 100));
         rvIndex.getRecyclerView().setLayoutManager(layoutManager);
-        rvIndex.setPullRefreshEnable(true);
+        rvIndex.setPullRefreshEnable(false);
         rvIndex.setPushRefreshEnable(false);
-
-        //下拉刷新和加载更多
-        rvIndex.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
-            @Override
-            public void onRefresh() {
-                currPage = startPage;
-                getCollectionDetail(currPage);
-            }
-
-            @Override
-            public void onLoadMore() {
-            }
-        });
 
     }
 
     private void refreshDescription(){
-        toolbar.setTitle(collection.title);
-        holder.tvTitle.setText(collection.title);
-        holder.tvUploader.setText(collection.uploader);
-        holder.tvCategory.setText(collection.category);
+        toolbar.setTitle(task.collection.title);
+        holder.tvTitle.setText(task.collection.title);
+        holder.tvUploader.setText(task.collection.uploader);
+        holder.tvCategory.setText(task.collection.category);
         TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-        if (collection.tags != null) {
+        if (task.collection.tags != null) {
             adapter.getDataProvider().clear();
-            adapter.getDataProvider().addAll(collection.tags);
+            adapter.getDataProvider().addAll(task.collection.tags);
         }
         adapter.notifyDataSetChanged();
-        holder.rbRating.setRating(collection.rating);
-        holder.tvSubmittime.setText(collection.datetime);
-    }
-
-    private void getCollectionDetail(final int page) {
-        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", collection.idCode)
-                .replaceAll("\\{page:" + startPage + "\\}", "" + page);
-        HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String result) {
-                collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule, url);
-
-                refreshDescription();
-
-                if (collection.pictures != null && collection.pictures.size() > 0) {
-                    if (page == startPage) {
-                        pictureAdapter.getDataProvider().clear();
-                        pictureAdapter.getDataProvider().addAll(collection.pictures);
-                        pictureAdapter.notifyDataSetChanged();
-                        if (picturePagerAdapter != null)
-                            picturePagerAdapter.notifyDataSetChanged();
-                        currPage = page;
-                        getCollectionDetail(currPage + 1);
-                    } else if (!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))) {
-                        pictureAdapter.getDataProvider().addAll(collection.pictures);
-                        pictureAdapter.notifyDataSetChanged();
-                        if (picturePagerAdapter != null)
-                            picturePagerAdapter.notifyDataSetChanged();
-                        currPage = page;
-                        getCollectionDetail(currPage + 1);
-                    } else {
-                        isIndexComplete = true;
-                        collection.pictures = pictureAdapter.getDataProvider().getItems();
-                    }
-                } else {
-                    isIndexComplete = true;
-                    collection.pictures = pictureAdapter.getDataProvider().getItems();
-                }
-                rvIndex.setPullLoadMoreCompleted();
-            }
-
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-                showSnackBar(error.getErrorString());
-                rvIndex.setPullLoadMoreCompleted();
-            }
-        });
+        holder.rbRating.setRating(task.collection.rating);
+        holder.tvSubmittime.setText(task.collection.datetime);
     }
 
     @OnClick(R.id.btn_return)
@@ -309,33 +213,15 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         onBackPressed();
     }
 
-    @OnClick(R.id.fab_favor)
-    void favor() {
-        HViewerApplication.favouriteHolder.addFavourite((LocalCollection) collection);
-        showSnackBar("收藏成功！");
-    }
-
-    @OnClick(R.id.fab_download)
-    void download() {
-        if (isIndexComplete) {
-            if (!manager.createDownloadTask((LocalCollection) collection))
-                showSnackBar("下载任务已在列表中！");
-            else
-                showSnackBar("下载任务已添加");
-        } else {
-            showSnackBar("请等待目录加载完毕再下载！");
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
+        picturePagerAdapter = null;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        manager.unbindService(this);
     }
 
     public class CollectionViewHolder {
@@ -365,6 +251,5 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                     new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
             rvTags.setLayoutManager(layoutManager);
         }
-
     }
 }

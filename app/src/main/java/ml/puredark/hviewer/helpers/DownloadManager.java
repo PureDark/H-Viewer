@@ -9,7 +9,6 @@ import android.util.Log;
 
 import java.util.List;
 
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
@@ -30,10 +29,10 @@ public class DownloadManager {
     private ServiceConnection conn = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d("DownloadManager", "serviceConnected");
-            if(service instanceof DownloadService.DownloadBinder)
+            if (service instanceof DownloadService.DownloadBinder)
                 binder = (DownloadService.DownloadBinder) service;
-            Log.d("DownloadManager", "serviceConnected binder="+binder);
         }
+
         public void onServiceDisconnected(ComponentName name) {
         }
     };
@@ -59,35 +58,38 @@ public class DownloadManager {
             return DEFAULT_PATH;
     }
 
-    public List<DownloadTask> getDownloadTasks(){
+    public boolean isDownloading() {
+        return (binder.getCurrTask() != null && binder.getCurrTask().status == DownloadTask.STATUS_DOWNLOADING);
+    }
+
+    public List<DownloadTask> getDownloadTasks() {
         return holder.getDownloadTasks();
     }
 
     public boolean createDownloadTask(LocalCollection collection) {
         String path = getDownloadPath() + "/" + collection.title + "/";
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
-        if(holder.isInList(task)||binder==null)
+        if (holder.isInList(task) || binder == null)
             return false;
-        Log.d("DownloadManager", "task.collection.pictures.size():" + task.collection.pictures.size());
         holder.addDownloadTask(task);
-        if(binder.getCurrTask()==null)
+        if (!isDownloading())
             startDownload(task);
         return true;
     }
 
-    public void startDownload(DownloadTask task){
+    public void startDownload(DownloadTask task) {
         binder.start(task);
     }
 
-    public void pauseDownload(){
+    public void pauseDownload() {
         binder.pause();
     }
 
-    public void deleteDownloadTask(DownloadTask downloadTask){
+    public void deleteDownloadTask(DownloadTask downloadTask) {
         holder.deleteDownloadTask(downloadTask);
     }
 
-    public void unbindService(Context context){
+    public void unbindService(Context context) {
         context.unbindService(conn);
     }
 
