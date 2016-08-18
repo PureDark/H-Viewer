@@ -11,7 +11,7 @@ An android feed reader application which fetch data with selector and regular ex
 ##Sites' QR Code
 1.lofi.e-hentai
 
-![](http://qr.api.cli.im/qr?data=http%253A%252F%252Fjsondepot.mcsky.org%252F2%252F&level=H&transparent=false&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=280&kid=cliim&key=db198a0959e820834114ae0ace8e91cc)
+![](http://qr.api.cli.im/qr?data=http%3A%2F%2Fjsondepot.mcsky.org%2F2%2F&level=H&transparent=&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=220&kid=cliim&time=1471550842&key=c745a4fc9bf597a6f2fc30875e9595ec)
 
 2.g.e-hentai
 
