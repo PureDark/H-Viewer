@@ -200,7 +200,7 @@ public class SitePropViewHolder {
         inputIndexUrl.setText(site.indexUrl);
         inputGalleryUrl.setText(site.galleryUrl);
         inputSearchUrl.setText(site.searchUrl);
-        inputSearchUrl.setText(site.cookie);
+        inputCookie.setText(site.cookie);
         if (site.picUrlSelector != null) {
             inputPicUrlSekectorSelector.setText(joinSelector(site.picUrlSelector));
             inputPicUrlSekectorRegex.setText(site.picUrlSelector.regex);

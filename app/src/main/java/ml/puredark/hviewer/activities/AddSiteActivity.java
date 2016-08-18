@@ -1,11 +1,14 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.gc.materialdesign.views.ButtonFlat;
 import com.github.clans.fab.FloatingActionButton;
@@ -33,6 +36,8 @@ public class AddSiteActivity extends AnimationActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.edittext_container)
+    RelativeLayout edittextContainer;
     @BindView(R.id.view_add_site_json)
     View viewAddSiteJson;
     @BindView(R.id.view_site_details)
@@ -62,6 +67,12 @@ public class AddSiteActivity extends AnimationActivity {
         MDStatusBarCompat.setOrdinaryToolBar(this);
 
         setContainer(coordinatorLayout);
+
+        if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)) {
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) edittextContainer.getLayoutParams();
+            lp.topMargin += MDStatusBarCompat.getStatusBarHeight(this);
+            edittextContainer.setLayoutParams(lp);
+        }
 
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
@@ -149,7 +160,7 @@ public class AddSiteActivity extends AnimationActivity {
         try {
             Site site = new Gson().fromJson(json, Site.class);
             List<Site> sites = siteHolder.getSites();
-            int sid = sites.get(sites.size() - 1).sid + 1;
+            int sid = (sites.size() > 0) ? sites.get(sites.size() - 1).sid + 1 : 1;
             site.sid = sid;
             if (site.indexRule == null || site.galleryRule == null)
                 showSnackBar("输入的规则缺少信息");

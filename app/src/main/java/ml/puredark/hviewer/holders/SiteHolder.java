@@ -32,7 +32,6 @@ public class SiteHolder {
 
     public void addSite(Site item) {
         if (item == null) return;
-        deleteSite(item);
         sites.add(item);
         saveSites();
     }

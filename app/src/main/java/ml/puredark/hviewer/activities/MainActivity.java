@@ -158,98 +158,98 @@ public class MainActivity extends AnimationActivity {
 
         List<Site> sites = HViewerApplication.siteHolder.getSites();
 
-        sites.clear();
-
-        Rule indexRule = new Rule();
-        indexRule.item = new Selector("#ig .ig", null, null, null, null);
-        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)", null);
-        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null, null);
-        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)", null);
-        indexRule.cover = new Selector("td.ii img", "attr", "src", null, null);
-        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null, null);
-        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})", null);
-        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null, null);
-        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)", null);
-
-        Rule galleryRule = new Rule();
-        galleryRule.item = new Selector("#gh .gi", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("a img", "attr", "src", null, null);
-
-        Selector pic = new Selector("img#sm", "attr", "src", null, null);
-
-        sites.add(new Site(1, "Lofi.E-hentai",
-                "http://lofi.e-hentai.org/?page={page:0}",
-                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
-                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
-                indexRule, galleryRule, pic));
-
-        indexRule = new Rule();
-        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
-        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
-        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
-        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
-        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
-        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
-        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null, null);
-        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-(\\d+)px -(\\d+)px", "5-$1/16-($2-1)/40");
-
-        galleryRule = new Rule();
-        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
-        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
-
-        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
-
-        sites.add(new Site(2, "G.E-hentai",
-                "http://g.e-hentai.org/?page={page:0}",
-                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}&nw=always",
-                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
-                indexRule, galleryRule, pic));
-
-        indexRule = new Rule();
-        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null, null);
-        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)", null);
-        indexRule.title = new Selector("div.info div.title a", "html", null, null, null);
-        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null, null);
-        indexRule.datetime = new Selector("div.info div.info_col", "html", null, "(\\d{4}-\\d{2}-\\d{2})", null);
-
-        galleryRule = new Rule();
-        galleryRule.item = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-original", null, null);
-
-        pic = new Selector("img#picarea", "attr", "src", null, null);
-
-        sites.add(new Site(3, "绅士漫画",
-                "http://www.wnacg.org/albums-index-page-{page:1}.html",
-                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
-                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
-                indexRule, galleryRule, pic));
-
-        indexRule = new Rule();
-        indexRule.item = new Selector("div.container div.gallery", null, null, null, null);
-        indexRule.idCode = new Selector("a", "attr", "href", null, null);
-        indexRule.title = new Selector("a div.caption", "html", null, null, null);
-        indexRule.cover = new Selector("a img", "attr", "src", "(.*)", "https:$1");
-
-        galleryRule = new Rule();
-        galleryRule.title = new Selector("div#info h2", "html", null, null, null);
-        galleryRule.category = new Selector(".tag-container:eq(6) span.tags a", "html", null, "(.*)<span", null);
-        galleryRule.tags = new Selector("span.tags a", "html", null, "(.*)<span", null);
-        galleryRule.item = new Selector("div.container div.thumb-container", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
-        galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-src", "(.*)", "https:$1");
-
-        pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
-
-        sites.add(new Site(4, "nhentai",
-                "https://nhentai.net/?page={page:1}",
-                "https://nhentai.net{idCode:}",
-                "https://nhentai.net/search/?q={keyword:}&page={page:1}",
-                indexRule, galleryRule, pic));
+//        sites.clear();
+//
+//        Rule indexRule = new Rule();
+//        indexRule.item = new Selector("#ig .ig", null, null, null, null);
+//        indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)", null);
+//        indexRule.title = new Selector("table.it tr:eq(0) a", "html", null, null, null);
+//        indexRule.uploader = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(by .*)", null);
+//        indexRule.cover = new Selector("td.ii img", "attr", "src", null, null);
+//        indexRule.category = new Selector("table.it tr:eq(2) td:eq(1)", "html", null, null, null);
+//        indexRule.datetime = new Selector("table.it tr:eq(1) td:eq(1)", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})", null);
+//        indexRule.rating = new Selector("table.it tr:eq(4) td:eq(1)", "html", null, null, null);
+//        indexRule.tags = new Selector("table.it tr:eq(3) td:eq(1)", "html", null, "([a-zA-Z0-9 -]+)", null);
+//
+//        Rule galleryRule = new Rule();
+//        galleryRule.item = new Selector("#gh .gi", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("a img", "attr", "src", null, null);
+//
+//        Selector pic = new Selector("img#sm", "attr", "src", null, null);
+//
+//        sites.add(new Site(1, "Lofi.E-hentai",
+//                "http://lofi.e-hentai.org/?page={page:0}",
+//                "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
+//                "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
+//                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
+//        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
+//        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
+//        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
+//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
+//        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
+//        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null, null);
+//        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-(\\d+)px -(\\d+)px", "5-$1/16-($2-1)/40");
+//
+//        galleryRule = new Rule();
+//        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
+//        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
+//        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
+//
+//        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
+//
+//        sites.add(new Site(2, "G.E-hentai",
+//                "http://g.e-hentai.org/?page={page:0}",
+//                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}&nw=always",
+//                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
+//                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null, null);
+//        indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)", null);
+//        indexRule.title = new Selector("div.info div.title a", "html", null, null, null);
+//        indexRule.cover = new Selector("div.pic_box a img", "attr", "data-original", null, null);
+//        indexRule.datetime = new Selector("div.info div.info_col", "html", null, "(\\d{4}-\\d{2}-\\d{2})", null);
+//
+//        galleryRule = new Rule();
+//        galleryRule.item = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-original", null, null);
+//
+//        pic = new Selector("img#picarea", "attr", "src", null, null);
+//
+//        sites.add(new Site(3, "绅士漫画",
+//                "http://www.wnacg.org/albums-index-page-{page:1}.html",
+//                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
+//                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
+//                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("div.container div.gallery", null, null, null, null);
+//        indexRule.idCode = new Selector("a", "attr", "href", null, null);
+//        indexRule.title = new Selector("a div.caption", "html", null, null, null);
+//        indexRule.cover = new Selector("a img", "attr", "src", "(.*)", "https:$1");
+//
+//        galleryRule = new Rule();
+//        galleryRule.title = new Selector("div#info h2", "html", null, null, null);
+//        galleryRule.category = new Selector(".tag-container:eq(6) span.tags a", "html", null, "(.*)<span", null);
+//        galleryRule.tags = new Selector("span.tags a", "html", null, "(.*)<span", null);
+//        galleryRule.item = new Selector("div.container div.thumb-container", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-src", "(.*)", "https:$1");
+//
+//        pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
+//
+//        sites.add(new Site(4, "nhentai",
+//                "https://nhentai.net/?page={page:1}",
+//                "https://nhentai.net{idCode:}",
+//                "https://nhentai.net/search/?q={keyword:}&page={page:1}",
+//                indexRule, galleryRule, pic));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
