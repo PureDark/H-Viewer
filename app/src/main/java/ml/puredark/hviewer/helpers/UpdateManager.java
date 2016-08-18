@@ -29,6 +29,8 @@ import ml.puredark.hviewer.R;
 public class UpdateManager {
 
     private Context mContext;
+    //标题
+    private String title = "新版本";
     //提示语
     private String updateMsg = "应用更新了哦，亲快下载吧~";
     //返回的安装包url
@@ -65,9 +67,10 @@ public class UpdateManager {
         ;
     };
 
-    public UpdateManager(Context context, String apkUrl, String updateMsg) {
+    public UpdateManager(Context context, String apkUrl, String title, String updateMsg) {
         this.mContext = context;
         this.apkUrl = apkUrl;
+        this.title = title;
         this.updateMsg = updateMsg;
     }
 
@@ -82,7 +85,7 @@ public class UpdateManager {
 
     private void showNoticeDialog() {
         AlertDialog.Builder builder = new Builder(mContext);
-        builder.setTitle("软件版本更新");
+        builder.setTitle(title);
         builder.setMessage(updateMsg);
         builder.setPositiveButton("下载", new OnClickListener() {
             @Override

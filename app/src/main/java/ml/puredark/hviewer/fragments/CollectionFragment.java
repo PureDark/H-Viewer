@@ -84,6 +84,7 @@ public class CollectionFragment extends MyFragment {
             public void onRefresh() {
                 keyword = null;
                 currPage = startPage;
+                rvCollection.setRefreshing(true);
                 getCollections(null, currPage);
             }
 
@@ -105,6 +106,7 @@ public class CollectionFragment extends MyFragment {
                 currPage = startPage;
             }
             getCollections(null, startPage);
+
         }
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
             @Override

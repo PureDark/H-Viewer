@@ -2,6 +2,7 @@ package ml.puredark.hviewer.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -46,6 +48,7 @@ import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 
+import static android.R.id.toggle;
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -92,6 +95,13 @@ public class MainActivity extends AnimationActivity {
         // User interface
         setSupportActionBar(toolbar);
         setContainer(coordinatorLayout);
+
+
+        if((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) ) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) searchView.getLayoutParams();
+            lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
+            searchView.setLayoutParams(lp);
+        }
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

@@ -94,6 +94,9 @@ public class SettingActivity extends AnimationActivity {
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             if(preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)){
+                checkUpdate();
+            }else if(preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)){
+
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
@@ -105,29 +108,19 @@ public class SettingActivity extends AnimationActivity {
         }
 
         public void checkUpdate(){
-            String url = "https://github.com/PureDark/H-Viewer/raw/master/update.json";
+            String url = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
             HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String result) {
                     try {
-                        JsonArray versions = new JsonParser().parse(result).getAsJsonArray();
-                        JsonObject version = null;
-                        for(JsonElement element : versions){
-                            JsonObject temp = element.getAsJsonObject();
-                            if(version == null)
-                                version = temp;
-                            else if(temp.get("vid").getAsInt()>version.get("vid").getAsInt()){
-                                version = temp;
-                            }
-                        }
-                        if(version!=null) {
+                        JsonObject version = new JsonParser().parse(result).getAsJsonObject();
+                        JsonArray assets = version.get("assets").getAsJsonArray();
+                        if(assets.size()>0) {
                             String oldVersion = HViewerApplication.getVersionName();
-                            String newVersion = version.get("version").getAsString();
-                            String url = version.get("url").getAsString();
-                            String detail = version.get("detail").getAsString();
-                            String ver = version.get("version").getAsString();
-                            String msg = ver + "版本更新内容：\n" + detail;
-                            new UpdateManager(HViewerApplication.mContext, url, msg).checkUpdateInfo(oldVersion, newVersion);
+                            String newVersion = version.get("tag_name").getAsString().substring(1);
+                            String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
+                            String detail = version.get("body").getAsString();
+                            new UpdateManager(HViewerApplication.mContext, url, newVersion + "版本更新", detail).checkUpdateInfo(oldVersion, newVersion);
                         }else{
                             activity.showSnackBar("当前已是最新版本！");
                         }

@@ -142,6 +142,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         initCover(collection.cover);
         initTabAndViewPager();
         refreshDescription();
+        rvIndex.setRefreshing(true);
         getCollectionDetail(startPage);
 
         //加入历史记录
@@ -288,12 +289,13 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                     } else {
                         isIndexComplete = true;
                         collection.pictures = pictureAdapter.getDataProvider().getItems();
+                        rvIndex.setPullLoadMoreCompleted();
                     }
                 } else {
                     isIndexComplete = true;
                     collection.pictures = pictureAdapter.getDataProvider().getItems();
+                    rvIndex.setPullLoadMoreCompleted();
                 }
-                rvIndex.setPullLoadMoreCompleted();
             }
 
             @Override
