@@ -3,23 +3,27 @@ package ml.puredark.hviewer.activities;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.nineoldandroids.animation.Animator;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.helpers.HProxy;
+import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class SettingActivity extends AnimationActivity {
@@ -63,6 +67,12 @@ public class SettingActivity extends AnimationActivity {
         public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
         public static final String KEY_PREF_ABOUT_ABOUT = "pref_about_about";
 
+        private AnimationActivity activity;
+
+        public SettingFragment(){
+            activity = (AnimationActivity) this.getActivity();
+        }
+
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -81,10 +91,57 @@ public class SettingActivity extends AnimationActivity {
             }
         }
 
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            if(preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)){
+            }
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
+
         public void updateProxyOptions(boolean isEnabled) {
             getPreferenceScreen().findPreference(KEY_PREF_PROXY_REQUEST).setEnabled(isEnabled);
             getPreferenceScreen().findPreference(KEY_PREF_PROXY_PICTURE).setEnabled(isEnabled);
             getPreferenceScreen().findPreference(KEY_PREF_PROXY_SERVER).setEnabled(isEnabled);
+        }
+
+        public void checkUpdate(){
+            String url = "https://github.com/PureDark/H-Viewer/raw/master/update.json";
+            HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        JsonArray versions = new JsonParser().parse(result).getAsJsonArray();
+                        JsonObject version = null;
+                        for(JsonElement element : versions){
+                            JsonObject temp = element.getAsJsonObject();
+                            if(version == null)
+                                version = temp;
+                            else if(temp.get("vid").getAsInt()>version.get("vid").getAsInt()){
+                                version = temp;
+                            }
+                        }
+                        if(version!=null) {
+                            String oldVersion = HViewerApplication.getVersionName();
+                            String newVersion = version.get("version").getAsString();
+                            String url = version.get("url").getAsString();
+                            String detail = version.get("detail").getAsString();
+                            String ver = version.get("version").getAsString();
+                            String msg = ver + "版本更新内容：\n" + detail;
+                            new UpdateManager(HViewerApplication.mContext, url, msg).checkUpdateInfo(oldVersion, newVersion);
+                        }else{
+                            activity.showSnackBar("当前已是最新版本！");
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        activity.showSnackBar("当前已是最新版本！");
+                    }
+                }
+
+                @Override
+                public void onFailure(HViewerHttpClient.HttpError error) {
+                    activity.showSnackBar("当前已是最新版本！");
+                }
+            });
         }
 
     }

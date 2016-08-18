@@ -84,12 +84,14 @@ public class DownloadActivity extends AnimationActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         MDStatusBarCompat.setToolbarTabLayout(this);
 
+        receiver = new MyDownloadReceiver();
+        setDownloadReceiver(receiver);
+
         manager = new DownloadManager(this);
         downloadingTasks = new ArrayList<>();
         downloadedTasks = new ArrayList<>();
 
         initTabAndViewPager();
-        distinguishDownloadTasks();
     }
 
     @OnClick(R.id.btn_return)
@@ -100,20 +102,7 @@ public class DownloadActivity extends AnimationActivity {
     @Override
     public void onResume(){
         super.onResume();
-        IntentFilter downloadIntentFilter = new IntentFilter();
-        downloadIntentFilter.addAction(DownloadService.ON_START);
-        downloadIntentFilter.addAction(DownloadService.ON_PAUSE);
-        downloadIntentFilter.addAction(DownloadService.ON_PROGRESS);
-        downloadIntentFilter.addAction(DownloadService.ON_COMPLETE);
-        downloadIntentFilter.addAction(DownloadService.ON_FAILURE);
-        receiver = new DownloadReceiver();
-        registerReceiver(receiver, downloadIntentFilter);
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        unregisterReceiver(receiver);
+        distinguishDownloadTasks();
     }
 
     @Override
@@ -232,7 +221,7 @@ public class DownloadActivity extends AnimationActivity {
     }
 
 
-    public class DownloadReceiver extends BroadcastReceiver {
+    public class MyDownloadReceiver extends DownloadReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {

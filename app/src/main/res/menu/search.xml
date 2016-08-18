@@ -5,19 +5,19 @@
         android:icon="@drawable/selector_download"
         android:orderInCategory="1"
         android:title="下载"
-        app:showAsAction="collapseActionView" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_history"
         android:icon="@drawable/selector_history"
         android:orderInCategory="2"
         android:title="历史记录"
-        app:showAsAction="collapseActionView" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_favourite"
         android:icon="@drawable/selector_favourite"
         android:orderInCategory="3"
         android:title="收藏夹"
-        app:showAsAction="collapseActionView" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/selector_search"

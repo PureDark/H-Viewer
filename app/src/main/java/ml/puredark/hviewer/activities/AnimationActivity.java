@@ -1,11 +1,16 @@
 package ml.puredark.hviewer.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,6 +22,7 @@ import com.nineoldandroids.animation.Animator;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.services.DownloadService;
 
 /**
  * Created by PureDark on 2016/8/13.
@@ -31,6 +37,8 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     private AppBarLayout appBar;
     private FloatingActionMenu fabMenu;
 
+    private DownloadReceiver receiver;
+
 
     //是否动画中
     private boolean animating = false;
@@ -44,6 +52,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
         btnReturnIcon.setColor(getResources().getColor(R.color.white));
         btnReturnIcon.setProgress(1f);
 
+        receiver = new DownloadReceiver();
     }
 
     protected void setReturnButton(ImageView btnReturn) {
@@ -61,6 +70,10 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
 
     protected void setFabMenu(FloatingActionMenu fabMenu) {
         this.fabMenu = fabMenu;
+    }
+
+    protected void setDownloadReceiver(DownloadReceiver receiver) {
+        this.receiver = receiver;
     }
 
     public void showSnackBar(String content){
@@ -113,6 +126,13 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter downloadIntentFilter = new IntentFilter();
+        downloadIntentFilter.addAction(DownloadService.ON_START);
+        downloadIntentFilter.addAction(DownloadService.ON_PAUSE);
+        downloadIntentFilter.addAction(DownloadService.ON_PROGRESS);
+        downloadIntentFilter.addAction(DownloadService.ON_COMPLETE);
+        downloadIntentFilter.addAction(DownloadService.ON_FAILURE);
+        registerReceiver(receiver, downloadIntentFilter);
         if (appBar != null)
             appBar.addOnOffsetChangedListener(this);
     }
@@ -120,6 +140,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     public void onPause() {
         super.onPause();
+        unregisterReceiver(receiver);
         if (appBar != null)
             appBar.removeOnOffsetChangedListener(this);
     }
@@ -140,6 +161,28 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
             if (fabMenu != null)
                 fabMenu.showMenu(true);
         }
+    }
+
+
+    public class DownloadReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent){
+            if (intent.getAction().equals(DownloadService.ON_START)||
+                    intent.getAction().equals(DownloadService.ON_PROGRESS)) {
+            }
+            else if(intent.getAction().equals(DownloadService.ON_PAUSE)) {
+            }
+            else if(intent.getAction().equals(DownloadService.ON_FAILURE)){
+                String message = intent.getStringExtra("message");
+                message = ("".equals(message))?"当前任务下载失败，请重试":message;
+                showSnackBar(message);
+            }
+            else if(intent.getAction().equals(DownloadService.ON_COMPLETE)){
+                showSnackBar("一个任务下载成功");
+            }
+        }
+
     }
 
 }
