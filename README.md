@@ -5,7 +5,9 @@ An android feed reader application which fetch data with selector and regular ex
 
 ## Usage
 1.Slide to open drawer
+
 2.Click to add a site
+
 3.Scan QR codes below
 
 ##Sites' QR Code
