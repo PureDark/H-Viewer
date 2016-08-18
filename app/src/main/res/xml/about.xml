@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="关于H-Viewer">
+
+        <Preference
+            android:key="pref_about_author"
+            android:title="@string/setting_about_author"
+            android:summary="@string/setting_about_author_summary"/>
+
+        <Preference
+            android:key="pref_about_github"
+            android:title="@string/setting_about_github"
+            android:summary="@string/setting_about_github_summary"/>
+        <Preference
+            android:key="pref_about_changelog"
+            android:title="@string/setting_about_changelog"
+            android:summary="@string/setting_about_changelog_summary"/>
+        <Preference
+            android:key="pref_about_version"
+            android:title="@string/setting_about_version"
+            android:summary="@string/setting_about_version_summary"/>
+        <Preference
+            android:key="pref_about_donate"
+            android:title="@string/setting_about_donate"
+            android:summary="@string/setting_about_donate_summary"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

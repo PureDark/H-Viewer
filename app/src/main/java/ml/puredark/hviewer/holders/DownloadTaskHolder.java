@@ -11,6 +11,7 @@ import java.util.List;
 
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
+import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
@@ -70,6 +71,8 @@ public class DownloadTaskHolder {
     private void setAllPaused(){
         for(DownloadTask task : downloadTasks){
             task.status = DownloadTask.STATUS_PAUSED;
+            for(Picture picture : task.collection.pictures)
+                picture.status = Picture.STATUS_WAITING;
         }
     }
 

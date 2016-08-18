@@ -55,7 +55,9 @@
         <activity
             android:name=".activities.HistoryActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.DownloadActivity" />
+        <activity
+            android:name=".activities.DownloadActivity"
+            android:screenOrientation="portrait" />
 
         <service android:name=".services.DownloadService">
             <intent-filter>
@@ -63,7 +65,15 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activities.DownloadTaskActivity"></activity>
+        <activity
+            android:name=".activities.DownloadTaskActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.LicenseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.AboutActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

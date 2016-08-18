@@ -1,7 +1,7 @@
 package ml.puredark.hviewer.activities;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -9,9 +9,9 @@ import android.preference.PreferenceScreen;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -20,7 +20,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
@@ -34,12 +33,14 @@ public class SettingActivity extends AnimationActivity {
     Toolbar toolbar;
     @BindView(R.id.btn_return)
     ImageView btnReturn;
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting);
-        getFragmentManager().beginTransaction().replace(R.id.setting_content, new SettingFragment()).commit();
+        setContentView(R.layout.activity_preference);
+        getFragmentManager().beginTransaction().replace(R.id.setting_content, new SettingFragment(this)).commit();
         ButterKnife.bind(this);
         MDStatusBarCompat.setOrdinaryToolBar(this);
 
@@ -50,6 +51,8 @@ public class SettingActivity extends AnimationActivity {
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
 
+        tvTitle.setText("设置");
+
     }
 
     @OnClick(R.id.btn_return)
@@ -57,7 +60,7 @@ public class SettingActivity extends AnimationActivity {
         onBackPressed();
     }
 
-    public static class SettingFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+    public static class SettingFragment extends PreferenceFragment{
         public static final String KEY_PREF_PROXY_ENABLED = "pref_proxy_enabled";
         public static final String KEY_PREF_PROXY_REQUEST = "pref_proxy_request";
         public static final String KEY_PREF_PROXY_PICTURE = "pref_proxy_picture";
@@ -65,12 +68,16 @@ public class SettingActivity extends AnimationActivity {
 
         public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
         public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
-        public static final String KEY_PREF_ABOUT_ABOUT = "pref_about_about";
+        public static final String KEY_PREF_ABOUT_H_VIEWER = "pref_about_h_viewer";
 
         private AnimationActivity activity;
 
         public SettingFragment(){
-            activity = (AnimationActivity) this.getActivity();
+        }
+
+        @SuppressLint("ValidFragment")
+        public SettingFragment(AnimationActivity activity){
+            this.activity = activity;
         }
 
         @Override
@@ -78,17 +85,6 @@ public class SettingActivity extends AnimationActivity {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName(SharedPreferencesUtil.FILE_NAME);
             addPreferencesFromResource(R.xml.preferences);
-            getPreferenceScreen().getSharedPreferences()
-                    .registerOnSharedPreferenceChangeListener(this);
-
-            updateProxyOptions(HProxy.isEnabled());
-        }
-
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals(KEY_PREF_PROXY_ENABLED)) {
-                updateProxyOptions(sharedPreferences.getBoolean(key, true));
-            }
         }
 
         @Override
@@ -96,15 +92,13 @@ public class SettingActivity extends AnimationActivity {
             if(preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)){
                 checkUpdate();
             }else if(preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)){
-
+                Intent intent = new Intent(activity, LicenseActivity.class);
+                startActivity(intent);
+            }else if(preference.getKey().equals(KEY_PREF_ABOUT_H_VIEWER)){
+                Intent intent = new Intent(activity, AboutActivity.class);
+                startActivity(intent);
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
-        }
-
-        public void updateProxyOptions(boolean isEnabled) {
-            getPreferenceScreen().findPreference(KEY_PREF_PROXY_REQUEST).setEnabled(isEnabled);
-            getPreferenceScreen().findPreference(KEY_PREF_PROXY_PICTURE).setEnabled(isEnabled);
-            getPreferenceScreen().findPreference(KEY_PREF_PROXY_SERVER).setEnabled(isEnabled);
         }
 
         public void checkUpdate(){
@@ -120,7 +114,8 @@ public class SettingActivity extends AnimationActivity {
                             String newVersion = version.get("tag_name").getAsString().substring(1);
                             String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
                             String detail = version.get("body").getAsString();
-                            new UpdateManager(HViewerApplication.mContext, url, newVersion + "版本更新", detail).checkUpdateInfo(oldVersion, newVersion);
+                            new UpdateManager(HViewerApplication.mContext, url, newVersion + "版本更新", detail)
+                                    .checkUpdateInfo(oldVersion, newVersion);
                         }else{
                             activity.showSnackBar("当前已是最新版本！");
                         }

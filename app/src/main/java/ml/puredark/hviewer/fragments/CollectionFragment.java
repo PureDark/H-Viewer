@@ -152,7 +152,9 @@ public class CollectionFragment extends MyFragment {
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                ((AnimationActivity)getActivity()).showSnackBar(error.getErrorString());
+                AnimationActivity activity = (AnimationActivity)getActivity();
+                if(activity!=null)
+                    activity.showSnackBar(error.getErrorString());
                 rvCollection.setPullLoadMoreCompleted();
             }
         });
@@ -169,6 +171,11 @@ public class CollectionFragment extends MyFragment {
         HViewerApplication.searchSuggestionHolder.removeDuplicate();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onAttach(Context context) {

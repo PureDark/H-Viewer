@@ -17,7 +17,7 @@ public class TagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public TagAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
-        setHasStableIds(true);
+        setHasStableIds(false);
     }
 
 

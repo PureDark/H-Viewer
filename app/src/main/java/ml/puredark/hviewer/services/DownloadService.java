@@ -44,7 +44,9 @@ public class DownloadService extends Service {
         pauseNoBrocast();
         currTask = task;
         currTask.status = STATUS_DOWNLOADING;
-        downloadCurrPage(currTask);
+        downloadNewPage(currTask);
+        downloadNewPage(currTask);
+        downloadNewPage(currTask);
         Intent intent = new Intent(ON_START);
         sendBroadcast(intent);
     }
@@ -69,10 +71,29 @@ public class DownloadService extends Service {
         return currTask;
     }
 
-    private void downloadCurrPage(final DownloadTask task) {
-        if (task.curPosition > task.collection.pictures.size())
+    private void downloadNewPage(final DownloadTask task) {
+        boolean isCompleted = true;
+        Picture currPic = null;
+        for(Picture picture : task.collection.pictures){
+            if(picture.status==Picture.STATUS_WAITING) {
+                currPic = picture;
+                currPic.status = Picture.STATUS_DOWNLOADING;
+                isCompleted = false;
+                break;
+            }else if(picture.status==Picture.STATUS_DOWNLOADING){
+                isCompleted = false;
+            }
+        }
+
+        if (currPic==null) {
+            if(isCompleted) {
+                task.status = STATUS_COMPLETED;
+                Intent intent = new Intent(ON_COMPLETE);
+                sendBroadcast(intent);
+            }
             return;
-        final Picture picture = task.collection.pictures.get(task.curPosition);
+        }
+        final Picture picture = currPic;
         if (picture.pic != null) {
             loadBitmap(picture, task);
         } else {
@@ -86,6 +107,7 @@ public class DownloadService extends Service {
                 @Override
                 public void onFailure(HViewerHttpClient.HttpError error) {
                     task.status = STATUS_PAUSED;
+                    picture.status = Picture.STATUS_WAITING;
                     Intent intent = new Intent(ON_FAILURE);
                     intent.putExtra("message", "图片地址获取失败，请检查网络连接");
                     sendBroadcast(intent);
@@ -101,42 +123,39 @@ public class DownloadService extends Service {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
                 try {
-                    String filePath = myTask.path + (myTask.curPosition + 1) + ".jpg";
+                    String filePath = myTask.path + picture.pid + ".jpg";
                     if (myTask.collection.pictures.size() >= 100) {
-                        if (myTask.curPosition >= 99)
-                            filePath = myTask.path + (myTask.curPosition + 1) + ".jpg";
-                        else if (myTask.curPosition >= 9)
-                            filePath = myTask.path + "0" + (myTask.curPosition + 1) + ".jpg";
+                        if (picture.pid >= 99)
+                            filePath = myTask.path + picture.pid + ".jpg";
+                        else if (picture.pid >= 9)
+                            filePath = myTask.path + "0" + picture.pid + ".jpg";
                         else
-                            filePath = myTask.path + "00" + (myTask.curPosition + 1) + ".jpg";
+                            filePath = myTask.path + "00" + picture.pid + ".jpg";
                     } else if (myTask.collection.pictures.size() >= 10) {
-                        if (myTask.curPosition >= 9)
-                            filePath = myTask.path + (myTask.curPosition + 1) + ".jpg";
+                        if (picture.pid >= 9)
+                            filePath = myTask.path + picture.pid + ".jpg";
                         else
-                            filePath = myTask.path + "0" + (myTask.curPosition + 1) + ".jpg";
+                            filePath = myTask.path + "0" + picture.pid + ".jpg";
                     }
                     ImageScaleUtil.saveToFile(HViewerApplication.mContext, resource, filePath);
-                    if (myTask.curPosition == 0) {
+                    if (picture.pid == 0) {
                         myTask.collection.cover = filePath;
                     }
                     picture.thumbnail = filePath;
                     picture.pic = filePath;
                     picture.retries = 0;
-                    myTask.curPosition++;
+                    picture.status = Picture.STATUS_DOWNLOADED;
                     Intent intent = new Intent(ON_PROGRESS);
                     sendBroadcast(intent);
-                    if (myTask.curPosition == myTask.collection.pictures.size()) {
-                        task.status = STATUS_COMPLETED;
-                        intent = new Intent(ON_COMPLETE);
-                        sendBroadcast(intent);
-                    } else if (task.status != STATUS_PAUSED && task.status != STATUS_COMPLETED) {
-                        downloadCurrPage(myTask);
+                    if (task.status != STATUS_PAUSED && task.status != STATUS_COMPLETED) {
+                        downloadNewPage(myTask);
                     }
 
-                    Log.d("DownloadManager", "myTask.curPosition=" + myTask.curPosition);
+                    Log.d("DownloadManager", "picture.pid = " + picture.pid);
                 } catch (IOException e) {
                     e.printStackTrace();
                     task.status = STATUS_PAUSED;
+                    picture.status = Picture.STATUS_WAITING;
                     Intent intent = new Intent(ON_FAILURE);
                     intent.putExtra("message", "文件保存失败，请检查剩余空间");
                     sendBroadcast(intent);
@@ -146,12 +165,14 @@ public class DownloadService extends Service {
             @Override
             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                 super.onLoadFailed(e, errorDrawable);
-                if (picture.retries < 3) {
+                if (picture.retries < 15) {
+                    picture.status = Picture.STATUS_DOWNLOADING;
                     loadBitmap(picture, task);
                     picture.retries++;
                 } else {
                     picture.retries = 0;
                     task.status = STATUS_PAUSED;
+                    picture.status = Picture.STATUS_WAITING;
                     Intent intent = new Intent(ON_FAILURE);
                     intent.putExtra("message", "图片下载失败，也许您需要代理");
                     sendBroadcast(intent);

@@ -5,9 +5,13 @@ import java.lang.reflect.Field;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Picture extends AbstractDataProvider.Data {
+    public final static int STATUS_WAITING = 1;
+    public final static int STATUS_DOWNLOADING = 2;
+    public final static int STATUS_DOWNLOADED = 3;
     public int pid;
     public String thumbnail, url, pic;
     public int retries;
+    public int status = STATUS_WAITING;
 
     public Picture(int pid, String url, String thumbnail) {
         this.pid = pid;

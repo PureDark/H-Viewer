@@ -38,10 +38,11 @@
                     android:scaleType="fitXY" />
 
                 <TextView
+                    android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="设置"
+                    tools:text="设置"
                     android:textAppearance="@style/ActionBar.Title" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>

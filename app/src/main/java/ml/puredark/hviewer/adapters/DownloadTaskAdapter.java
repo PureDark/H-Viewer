@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,13 +35,13 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == VIEW_TYPE_DOWNLOADING) {
+        if (viewType == VIEW_TYPE_DOWNLOADING) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_download_task, parent, false);
             // 在这里对View的参数进行设置
             DownloadingTaskViewHolder vh = new DownloadingTaskViewHolder(v);
             return vh;
-        }else if(viewType == VIEW_TYPE_DOWNLOADED){
+        } else if (viewType == VIEW_TYPE_DOWNLOADED) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_collection, parent, false);
             // 在这里对View的参数进行设置
@@ -55,7 +54,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         DownloadTask task = (DownloadTask) mProvider.getItem(position);
-        if(viewHolder instanceof  DownloadingTaskViewHolder) {
+        if (viewHolder instanceof DownloadingTaskViewHolder) {
             DownloadingTaskViewHolder holder = (DownloadingTaskViewHolder) viewHolder;
             HViewerApplication.loadImageFromUrl(holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
@@ -63,12 +62,12 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.tvCategory.setText(task.collection.category);
             holder.rbRating.setRating(task.collection.rating);
             holder.tvSubmittime.setText(task.collection.datetime);
-            holder.tvCount.setText(task.curPosition + "/" + task.collection.pictures.size());
-            int percent = (int) ((float) task.curPosition * 100 / task.collection.pictures.size());
+            holder.tvCount.setText(task.getDownloadedPictureCount() + "/" + task.collection.pictures.size());
+            int percent = Math.round(((float) task.getDownloadedPictureCount() * 100 / task.collection.pictures.size()));
             holder.tvPercentage.setText(percent + "%");
             holder.progressBar.setProgress(percent);
             int resID = R.drawable.ic_play_arrow_primary_dark;
-            switch(task.status){
+            switch (task.status) {
                 case DownloadTask.STATUS_PAUSED:
                     resID = R.drawable.ic_play_arrow_primary_dark;
                     break;
@@ -80,7 +79,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     break;
             }
             holder.btnStartPause.setImageResource(resID);
-        }else if(viewHolder instanceof  DownloadedTaskViewHolder){
+        } else if (viewHolder instanceof DownloadedTaskViewHolder) {
             DownloadedTaskViewHolder holder = (DownloadedTaskViewHolder) viewHolder;
             HViewerApplication.loadImageFromUrl(holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
@@ -108,7 +107,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public int getItemViewType(int position) {
         DownloadTask task = (DownloadTask) mProvider.getItem(position);
-        return (task.status==DownloadTask.STATUS_COMPLETED) ? VIEW_TYPE_DOWNLOADED : VIEW_TYPE_DOWNLOADING;
+        return (task.status == DownloadTask.STATUS_COMPLETED) ? VIEW_TYPE_DOWNLOADED : VIEW_TYPE_DOWNLOADING;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -224,14 +223,14 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -240,14 +239,14 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;

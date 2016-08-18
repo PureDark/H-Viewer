@@ -2,50 +2,53 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:key="pref_proxy_settings"
-        android:title="HProxy 设置">
+        android:title="@string/settings_proxy">
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="pref_proxy_enabled"
-            android:summary="关于 HProxy 的信息请参阅应用主页"
-            android:title="启用 HProxy" />
+            android:title="@string/settings_proxy_enabled"
+            android:summary="@string/settings_proxy_enabled_summary"/>
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_proxy_request"
-            android:summary="在获取相册列表时使用 HProxy"
-            android:title="普通请求" />
+            android:dependency="pref_proxy_enabled"
+            android:title="@string/settings_proxy_request"
+            android:summary="@string/settings_proxy_request_summary"/>
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_proxy_picture"
-            android:summary="在下载图片时使用 HProxy"
-            android:title="图片" />
+            android:dependency="pref_proxy_enabled"
+            android:title="@string/settings_proxy_picture"
+            android:summary="@string/settings_proxy_picture_summary"/>
 
         <EditTextPreference
             android:defaultValue=""
             android:key="pref_proxy_server"
+            android:dependency="pref_proxy_enabled"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="更改 HProxy 服务器" />
+            android:title="@string/settings_proxy_server" />
 
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_about"
-        android:title="关于">
+        android:title="@string/settings_about">
 
         <Preference
             android:key="pref_about_upgrade"
-            android:title="检查更新" />
+            android:title="@string/settings_about_upgrade" />
 
         <Preference
             android:key="pref_about_license"
-            android:title="开源协议" />
+            android:title="@string/settings_about_license" />
         <Preference
-            android:key="pref_about_about"
-            android:title="关于 H-Viewer" />
+            android:key="pref_about_h_viewer"
+            android:title="@string/settings_about_h_viewer" />
     </PreferenceCategory>
 
 </PreferenceScreen>

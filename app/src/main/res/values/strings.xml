@@ -3,5 +3,31 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="suggestions">["double anal","pregnant","furry","impregnation","defloration","lizard guy","double penetration","eggs","sole female","drugs","exhibitionism","fox boy","kissing","bbm","anal","big penis","orc","bestiality","huge penis","nakadashi","elf","milf","schoolgirl uniform","bondage","females only","ahegao","sister","gender bender","glasses","tanlines","thigh high boots","yaoi","muscle","vore","shibari","incest","collar","stockings","huge breasts","x-ray","futanari","big breasts","schoolboy uniform","dark skin","cheating","monster","sunglasses","males only","father","garter belt","small breasts","bunny girl","masturbation","bbw","mind control","harem","blowjob","catgirl","yuri","sex toys","sole male","orgasm denial","rape","dilf","lizard girl","human on furry","parasite","dougi","kimono","bikini","mouse","fundoshi","shemale","monster girl","dickgirl on male","swimsuit","cat","freckles","dickgirl on dickgirl","solo action","giantess","big areolae","age progression","group","snake girl","demon girl","tentacles","alien girl","shotacon","unusual pupils","cunnilingus","fingering","business suit","lactation","sundress","handjob","filming","catboy","bisexual","big ass","tomboy","monkey","tickling","crossdressing","tomgirl","footjob","fox girl","squid girl","inseki","octopus","first person perspective","teacher","eye penetration","tribadism","paizuri","oni","onahole","triple penetration","eyepatch","dog girl","fox","prostitution","foot licking","tall girl","minigirl","mother","ghost","aunt","vampire","wrestling","lingerie","femdom","insect girl","horse girl","gyaru","inflation","old man","old lady","school swimsuit","insect boy","miko"]</string>
+
+
+    <string name="settings_proxy">HProxy 设置</string>
+    <string name="settings_proxy_enabled">启用 HProxy</string>
+    <string name="settings_proxy_enabled_summary">关于 HProxy 的信息请参阅应用主页</string>
+    <string name="settings_proxy_request">普通请求</string>
+    <string name="settings_proxy_request_summary">在获取相册列表时使用 HProxy</string>
+    <string name="settings_proxy_picture">图片</string>
+    <string name="settings_proxy_picture_summary">在下载图片时使用 HProxy</string>
+    <string name="settings_proxy_server">更改 HProxy 服务器</string>
+
+    <string name="settings_about">关于</string>
+    <string name="settings_about_upgrade">检查更新</string>
+    <string name="settings_about_license">开源协议</string>
+    <string name="settings_about_h_viewer">关于H-Viewer</string>
+
+    <string name="setting_about_author">作者</string>
+    <string name="setting_about_author_summary">PureDark&lt;liangzhonghua@163.com&gt;</string>
+    <string name="setting_about_github">Github主页</string>
+    <string name="setting_about_github_summary">https://github.com/PureDark/H-Viewer</string>
+    <string name="setting_about_changelog">更新日志</string>
+    <string name="setting_about_changelog_summary">https://github.com/PureDark/H-Viewer/releases</string>
+    <string name="setting_about_version">版本号</string>
+    <string name="setting_about_version_summary">v0.1.0</string>
+    <string name="setting_about_donate">捐赠</string>
+    <string name="setting_about_donate_summary">支付宝:bruce.lee.liang@gmail.com</string>
+
 </resources>

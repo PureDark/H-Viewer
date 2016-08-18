@@ -48,10 +48,15 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
         holder.tvCategory.setText(collection.category);
-        TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-        adapter.getDataProvider().clear();
-        if (collection.tags != null)
-            adapter.getDataProvider().addAll(collection.tags);
+        if (collection.tags != null) {
+            holder.rvTags.setAdapter(
+                    new TagAdapter(
+                            new ListDataProvider<>(
+                                    collection.tags
+                            )
+                    )
+            );
+        }
         holder.rbRating.setRating(collection.rating);
         holder.tvSubmittime.setText(collection.datetime);
     }
@@ -113,13 +118,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public CollectionViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            rvTags.setAdapter(
-                    new TagAdapter(
-                            new ListDataProvider<>(
-                                    new ArrayList<Tag>()
-                            )
-                    )
-            );
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

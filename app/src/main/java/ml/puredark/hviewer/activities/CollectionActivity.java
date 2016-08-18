@@ -79,6 +79,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     private Site site;
 
     private Collection collection;
+    private Collection myCollection;
 
     private PullLoadMoreRecyclerView rvIndex;
 
@@ -121,7 +122,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             finish();
             return;
         }
-        collection = new LocalCollection(collection, site);
+        myCollection = new LocalCollection(collection, site);
 
         toolbar.setTitle(collection.title);
         setSupportActionBar(toolbar);
@@ -139,14 +140,14 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             currPage = startPage;
         }
 
-        initCover(collection.cover);
+        initCover(myCollection.cover);
         initTabAndViewPager();
         refreshDescription();
         rvIndex.setRefreshing(true);
         getCollectionDetail(startPage);
 
         //加入历史记录
-        HViewerApplication.historyHolder.addHistory((LocalCollection) collection);
+        HViewerApplication.historyHolder.addHistory((LocalCollection) myCollection);
     }
 
     private void initCover(String cover) {
@@ -246,41 +247,58 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     }
 
     private void refreshDescription(){
-        toolbar.setTitle(collection.title);
-        holder.tvTitle.setText(collection.title);
-        holder.tvUploader.setText(collection.uploader);
-        holder.tvCategory.setText(collection.category);
+        getSupportActionBar().setTitle(myCollection.title);
+        holder.tvTitle.setText(myCollection.title);
+        holder.tvUploader.setText(myCollection.uploader);
+        holder.tvCategory.setText(myCollection.category);
         TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-        if (collection.tags != null) {
+        if (myCollection.tags != null) {
             adapter.getDataProvider().clear();
-            adapter.getDataProvider().addAll(collection.tags);
+            adapter.getDataProvider().addAll(myCollection.tags);
         }
         adapter.notifyDataSetChanged();
-        holder.rbRating.setRating(collection.rating);
-        holder.tvSubmittime.setText(collection.datetime);
+        holder.rbRating.setRating(myCollection.rating);
+        holder.tvSubmittime.setText(myCollection.datetime);
+        collection.title = myCollection.title;
+        collection.uploader = myCollection.uploader;
+        collection.category = myCollection.category;
+        collection.tags = myCollection.tags;
+        collection.rating = myCollection.rating;
+        collection.datetime = myCollection.datetime;
     }
 
     private void getCollectionDetail(final int page) {
-        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", collection.idCode)
+        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", myCollection.idCode)
                 .replaceAll("\\{page:" + startPage + "\\}", "" + page);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String result) {
-                collection = RuleParser.getCollectionDetail(collection, result, site.galleryRule, url);
+                myCollection = RuleParser.getCollectionDetail(myCollection, result, site.galleryRule, url);
 
                 refreshDescription();
 
-                if (collection.pictures != null && collection.pictures.size() > 0) {
+                if(myCollection.tags!=null) {
+                    for (Tag tag : myCollection.tags) {
+                        HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                    }
+                }
+                HViewerApplication.searchSuggestionHolder.removeDuplicate();
+
+                if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
                     if (page == startPage) {
                         pictureAdapter.getDataProvider().clear();
-                        pictureAdapter.getDataProvider().addAll(collection.pictures);
+                        pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                         pictureAdapter.notifyDataSetChanged();
                         if (picturePagerAdapter != null)
                             picturePagerAdapter.notifyDataSetChanged();
                         currPage = page;
                         getCollectionDetail(currPage + 1);
-                    } else if (!pictureAdapter.getDataProvider().getItems().contains(collection.pictures.get(0))) {
-                        pictureAdapter.getDataProvider().addAll(collection.pictures);
+                    } else if (!pictureAdapter.getDataProvider().getItems().contains(myCollection.pictures.get(0))) {
+                        int currPid = pictureAdapter.getItemCount() + 1;
+                        for(int i = 0; i< myCollection.pictures.size(); i++){
+                            myCollection.pictures.get(i).pid = currPid + i;
+                        }
+                        pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                         pictureAdapter.notifyDataSetChanged();
                         if (picturePagerAdapter != null)
                             picturePagerAdapter.notifyDataSetChanged();
@@ -288,12 +306,12 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                         getCollectionDetail(currPage + 1);
                     } else {
                         isIndexComplete = true;
-                        collection.pictures = pictureAdapter.getDataProvider().getItems();
+                        myCollection.pictures = pictureAdapter.getDataProvider().getItems();
                         rvIndex.setPullLoadMoreCompleted();
                     }
                 } else {
                     isIndexComplete = true;
-                    collection.pictures = pictureAdapter.getDataProvider().getItems();
+                    myCollection.pictures = pictureAdapter.getDataProvider().getItems();
                     rvIndex.setPullLoadMoreCompleted();
                 }
             }
@@ -313,14 +331,14 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        HViewerApplication.favouriteHolder.addFavourite((LocalCollection) collection);
+        HViewerApplication.favouriteHolder.addFavourite((LocalCollection) myCollection);
         showSnackBar("收藏成功！");
     }
 
     @OnClick(R.id.fab_download)
     void download() {
         if (isIndexComplete) {
-            if (!manager.createDownloadTask((LocalCollection) collection))
+            if (!manager.createDownloadTask((LocalCollection) myCollection))
                 showSnackBar("下载任务已在列表中！");
             else
                 showSnackBar("下载任务已添加");

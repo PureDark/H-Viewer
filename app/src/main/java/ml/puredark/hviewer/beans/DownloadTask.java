@@ -14,7 +14,6 @@ public class DownloadTask extends AbstractDataProvider.Data{
     public int did;
     public LocalCollection collection;
     public String path;
-    public int curPosition;
     public int status = STATUS_IN_QUEUE;
 
     public DownloadTask(int did, LocalCollection collection, String path){
@@ -35,5 +34,14 @@ public class DownloadTask extends AbstractDataProvider.Data{
     @Override
     public int getId() {
         return did;
+    }
+
+    public int getDownloadedPictureCount(){
+        int count = 0;
+        for(Picture picture : collection.pictures){
+            if(picture.status == Picture.STATUS_DOWNLOADED)
+                count++;
+        }
+        return count;
     }
 }

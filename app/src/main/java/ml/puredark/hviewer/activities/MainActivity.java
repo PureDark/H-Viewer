@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.R.id.toggle;
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
@@ -98,7 +100,7 @@ public class MainActivity extends AnimationActivity {
 
 
         if((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) ) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) searchView.getLayoutParams();
+            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchView.getLayoutParams();
             lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
             searchView.setLayoutParams(lp);
         }
@@ -193,16 +195,17 @@ public class MainActivity extends AnimationActivity {
         indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-(\\d+)px -(\\d+)px", "5-$1/16-($2-1)/40");
 
         galleryRule = new Rule();
+        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
         galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-        galleryRule.item = new Selector("div#gtd div.gdtm", null, null, null, null);
+        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
         galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
 
-        pic = new Selector("img#sm", "attr", "src", null, null);
+        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 
         sites.add(new Site(2, "G.E-hentai",
                 "http://g.e-hentai.org/?page={page:0}",
-                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
+                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}&nw=always",
                 "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
                 indexRule, galleryRule, pic));
 
@@ -224,6 +227,28 @@ public class MainActivity extends AnimationActivity {
                 "http://www.wnacg.org/albums-index-page-{page:1}.html",
                 "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
                 "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
+                indexRule, galleryRule, pic));
+
+        indexRule = new Rule();
+        indexRule.item = new Selector("div.container div.gallery", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", null, null);
+        indexRule.title = new Selector("a div.caption", "html", null, null, null);
+        indexRule.cover = new Selector("a img", "attr", "src", "(.*)", "https:$1");
+
+        galleryRule = new Rule();
+        galleryRule.title = new Selector("div#info h2", "html", null, null, null);
+        galleryRule.category = new Selector(".tag-container:eq(6) span.tags a", "html", null, "(.*)<span", null);
+        galleryRule.tags = new Selector("span.tags a", "html", null, "(.*)<span", null);
+        galleryRule.item = new Selector("div.container div.thumb-container", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-src", "(.*)", "https:$1");
+
+        pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
+
+        sites.add(new Site(4, "nhentai",
+                "https://nhentai.net/?page={page:1}",
+                "https://nhentai.net{idCode:}",
+                "https://nhentai.net/search/?q={keyword:}&page={page:1}",
                 indexRule, galleryRule, pic));
 
 
@@ -286,7 +311,7 @@ public class MainActivity extends AnimationActivity {
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
 
-        //SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
     }
 
