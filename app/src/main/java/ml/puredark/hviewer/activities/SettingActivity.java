@@ -114,7 +114,7 @@ public class SettingActivity extends AnimationActivity {
                             String newVersion = version.get("tag_name").getAsString().substring(1);
                             String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
                             String detail = version.get("body").getAsString();
-                            new UpdateManager(HViewerApplication.mContext, url, newVersion + "版本更新", detail)
+                            new UpdateManager(activity, url, newVersion + "版本更新", detail)
                                     .checkUpdateInfo(oldVersion, newVersion);
                         }else{
                             activity.showSnackBar("当前已是最新版本！");

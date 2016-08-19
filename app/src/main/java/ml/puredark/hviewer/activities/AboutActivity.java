@@ -86,6 +86,8 @@ public class AboutActivity extends AnimationActivity {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName(SharedPreferencesUtil.FILE_NAME);
             addPreferencesFromResource(R.xml.about);
+            Preference preference = getPreferenceScreen().findPreference(KEY_PREF_ABOUT_VERSION);
+            preference.setSummary("v"+HViewerApplication.getVersionName());
         }
 
         @Override
