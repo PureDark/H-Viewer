@@ -5,40 +5,45 @@
 
 An android feed reader application which fetch data with selector and regular expression.
 
-## Usage 使用说明
-1.向右滑打开抽屉
+## Usage
 
 1.Slide to open drawer
 
-2.点击添加一个新的站点
-
 2.Click to add a site
-
-3.点击右上角的二维码扫描按钮
 
 3.Click on the top-right corner
 
-4.扫描下面的站点二维码
-
 4.Scan QR codes below
 
-### Only cellphone in hand 如果只有手机
+## 使用说明
 
 1.向右滑打开抽屉
 
-1.Slide to open drawer
-
 2.点击添加一个新的站点
+
+3.点击右上角的二维码扫描按钮
+
+4.扫描下面的站点二维码
+
+### Only cellphone in hand 如果只有手机
+
+1.Slide to open drawer
 
 2.Click to add a site
 
-3.点击右上角的第一个按钮
-
 3.Click the icon left of the Qr scan icon
 
-4.将点击下面网站名称打开的网页中的内容复制粘贴进去
-
 4.Paste all content from below link
+
+### 如果只有手机
+
+1.向右滑打开抽屉
+
+2.点击添加一个新的站点
+
+3.点击右上角的第一个按钮
+
+4.将点击下面网站名称打开的网页中的内容复制粘贴进去
 
 ## Sites' QR Code
 1.[lofi.e-hentai](http://jsondepot.mcsky.org/2)
