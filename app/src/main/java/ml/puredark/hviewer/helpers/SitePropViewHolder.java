@@ -178,19 +178,24 @@ public class SitePropViewHolder {
 
     public String joinSelector(Selector selector) {
         String select = (selector.selector != null) ? "$(\"" + selector.selector + "\")" : "";
-        String function = (selector.fun != null) ? "." + selector.fun : "";
-        String parameter = (selector.param != null) ? "(\"" + selector.param + "\")" : "";
+        String function = (selector.fun != null && !"".equals(selector.fun)) ? "." + selector.fun : "";
+        String parameter = (selector.param != null && !"".equals(selector.param)) ? "(\"" + selector.param + "\")"
+                : ("".equals(function)) ? "" : "()";
         String join = select + function + parameter;
         return join;
     }
 
     public Selector splitSelector(Selector selector) {
-        Pattern pattern = Pattern.compile("\\$\\(\"(.*?)\"\\).?(\\w*)?\\(?\"?(\\w*)\"?\\)?", DOTALL);
+        Pattern pattern = Pattern.compile("\\$\\(\"(.*?)\"\\).?(\\w*)?\\(?\"?([a-zA-z_-]*)\"?\\)?", DOTALL);
         Matcher matcher = pattern.matcher(selector.selector);
         if (matcher.find() && matcher.groupCount() >= 3) {
             selector.selector = matcher.group(1);
             selector.fun = matcher.group(2);
             selector.param = matcher.group(3);
+            if ("".equals(selector.fun))
+                selector.fun = null;
+            if ("".equals(selector.param))
+                selector.param = null;
         }
         return selector;
     }

@@ -127,6 +127,12 @@ public class AddSiteActivity extends AnimationActivity {
             showSnackBar("规则缺少必要参数，请检查");
             return;
         }
+        List<Site> sites = siteHolder.getSites();
+        int sid = 1;
+        for(Site site : sites){
+            sid = Math.max(sid, site.sid + 1);
+        }
+        newSite.sid = sid;
 
         HViewerApplication.temp = newSite;
         siteHolder.addSite(newSite);
@@ -159,9 +165,6 @@ public class AddSiteActivity extends AnimationActivity {
     private Site parseSite(String json) {
         try {
             Site site = new Gson().fromJson(json, Site.class);
-            List<Site> sites = siteHolder.getSites();
-            int sid = (sites.size() > 0) ? sites.get(sites.size() - 1).sid + 1 : 1;
-            site.sid = sid;
             if (site.indexRule == null || site.galleryRule == null)
                 showSnackBar("输入的规则缺少信息");
             return site;

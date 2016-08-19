@@ -51,6 +51,10 @@ public class HViewerHttpClient {
     }
 
     public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
+        if(url==null||!url.startsWith("http")) {
+            callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
+            return;
+        }
         if (HViewerApplication.isNetworkAvailable()) {
             HRequestBuilder builder = new HRequestBuilder();
             if(cookies!=null){
@@ -66,7 +70,7 @@ public class HViewerHttpClient {
             mClient.newCall(request).enqueue(new HCallback() {
                 @Override
                 void onFailure(IOException e) {
-                    callback.onFailure(new HttpError(1009));
+                    callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
                 }
 
                 @Override
@@ -75,11 +79,15 @@ public class HViewerHttpClient {
                 }
             });
         } else {
-            callback.onFailure(new HttpError(1009));
+            callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
         }
     }
 
     public static void post(String url, RequestBody body, List<Cookie> cookies, final OnResponseListener callback) {
+        if(url==null||!url.startsWith("http")) {
+            callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
+            return;
+        }
         if (HViewerApplication.isNetworkAvailable()) {
             HRequestBuilder builder = new HRequestBuilder();
             if(cookies!=null){
@@ -96,7 +104,7 @@ public class HViewerHttpClient {
             mClient.newCall(request).enqueue(new HCallback() {
                 @Override
                 void onFailure(IOException e) {
-                    callback.onFailure(new HttpError(1009));
+                    callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
                 }
 
                 @Override
@@ -105,7 +113,7 @@ public class HViewerHttpClient {
                 }
             });
         } else {
-            callback.onFailure(new HttpError(1009));
+            callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
         }
     }
 
@@ -149,6 +157,7 @@ public class HViewerHttpClient {
         // Error code constants
         public static final int ERROR_UNKNOWN = 1000;  //未知错误
         public static final int ERROR_NETWORK = 1009;  //网络错误
+        public static final int ERROR_WRONG_URL = 1011;  //URL格式错误
 
         private int errorCode;
         private String errorString = "";
@@ -161,6 +170,9 @@ public class HViewerHttpClient {
                     break;
                 case ERROR_NETWORK:
                     errorString = "网络错误，请重试";
+                    break;
+                case ERROR_WRONG_URL:
+                    errorString = "URL格式错误";
                     break;
                 default:
                     errorString = "未定义的错误码";
