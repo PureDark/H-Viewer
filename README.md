@@ -13,19 +13,19 @@ An android feed reader application which fetch data with selector and regular ex
 ##Sites' QR Code
 1.lofi.e-hentai
 
-![](http://qr.api.cli.im/qr?data=http%3A%2F%2Fjsondepot.mcsky.org%2F2&level=H&transparent=&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=220&kid=cliim&time=1471551054&key=aff7b1327ea3b458fdb945f7f090e5a2)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/1.lofi.png)
 
 2.g.e-hentai
 
-![](http://qr.api.cli.im/qr?data=http%3A%2F%2Fjsondepot.mcsky.org%2F3%2F&level=H&transparent=&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=220&kid=cliim&time=1471550412&key=842f860ab35e69f59d5642282e90bfae)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/2.g.png)
 
 3.wnacg (绅士漫画)
 
-![](http://qr.api.cli.im/qr?data=http%3A%2F%2Fjsondepot.mcsky.org%2F4%2F&level=H&transparent=&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=220&kid=cliim&time=1471550675&key=ede205f91f2bf93e94da8cf991d8bf7f)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.wnacg.png)
 
 4.nhentai
 
-![](http://qr.api.cli.im/qr?data=http%3A%2F%2Fjsondepot.mcsky.org%2F5%2F&level=H&transparent=&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=220&kid=cliim&time=1471550764&key=bc73f8054b1d4c0b2689ece096ef074e)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.nhentai.png)
 
 ## Preview
 ![](https://github.com/PureDark/H-Viewer/raw/master/images/1.png)
