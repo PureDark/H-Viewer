@@ -63,9 +63,13 @@ An android feed reader application which fetch data with selector and regular ex
 ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.nhentai.png)
 
 ## How to make a custom rule of a new site
-check our wiki
+Check our wiki
 
 [怎么自定义新的站点规则](https://github.com/PureDark/H-Viewer/wiki/%E6%80%8E%E4%B9%88%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E7%AB%99%E7%82%B9%E8%A7%84%E5%88%99)
+
+If anyone had created a new rule to share, please post a issue, I shall add it in README with your credit.
+
+如果谁创建了新的站点想要分享，请务必发一条issue告知我，我会把你的二维码贴到首页的README里，并附上你的名字。
 
 ## Preview
 ![](https://github.com/PureDark/H-Viewer/raw/master/images/1.png)
