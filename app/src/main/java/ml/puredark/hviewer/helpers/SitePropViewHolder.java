@@ -186,7 +186,7 @@ public class SitePropViewHolder {
     }
 
     public Selector splitSelector(Selector selector) {
-        Pattern pattern = Pattern.compile("\\$\\(\"(.*?)\"\\).?(\\w*)?\\(?\"?([a-zA-z_-]*)\"?\\)?", DOTALL);
+        Pattern pattern = Pattern.compile("\\$\\(\"(.*?)\"\\).?(\\w*)?\\(?\"?([a-zA-z0-9_-]*)\"?\\)?", DOTALL);
         Matcher matcher = pattern.matcher(selector.selector);
         if (matcher.find() && matcher.groupCount() >= 3) {
             selector.selector = matcher.group(1);
