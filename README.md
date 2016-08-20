@@ -53,7 +53,7 @@ An android feed reader application which fetch data with selector and regular ex
 |  2   | [g.e-hentai](http://jsondepot.mcsky.org/3) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/2.g.png)  | PureDark |
 |  3   | [wnacg (绅士漫画)](http://jsondepot.mcsky.org/4) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.wnacg.png)  | PureDark |
 |  4   | [nhentai](http://jsondepot.mcsky.org/5) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.nhentai.png)  | PureDark |
-|  5   | [xiure (秀人)）](http://jsondepot.mcsky.org/5) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.xiuren.png)  | lbq from v2ex |
+|  5   | [xiure (秀人)）](http://jsondepot.mcsky.org/6) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.xiuren.png)  | lbq from v2ex |
 
 
 ## How to make a custom rule of a new site
