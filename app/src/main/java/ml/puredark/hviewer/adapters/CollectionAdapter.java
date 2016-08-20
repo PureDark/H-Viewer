@@ -48,15 +48,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
         holder.tvCategory.setText(collection.category);
-        if (collection.tags != null) {
-            holder.rvTags.setAdapter(
-                    new TagAdapter(
-                            new ListDataProvider<>(
-                                    collection.tags
-                            )
-                    )
-            );
-        }
+        holder.rvTags.setAdapter(
+                new TagAdapter(
+                        new ListDataProvider<>(
+                                (collection.tags != null)?collection.tags:new ArrayList()
+                        )
+                )
+        );
         holder.rbRating.setRating(collection.rating);
         holder.tvSubmittime.setText(collection.datetime);
     }
