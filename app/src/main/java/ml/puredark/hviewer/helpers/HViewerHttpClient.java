@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.helpers;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -19,6 +21,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static android.R.attr.bitmap;
 
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
@@ -74,8 +78,8 @@ public class HViewerHttpClient {
                 }
 
                 @Override
-                void onResponse(String body) {
-                    callback.onSuccess(body);
+                void onResponse(String contentType, Object body) {
+                    callback.onSuccess(contentType, body);
                 }
             });
         } else {
@@ -108,8 +112,8 @@ public class HViewerHttpClient {
                 }
 
                 @Override
-                void onResponse(String body) {
-                    callback.onSuccess(body);
+                void onResponse(String contentType, Object body) {
+                    callback.onSuccess(contentType, body);
                 }
             });
         } else {
@@ -118,7 +122,7 @@ public class HViewerHttpClient {
     }
 
     public interface OnResponseListener {
-        void onSuccess(String result);
+        void onSuccess(String contentType, Object result);
 
         void onFailure(HttpError error);
     }
@@ -127,7 +131,7 @@ public class HViewerHttpClient {
     public static abstract class HCallback implements Callback {
         abstract void onFailure(IOException e);
 
-        abstract void onResponse(String body);
+        abstract void onResponse(String contentType, Object body);
 
         @Override
         public void onFailure(Call call, final IOException e) {
@@ -142,11 +146,17 @@ public class HViewerHttpClient {
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-            final String body = response.body().string();
+            final String contentType = response.header("Content-Type");
+            final Object body;
+            if(contentType.contains("image")){
+                body = BitmapFactory.decodeStream(response.body().byteStream());
+            }else{
+                body = response.body().string();
+            }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    onResponse(body);
+                    onResponse(contentType, body);
                 }
             });
         }

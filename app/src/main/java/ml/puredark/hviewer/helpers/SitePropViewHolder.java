@@ -364,7 +364,7 @@ public class SitePropViewHolder {
         site.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         site.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
 
-        if (site.indexUrl == null || site.galleryUrl == null || site.searchUrl == null || site.picUrlSelector == null ||
+        if (site.indexUrl == null || site.galleryUrl == null || site.searchUrl == null ||
                 site.indexRule.item == null || site.indexRule.idCode == null ||
                 site.galleryRule.item == null || site.galleryRule.pictureUrl == null)
             return null;

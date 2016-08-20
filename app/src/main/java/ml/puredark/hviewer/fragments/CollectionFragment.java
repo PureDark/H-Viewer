@@ -134,13 +134,13 @@ public class CollectionFragment extends MyFragment {
                 .replaceAll("\\{keyword:\\}", keyword);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
-            public void onSuccess(String result) {
+            public void onSuccess(String contentType, Object result) {
                 if (page == startPage) {
                     adapter.getDataProvider().clear();
                 }
                 List<Collection> collections = adapter.getDataProvider().getItems();
                 int oldSize = collections.size();
-                collections = RuleParser.getCollections(collections, result, site.indexRule, url);
+                collections = RuleParser.getCollections(collections, (String) result, site.indexRule, url);
                 int newSize = collections.size();
                 adapter.notifyDataSetChanged();
                 if (newSize > oldSize) {

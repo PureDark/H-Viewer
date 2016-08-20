@@ -272,8 +272,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                 .replaceAll("\\{page:" + startPage + "\\}", "" + page);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
-            public void onSuccess(String result) {
-                myCollection = RuleParser.getCollectionDetail(myCollection, result, site.galleryRule, url);
+            public void onSuccess(String contentType, Object result) {
+                myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.galleryRule, url);
 
                 refreshDescription();
 

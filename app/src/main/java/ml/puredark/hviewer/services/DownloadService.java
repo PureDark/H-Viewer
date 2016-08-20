@@ -74,19 +74,19 @@ public class DownloadService extends Service {
     private void downloadNewPage(final DownloadTask task) {
         boolean isCompleted = true;
         Picture currPic = null;
-        for(Picture picture : task.collection.pictures){
-            if(picture.status==Picture.STATUS_WAITING) {
+        for (Picture picture : task.collection.pictures) {
+            if (picture.status == Picture.STATUS_WAITING) {
                 currPic = picture;
                 currPic.status = Picture.STATUS_DOWNLOADING;
                 isCompleted = false;
                 break;
-            }else if(picture.status==Picture.STATUS_DOWNLOADING){
+            } else if (picture.status == Picture.STATUS_DOWNLOADING) {
                 isCompleted = false;
             }
         }
 
-        if (currPic==null) {
-            if(isCompleted) {
+        if (currPic == null) {
+            if (isCompleted) {
                 task.status = STATUS_COMPLETED;
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);
@@ -95,13 +95,19 @@ public class DownloadService extends Service {
         }
         final Picture picture = currPic;
         if (picture.pic != null) {
-            loadBitmap(picture, task);
+            loadBitmap(picture, task, null);
         } else {
             HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
                 @Override
-                public void onSuccess(String result) {
-                    picture.pic = RuleParser.getPictureUrl(result, task.collection.site.picUrlSelector, picture.url);
-                    loadBitmap(picture, task);
+                public void onSuccess(String contentType, Object result) {
+                    if (contentType.contains("image") && result instanceof Bitmap) {
+                        picture.pic = picture.url;
+                        Bitmap bitmap = (Bitmap) result;
+                        loadBitmap(picture, task, bitmap);
+                    } else {
+                        picture.pic = RuleParser.getPictureUrl((String) result, task.collection.site.picUrlSelector, picture.url);
+                        loadBitmap(picture, task, null);
+                    }
                 }
 
                 @Override
@@ -116,69 +122,76 @@ public class DownloadService extends Service {
         }
     }
 
-    private void loadBitmap(final Picture picture, final DownloadTask task) {
-        HViewerApplication.loadBitmapFromUrl(picture.pic, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-            private DownloadTask myTask = task;
+    private void loadBitmap(final Picture picture, final DownloadTask task, Bitmap bitmap) {
+        if (bitmap != null) {
+            saveBitmap(picture, task, bitmap);
+        } else
+            HViewerApplication.loadBitmapFromUrl(picture.pic, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                private DownloadTask myTask = task;
 
-            @Override
-            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                try {
-                    String filePath = myTask.path + picture.pid + ".jpg";
-                    if (myTask.collection.pictures.size() >= 100) {
-                        if (picture.pid >= 99)
-                            filePath = myTask.path + picture.pid + ".jpg";
-                        else if (picture.pid >= 9)
-                            filePath = myTask.path + "0" + picture.pid + ".jpg";
-                        else
-                            filePath = myTask.path + "00" + picture.pid + ".jpg";
-                    } else if (myTask.collection.pictures.size() >= 10) {
-                        if (picture.pid >= 9)
-                            filePath = myTask.path + picture.pid + ".jpg";
-                        else
-                            filePath = myTask.path + "0" + picture.pid + ".jpg";
-                    }
-                    ImageScaleUtil.saveToFile(HViewerApplication.mContext, resource, filePath);
-                    if (picture.pid == 0) {
-                        myTask.collection.cover = filePath;
-                    }
-                    picture.thumbnail = filePath;
-                    picture.pic = filePath;
-                    picture.retries = 0;
-                    picture.status = Picture.STATUS_DOWNLOADED;
-                    Intent intent = new Intent(ON_PROGRESS);
-                    sendBroadcast(intent);
-                    if (task.status != STATUS_PAUSED && task.status != STATUS_COMPLETED) {
-                        downloadNewPage(myTask);
-                    }
-
-                    Log.d("DownloadManager", "picture.pid = " + picture.pid);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    task.status = STATUS_PAUSED;
-                    picture.status = Picture.STATUS_WAITING;
-                    Intent intent = new Intent(ON_FAILURE);
-                    intent.putExtra("message", "文件保存失败，请检查剩余空间");
-                    sendBroadcast(intent);
+                @Override
+                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                    saveBitmap(picture, myTask, resource);
                 }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    super.onLoadFailed(e, errorDrawable);
+                    if (picture.retries < 15) {
+                        picture.status = Picture.STATUS_DOWNLOADING;
+                        loadBitmap(picture, task, null);
+                        picture.retries++;
+                    } else {
+                        picture.retries = 0;
+                        task.status = STATUS_PAUSED;
+                        picture.status = Picture.STATUS_WAITING;
+                        Intent intent = new Intent(ON_FAILURE);
+                        intent.putExtra("message", "图片下载失败，也许您需要代理");
+                        sendBroadcast(intent);
+                    }
+                }
+            });
+    }
+
+    private void saveBitmap(Picture picture, DownloadTask task, Bitmap bitmap) {
+        try {
+            String filePath = task.path + picture.pid + ".jpg";
+            if (task.collection.pictures.size() >= 100) {
+                if (picture.pid >= 99)
+                    filePath = task.path + picture.pid + ".jpg";
+                else if (picture.pid >= 9)
+                    filePath = task.path + "0" + picture.pid + ".jpg";
+                else
+                    filePath = task.path + "00" + picture.pid + ".jpg";
+            } else if (task.collection.pictures.size() >= 10) {
+                if (picture.pid >= 9)
+                    filePath = task.path + picture.pid + ".jpg";
+                else
+                    filePath = task.path + "0" + picture.pid + ".jpg";
+            }
+            ImageScaleUtil.saveToFile(HViewerApplication.mContext, bitmap, filePath);
+            if (picture.pid == 0) {
+                task.collection.cover = filePath;
+            }
+            picture.thumbnail = filePath;
+            picture.pic = filePath;
+            picture.retries = 0;
+            picture.status = Picture.STATUS_DOWNLOADED;
+            Intent intent = new Intent(ON_PROGRESS);
+            sendBroadcast(intent);
+            if (task.status != STATUS_PAUSED && task.status != STATUS_COMPLETED) {
+                downloadNewPage(task);
             }
 
-            @Override
-            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                super.onLoadFailed(e, errorDrawable);
-                if (picture.retries < 15) {
-                    picture.status = Picture.STATUS_DOWNLOADING;
-                    loadBitmap(picture, task);
-                    picture.retries++;
-                } else {
-                    picture.retries = 0;
-                    task.status = STATUS_PAUSED;
-                    picture.status = Picture.STATUS_WAITING;
-                    Intent intent = new Intent(ON_FAILURE);
-                    intent.putExtra("message", "图片下载失败，也许您需要代理");
-                    sendBroadcast(intent);
-                }
-            }
-        });
+            Log.d("DownloadManager", "picture.pid = " + picture.pid);
+        } catch (IOException e) {
+            e.printStackTrace();
+            task.status = STATUS_PAUSED;
+            picture.status = Picture.STATUS_WAITING;
+            Intent intent = new Intent(ON_FAILURE);
+            intent.putExtra("message", "文件保存失败，请检查剩余空间");
+            sendBroadcast(intent);
+        }
     }
 
     @Override

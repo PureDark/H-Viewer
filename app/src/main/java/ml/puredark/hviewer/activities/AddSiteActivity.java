@@ -147,8 +147,8 @@ public class AddSiteActivity extends AnimationActivity {
         if (result != null && result.getContents() != null) {
             HViewerHttpClient.get(result.getContents(), null, new HViewerHttpClient.OnResponseListener() {
                 @Override
-                public void onSuccess(String result) {
-                    Site newSite = parseSite(result);
+                public void onSuccess(String contentType, Object result) {
+                    Site newSite = parseSite((String) result);
                     if (newSite == null)
                         return;
                     holder.fillSitePropEditText(newSite);

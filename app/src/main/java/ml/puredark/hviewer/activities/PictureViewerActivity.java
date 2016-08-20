@@ -1,10 +1,13 @@
 package ml.puredark.hviewer.activities;
 
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.ExViewPager;
@@ -27,7 +31,7 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 
-import static ml.puredark.hviewer.services.DownloadService.ON_FAILURE;
+import static android.R.attr.bitmap;
 
 
 public class PictureViewerActivity extends AppCompatActivity {
@@ -88,7 +92,7 @@ public class PictureViewerActivity extends AppCompatActivity {
         private Site site;
         public List<Picture> pictures;
 
-        public PicturePagerAdapter(Site site, List<Picture> pictures){
+        public PicturePagerAdapter(Site site, List<Picture> pictures) {
             this.site = site;
             this.pictures = pictures;
         }
@@ -117,6 +121,9 @@ public class PictureViewerActivity extends AppCompatActivity {
             View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_picture_viewer, null);
             final ImageView imageView = (ImageView) view.findViewById(R.id.iv_picture);
             final Picture picture = pictures.get(position);
+            if(site.picUrlSelector==null){
+                picture.pic = picture.url;
+            }
             if (picture.pic != null) {
                 HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
             } else {
@@ -127,19 +134,26 @@ public class PictureViewerActivity extends AppCompatActivity {
             return view;
         }
 
-        private void getPictureUrl(final ImageView imageView, final Picture picture, final Site site){
+        private void getPictureUrl(final ImageView imageView, final Picture picture, final Site site) {
             HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
 
                 @Override
-                public void onSuccess(String result) {
-                    picture.pic = RuleParser.getPictureUrl(result, site.picUrlSelector, picture.url);
-                    picture.retries = 0;
-                    HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
+                public void onSuccess(String contentType, Object result) {
+                    if (contentType.contains("image") && result instanceof Bitmap) {
+                        picture.pic = picture.url;
+                        imageView.setImageBitmap((Bitmap) result);
+                        Log.d("PicturePagerAdapter", "result = "+result);
+                        Log.d("PicturePagerAdapter", "result got");
+                    } else {
+                        picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
+                        picture.retries = 0;
+                        HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
+                    }
                 }
 
                 @Override
                 public void onFailure(HViewerHttpClient.HttpError error) {
-                    if (picture.retries < 3) {
+                    if (picture.retries < 15) {
                         getPictureUrl(imageView, picture, site);
                         picture.retries++;
                     } else {

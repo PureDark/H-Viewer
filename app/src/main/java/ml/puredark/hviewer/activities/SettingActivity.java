@@ -105,9 +105,9 @@ public class SettingActivity extends AnimationActivity {
             String url = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
             HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
                 @Override
-                public void onSuccess(String result) {
+                public void onSuccess(String contentType, Object result) {
                     try {
-                        JsonObject version = new JsonParser().parse(result).getAsJsonObject();
+                        JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
                         JsonArray assets = version.get("assets").getAsJsonArray();
                         if(assets.size()>0) {
                             String oldVersion = HViewerApplication.getVersionName();
