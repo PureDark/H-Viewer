@@ -10,16 +10,14 @@ android:
     - build-tools-23.0.3
 
     # Additional components
-    - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-24
 
     # The SDK version used to compile your project
     - android-24
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-x86-android-23
+    # - sys-img-x86-android-23
 
 script: ./gradlew build
 
@@ -36,18 +34,27 @@ cache:
 
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: F/3WjtqaFxTdstyNYkPBclDebxJwgws+yiW1cEJTxZiINKfWN4Tzn83OgoBio0ZbsrsfG6H/htIYmUmQIxiIcfswn1Jh1fGHikGvh+FNAjbOkot7ki006Bn1jXzHBSahdReiydgUy6SH/UDZd8gNjRDDw/D148aHBuHnffZV3rhatPv5Fj2JsVELCR5zDVrNk5M1GPQH0yVocmPe0BgQuiOOXbjx2ESYxuO5a/zxRUA7cf7hyjtmKYWaJYgi5m7c1SC2f8iqUxN4IUQsE43/4ALKfBI6GdKOPQZyujeinE8HyOPj60GO5EtFYpVjA8HDj/lmr8B4Nva2pRHLV47P1NAw5DlSoNgoVKmGlQ8FbenMmerpln49Mg80pVwK7yWBsW38iDwviOGAtnVEv9z2ylNN/07tjyB7Rm20jfi7fE6xZOCtXg8mS+NZBU3O/w7Hizne+a+XGReSA8QHouFY6zPSojKUvw4Q7zC17mqOI6B9YO4wxKEenFJUhFEEtEL3QMWOFBitngeGX7b7JR+Rne6bPKKySHTRzID0J9jc+8FT1nJoxq+aFuVdAKTetVAVh90XvRi1VkLvVAlrGgXVFzmb02E2KFfwFsx19km45bX/8LcbqcsmZK1oLeP1She+bSwzmUsY2sonSNj6U629gD8CzmMs4Rn5CJw9H4S0odw=
   file: app/build/outputs/apk/app-release.apk
   on:
     repo: PureDark/H-Viewer
+    tags: true
+    
+before_deploy:
+  - echo $ANDROID_KEYSTORE | base64 -d > android.keystore
+  - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore android.keystore -storepass $ANDROID_KEYPASS app/build/outputs/apk/app-release-unsigned.apk $ANDROID_ALIAS
+  - $ANDROID_HOME/build-tools/23.0.3/zipalign -v 4 app/build/outputs/apk/app-release-unsigned.apk app/build/outputs/apk/app-release.apk 
+  - rm app/build/outputs/apk/app-release-unsigned.apk
+  - rm android.keystore
+  - gem install fir-cli
 
 before_install:
   - mkdir -p $ANDROID_HOME/licenses
   # The hash may change in the future
   - echo '8933bad161af4178b1185d1a37fbf41ea5269c55' > $ANDROID_HOME/licenses/android-sdk-license
   - echo '84831b9409646a918e30573bab4c9c91346d8abd' > $ANDROID_HOME/licenses/android-sdk-preview-license
-  - gem install fir-cli
 
 after_deploy:
-  - fir p build/outputs/apk/app-release.apk -T $FIR_TOKEN -c "`git cat-file tag $TRAVIS_TAG`"
+  - fir p app/build/outputs/apk/app-release.apk -T $FIR_TOKEN -c "`git cat-file tag $TRAVIS_TAG`"
