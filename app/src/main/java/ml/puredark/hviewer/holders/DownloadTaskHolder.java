@@ -70,10 +70,10 @@ public class DownloadTaskHolder {
         for (DownloadTask task : downloadTasks) {
             if (task.status == DownloadTask.STATUS_DOWNLOADING) {
                 task.status = DownloadTask.STATUS_PAUSED;
-                for (Picture picture : task.collection.pictures) {
-                    if (picture.status == Picture.STATUS_DOWNLOADING) {
-                        picture.status = Picture.STATUS_WAITING;
-                    }
+            }
+            for (Picture picture : task.collection.pictures) {
+                if (picture.status == Picture.STATUS_DOWNLOADING) {
+                    picture.status = Picture.STATUS_WAITING;
                 }
             }
         }

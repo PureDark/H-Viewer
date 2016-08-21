@@ -183,7 +183,7 @@ public class DownloadService extends Service {
                 downloadNewPage(task);
             }
 
-            Log.d("DownloadManager", "picture.pid = " + picture.pid);
+            //Log.d("DownloadManager", "picture.pid = " + picture.pid);
         } catch (IOException e) {
             e.printStackTrace();
             task.status = STATUS_PAUSED;
