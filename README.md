@@ -5,6 +5,19 @@
 
 An android feed reader application which fetch data with selector and regular expression.
 
+## Preview
+
+![](https://github.com/PureDark/H-Viewer/raw/master/images/1.png)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/2.png)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/3.png)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/4.png)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/5.png)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/6.gif)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/7.gif)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/8.gif)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/9.png)
+![](https://github.com/PureDark/H-Viewer/raw/master/images/10.png)
+
 ## Usage
 
 1.Slide to open drawer
@@ -54,6 +67,8 @@ An android feed reader application which fetch data with selector and regular ex
 |  3   | [wnacg (绅士漫画)](http://jsondepot.mcsky.org/4) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.wnacg.png)  | PureDark |
 |  4   | [nhentai](http://jsondepot.mcsky.org/5) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.nhentai.png)  | PureDark |
 |  5   | [xiure (秀人)](http://jsondepot.mcsky.org/6) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.xiuren.png)  | lbq from v2ex |
+|  6   | [1024贴图区](http://jsondepot.mcsky.org/7) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/6.1024贴图区.png)  | PureDark |
+|  7   | [1024自拍区](http://jsondepot.mcsky.org/8) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.1024自拍区.png)  | PureDark |
 
 
 ## How to make a custom rule of a new site
@@ -64,17 +79,6 @@ Check our wiki
 If anyone had created a new rule to share, please post a issue, I shall add it in README with your credit.
 
 如果谁创建了新的站点想要分享，请务必发一条issue告知我，我会把你的二维码贴到首页的README里，并附上你的名字。
-
-## Preview
-![](https://github.com/PureDark/H-Viewer/raw/master/images/1.png)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/2.png)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/3.png)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/4.png)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/5.png)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/6.gif)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/7.gif)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/8.gif)
-![](https://github.com/PureDark/H-Viewer/raw/master/images/9.png)
 
 ## Using Proxy
 
