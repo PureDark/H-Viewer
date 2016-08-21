@@ -44,7 +44,7 @@ deploy:
 before_deploy:
   - echo $ANDROID_KEYSTORE | base64 -d > android.keystore
   - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore android.keystore -storepass $ANDROID_KEYPASS app/build/outputs/apk/app-release-unsigned.apk $ANDROID_ALIAS
-  - zipalign -v 4 app/build/outputs/apk/app-release-unsigned.apk app/build/outputs/apk/app-release.apk 
+  - $ANDROID_HOME/bin/zipalign -v 4 app/build/outputs/apk/app-release-unsigned.apk app/build/outputs/apk/app-release.apk 
   - rm app/build/outputs/apk/app-release-unsigned.apk
   - rm android.keystore
 before_install:
