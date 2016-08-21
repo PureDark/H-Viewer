@@ -38,7 +38,7 @@ deploy:
   provider: releases
   api_key:
     secure: F/3WjtqaFxTdstyNYkPBclDebxJwgws+yiW1cEJTxZiINKfWN4Tzn83OgoBio0ZbsrsfG6H/htIYmUmQIxiIcfswn1Jh1fGHikGvh+FNAjbOkot7ki006Bn1jXzHBSahdReiydgUy6SH/UDZd8gNjRDDw/D148aHBuHnffZV3rhatPv5Fj2JsVELCR5zDVrNk5M1GPQH0yVocmPe0BgQuiOOXbjx2ESYxuO5a/zxRUA7cf7hyjtmKYWaJYgi5m7c1SC2f8iqUxN4IUQsE43/4ALKfBI6GdKOPQZyujeinE8HyOPj60GO5EtFYpVjA8HDj/lmr8B4Nva2pRHLV47P1NAw5DlSoNgoVKmGlQ8FbenMmerpln49Mg80pVwK7yWBsW38iDwviOGAtnVEv9z2ylNN/07tjyB7Rm20jfi7fE6xZOCtXg8mS+NZBU3O/w7Hizne+a+XGReSA8QHouFY6zPSojKUvw4Q7zC17mqOI6B9YO4wxKEenFJUhFEEtEL3QMWOFBitngeGX7b7JR+Rne6bPKKySHTRzID0J9jc+8FT1nJoxq+aFuVdAKTetVAVh90XvRi1VkLvVAlrGgXVFzmb02E2KFfwFsx19km45bX/8LcbqcsmZK1oLeP1She+bSwzmUsY2sonSNj6U629gD8CzmMs4Rn5CJw9H4S0odw=
-  file: app/build/outputs/apk/app-release.apk
+  file: build/outputs/apk/app-release.apk
   on:
     repo: PureDark/H-Viewer
 
