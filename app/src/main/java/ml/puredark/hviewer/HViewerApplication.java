@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.MemoryCategory;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestListener;
@@ -119,6 +120,9 @@ public class HViewerApplication extends Application {
             public void onSuccess(String contentType, Object result) {
                 try {
                     JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
+                    boolean prerelease = version.get("prerelease").getAsBoolean();
+                    if(prerelease)
+                        return;
                     JsonArray assets = version.get("assets").getAsJsonArray();
                     if(assets.size()>0) {
                         String oldVersion = HViewerApplication.getVersionName();
@@ -154,6 +158,8 @@ public class HViewerApplication extends Application {
 
         startService(new Intent(this, DownloadService.class));
     }
+
+
 
 
 }

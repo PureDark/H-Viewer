@@ -250,6 +250,26 @@ public class MainActivity extends AnimationActivity {
 //                "https://nhentai.net{idCode:}",
 //                "https://nhentai.net/search/?q={keyword:}&page={page:1}",
 //                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("#ajaxtable tr.tr3.t_one:gt(10)", null, null, null, null);
+//        indexRule.idCode = new Selector("td:eq(1) h3 a", "attr", "href", "htm_data/8/1608/(.*?).html", null);
+//        indexRule.category = new Selector("td:eq(1)", "html", null, "\\[(.*?)\\]", null);
+//        indexRule.title = new Selector("td:eq(1) h3 a", "html", null, null, null);
+//        indexRule.uploader = new Selector("td:eq(2) a", "html", null, null, null);
+//        indexRule.datetime = new Selector("td:eq(2) div", "html", null, null, null);
+//
+//        galleryRule = new Rule();
+//        galleryRule.cover = new Selector("div.tpc_content input:eq(0)", "attr", "src", null, null);
+//        galleryRule.item = new Selector("div.tpc_content input", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
+//        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
+//
+//        sites.add(new Site(5, "1024",
+//                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
+//                "http://cl.deocool.pw/htm_data/8/1608/{idCode:}.html",
+//                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
+//                indexRule, galleryRule, pic));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);

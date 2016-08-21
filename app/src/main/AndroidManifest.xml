@@ -8,10 +8,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <meta-data
-        android:name="com.bumptech.glide.integration.okhttp3.OkHttpGlideModule"
-        android:value="GlideModule" />
-
     <application
         android:name=".HViewerApplication"
         android:allowBackup="true"
@@ -19,6 +15,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="ml.puredark.hviewer.customs.CustomCachingGlideModule"
+            android:value="GlideModule" />
+
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait">

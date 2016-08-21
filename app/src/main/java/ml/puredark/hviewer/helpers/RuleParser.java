@@ -173,7 +173,7 @@ public class RuleParser {
         String prop = "";
 
         if (selector != null) {
-            Elements temp = element.select(selector.selector);
+            Elements temp = ("this".equals(selector.selector))?new Elements(element):element.select(selector.selector);
             if (temp != null) {
                 if ("attr".equals(selector.fun)) {
                     prop = temp.attr(selector.param);
@@ -193,7 +193,8 @@ public class RuleParser {
                         } else {
                             prop = matcher.group(1);
                         }
-                    }
+                    }else
+                        prop = "";
                 }
                 if (isUrl)
                     prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);

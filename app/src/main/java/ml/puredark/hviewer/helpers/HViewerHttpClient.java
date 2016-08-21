@@ -4,8 +4,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,7 +157,9 @@ public class HViewerHttpClient {
             if(contentType.contains("image")){
                 body = BitmapFactory.decodeStream(response.body().byteStream());
             }else{
-                body = response.body().string();
+                byte[] b = response.body().bytes();
+                String charset = getCharset(new String(b));
+                body = new String(b, charset);
             }
             mHandler.post(new Runnable() {
                 @Override
@@ -160,6 +168,28 @@ public class HViewerHttpClient {
                 }
             });
         }
+    }
+
+    public static String getCharset(String html){
+        Document doc = Jsoup.parse(html);
+        Element e = doc.getElementsByTag("meta").first();
+        if(e != null){
+            String content;
+            String charset;
+            if(e.attr("content") != null && e.attr("content") != ""){
+                content = e.attr("content");
+                charset = content.substring(content.indexOf("=")+1);
+            }
+            else if(e.attr("charset") != null && e.attr("charset") != "")
+                charset = e.attr("charset");
+            else
+                charset = "utf-8";
+            Log.d("RuleParser", charset);
+            return charset;
+        }else{
+            return "utf-8";
+        }
+
     }
 
     // Pre-define error code

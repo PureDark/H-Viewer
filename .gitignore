@@ -44,3 +44,4 @@ Thumbs.db
 .idea/dataSources.ids
 /images/raws
 /images/icons
+/gradle.properties

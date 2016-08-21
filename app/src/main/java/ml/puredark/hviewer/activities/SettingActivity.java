@@ -108,6 +108,11 @@ public class SettingActivity extends AnimationActivity {
                 public void onSuccess(String contentType, Object result) {
                     try {
                         JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
+                        boolean prerelease = version.get("prerelease").getAsBoolean();
+                        if(prerelease) {
+                            onFailure(null);
+                            return;
+                        }
                         JsonArray assets = version.get("assets").getAsJsonArray();
                         if(assets.size()>0) {
                             String oldVersion = HViewerApplication.getVersionName();
@@ -117,11 +122,11 @@ public class SettingActivity extends AnimationActivity {
                             new UpdateManager(activity, url, newVersion + "版本更新", detail)
                                     .checkUpdateInfo(oldVersion, newVersion);
                         }else{
-                            activity.showSnackBar("当前已是最新版本！");
+                            onFailure(null);
                         }
                     }catch(Exception e){
                         e.printStackTrace();
-                        activity.showSnackBar("当前已是最新版本！");
+                        onFailure(null);
                     }
                 }
 
