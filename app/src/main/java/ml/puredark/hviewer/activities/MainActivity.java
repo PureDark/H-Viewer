@@ -311,7 +311,9 @@ public class MainActivity extends AnimationActivity {
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
 
-        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+        //SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+
+        HViewerApplication.checkUpdate(this);
 
     }
 

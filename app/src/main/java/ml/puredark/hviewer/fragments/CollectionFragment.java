@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -189,6 +191,11 @@ public class CollectionFragment extends MyFragment {
 
     @Override
     public void onSearch(String keyword) {
+        try {
+            keyword = URLEncoder.encode(keyword, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         getCollections(keyword, startPage);
     }
 }

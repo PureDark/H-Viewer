@@ -6,10 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -24,7 +22,7 @@ public class DownloadTaskHolder {
 
     public DownloadTaskHolder(Context context) {
         this.mContext = context;
-        if(downloadTasks==null) {
+        if (downloadTasks == null) {
             String downloadStr = (String) SharedPreferencesUtil.getData(context, "DownloadTask", "[]");
             downloadTasks = new Gson().fromJson(downloadStr, new TypeToken<ArrayList<DownloadTask>>() {
             }.getType());
@@ -68,11 +66,16 @@ public class DownloadTaskHolder {
         return false;
     }
 
-    private void setAllPaused(){
-        for(DownloadTask task : downloadTasks){
-            task.status = DownloadTask.STATUS_PAUSED;
-            for(Picture picture : task.collection.pictures)
-                picture.status = Picture.STATUS_WAITING;
+    private void setAllPaused() {
+        for (DownloadTask task : downloadTasks) {
+            if (task.status == DownloadTask.STATUS_DOWNLOADING) {
+                task.status = DownloadTask.STATUS_PAUSED;
+                for (Picture picture : task.collection.pictures) {
+                    if (picture.status == Picture.STATUS_DOWNLOADING) {
+                        picture.status = Picture.STATUS_WAITING;
+                    }
+                }
+            }
         }
     }
 

@@ -18,10 +18,13 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.holders.FavouriteHolder;
 import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
@@ -107,6 +110,33 @@ public class HViewerApplication extends Application {
                 Glide.with(mContext).load(url).asBitmap().into(listener);
             }
         }
+    }
+
+    public static void checkUpdate(final Context context){
+        String url = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
+        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
+            @Override
+            public void onSuccess(String contentType, Object result) {
+                try {
+                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
+                    JsonArray assets = version.get("assets").getAsJsonArray();
+                    if(assets.size()>0) {
+                        String oldVersion = HViewerApplication.getVersionName();
+                        String newVersion = version.get("tag_name").getAsString().substring(1);
+                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
+                        String detail = version.get("body").getAsString();
+                        new UpdateManager(context, url, newVersion + "版本更新", detail)
+                                .checkUpdateInfo(oldVersion, newVersion);
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(HViewerHttpClient.HttpError error) {
+            }
+        });
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
