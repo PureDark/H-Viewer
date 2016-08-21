@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 
@@ -257,9 +258,9 @@ public class MainActivity extends AnimationActivity {
 //
 //        indexRule = new Rule();
 //        indexRule.item = new Selector("#ajaxtable tr.tr3.t_one:gt(10)", null, null, null, null);
-//        indexRule.idCode = new Selector("td:eq(1) h3 a", "attr", "href", "htm_data/8/1608/(.*?).html", null);
-//        indexRule.category = new Selector("td:eq(1)", "html", null, "\\[(.*?)\\]", null);
-//        indexRule.title = new Selector("td:eq(1) h3 a", "html", null, null, null);
+//        indexRule.idCode = new Selector("td:eq(1) h3 a", "attr", "href", "htm_data/(.*?).html", null);
+//        indexRule.category = new Selector("td:eq(1)", "html", null, "\\[([^<>]*?)\\]", null);
+//        indexRule.title = new Selector("td:eq(1) h3 a", "html", null, "(<font.*?>)?([^<>]*)(</font>)?", "$2");
 //        indexRule.uploader = new Selector("td:eq(2) a", "html", null, null, null);
 //        indexRule.datetime = new Selector("td:eq(2) div", "html", null, null, null);
 //
@@ -269,10 +270,30 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
 //        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
 //
-//        sites.add(new Site(5, "1024",
+//        sites.add(new Site(5, "1024贴图区",
 //                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
-//                "http://cl.deocool.pw/htm_data/8/1608/{idCode:}.html",
+//                "http://cl.deocool.pw/htm_data/{idCode:}.html",
 //                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
+//                indexRule, galleryRule, pic));
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("#ajaxtable tr.tr3.t_one:gt(10)", null, null, null, null);
+//        indexRule.idCode = new Selector("td:eq(1) h3 a", "attr", "href", "htm_data/(.*?).html", null);
+//        indexRule.category = new Selector("td:eq(1)", "html", null, "\\[([^<>]*?)\\]", null);
+//        indexRule.title = new Selector("td:eq(1) h3 a", "html", null, "(<font.*?>)?([^<>]*)(</font>)?", "$2");
+//        indexRule.uploader = new Selector("td:eq(2) a", "html", null, null, null);
+//        indexRule.datetime = new Selector("td:eq(2) div", "html", null, null, null);
+//
+//        galleryRule = new Rule();
+//        galleryRule.cover = new Selector("div.tpc_content input:eq(0)", "attr", "src", null, null);
+//        galleryRule.item = new Selector("div.tpc_content input", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
+//        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
+//
+//        sites.add(new Site(6, "1024自拍区",
+//                "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}",
+//                "http://cl.deocool.pw/htm_data/{idCode:}.html",
+//                "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}",
 //                indexRule, galleryRule, pic));
 
 
@@ -290,7 +311,6 @@ public class MainActivity extends AnimationActivity {
                     Site site = (Site) adapter.getDataProvider().getItem(position);
                     adapter.selectedSid = site.sid;
                     adapter.notifyDataSetChanged();
-                    setTitle(site.title);
                     temp = site;
                     CollectionFragment fragment = CollectionFragment.newInstance();
                     Bundle bundle = new Bundle();
@@ -356,12 +376,11 @@ public class MainActivity extends AnimationActivity {
             Site site = sites.get(0);
             adapter.selectedSid = site.sid;
             adapter.notifyDataSetChanged();
-            setTitle(site.title);
             temp = site;
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
 
-        //SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         HViewerApplication.checkUpdate(this);
 
@@ -499,6 +518,7 @@ public class MainActivity extends AnimationActivity {
     }
 
     public void replaceFragment(MyFragment fragment, String tag) {
+        setTitle(tag);
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .replace(R.id.fragment_container, fragment, tag)
