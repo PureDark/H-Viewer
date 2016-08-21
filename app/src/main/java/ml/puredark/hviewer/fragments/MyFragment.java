@@ -9,4 +9,9 @@ import android.support.v4.app.Fragment;
 public abstract class MyFragment extends Fragment {
 
     public abstract void onSearch(String keyword);
+
+    public abstract void setRecyclerViewToList();
+
+    public abstract void setRecyclerViewToGrid();
+
 }

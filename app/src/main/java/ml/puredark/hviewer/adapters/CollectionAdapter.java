@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Optional;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
@@ -22,9 +24,13 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public final static int TYPE_LIST = 1;
+    public final static int TYPE_GRID = 2;
+
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
     private String cookie;
+    private boolean isGrid = false;
 
     public CollectionAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
@@ -33,30 +39,47 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_collection, parent, false);
-        // 在这里对View的参数进行设置
-        CollectionViewHolder vh = new CollectionViewHolder(v);
-        return vh;
+        if(viewType==TYPE_LIST){
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_collection, parent, false);
+            RecyclerView.ViewHolder vh = new CollectionViewHolder(v);
+            return vh;
+        }else {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_collection_grid, parent, false);
+            RecyclerView.ViewHolder vh = new CollectionGridViewHolder(v);
+            return vh;
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Collection collection = (Collection) mProvider.getItem(position);
-        CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-        HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie);
-        holder.tvTitle.setText(collection.title);
-        holder.tvUploader.setText(collection.uploader);
-        holder.tvCategory.setText(collection.category);
-        holder.rvTags.setAdapter(
-                new TagAdapter(
-                        new ListDataProvider<>(
-                                (collection.tags != null)?collection.tags:new ArrayList()
-                        )
-                )
-        );
-        holder.rbRating.setRating(collection.rating);
-        holder.tvSubmittime.setText(collection.datetime);
+        if(viewHolder instanceof CollectionViewHolder) {
+            CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie);
+            holder.tvTitle.setText(collection.title);
+            holder.tvUploader.setText(collection.uploader);
+            holder.tvCategory.setText(collection.category);
+            if(collection.tags==null){
+                holder.tvTitle.setMaxLines(2);
+                holder.rvTags.setVisibility(View.GONE);
+                holder.rvTags.setAdapter(
+                    new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                );
+            }else{
+                holder.tvTitle.setMaxLines(1);
+                holder.rvTags.setVisibility(View.VISIBLE);
+                holder.rvTags.setAdapter(
+                        new TagAdapter(new ListDataProvider<>(collection.tags))
+                );
+            }
+            holder.rbRating.setRating(collection.rating);
+            holder.tvSubmittime.setText(collection.datetime);
+        }else if(viewHolder instanceof CollectionGridViewHolder){
+            CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie);
+        }
     }
 
     @Override
@@ -71,7 +94,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return 0;
+        return (isGrid)?TYPE_GRID:TYPE_LIST;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -88,6 +111,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setDataProvider(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
+    }
+
+
+    public void setIsGrid(boolean isGrid){
+        this.isGrid = isGrid;
     }
 
     public interface OnItemClickListener {
@@ -137,6 +165,51 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 public void onClick(View v) {
                     if(mItemClickListener!=null)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
+            rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(mItemClickListener!=null)
+                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                    else
+                        return false;
+                }
+            });
+        }
+
+    }
+
+    public class CollectionGridViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ripple_layout)
+        MaterialRippleLayout rippleLayout;
+        @BindView(R.id.iv_cover)
+        ImageView ivCover;
+
+        public CollectionGridViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mItemClickListener!=null)
+                        mItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(mItemClickListener!=null)
+                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                    else
+                        return false;
+                }
+            });
+            rippleLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mItemClickListener!=null)
+                        mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {

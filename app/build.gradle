@@ -43,9 +43,9 @@ dependencies {
     }
 
     //Google offical
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:cardview-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:cardview-v7:24.1.1'
+    compile 'com.android.support:design:24.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
 
     //material widget
@@ -55,6 +55,7 @@ dependencies {
     compile 'com.github.clans:fab:1.6.1'
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.MiguelCatalan:MaterialSearchView:v1.4.0'
+    compile 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
     
     //butter knife
     compile 'com.jakewharton:butterknife:8.2.1'

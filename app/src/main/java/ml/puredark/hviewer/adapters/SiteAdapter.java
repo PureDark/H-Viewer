@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
+import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,12 +16,11 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
-import static ml.puredark.hviewer.R.id.container;
-
 public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int selectedSid = 0;
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
+    private MaterialAnimatedSwitch.OnCheckedChangeListener mOnCheckedChangeListener;
 
     public SiteAdapter(AbstractDataProvider mProvider) {
         this.mProvider = mProvider;
@@ -43,6 +42,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (position == getItemCount() - 1) {
             holder.ivIcon.setImageResource(R.drawable.ic_add_black);
             holder.tvTitle.setText("添加新站点");
+            holder.switchListGrid.setVisibility(View.GONE);
         } else {
             Site site = (Site) mProvider.getItem(position);
             int rID = R.drawable.ic_filter_9_plus_black;
@@ -77,10 +77,13 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             holder.ivIcon.setImageResource(rID);
             holder.tvTitle.setText(site.title);
-            if (selectedSid == site.sid)
+            if (selectedSid == site.sid) {
                 holder.container.setBackgroundResource(R.color.black_10);
-            else
+                holder.switchListGrid.setVisibility(View.VISIBLE);
+            } else {
                 holder.container.setBackground(null);
+                holder.switchListGrid.setVisibility(View.GONE);
+            }
         }
 
     }
@@ -107,6 +110,10 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mItemClickListener = listener;
     }
 
+    public void setOnCheckedChangeListener(MaterialAnimatedSwitch.OnCheckedChangeListener listener) {
+        this.mOnCheckedChangeListener = listener;
+    }
+
     public AbstractDataProvider getDataProvider() {
         return mProvider;
     }
@@ -116,7 +123,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View v, int position);
+        void onItemClick(View v, int position, boolean isGrid);
 
         boolean onItemLongClick(View v, int position);
     }
@@ -128,6 +135,8 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ImageView ivIcon;
         @BindView(R.id.tv_title)
         TextView tvTitle;
+        @BindView(R.id.switch_list_grid)
+        MaterialAnimatedSwitch switchListGrid;
 
         public RuleViewHolder(View view) {
             super(view);
@@ -136,7 +145,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     if (mItemClickListener != null)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
+                        mItemClickListener.onItemClick(v, getAdapterPosition(), switchListGrid.isChecked());
                 }
             });
             container.setOnLongClickListener(new View.OnLongClickListener() {
@@ -148,6 +157,14 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         return false;
                 }
             });
+            switchListGrid.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switchListGrid.toggle();
+                }
+            });
+            if (mOnCheckedChangeListener != null)
+                switchListGrid.setOnCheckedChangeListener(mOnCheckedChangeListener);
         }
     }
 }

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
@@ -19,12 +20,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.google.gson.Gson;
+import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +69,8 @@ public class MainActivity extends AnimationActivity {
     AppBarLayout appBar;
     @BindView(R.id.backdrop)
     ImageView backdrop;
+    @BindView(R.id.toolbar_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fab_search)
@@ -278,7 +282,7 @@ public class MainActivity extends AnimationActivity {
 
         adapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
+            public void onItemClick(View v, int position, boolean isGrid) {
                 if (position == adapter.getItemCount() - 1) {
                     Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
                     startActivityForResult(intent, RESULT_ADD_SITE);
@@ -286,8 +290,13 @@ public class MainActivity extends AnimationActivity {
                     Site site = (Site) adapter.getDataProvider().getItem(position);
                     adapter.selectedSid = site.sid;
                     adapter.notifyDataSetChanged();
+                    setTitle(site.title);
                     temp = site;
-                    replaceFragment(CollectionFragment.newInstance(), site.title);
+                    CollectionFragment fragment = CollectionFragment.newInstance();
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("isGrid", isGrid);
+                    fragment.setArguments(bundle);
+                    replaceFragment(fragment, site.title);
                 }
                 drawer.closeDrawer(GravityCompat.START);
             }
@@ -323,10 +332,31 @@ public class MainActivity extends AnimationActivity {
             }
         });
 
+        adapter.setOnCheckedChangeListener(new MaterialAnimatedSwitch.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(final boolean right) {
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        if(right)
+                            currFragment.setRecyclerViewToGrid();
+                        else
+                            currFragment.setRecyclerViewToList();
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                                drawer.closeDrawer(GravityCompat.START);
+                            }
+                        }, 200);
+                    }
+                }, 300);
+            }
+        });
+
         if (sites.size() > 0) {
             Site site = sites.get(0);
             adapter.selectedSid = site.sid;
             adapter.notifyDataSetChanged();
+            setTitle(site.title);
             temp = site;
             replaceFragment(CollectionFragment.newInstance(), site.title);
         }
@@ -364,6 +394,10 @@ public class MainActivity extends AnimationActivity {
         isSuggestionEmpty = false;
     }
 
+    public void setTitle(String title){
+        collapsingToolbarLayout.setTitle(title);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search, menu);
@@ -379,23 +413,29 @@ public class MainActivity extends AnimationActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
+        final Intent intent;
         switch (item.getItemId()) {
             case R.id.action_download:
                 intent = new Intent(MainActivity.this, DownloadActivity.class);
                 startActivity(intent);
-                return true;
+                break;
             case R.id.action_history:
                 intent = new Intent(MainActivity.this, HistoryActivity.class);
                 startActivity(intent);
-                return true;
+                break;
             case R.id.action_favourite:
                 intent = new Intent(MainActivity.this, FavouriteActivity.class);
-                startActivity(intent);
-                return true;
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                startActivity(intent);
+            }
+        }, 500);
+        return true;
     }
 
     @OnClick(R.id.fab_search)

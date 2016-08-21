@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:gravity="center"
+    android:elevation="4dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="4dp"
+    app:cardPreventCornerOverlap="false"
+    app:cardUseCompatPadding="true">
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/ripple_layout"
+        android:layout_width="match_parent"
+        android:layout_height="145dp"
+        android:orientation="horizontal"
+        app:mrl_rippleOverlay="true"
+        app:mrl_rippleColor="@color/black"
+        app:mrl_rippleAlpha="0.1"
+        app:mrl_rippleDimension="10dp"
+        app:mrl_rippleDuration="250"
+        app:mrl_rippleFadeDuration="75"
+        app:mrl_rippleHover="true"
+        app:mrl_rippleDelayClick="true">
+
+        <RelativeLayout
+            android:layout_width="105dp"
+            android:layout_height="145dp">
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:padding="30dp"
+                app:srcCompat="@drawable/ic_gallery_white" />
+
+            <ImageView
+                android:id="@+id/iv_cover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+</android.support.v7.widget.CardView>

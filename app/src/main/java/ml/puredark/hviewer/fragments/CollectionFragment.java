@@ -3,6 +3,8 @@ package ml.puredark.hviewer.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,7 @@ import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
@@ -38,6 +41,8 @@ public class CollectionFragment extends MyFragment {
     PullLoadMoreRecyclerView rvCollection;
 
     CollectionAdapter adapter;
+
+    private RecyclerView.LayoutManager mLinearLayoutManager, mGridLayoutManager;
 
     private Site site;
 
@@ -69,13 +74,22 @@ public class CollectionFragment extends MyFragment {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
         ButterKnife.bind(this, rootView);
 
+        mLinearLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
+        mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
 
         List<Collection> collections = new ArrayList<>();
         AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
         adapter = new CollectionAdapter(dataProvider);
         rvCollection.setAdapter(adapter);
 
-        rvCollection.setLinearLayout();
+        Bundle bundle = getArguments();
+        boolean isGrid = (bundle == null) ? false : bundle.getBoolean("isGrid", false);
+
+        if (isGrid)
+            setRecyclerViewToGrid();
+        else
+            setRecyclerViewToList();
+
         rvCollection.setPullRefreshEnable(true);
         rvCollection.getRecyclerView().setClipToPadding(false);
         rvCollection.getRecyclerView().setPadding(0, DensityUtil.dp2px(getActivity(), 8), 0, DensityUtil.dp2px(getActivity(), 8));
@@ -154,17 +168,17 @@ public class CollectionFragment extends MyFragment {
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                AnimationActivity activity = (AnimationActivity)getActivity();
-                if(activity!=null)
+                AnimationActivity activity = (AnimationActivity) getActivity();
+                if (activity != null)
                     activity.showSnackBar(error.getErrorString());
                 rvCollection.setPullLoadMoreCompleted();
             }
         });
     }
 
-    private void addSearchSuggestions(List<Collection> collections){
-        for(Collection collection : collections){
-            if(collection.tags!=null) {
+    private void addSearchSuggestions(List<Collection> collections) {
+        for (Collection collection : collections) {
+            if (collection.tags != null) {
                 for (Tag tag : collection.tags) {
                     HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
                 }
@@ -197,5 +211,17 @@ public class CollectionFragment extends MyFragment {
             e.printStackTrace();
         }
         getCollections(keyword, startPage);
+    }
+
+    @Override
+    public void setRecyclerViewToList() {
+        adapter.setIsGrid(false);
+        rvCollection.getRecyclerView().setLayoutManager(mLinearLayoutManager);
+    }
+
+    @Override
+    public void setRecyclerViewToGrid() {
+        adapter.setIsGrid(true);
+        rvCollection.getRecyclerView().setLayoutManager(mGridLayoutManager);
     }
 }
