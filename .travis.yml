@@ -48,13 +48,13 @@ before_deploy:
   - $ANDROID_HOME/build-tools/23.0.3/zipalign -v 4 app/build/outputs/apk/app-release-unsigned.apk app/build/outputs/apk/app-release.apk 
   - rm app/build/outputs/apk/app-release-unsigned.apk
   - rm android.keystore
+  - gem install fir-cli
 
 before_install:
   - mkdir -p $ANDROID_HOME/licenses
   # The hash may change in the future
   - echo '8933bad161af4178b1185d1a37fbf41ea5269c55' > $ANDROID_HOME/licenses/android-sdk-license
   - echo '84831b9409646a918e30573bab4c9c91346d8abd' > $ANDROID_HOME/licenses/android-sdk-preview-license
-  - gem install fir-cli
 
 after_deploy:
   - fir p app/build/outputs/apk/app-release.apk -T $FIR_TOKEN -c "`git cat-file tag $TRAVIS_TAG`"
