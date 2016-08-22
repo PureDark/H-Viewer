@@ -73,6 +73,7 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  5   | [xiure (秀人)](http://jsondepot.mcsky.org/6) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.xiuren.png)  | lbq from v2ex |
 |  6   | [1024贴图区](http://jsondepot.mcsky.org/7) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/6.1024贴图区.png)  | PureDark |
 |  7   | [1024自拍区](http://jsondepot.mcsky.org/8) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.1024自拍区.png)  | PureDark |
+|  8   | [Rosi](http://jsondepot.mcsky.org/10) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/8.rosiyy.png)  | vvyoko |
 
 
 ## How to make a custom rule of a new site
