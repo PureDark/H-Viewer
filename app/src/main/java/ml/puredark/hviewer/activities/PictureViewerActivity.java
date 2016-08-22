@@ -1,8 +1,6 @@
 package ml.puredark.hviewer.activities;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,9 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,8 +25,6 @@ import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
-
-import static android.R.attr.bitmap;
 
 
 public class PictureViewerActivity extends AppCompatActivity {
@@ -121,7 +114,7 @@ public class PictureViewerActivity extends AppCompatActivity {
             View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_picture_viewer, null);
             final ImageView imageView = (ImageView) view.findViewById(R.id.iv_picture);
             final Picture picture = pictures.get(position);
-            if(site.picUrlSelector==null){
+            if (site.picUrlSelector == null) {
                 picture.pic = picture.url;
             }
             if (picture.pic != null) {
@@ -139,10 +132,12 @@ public class PictureViewerActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(String contentType, Object result) {
+                    if (result == null || result.equals(""))
+                        return;
                     if (contentType.contains("image") && result instanceof Bitmap) {
                         picture.pic = picture.url;
                         imageView.setImageBitmap((Bitmap) result);
-                        Log.d("PicturePagerAdapter", "result = "+result);
+                        Log.d("PicturePagerAdapter", "result = " + result);
                         Log.d("PicturePagerAdapter", "result got");
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
