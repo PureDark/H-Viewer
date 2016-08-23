@@ -76,6 +76,12 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  8   | [Rosi](http://jsondepot.mcsky.org/10) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/8.rosiyy.png)  | vvyoko |
 
 
+### ACG picture sites
+|  ID  | Site's Json  | QR Code | Author |
+| ---- | ------------- | ------------- | ------------- |
+|  1   | [E-shuushuu](http://jsondepot.mcsky.org/13) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/9.e-shuushuu.png)  | PureDark |
+
+
 ## How to make a custom rule of a new site
 Check our wiki
 

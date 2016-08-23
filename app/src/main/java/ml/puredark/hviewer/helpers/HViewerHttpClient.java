@@ -184,7 +184,6 @@ public class HViewerHttpClient {
                 charset = e.attr("charset");
             else
                 charset = "utf-8";
-            Log.d("RuleParser", charset);
             return charset;
         }else{
             return "utf-8";

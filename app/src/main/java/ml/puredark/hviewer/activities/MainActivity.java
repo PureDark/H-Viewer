@@ -163,7 +163,7 @@ public class MainActivity extends AnimationActivity {
 
         List<Site> sites = HViewerApplication.siteHolder.getSites();
 
-//        sites.clear();
+        sites.clear();
 //
 //        Rule indexRule = new Rule();
 //        indexRule.item = new Selector("#ig .ig", null, null, null, null);
@@ -274,7 +274,7 @@ public class MainActivity extends AnimationActivity {
 //                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
 //                "http://cl.deocool.pw/htm_data/{idCode:}.html",
 //                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
-//                indexRule, galleryRule, pic));
+//                indexRule, galleryRule, null));
 //
 //        indexRule = new Rule();
 //        indexRule.item = new Selector("#ajaxtable tr.tr3.t_one:gt(10)", null, null, null, null);
@@ -294,7 +294,31 @@ public class MainActivity extends AnimationActivity {
 //                "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}",
 //                "http://cl.deocool.pw/htm_data/{idCode:}.html",
 //                "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}",
-//                indexRule, galleryRule, pic));
+//                indexRule, galleryRule, null));
+
+
+        /*******非和谐站*******/
+
+//        Rule indexRule = new Rule();
+//        indexRule.item = new Selector(".image_thread", null, null, null, null);
+//        indexRule.idCode = new Selector(".title h2 a", "attr", "href", null, null);
+//        indexRule.title = new Selector(".title h2 a", "html", null, null, null);
+//        indexRule.uploader = new Selector(".meta dl dd span.reg_user", "html", null, null, null);
+//        indexRule.cover = new Selector("a.thumb_image img", "attr", "src", null, null);
+//        indexRule.datetime = new Selector(".meta dd:eq(3)", "html", null, null, null);
+//        indexRule.tags = new Selector(".meta span.tag a", "html", null, null, null);
+//
+//        Rule galleryRule = new Rule();
+//        galleryRule.rating = new Selector(".image_thread .meta dl dd[id^='rating']", "html", null, "(\\d*\\.?\\d*).*?<img", "$2/2");
+//        galleryRule.item = new Selector(".image_thread .image_block", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("a.thumb_image", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("a.thumb_image img", "attr", "src", null, null);
+//
+//        sites.add(new Site(1, "E-shuushuu",
+//                "http://e-shuushuu.net/?page={page:1}",
+//                "http://e-shuushuu.net/{idCode:}",
+//                "http://e-shuushuu.net/?page={page:1}",
+//                indexRule, galleryRule, null));
 
 
         AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
