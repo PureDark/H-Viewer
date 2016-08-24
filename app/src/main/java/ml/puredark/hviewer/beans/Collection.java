@@ -12,13 +12,14 @@ public class Collection extends AbstractDataProvider.Data {
     public float rating;
     public List<Tag> tags;
     public List<Picture> pictures;
+    public String referer;
 
     public Collection(int cid) {
         this.cid = cid;
     }
 
     public Collection(int cid, String idCode, String title, String uploader, String cover, String category,
-                      String datetime, float rating, List<Tag> tags, List<Picture> pictures) {
+                      String datetime, float rating, String referer, List<Tag> tags, List<Picture> pictures) {
         this.cid = cid;
         this.idCode = idCode;
         this.title = title;
@@ -27,6 +28,7 @@ public class Collection extends AbstractDataProvider.Data {
         this.category = category;
         this.datetime = datetime;
         this.rating = rating;
+        this.referer = referer;
         this.tags = tags;
         this.pictures = pictures;
     }

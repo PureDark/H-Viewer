@@ -57,7 +57,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         Collection collection = (Collection) mProvider.getItem(position);
         if (viewHolder instanceof CollectionViewHolder) {
             CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie);
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie, collection.referer);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
             holder.tvCategory.setText(collection.category);
@@ -79,7 +79,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             checkSiteFlags(holder, site.flag);
         } else if (viewHolder instanceof CollectionGridViewHolder) {
             CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie);
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie, collection.referer);
         }
     }
 

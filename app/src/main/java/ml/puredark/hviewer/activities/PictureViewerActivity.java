@@ -118,7 +118,7 @@ public class PictureViewerActivity extends AppCompatActivity {
                 picture.pic = picture.url;
             }
             if (picture.pic != null) {
-                HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
+                HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie, picture.referer);
             } else {
                 getPictureUrl(imageView, picture, site);
             }
@@ -137,12 +137,11 @@ public class PictureViewerActivity extends AppCompatActivity {
                     if (contentType.contains("image") && result instanceof Bitmap) {
                         picture.pic = picture.url;
                         imageView.setImageBitmap((Bitmap) result);
-                        Log.d("PicturePagerAdapter", "result = " + result);
-                        Log.d("PicturePagerAdapter", "result got");
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
                         picture.retries = 0;
-                        HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie);
+                        picture.referer = picture.url;
+                        HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie, picture.referer);
                     }
                 }
 

@@ -78,7 +78,15 @@ public class HViewerApplication extends Application {
         return false;
     }
 
+    public static void loadImageFromUrl(ImageView imageView, String url) {
+        loadImageFromUrl(imageView, url, null, null);
+    }
+
     public static void loadImageFromUrl(ImageView imageView, String url, String cookie) {
+        loadImageFromUrl(imageView, url, cookie, null);
+    }
+
+    public static void loadImageFromUrl(ImageView imageView, String url, String cookie, String referer) {
         imageView.setImageBitmap(null);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
@@ -86,11 +94,13 @@ public class HViewerApplication extends Application {
                 GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
                         .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
                         .addHeader("cookie", cookie)
+                        .addHeader("referer", referer)
                         .build());
                 Glide.with(mContext).load(glideUrl).into(imageView);
             } else {
                 GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
                         .addHeader("cookie", cookie)
+                        .addHeader("referer", referer)
                         .build());
                 Glide.with(mContext).load(glideUrl).into(imageView);
             }

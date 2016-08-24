@@ -12,11 +12,13 @@ public class Picture extends AbstractDataProvider.Data {
     public String thumbnail, url, pic;
     public int retries;
     public int status = STATUS_WAITING;
+    public String referer;
 
-    public Picture(int pid, String url, String thumbnail) {
+    public Picture(int pid, String url, String thumbnail, String referer) {
         this.pid = pid;
         this.url = url;
         this.thumbnail = thumbnail;
+        this.referer = referer;
     }
 
     @Override

@@ -144,7 +144,7 @@ public class RuleParser {
             for (Element pictureElement : temp) {
                 String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true);
                 String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true);
-                pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail));
+                pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail, sourceUrl));
             }
         }
 
@@ -162,6 +162,8 @@ public class RuleParser {
             collection.datetime = datetime;
         if (rating > 0)
             collection.rating = rating;
+        if (sourceUrl != null && !sourceUrl.equals(""))
+            collection.referer = sourceUrl;
         if (tags != null && tags.size() > 0)
             collection.tags = tags;
         if (pictures != null && pictures.size() > 0)
