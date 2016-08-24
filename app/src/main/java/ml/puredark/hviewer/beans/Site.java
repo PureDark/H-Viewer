@@ -12,6 +12,7 @@ import okhttp3.Cookie;
 public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_NO_COVER = "noCover";
     public final static String FLAG_NO_RATING = "noRating";
+    public final static String FLAG_NO_TAG = "noTag";
     public int sid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "";

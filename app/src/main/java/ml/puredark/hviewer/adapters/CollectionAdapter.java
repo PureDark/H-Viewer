@@ -1,11 +1,13 @@
 package ml.puredark.hviewer.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
@@ -83,12 +85,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void checkSiteFlags(CollectionViewHolder holder, String flags) {
         if (flags == null || "".equals(flags)) return;
-        String[] flagArray = flags.split("|");
+        String[] flagArray = flags.split("\\|");
         for(String flag : flagArray){
             if(Site.FLAG_NO_COVER.equals(flag)){
-                holder.ivCover.setVisibility(View.GONE);
+                holder.layoutCover.setVisibility(View.GONE);
             }else if(Site.FLAG_NO_RATING.equals(flag)){
                 holder.rbRating.setVisibility(View.GONE);
+            }else if(Site.FLAG_NO_TAG.equals(flag)){
+                holder.rvTags.setVisibility(View.GONE);
             }
         }
     }
@@ -138,6 +142,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public class CollectionViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ripple_layout)
         MaterialRippleLayout rippleLayout;
+        @BindView(R.id.layout_cover)
+        RelativeLayout layoutCover;
         @BindView(R.id.iv_cover)
         ImageView ivCover;
         @BindView(R.id.tv_title)

@@ -31,6 +31,8 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryUrl;
     @BindView(R.id.input_searchUrl)
     MaterialEditText inputSearchUrl;
+    @BindView(R.id.input_flag)
+    MaterialEditText inputFlag;
     @BindView(R.id.input_cookie)
     MaterialEditText inputCookie;
     @BindView(R.id.input_picUrlSelector_selector)
@@ -206,6 +208,7 @@ public class SitePropViewHolder {
         inputGalleryUrl.setText(site.galleryUrl);
         inputSearchUrl.setText(site.searchUrl);
         inputCookie.setText(site.cookie);
+        inputFlag.setText(site.flag);
         if (site.picUrlSelector != null) {
             inputPicUrlSekectorSelector.setText(joinSelector(site.picUrlSelector));
             inputPicUrlSekectorRegex.setText(site.picUrlSelector.regex);
@@ -334,6 +337,7 @@ public class SitePropViewHolder {
         site.galleryUrl = loadString(inputGalleryUrl);
         site.searchUrl = loadString(inputSearchUrl);
         site.cookie = loadString(inputCookie);
+        site.flag = loadString(inputFlag);
         site.picUrlSelector = loadSelector(inputPicUrlSekectorSelector, inputPicUrlSekectorRegex, inputPicUrlSekectorReplacement);
 
         //index rule

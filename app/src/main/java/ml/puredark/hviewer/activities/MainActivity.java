@@ -164,7 +164,7 @@ public class MainActivity extends AnimationActivity {
 
         List<Site> sites = HViewerApplication.siteHolder.getSites();
 
-        sites.clear();
+//        sites.clear();
 //
 //        Rule indexRule = new Rule();
 //        indexRule.item = new Selector("#ig .ig", null, null, null, null);
