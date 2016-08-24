@@ -10,6 +10,8 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import okhttp3.Cookie;
 
 public class Site extends AbstractDataProvider.Data {
+    public final static String FLAG_NO_COVER = "noCover";
+    public final static String FLAG_NO_RATING = "noRating";
     public int sid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "";
@@ -17,6 +19,7 @@ public class Site extends AbstractDataProvider.Data {
     public Rule indexRule, galleryRule, searchRule;
     public Selector picUrlSelector;
     public String cookie = "";
+    public String flag = "";
 
     public Site() {
     }

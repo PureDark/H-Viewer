@@ -111,7 +111,7 @@ public class CollectionFragment extends MyFragment {
         });
 
         if (site != null) {
-            adapter.setCookie(site.cookie);
+            adapter.setSite(site);
             Map<String, String> map = RuleParser.parseUrl(site.indexUrl);
             String pageStr = map.get("page");
             try {

@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.adapters;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,10 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Optional;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
@@ -29,7 +27,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
-    private String cookie;
+    private Site site;
     private boolean isGrid = false;
 
     public CollectionAdapter(AbstractDataProvider mProvider) {
@@ -39,12 +37,12 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType==TYPE_LIST){
+        if (viewType == TYPE_LIST) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_collection, parent, false);
             RecyclerView.ViewHolder vh = new CollectionViewHolder(v);
             return vh;
-        }else {
+        } else {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_collection_grid, parent, false);
             RecyclerView.ViewHolder vh = new CollectionGridViewHolder(v);
@@ -55,19 +53,19 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Collection collection = (Collection) mProvider.getItem(position);
-        if(viewHolder instanceof CollectionViewHolder) {
+        if (viewHolder instanceof CollectionViewHolder) {
             CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie);
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
             holder.tvCategory.setText(collection.category);
-            if(collection.tags==null){
+            if (collection.tags == null) {
                 holder.tvTitle.setMaxLines(2);
                 holder.rvTags.setVisibility(View.GONE);
                 holder.rvTags.setAdapter(
-                    new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                        new TagAdapter(new ListDataProvider<>(new ArrayList()))
                 );
-            }else{
+            } else {
                 holder.tvTitle.setMaxLines(1);
                 holder.rvTags.setVisibility(View.VISIBLE);
                 holder.rvTags.setAdapter(
@@ -76,9 +74,22 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             holder.rbRating.setRating(collection.rating);
             holder.tvSubmittime.setText(collection.datetime);
-        }else if(viewHolder instanceof CollectionGridViewHolder){
+            checkSiteFlags(holder, site.flag);
+        } else if (viewHolder instanceof CollectionGridViewHolder) {
             CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie);
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie);
+        }
+    }
+
+    private void checkSiteFlags(CollectionViewHolder holder, String flags) {
+        if (flags == null || "".equals(flags)) return;
+        String[] flagArray = flags.split("|");
+        for(String flag : flagArray){
+            if(Site.FLAG_NO_COVER.equals(flag)){
+                holder.ivCover.setVisibility(View.GONE);
+            }else if(Site.FLAG_NO_RATING.equals(flag)){
+                holder.rbRating.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -94,15 +105,15 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return (isGrid)?TYPE_GRID:TYPE_LIST;
+        return (isGrid) ? TYPE_GRID : TYPE_LIST;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mItemClickListener = listener;
     }
 
-    public void setCookie(String cookie){
-        this.cookie = cookie;
+    public void setSite(Site site) {
+        this.site = site;
     }
 
     public AbstractDataProvider getDataProvider() {
@@ -114,12 +125,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
-    public void setIsGrid(boolean isGrid){
+    public void setIsGrid(boolean isGrid) {
         this.isGrid = isGrid;
     }
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
+
         boolean onItemLongClick(View v, int position);
     }
 
@@ -147,14 +159,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -163,14 +175,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
-                    mItemClickListener.onItemClick(v, getAdapterPosition());
+                    if (mItemClickListener != null)
+                        mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -192,14 +204,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -208,14 +220,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if(mItemClickListener!=null)
+                    if (mItemClickListener != null)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
