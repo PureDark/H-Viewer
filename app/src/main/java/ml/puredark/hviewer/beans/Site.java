@@ -13,14 +13,16 @@ public class Site extends AbstractDataProvider.Data {
     public int sid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "";
-    public Rule indexRule, galleryRule;
+    public List<Category> categories;
+    public Rule indexRule, galleryRule, searchRule;
     public Selector picUrlSelector;
     public String cookie = "";
 
     public Site() {
     }
 
-    public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl, Rule indexRule, Rule galleryRule, Selector picUrlSelector) {
+    public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl,
+                Rule indexRule, Rule galleryRule, Rule searchRule, Selector picUrlSelector) {
         this.sid = sid;
         this.title = title;
         this.indexUrl = indexUrl;
@@ -28,7 +30,12 @@ public class Site extends AbstractDataProvider.Data {
         this.searchUrl = searchUrl;
         this.indexRule = indexRule;
         this.galleryRule = galleryRule;
+        this.searchRule = searchRule;
         this.picUrlSelector = picUrlSelector;
+    }
+
+    public void setCategories(List<Category> categories){
+        this.categories = categories;
     }
 
     @Override

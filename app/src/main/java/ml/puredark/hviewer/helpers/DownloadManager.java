@@ -13,6 +13,7 @@ import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.services.DownloadService;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -28,7 +29,6 @@ public class DownloadManager {
 
     private ServiceConnection conn = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d("DownloadManager", "serviceConnected");
             if (service instanceof DownloadService.DownloadBinder)
                 binder = (DownloadService.DownloadBinder) service;
         }
@@ -40,8 +40,8 @@ public class DownloadManager {
     public DownloadManager(Context context) {
         holder = new DownloadTaskHolder(context);
         reorganizeTasks();
-        Log.d("DownloadManager", "DownloadManager created");
         context.bindService(new Intent(context, DownloadService.class), conn, BIND_AUTO_CREATE);
+        checkNoMediaFile();
     }
 
     public void reorganizeTasks() {
@@ -49,6 +49,10 @@ public class DownloadManager {
         for (int i = 0; i < size; i++) {
             holder.getDownloadTasks().get(i).did = i + 1;
         }
+    }
+
+    private void checkNoMediaFile(){
+        SimpleFileUtil.createIfNotExist(getDownloadPath()+"/.nomedia");
     }
 
     public String getDownloadPath() {

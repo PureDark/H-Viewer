@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import ml.puredark.hviewer.activities.AnimationActivity;
 import ml.puredark.hviewer.activities.CollectionActivity;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
@@ -145,7 +145,15 @@ public class CollectionFragment extends MyFragment {
 
     private void getCollections(String keyword, final int page) {
         this.keyword = keyword;
-        String chooseUrl = (keyword == null) ? site.indexUrl : site.searchUrl;
+        String chooseUrl;
+        final Rule rule;
+        if(keyword==null){
+            chooseUrl = site.indexUrl;
+            rule = site.indexRule;
+        }else{
+            chooseUrl = site.searchUrl;
+            rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
+        }
         final String url = chooseUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
                 .replaceAll("\\{keyword:\\}", keyword);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
@@ -156,7 +164,7 @@ public class CollectionFragment extends MyFragment {
                 }
                 List<Collection> collections = adapter.getDataProvider().getItems();
                 int oldSize = collections.size();
-                collections = RuleParser.getCollections(collections, (String) result, site.indexRule, url);
+                collections = RuleParser.getCollections(collections, (String) result, rule, url);
                 int newSize = collections.size();
                 adapter.notifyDataSetChanged();
                 if (newSize > oldSize) {
