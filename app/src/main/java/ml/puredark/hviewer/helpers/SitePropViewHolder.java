@@ -2,6 +2,8 @@ package ml.puredark.hviewer.helpers;
 
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -35,12 +37,19 @@ public class SitePropViewHolder {
     MaterialEditText inputFlag;
     @BindView(R.id.input_cookie)
     MaterialEditText inputCookie;
+
     @BindView(R.id.input_picUrlSelector_selector)
-    MaterialEditText inputPicUrlSekectorSelector;
+    MaterialEditText inputPicUrlSelectorSelector;
     @BindView(R.id.input_picUrlSelector_regex)
-    MaterialEditText inputPicUrlSekectorRegex;
+    MaterialEditText inputPicUrlSelectorRegex;
     @BindView(R.id.input_picUrlSelector_replacement)
-    MaterialEditText inputPicUrlSekectorReplacement;
+    MaterialEditText inputPicUrlSelectorReplacement;
+
+
+    @BindView(R.id.btn_indexRule)
+    TextView btnIndexRule;
+    @BindView(R.id.layout_indexRule)
+    LinearLayout layoutIndexRule;
     @BindView(R.id.input_indexRule_item_selector)
     MaterialEditText inputIndexRuleItemSelector;
     @BindView(R.id.input_indexRule_item_regex)
@@ -107,6 +116,84 @@ public class SitePropViewHolder {
     MaterialEditText inputIndexRulePictureThumbnailRegex;
     @BindView(R.id.input_indexRule_pictureThumbnail_replacement)
     MaterialEditText inputIndexRulePictureThumbnailReplacement;
+
+
+    @BindView(R.id.btn_searchRule)
+    TextView btnSearchRule;
+    @BindView(R.id.layout_searchRule)
+    LinearLayout layoutSearchRule;
+    @BindView(R.id.input_searchRule_item_selector)
+    MaterialEditText inputSearchRuleItemSelector;
+    @BindView(R.id.input_searchRule_item_regex)
+    MaterialEditText inputSearchRuleItemRegex;
+    @BindView(R.id.input_searchRule_item_replacement)
+    MaterialEditText inputSearchRuleItemReplacement;
+    @BindView(R.id.input_searchRule_idCode_selector)
+    MaterialEditText inputSearchRuleIdCodeSelector;
+    @BindView(R.id.input_searchRule_idCode_regex)
+    MaterialEditText inputSearchRuleIdCodeRegex;
+    @BindView(R.id.input_searchRule_idCode_replacement)
+    MaterialEditText inputSearchRuleIdCodeReplacement;
+    @BindView(R.id.input_searchRule_title_selector)
+    MaterialEditText inputSearchRuleTitleSelector;
+    @BindView(R.id.input_searchRule_title_regex)
+    MaterialEditText inputSearchRuleTitleRegex;
+    @BindView(R.id.input_searchRule_title_replacement)
+    MaterialEditText inputSearchRuleTitleReplacement;
+    @BindView(R.id.input_searchRule_uploader_selector)
+    MaterialEditText inputSearchRuleUploaderSelector;
+    @BindView(R.id.input_searchRule_uploader_regex)
+    MaterialEditText inputSearchRuleUploaderRegex;
+    @BindView(R.id.input_searchRule_uploader_replacement)
+    MaterialEditText inputSearchRuleUploaderReplacement;
+    @BindView(R.id.input_searchRule_cover_selector)
+    MaterialEditText inputSearchRuleCoverSelector;
+    @BindView(R.id.input_searchRule_cover_regex)
+    MaterialEditText inputSearchRuleCoverRegex;
+    @BindView(R.id.input_searchRule_cover_replacement)
+    MaterialEditText inputSearchRuleCoverReplacement;
+    @BindView(R.id.input_searchRule_category_selector)
+    MaterialEditText inputSearchRuleCategorySelector;
+    @BindView(R.id.input_searchRule_category_regex)
+    MaterialEditText inputSearchRuleCategoryRegex;
+    @BindView(R.id.input_searchRule_category_replacement)
+    MaterialEditText inputSearchRuleCategoryReplacement;
+    @BindView(R.id.input_searchRule_datetime_selector)
+    MaterialEditText inputSearchRuleDatetimeSelector;
+    @BindView(R.id.input_searchRule_datetime_regex)
+    MaterialEditText inputSearchRuleDatetimeRegex;
+    @BindView(R.id.input_searchRule_datetime_replacement)
+    MaterialEditText inputSearchRuleDatetimeReplacement;
+    @BindView(R.id.input_searchRule_rating_selector)
+    MaterialEditText inputSearchRuleRatingSelector;
+    @BindView(R.id.input_searchRule_rating_regex)
+    MaterialEditText inputSearchRuleRatingRegex;
+    @BindView(R.id.input_searchRule_rating_replacement)
+    MaterialEditText inputSearchRuleRatingReplacement;
+    @BindView(R.id.input_searchRule_tags_selector)
+    MaterialEditText inputSearchRuleTagsSelector;
+    @BindView(R.id.input_searchRule_tags_regex)
+    MaterialEditText inputSearchRuleTagsRegex;
+    @BindView(R.id.input_searchRule_tags_replacement)
+    MaterialEditText inputSearchRuleTagsReplacement;
+    @BindView(R.id.input_searchRule_pictureUrl_selector)
+    MaterialEditText inputSearchRulePictureUrlSelector;
+    @BindView(R.id.input_searchRule_pictureUrl_regex)
+    MaterialEditText inputSearchRulePictureUrlRegex;
+    @BindView(R.id.input_searchRule_pictureUrl_replacement)
+    MaterialEditText inputSearchRulePictureUrlReplacement;
+    @BindView(R.id.input_searchRule_pictureThumbnail_selector)
+    MaterialEditText inputSearchRulePictureThumbnailSelector;
+    @BindView(R.id.input_searchRule_pictureThumbnail_regex)
+    MaterialEditText inputSearchRulePictureThumbnailRegex;
+    @BindView(R.id.input_searchRule_pictureThumbnail_replacement)
+    MaterialEditText inputSearchRulePictureThumbnailReplacement;
+
+
+    @BindView(R.id.btn_galleryRule)
+    TextView btnGalleryRule;
+    @BindView(R.id.layout_galleryRule)
+    LinearLayout layoutGalleryRule;
     @BindView(R.id.input_galleryRule_item_selector)
     MaterialEditText inputGalleryRuleItemSelector;
     @BindView(R.id.input_galleryRule_item_regex)
@@ -176,6 +263,33 @@ public class SitePropViewHolder {
 
     public SitePropViewHolder(View view) {
         ButterKnife.bind(this, view);
+        btnIndexRule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(layoutIndexRule.getVisibility() == View.GONE)
+                    layoutIndexRule.setVisibility(View.VISIBLE);
+                else
+                    layoutIndexRule.setVisibility(View.GONE);
+            }
+        });
+        btnSearchRule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(layoutSearchRule.getVisibility() == View.GONE)
+                    layoutSearchRule.setVisibility(View.VISIBLE);
+                else
+                    layoutSearchRule.setVisibility(View.GONE);
+            }
+        });
+        btnGalleryRule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(layoutGalleryRule.getVisibility() == View.GONE)
+                    layoutGalleryRule.setVisibility(View.VISIBLE);
+                else
+                    layoutGalleryRule.setVisibility(View.GONE);
+            }
+        });
     }
 
     public String joinSelector(Selector selector) {
@@ -210,9 +324,9 @@ public class SitePropViewHolder {
         inputCookie.setText(site.cookie);
         inputFlag.setText(site.flag);
         if (site.picUrlSelector != null) {
-            inputPicUrlSekectorSelector.setText(joinSelector(site.picUrlSelector));
-            inputPicUrlSekectorRegex.setText(site.picUrlSelector.regex);
-            inputPicUrlSekectorReplacement.setText(site.picUrlSelector.replacement);
+            inputPicUrlSelectorSelector.setText(joinSelector(site.picUrlSelector));
+            inputPicUrlSelectorRegex.setText(site.picUrlSelector.regex);
+            inputPicUrlSelectorReplacement.setText(site.picUrlSelector.replacement);
         }
         if (site.indexRule != null) {
             if (site.indexRule.item != null) {
@@ -271,6 +385,65 @@ public class SitePropViewHolder {
                 inputIndexRulePictureThumbnailReplacement.setText(site.indexRule.pictureThumbnail.replacement);
             }
         }
+
+        if (site.searchRule != null) {
+            if (site.searchRule.item != null) {
+                inputSearchRuleItemSelector.setText(joinSelector(site.searchRule.item));
+                inputSearchRuleItemRegex.setText(site.searchRule.item.regex);
+                inputSearchRuleItemReplacement.setText(site.searchRule.item.replacement);
+            }
+            if (site.searchRule.idCode != null) {
+                inputSearchRuleIdCodeSelector.setText(joinSelector(site.searchRule.idCode));
+                inputSearchRuleIdCodeRegex.setText(site.searchRule.idCode.regex);
+                inputSearchRuleIdCodeReplacement.setText(site.searchRule.idCode.replacement);
+            }
+            if (site.searchRule.title != null) {
+                inputSearchRuleTitleSelector.setText(joinSelector(site.searchRule.title));
+                inputSearchRuleTitleRegex.setText(site.searchRule.title.regex);
+                inputSearchRuleTitleReplacement.setText(site.searchRule.title.replacement);
+            }
+            if (site.searchRule.uploader != null) {
+                inputSearchRuleUploaderSelector.setText(joinSelector(site.searchRule.uploader));
+                inputSearchRuleUploaderRegex.setText(site.searchRule.uploader.regex);
+                inputSearchRuleUploaderReplacement.setText(site.searchRule.uploader.replacement);
+            }
+            if (site.searchRule.cover != null) {
+                inputSearchRuleCoverSelector.setText(joinSelector(site.searchRule.cover));
+                inputSearchRuleCoverRegex.setText(site.searchRule.cover.regex);
+                inputSearchRuleCoverReplacement.setText(site.searchRule.cover.replacement);
+            }
+            if (site.searchRule.category != null) {
+                inputSearchRuleCategorySelector.setText(joinSelector(site.searchRule.category));
+                inputSearchRuleCategoryRegex.setText(site.searchRule.category.regex);
+                inputSearchRuleCategoryReplacement.setText(site.searchRule.category.replacement);
+            }
+            if (site.searchRule.datetime != null) {
+                inputSearchRuleDatetimeSelector.setText(joinSelector(site.searchRule.datetime));
+                inputSearchRuleDatetimeRegex.setText(site.searchRule.datetime.regex);
+                inputSearchRuleDatetimeReplacement.setText(site.searchRule.datetime.replacement);
+            }
+            if (site.searchRule.rating != null) {
+                inputSearchRuleRatingSelector.setText(joinSelector(site.searchRule.rating));
+                inputSearchRuleRatingRegex.setText(site.searchRule.rating.regex);
+                inputSearchRuleRatingReplacement.setText(site.searchRule.rating.replacement);
+            }
+            if (site.searchRule.tags != null) {
+                inputSearchRuleTagsSelector.setText(joinSelector(site.searchRule.tags));
+                inputSearchRuleTagsRegex.setText(site.searchRule.tags.regex);
+                inputSearchRuleTagsReplacement.setText(site.searchRule.tags.replacement);
+            }
+            if (site.searchRule.pictureUrl != null) {
+                inputSearchRulePictureUrlSelector.setText(joinSelector(site.searchRule.pictureUrl));
+                inputSearchRulePictureUrlRegex.setText(site.searchRule.pictureUrl.regex);
+                inputSearchRulePictureUrlReplacement.setText(site.searchRule.pictureUrl.replacement);
+            }
+            if (site.searchRule.pictureThumbnail != null) {
+                inputSearchRulePictureThumbnailSelector.setText(joinSelector(site.searchRule.pictureThumbnail));
+                inputSearchRulePictureThumbnailRegex.setText(site.searchRule.pictureThumbnail.regex);
+                inputSearchRulePictureThumbnailReplacement.setText(site.searchRule.pictureThumbnail.replacement);
+            }
+        }
+
         if (site.galleryRule != null) {
             if (site.galleryRule.item != null) {
                 inputGalleryRuleItemSelector.setText(joinSelector(site.galleryRule.item));
@@ -338,7 +511,7 @@ public class SitePropViewHolder {
         site.searchUrl = loadString(inputSearchUrl);
         site.cookie = loadString(inputCookie);
         site.flag = loadString(inputFlag);
-        site.picUrlSelector = loadSelector(inputPicUrlSekectorSelector, inputPicUrlSekectorRegex, inputPicUrlSekectorReplacement);
+        site.picUrlSelector = loadSelector(inputPicUrlSelectorSelector, inputPicUrlSelectorRegex, inputPicUrlSelectorReplacement);
 
         //index rule
         site.indexRule = new Rule();
@@ -353,6 +526,29 @@ public class SitePropViewHolder {
         site.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
         site.indexRule.pictureUrl = loadSelector(inputIndexRulePictureUrlSelector, inputIndexRulePictureUrlRegex, inputIndexRulePictureUrlReplacement);
         site.indexRule.pictureThumbnail = loadSelector(inputIndexRulePictureThumbnailSelector, inputIndexRulePictureThumbnailRegex, inputIndexRulePictureThumbnailReplacement);
+
+
+        //search rule
+        site.searchRule = new Rule();
+        site.searchRule.item = loadSelector(inputSearchRuleItemSelector, inputSearchRuleItemRegex, inputSearchRuleItemReplacement);
+        site.searchRule.idCode = loadSelector(inputSearchRuleIdCodeSelector, inputSearchRuleIdCodeRegex, inputSearchRuleIdCodeReplacement);
+        site.searchRule.title = loadSelector(inputSearchRuleTitleSelector, inputSearchRuleTitleRegex, inputSearchRuleTitleReplacement);
+        site.searchRule.uploader = loadSelector(inputSearchRuleUploaderSelector, inputSearchRuleUploaderRegex, inputSearchRuleUploaderReplacement);
+        site.searchRule.cover = loadSelector(inputSearchRuleCoverSelector, inputSearchRuleCoverRegex, inputSearchRuleCoverReplacement);
+        site.searchRule.category = loadSelector(inputSearchRuleCategorySelector, inputSearchRuleCategoryRegex, inputSearchRuleCategoryReplacement);
+        site.searchRule.datetime = loadSelector(inputSearchRuleDatetimeSelector, inputSearchRuleDatetimeRegex, inputSearchRuleDatetimeReplacement);
+        site.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
+        site.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
+        site.searchRule.pictureUrl = loadSelector(inputSearchRulePictureUrlSelector, inputSearchRulePictureUrlRegex, inputSearchRulePictureUrlReplacement);
+        site.searchRule.pictureThumbnail = loadSelector(inputSearchRulePictureThumbnailSelector, inputSearchRulePictureThumbnailRegex, inputSearchRulePictureThumbnailReplacement);
+
+        if (site.searchRule.item == null && site.searchRule.idCode == null
+                && site.searchRule.title == null && site.searchRule.uploader == null
+                && site.searchRule.cover == null && site.searchRule.category == null
+                && site.searchRule.datetime == null && site.searchRule.rating == null
+                && site.searchRule.tags == null && site.searchRule.pictureUrl == null
+                && site.searchRule.pictureThumbnail == null)
+            site.searchRule = null;
 
         //gallery rule
         site.galleryRule = new Rule();
@@ -378,22 +574,22 @@ public class SitePropViewHolder {
 
     private String loadString(EditText editText) {
         String text = editText.getText().toString();
-        return ("".equals(text)) ? null : text;
+        return ("".equals(text.trim())) ? null : text;
     }
 
     private Selector loadSelector(EditText inputSelector, EditText inputRegex, EditText inputReplace) {
         Selector selector = new Selector();
         String sel = inputSelector.getText().toString();
-        if (!"".equals(sel)) {
+        if (!"".equals(sel.trim())) {
             selector.selector = sel;
             selector = splitSelector(selector);
         }
         String regex = inputRegex.getText().toString();
-        if (!"".equals(regex)) {
+        if (!"".equals(regex.trim())) {
             selector.regex = regex;
         }
         String replace = inputReplace.getText().toString();
-        if (!"".equals(replace)) {
+        if (!"".equals(replace.trim())) {
             selector.replacement = replace;
         }
         return (selector.selector == null) ? null : selector;

@@ -1,6 +1,8 @@
 package ml.puredark.hviewer.beans;
 
-public class Category{
+import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+
+public class Category extends AbstractDataProvider.Data{
     public int cid;
     public String title, url;
 
@@ -10,4 +12,8 @@ public class Category{
         this.url = url;
     }
 
+    @Override
+    public int getId() {
+        return cid;
+    }
 }

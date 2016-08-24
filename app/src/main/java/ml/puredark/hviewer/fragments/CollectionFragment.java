@@ -24,6 +24,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.activities.AnimationActivity;
 import ml.puredark.hviewer.activities.CollectionActivity;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
+import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
@@ -46,6 +47,7 @@ public class CollectionFragment extends MyFragment {
 
     private Site site;
 
+    private String currUrl = null;
     private String keyword = null;
     private int startPage;
     private int currPage;
@@ -53,19 +55,15 @@ public class CollectionFragment extends MyFragment {
     public CollectionFragment() {
     }
 
-    public static CollectionFragment newInstance() {
+    public static CollectionFragment newInstance(Site site) {
         CollectionFragment fragment = new CollectionFragment();
+        fragment.site = site;
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (HViewerApplication.temp instanceof Site)
-            site = (Site) HViewerApplication.temp;
-
-
     }
 
     @Override
@@ -101,7 +99,7 @@ public class CollectionFragment extends MyFragment {
                 keyword = null;
                 currPage = startPage;
                 rvCollection.setRefreshing(true);
-                getCollections(null, currPage);
+                getCollections(keyword, currPage);
             }
 
             @Override
@@ -121,6 +119,8 @@ public class CollectionFragment extends MyFragment {
                 startPage = 0;
                 currPage = startPage;
             }
+            currUrl = site.indexUrl;
+            rvCollection.setRefreshing(true);
             getCollections(null, startPage);
 
         }
@@ -145,16 +145,13 @@ public class CollectionFragment extends MyFragment {
 
     private void getCollections(String keyword, final int page) {
         this.keyword = keyword;
-        String chooseUrl;
         final Rule rule;
         if(keyword==null){
-            chooseUrl = site.indexUrl;
             rule = site.indexRule;
         }else{
-            chooseUrl = site.searchUrl;
             rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
         }
-        final String url = chooseUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
+        final String url = currUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
                 .replaceAll("\\{keyword:\\}", keyword);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
@@ -218,7 +215,16 @@ public class CollectionFragment extends MyFragment {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        currUrl = site.searchUrl;
+        rvCollection.setRefreshing(true);
         getCollections(keyword, startPage);
+    }
+
+    @Override
+    public void onCategorySelected(Category category){
+        currUrl = category.url;
+        rvCollection.setRefreshing(true);
+        getCollections(null, startPage);
     }
 
     @Override

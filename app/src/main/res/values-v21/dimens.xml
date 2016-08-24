@@ -12,6 +12,7 @@
 
     <dimen name="nav_header_height">185dp</dimen>
     <dimen name="nav_header_height_plus_margin">193dp</dimen>
+    <dimen name="nav_category_header_height">100dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">205dp</dimen>
     <dimen name="tool_bar_height">56dp</dimen>

@@ -21,7 +21,6 @@
 
         <RelativeLayout
             android:id="@+id/layout_cover"
-            android:visibility="gone"
             android:layout_width="105dp"
             android:layout_height="145dp">
 

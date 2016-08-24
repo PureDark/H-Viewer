@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:minWidth="80dp"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/nav_header_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_category_header_height"
+        android:focusable="true"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/polygon_5" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/uni_padding"
+            android:layout_marginRight="@dimen/uni_padding"
+            android:layout_marginBottom="@dimen/uni_padding"
+            android:layout_alignParentBottom="true"
+            android:textAppearance="@style/ActionBar.Title"
+            android:textColor="@color/white"
+            android:text="@string/nav_category_title"/>
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_category"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxWidth="140dp"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:clipToPadding="false"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/item_category">
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

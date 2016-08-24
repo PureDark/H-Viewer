@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">H-Viewer</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">打开站点抽屉</string>
+    <string name="navigation_drawer_close">关闭站点抽屉</string>
+
+    <string name="nav_category_title">分 类</string>
 
 
     <string name="settings_proxy">HProxy 设置</string>

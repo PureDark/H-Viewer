@@ -10,7 +10,7 @@ public class LocalCollection extends Collection {
 
     public LocalCollection(Collection collection, Site site){
         super(collection.cid, collection.idCode, collection.title, collection.uploader, collection.cover, collection.category,
-                collection.datetime, collection.rating, collection.tags, collection.pictures);
+                collection.datetime, collection.rating, collection.referer, collection.tags, collection.pictures);
         this.site = site;
     }
 }
