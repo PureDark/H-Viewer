@@ -39,8 +39,6 @@ public class Collection extends AbstractDataProvider.Data {
         return cid;
     }
 
-    //重写equals方法，对比除了cid、tags、pictures以外的属性，全部相同则判定为相等
-    //因为cid只是在列表中的编号，每次都会变
     @Override
     public boolean equals(Object obj) {
         if ((obj instanceof Collection)) {
@@ -52,7 +50,8 @@ public class Collection extends AbstractDataProvider.Data {
                     if ("cid".equals(f.getName())
                             || "cover".equals(f.getName())
                             || "tags".equals(f.getName())
-                            || "pictures".equals(f.getName()))
+                            || "pictures".equals(f.getName())
+                            || "referer".equals(f.getName()))
                         continue;
                     f.setAccessible(true);
                     Object v1 = f.get(this);

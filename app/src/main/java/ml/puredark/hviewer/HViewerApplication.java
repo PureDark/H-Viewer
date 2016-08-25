@@ -109,16 +109,22 @@ public class HViewerApplication extends Application {
         }
     }
 
-    public static void loadBitmapFromUrl(String url, SimpleTarget listener){
+    public static void loadBitmapFromUrl(String url, String cookie, String referer, SimpleTarget listener){
         if (url != null) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
                 GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
                         .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
+                        .addHeader("cookie", cookie)
+                        .addHeader("referer", referer)
                         .build());
                 Glide.with(mContext).load(glideUrl).asBitmap().into(listener);
             } else {
-                Glide.with(mContext).load(url).asBitmap().into(listener);
+                GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
+                        .addHeader("cookie", cookie)
+                        .addHeader("referer", referer)
+                        .build());
+                Glide.with(mContext).load(glideUrl).asBitmap().into(listener);
             }
         }
     }

@@ -106,6 +106,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     animating = false;
+                    finish();
                 }
 
                 @Override

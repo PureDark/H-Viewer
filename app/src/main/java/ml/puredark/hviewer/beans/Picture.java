@@ -26,8 +26,6 @@ public class Picture extends AbstractDataProvider.Data {
         return pid;
     }
 
-    //重写equals方法，对比thumbnail, url, pic属性，全部相同则判定为相等
-    //因为pid只是在列表中的编号，每次都会变
     @Override
     public boolean equals(Object obj) {
         if ((obj instanceof Picture)) {
@@ -36,7 +34,11 @@ public class Picture extends AbstractDataProvider.Data {
             Field[] fs = Picture.class.getDeclaredFields();
             try {
                 for (Field f : fs) {
-                    if ("pid".equals(f.getName()) || "pic".equals(f.getName()) || "retries".equals(f.getName()))
+                    if ("pid".equals(f.getName())
+                            || "pic".equals(f.getName())
+                            || "retries".equals(f.getName())
+                            || "status".equals(f.getName())
+                            || "referer".equals(f.getName()))
                         continue;
                     f.setAccessible(true);
                     Object v1 = f.get(this);

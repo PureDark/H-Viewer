@@ -206,6 +206,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         List<Picture> pictures = new ArrayList<>();
         pictureAdapter = new PictureAdapter(new ListDataProvider(pictures));
         pictureAdapter.setCookie(site.cookie);
+        pictureAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
         rvIndex.setAdapter(pictureAdapter);
 
         rvIndex.getRecyclerView().setClipToPadding(false);

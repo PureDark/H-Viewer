@@ -21,6 +21,7 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
 
+import static android.R.attr.resource;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
@@ -126,7 +127,7 @@ public class DownloadService extends Service {
         if (bitmap != null) {
             saveBitmap(picture, task, bitmap);
         } else
-            HViewerApplication.loadBitmapFromUrl(picture.pic, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+            HViewerApplication.loadBitmapFromUrl(picture.pic, task.collection.site.cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                 private DownloadTask myTask = task;
 
                 @Override

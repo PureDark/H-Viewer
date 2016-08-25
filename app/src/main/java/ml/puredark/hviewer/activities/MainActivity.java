@@ -568,11 +568,9 @@ public class MainActivity extends AnimationActivity {
         switch (item.getItemId()) {
             case R.id.action_download:
                 intent = new Intent(MainActivity.this, DownloadActivity.class);
-                startActivity(intent);
                 break;
             case R.id.action_history:
                 intent = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivity(intent);
                 break;
             case R.id.action_favourite:
                 intent = new Intent(MainActivity.this, FavouriteActivity.class);

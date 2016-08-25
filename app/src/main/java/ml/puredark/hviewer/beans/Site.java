@@ -15,6 +15,7 @@ public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_NO_COVER = "noCover";
     public final static String FLAG_NO_RATING = "noRating";
     public final static String FLAG_NO_TAG = "noTag";
+    public final static String FLAG_REPEATED_THUMBNAIL = "repeatedThumbnail";
     public int sid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
@@ -65,6 +66,13 @@ public class Site extends AbstractDataProvider.Data {
             );
         }
         return cookies;
+    }
+
+    public boolean hasFlag(String flag){
+        if(this.flag==null)
+            return false;
+        else
+            return this.flag.contains(flag);
     }
 
 }

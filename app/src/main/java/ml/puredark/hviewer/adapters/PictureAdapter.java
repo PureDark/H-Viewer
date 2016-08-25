@@ -1,10 +1,16 @@
 package ml.puredark.hviewer.adapters;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,6 +22,7 @@ import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AbstractDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
+    private boolean repeatedThumbnail = false;
     private String cookie;
 
     public PictureAdapter(AbstractDataProvider mProvider) {
@@ -33,10 +40,48 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         Picture picture = (Picture) mProvider.getItem(position);
-        PictureViewHolder holder = (PictureViewHolder) viewHolder;
-        HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail, cookie, picture.referer);
+        final PictureViewHolder holder = (PictureViewHolder) viewHolder;
+        if(!repeatedThumbnail)
+            HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail, cookie, picture.referer);
+        else
+            HViewerApplication.loadBitmapFromUrl(picture.thumbnail, cookie, picture.referer,  new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+
+                @Override
+                public void onResourceReady(final Bitmap resource, GlideAnimation glideAnimation) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Bitmap bitmap;
+                            if(resource.getWidth() >=  resource.getHeight()){
+                                int width = resource.getWidth()/getItemCount();
+                                int height = resource.getHeight();
+                                int startX = width * position;
+                                int startY = 0;
+                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                            }else{
+                                int width = resource.getWidth();
+                                int height = resource.getHeight()/getItemCount();
+                                int startX = 0;
+                                int startY = height * position;
+                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                            }
+                            holder.ivPicture.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    holder.ivPicture.setImageBitmap(bitmap);
+                                }
+                            });
+                        }
+                    }).start();
+                }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    super.onLoadFailed(e, errorDrawable);
+                }
+            });
     }
 
     @Override
@@ -60,6 +105,10 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void setCookie(String cookie){
         this.cookie = cookie;
+    }
+
+    public void setRepeatedThumbnail(boolean repeated){
+        repeatedThumbnail = repeated;
     }
 
     public AbstractDataProvider getDataProvider() {

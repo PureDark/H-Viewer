@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
@@ -57,7 +57,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         Collection collection = (Collection) mProvider.getItem(position);
         if (viewHolder instanceof CollectionViewHolder) {
             CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie, collection.referer);
+            String cookie = (site == null) ? "" : site.cookie;
+            if (collection instanceof LocalCollection) {
+                cookie = ((LocalCollection) collection).site.cookie;
+            }
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie, collection.referer);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
             holder.tvCategory.setText(collection.category);
@@ -76,24 +80,28 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             holder.rbRating.setRating(collection.rating);
             holder.tvSubmittime.setText(collection.datetime);
-            checkSiteFlags(holder, site.flag);
+            if(site!=null) {
+                checkSiteFlags(holder, site);
+            }else if (collection instanceof LocalCollection) {
+                checkSiteFlags(holder, ((LocalCollection) collection).site);
+            }
         } else if (viewHolder instanceof CollectionGridViewHolder) {
             CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, site.cookie, collection.referer);
+            String cookie = (site == null) ? "" : site.cookie;
+            if (collection instanceof LocalCollection) {
+                cookie = ((LocalCollection) collection).site.cookie;
+            }
+            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie, collection.referer);
         }
     }
 
-    private void checkSiteFlags(CollectionViewHolder holder, String flags) {
-        if (flags == null || "".equals(flags)) return;
-        String[] flagArray = flags.split("\\|");
-        for(String flag : flagArray){
-            if(Site.FLAG_NO_COVER.equals(flag)){
-                holder.layoutCover.setVisibility(View.GONE);
-            }else if(Site.FLAG_NO_RATING.equals(flag)){
-                holder.rbRating.setVisibility(View.GONE);
-            }else if(Site.FLAG_NO_TAG.equals(flag)){
-                holder.rvTags.setVisibility(View.GONE);
-            }
+    private void checkSiteFlags(CollectionViewHolder holder, Site site) {
+        if (site.hasFlag(Site.FLAG_NO_COVER)) {
+            holder.layoutCover.setVisibility(View.GONE);
+        } else if (site.hasFlag(Site.FLAG_NO_RATING)) {
+            holder.rbRating.setVisibility(View.GONE);
+        } else if (site.hasFlag(Site.FLAG_NO_TAG)) {
+            holder.rvTags.setVisibility(View.GONE);
         }
     }
 
