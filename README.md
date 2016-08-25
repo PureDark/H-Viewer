@@ -75,13 +75,14 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  5   | [nhentai](http://jsondepot.mcsky.org/19) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.nhentai.png)  | PureDark |
 |  6   | [草榴社区](http://jsondepot.mcsky.org/20) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/6.草榴社区.png)  | PureDark |
 |  7   | [xiure (秀人)](http://jsondepot.mcsky.org/6) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/8.xiuren.png)  | lbq from v2ex |
-|  8   | [Rosi](http://jsondepot.mcsky.org/10) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/9.rosiyy.png)  | vvyoko |
+|  8   | [Rosi](http://jsondepot.mcsky.org/10) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/9.rosiyy.png)  | [vvyoko](https://github.com/vvyoko) |
 
 
 ### ACG picture sites
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
 |  1   | [E-shuushuu](http://jsondepot.mcsky.org/21) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.e-shuushuu.png)  | PureDark |
+|  2   | [pixiv](http://jsondepot.mcsky.org/22) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
 
 
 ## How to make a custom rule of a new site
