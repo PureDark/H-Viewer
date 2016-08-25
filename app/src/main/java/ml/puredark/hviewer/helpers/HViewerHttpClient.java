@@ -9,12 +9,17 @@ import android.util.Log;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.HViewerApplication;
 import okhttp3.Call;
@@ -27,26 +32,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http.HttpMethod;
 
 import static android.R.attr.bitmap;
 
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
-    private static OkHttpClient mClient = new OkHttpClient.Builder()
-        .cookieJar(new CookieJar() {
-            private final HashMap<HttpUrl, List<Cookie>> cookieStore = new HashMap<>();
-
-            @Override
-            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                cookieStore.put(url, cookies);
-            }
-
-            @Override
-            public List<Cookie> loadForRequest(HttpUrl url) {
-                List<Cookie> cookies = cookieStore.get(url);
-                return cookies != null ? cookies : new ArrayList<Cookie>();
-            }
-        }).build();
+    private static OkHttpClient mClient = new OkHttpClient.Builder().build();
 
     public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {
         String[] paramStrings = paramsString.split("&");
@@ -170,25 +162,28 @@ public class HViewerHttpClient {
         }
     }
 
-    public static String getCharset(String html){
+    /**
+     * 获得字符集
+     */
+    public static String getCharset (String html){
         Document doc = Jsoup.parse(html);
-        Element e = doc.getElementsByTag("meta").first();
-        if(e != null){
-            String content;
-            String charset;
-            if(e.attr("content") != null && e.attr("content") != ""){
-                content = e.attr("content");
-                charset = content.substring(content.indexOf("=")+1);
-            }
-            else if(e.attr("charset") != null && e.attr("charset") != "")
-                charset = e.attr("charset");
-            else
-                charset = "utf-8";
-            return charset;
-        }else{
-            return "utf-8";
-        }
+        Elements eles = doc.select("meta[http-equiv=Content-Type]");
+        Iterator<Element> itor = eles.iterator();
+        while (itor.hasNext())
+            return matchCharset(itor.next().toString());
+        return "utf-8";
+    }
 
+    /**
+     * 获得页面字符
+     */
+    public static String matchCharset(String content) {
+        String chs = "utf-8";
+        Pattern p = Pattern.compile("(?<=charset=)(.+)(?=\")");
+        Matcher m = p.matcher(content);
+        if (m.find())
+            return m.group();
+        return chs;
     }
 
     // Pre-define error code

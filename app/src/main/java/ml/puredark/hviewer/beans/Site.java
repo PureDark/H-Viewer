@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.beans;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,7 +17,7 @@ public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_NO_TAG = "noTag";
     public int sid;
     public String title = "";
-    public String indexUrl = "", galleryUrl = "", searchUrl = "";
+    public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
     public Rule indexRule, galleryRule, searchRule;
     public Selector picUrlSelector;
@@ -25,13 +27,14 @@ public class Site extends AbstractDataProvider.Data {
     public Site() {
     }
 
-    public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl,
+    public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl, String loginUrl,
                 Rule indexRule, Rule galleryRule, Rule searchRule, Selector picUrlSelector) {
         this.sid = sid;
         this.title = title;
         this.indexUrl = indexUrl;
         this.galleryUrl = galleryUrl;
         this.searchUrl = searchUrl;
+        this.loginUrl = loginUrl;
         this.indexRule = indexRule;
         this.galleryRule = galleryRule;
         this.searchRule = searchRule;
@@ -51,7 +54,7 @@ public class Site extends AbstractDataProvider.Data {
         List<Cookie> cookies = new ArrayList<>();
         if(cookie==null||"".equals(cookie))
             return cookies;
-        Pattern pattern = Pattern.compile("(.*?)=(.*?);", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile("(.*?)=([^;]*)", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(cookie);
         while(matcher.find()){
             cookies.add(new Cookie.Builder()

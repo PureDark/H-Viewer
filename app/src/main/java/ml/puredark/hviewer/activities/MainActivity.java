@@ -57,6 +57,7 @@ import static ml.puredark.hviewer.HViewerApplication.temp;
 public class MainActivity extends AnimationActivity {
     private static int RESULT_ADD_SITE = 1;
     private static int RESULT_MODIFY_SITE = 2;
+    private static int RESULT_LOGIN = 3;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
@@ -166,7 +167,7 @@ public class MainActivity extends AnimationActivity {
         List<Site> sites = HViewerApplication.siteHolder.getSites();
 
         sites.clear();
-//
+
         Rule indexRule = new Rule();
         indexRule.item = new Selector("#ig .ig", null, null, null, null);
         indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)", null);
@@ -189,32 +190,88 @@ public class MainActivity extends AnimationActivity {
                 "http://lofi.e-hentai.org/?page={page:0}",
                 "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
                 "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
+                "https://forums.e-hentai.org/index.php?act=Login",
                 indexRule, galleryRule, null, pic));
-//
-//        indexRule = new Rule();
-//        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
-//        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
-//        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
-//        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
-//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
-//        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
-//        indexRule.datetime = new Selector("td.itd:eq(0)", "html", null, null, null);
-//        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-(\\d+)px -(\\d+)px", "5-$1/16-($2-1)/40");
-//
-//        galleryRule = new Rule();
-//        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
-//        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-//        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
-//        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
-//        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
-//
-//        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
-//
-//        sites.add(new Site(2, "G.E-hentai",
-//                "http://g.e-hentai.org/?page={page:0}",
-//                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}&nw=always",
-//                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
-//                indexRule, galleryRule, pic));
+
+        indexRule = new Rule();
+        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
+        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
+        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
+        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
+        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
+        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
+        indexRule.datetime = new Selector("td.itd[style]", "html", null, null, null);
+        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-?(\\d+)px -?(\\d+)px", "5-$1/16-($2-1)/40");
+
+        galleryRule = new Rule();
+        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
+        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
+        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
+
+        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
+
+        sites.add(new Site(2, "G.E-hentai",
+                "http://g.e-hentai.org/?page={page:0}",
+                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}&nw=always",
+                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
+                "https://forums.e-hentai.org/index.php?act=Login",
+                indexRule, galleryRule, null, pic));
+
+        List<Category> categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "http://g.e-hentai.org/?page={page:0}"));
+        categories.add(new Category(2, "同人志", "http://g.e-hentai.org/doujinshi/{page:0}"));
+        categories.add(new Category(3, "漫画", "http://g.e-hentai.org/manga/{page:0}"));
+        categories.add(new Category(4, "同人CG", "http://g.e-hentai.org/artistcg/{page:0}"));
+        categories.add(new Category(5, "游戏CG", "http://g.e-hentai.org/gamecg/{page:0}"));
+        categories.add(new Category(6, "欧美", "http://g.e-hentai.org/western/{page:0}"));
+        categories.add(new Category(7, "Non-H", "http://g.e-hentai.org/non-h/{page:0}"));
+        categories.add(new Category(8, "图集", "http://g.e-hentai.org/imageset/{page:0}"));
+        categories.add(new Category(9, "Cosplay", "http://g.e-hentai.org/cosplay/{page:0}"));
+        categories.add(new Category(10, "亚洲AV", "http://g.e-hentai.org/asianporn/{page:0}"));
+        categories.add(new Category(11, "MISC", "http://g.e-hentai.org/misc/{page:0}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+
+        indexRule = new Rule();
+        indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
+        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
+        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
+        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
+        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
+        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
+        indexRule.datetime = new Selector("td.itd[style]", "html", null, null, null);
+        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-?(\\d+)px -?(\\d+)px", "5-$1/16-($2-1)/40");
+
+        galleryRule = new Rule();
+        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
+        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
+        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
+
+        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
+
+        sites.add(new Site(3, "Ex-hentai",
+                "https://exhentai.org/?page={page:0}",
+                "http://exhentai.org/g/{idCode:}/?p={page:0}&nw=always",
+                "http://exhentai.org/?f_search={keyword:}&page={page:0}",
+                "https://forums.e-hentai.org/index.php?act=Login",
+                indexRule, galleryRule, null, pic));
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "http://exhentai.org/?page={page:0}"));
+        categories.add(new Category(2, "同人志", "http://exhentai.org/doujinshi/{page:0}"));
+        categories.add(new Category(3, "漫画", "http://exhentai.org/manga/{page:0}"));
+        categories.add(new Category(4, "同人CG", "http://exhentai.org/artistcg/{page:0}"));
+        categories.add(new Category(5, "游戏CG", "http://exhentai.org/gamecg/{page:0}"));
+        categories.add(new Category(6, "欧美", "http://exhentai.org/western/{page:0}"));
+        categories.add(new Category(7, "Non-H", "http://exhentai.org/non-h/{page:0}"));
+        categories.add(new Category(8, "图集", "http://exhentai.org/imageset/{page:0}"));
+        categories.add(new Category(9, "Cosplay", "http://exhentai.org/cosplay/{page:0}"));
+        categories.add(new Category(10, "亚洲AV", "http://exhentai.org/asianporn/{page:0}"));
+        categories.add(new Category(11, "MISC", "http://exhentai.org/misc/{page:0}"));
+        sites.get(sites.size() - 1).setCategories(categories);
 //
 //        indexRule = new Rule();
 //        indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null, null);
@@ -230,7 +287,7 @@ public class MainActivity extends AnimationActivity {
 //
 //        pic = new Selector("img#picarea", "attr", "src", null, null);
 //
-//        sites.add(new Site(3, "绅士漫画",
+//        sites.add(new Site(4, "绅士漫画",
 //                "http://www.wnacg.org/albums-index-page-{page:1}.html",
 //                "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
 //                "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
@@ -252,7 +309,7 @@ public class MainActivity extends AnimationActivity {
 //
 //        pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
 //
-//        sites.add(new Site(4, "nhentai",
+//        sites.add(new Site(5, "nhentai",
 //                "https://nhentai.net/?page={page:1}",
 //                "https://nhentai.net{idCode:}",
 //                "https://nhentai.net/search/?q={keyword:}&page={page:1}",
@@ -272,7 +329,7 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
 //        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
 //
-//        sites.add(new Site(5, "1024贴图区",
+//        sites.add(new Site(6, "1024贴图区",
 //                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
 //                "http://cl.deocool.pw/htm_data/{idCode:}.html",
 //                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
@@ -292,7 +349,7 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
 //        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
 //
-//        sites.add(new Site(6, "1024自拍区",
+//        sites.add(new Site(7, "1024自拍区",
 //                "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}",
 //                "http://cl.deocool.pw/htm_data/{idCode:}.html",
 //                "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}",
@@ -320,9 +377,10 @@ public class MainActivity extends AnimationActivity {
                 "http://e-shuushuu.net/?page={page:1}",
                 "http://e-shuushuu.net/{idCode:}",
                 "http://e-shuushuu.net/?page={page:1}",
+                null,
                 indexRule, galleryRule, null, null));
 
-        final List<Category> categories = new ArrayList<>();
+        categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://e-shuushuu.net/?page={page:1}"));
         categories.add(new Category(2, "排行榜", "http://e-shuushuu.net/top.php?page={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
@@ -353,14 +411,18 @@ public class MainActivity extends AnimationActivity {
                 final Site site = (Site) siteAdapter.getDataProvider().getItem(position);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("操作")
-                        .setItems(new String[]{"编辑", "删除"}, new DialogInterface.OnClickListener() {
+                        .setItems(new String[]{"登录", "编辑", "删除"}, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (i == 0) {
                                     temp = site;
+                                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                    startActivityForResult(intent, RESULT_LOGIN);
+                                } else if (i == 1) {
+                                    temp = site;
                                     Intent intent = new Intent(MainActivity.this, ModifySiteActivity.class);
                                     startActivityForResult(intent, RESULT_MODIFY_SITE);
-                                } else if (i == 1) {
+                                } else if (i == 2) {
                                     new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
                                             .setMessage("删除后将无法恢复")
                                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -549,6 +611,17 @@ public class MainActivity extends AnimationActivity {
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_MODIFY_SITE) {
+                if (temp instanceof Site) {
+                    final Site site = (Site) temp;
+                    Handler handler = new Handler();
+                    final Runnable r = new Runnable() {
+                        public void run() {
+                            selectSite(CollectionFragment.newInstance(site), site);
+                        }
+                    };
+                    handler.post(r);
+                }
+            } else if (requestCode == RESULT_LOGIN) {
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();

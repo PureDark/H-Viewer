@@ -223,7 +223,8 @@ public class CollectionFragment extends MyFragment {
     @Override
     public void onCategorySelected(Category category){
         currUrl = category.url;
-        rvCollection.setRefreshing(true);
+        if(rvCollection!=null)
+            rvCollection.setRefreshing(true);
         getCollections(null, startPage);
     }
 
