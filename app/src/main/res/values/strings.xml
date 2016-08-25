@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">H-Viewer</string>
 
+    <string name="json_site_key">37cce657eb1503f34ccf7a50bbe03444</string>
+    <string name="json_site_url">https://paste.ee/api</string>
+
     <string name="navigation_drawer_open">打开站点抽屉</string>
     <string name="navigation_drawer_close">关闭站点抽屉</string>
 

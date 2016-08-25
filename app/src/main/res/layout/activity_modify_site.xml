@@ -45,9 +45,27 @@
                     android:gravity="center_vertical"
                     android:text="编辑站点"
                     android:textAppearance="@style/ActionBar.Title" />
+
+                <ImageView
+                    android:id="@+id/btn_site_json"
+                    android:layout_width="@dimen/tool_bar_height"
+                    android:layout_height="@dimen/tool_bar_height"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_button"
+                    app:srcCompat="@drawable/ic_json_white"/>
+
+                <ImageView
+                    android:id="@+id/btn_site_qr_code"
+                    android:layout_width="@dimen/tool_bar_height"
+                    android:layout_height="@dimen/tool_bar_height"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_button"
+                    app:srcCompat="@drawable/ic_qrcode_scan_white"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+
+
 
     <RelativeLayout
         android:id="@+id/edittext_container"
@@ -61,6 +79,69 @@
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:background="@drawable/shadow_bottom" />
+
+        <LinearLayout
+            android:id="@+id/view_share_site_qr_code"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="@dimen/uni_padding">
+
+            <ImageView
+                android:id="@+id/iv_qr_code"
+                android:layout_marginTop="40dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
+
+            <com.gc.materialdesign.views.ButtonFlat
+                android:id="@+id/btn_save_qr_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:background="@color/colorPrimary"
+                android:text="保存二维码" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/view_share_site_json"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="@dimen/uni_padding">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/input_site"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="这里是站点规则生成的json，复制以分享给其他人"
+                android:minLines="10"
+                android:maxLines="18"
+                android:textSize="13sp"
+                android:editable="false"
+                app:met_baseColor="@color/colorPrimaryDark"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="站点规则"
+                app:met_floatingLabelTextSize="16sp"
+                app:met_primaryColor="@color/colorPrimaryDark"/>
+
+            <com.gc.materialdesign.views.ButtonFlat
+                android:id="@+id/btn_copy_json"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:background="@color/colorPrimary"
+                android:text="复制规则" />
+        </LinearLayout>
 
         <include layout="@layout/view_site_details"
             android:visibility="visible"

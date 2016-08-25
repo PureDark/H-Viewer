@@ -23,7 +23,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
 
 public class DownloadManager {
     private final static String DEFAULT_PATH = "/sdcard/H-Viewer/download";
-    private String downloadPath;
+    private static String downloadPath;
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -55,7 +55,7 @@ public class DownloadManager {
         SimpleFileUtil.createIfNotExist(getDownloadPath()+"/.nomedia");
     }
 
-    public String getDownloadPath() {
+    public static String getDownloadPath() {
         if (downloadPath != null)
             return downloadPath;
         else
