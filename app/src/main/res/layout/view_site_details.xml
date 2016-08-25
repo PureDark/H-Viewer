@@ -58,12 +58,33 @@
             app:met_floatingLabelText="COOKIE（可选）"/>
 
         <TextView
+            android:id="@+id/btn_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/half_padding"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14sp"
-            android:text="图片URL"/>
+            android:text="- 分类"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:scrollbars="vertical"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/item_category_input" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/half_padding"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            android:text="大图页图片SRC"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,6 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
+                android:hint="无大图页请留空"
                 style="@style/EditTextAddSite"
                 app:met_floatingLabelText="选择器"/>
             <com.rengwuxian.materialedittext.MaterialEditText

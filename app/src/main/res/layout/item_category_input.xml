@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/half_padding"
+    android:orientation="horizontal">
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/input_category_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="2dp"
+        style="@style/EditTextAddSite"
+        app:met_floatingLabelText="标题"/>
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/input_category_url"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="2dp"
+        style="@style/EditTextAddSite"
+        app:met_floatingLabelText="URL"/>
+</LinearLayout>

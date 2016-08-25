@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.helpers;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -7,15 +8,20 @@ import android.widget.TextView;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.adapters.CategoryInputAdapter;
+import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 import static java.util.regex.Pattern.DOTALL;
 
@@ -37,6 +43,11 @@ public class SitePropViewHolder {
     MaterialEditText inputFlag;
     @BindView(R.id.input_cookie)
     MaterialEditText inputCookie;
+
+    @BindView(R.id.btn_category)
+    TextView btnCategory;
+    @BindView(R.id.rv_category)
+    RecyclerView rvCategory;
 
     @BindView(R.id.input_picUrlSelector_selector)
     MaterialEditText inputPicUrlSelectorSelector;
@@ -261,35 +272,61 @@ public class SitePropViewHolder {
     @BindView(R.id.input_galleryRule_pictureThumbnail_replacement)
     MaterialEditText inputGalleryRulePictureThumbnailReplacement;
 
+    private CategoryInputAdapter categoryInputAdapter;
+
     public SitePropViewHolder(View view) {
         ButterKnife.bind(this, view);
+        btnCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (rvCategory.getVisibility() == View.GONE) {
+                    rvCategory.setVisibility(View.VISIBLE);
+                    btnCategory.setText("-" + btnCategory.getText().toString().substring(1));
+                } else {
+                    rvCategory.setVisibility(View.GONE);
+                    btnCategory.setText("+" + btnCategory.getText().toString().substring(1));
+                }
+            }
+        });
         btnIndexRule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(layoutIndexRule.getVisibility() == View.GONE)
+                if (layoutIndexRule.getVisibility() == View.GONE) {
                     layoutIndexRule.setVisibility(View.VISIBLE);
-                else
+                    btnIndexRule.setText("-" + btnIndexRule.getText().toString().substring(1));
+                } else {
                     layoutIndexRule.setVisibility(View.GONE);
+                    btnIndexRule.setText("+" + btnIndexRule.getText().toString().substring(1));
+                }
             }
         });
         btnSearchRule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(layoutSearchRule.getVisibility() == View.GONE)
+                if (layoutSearchRule.getVisibility() == View.GONE) {
                     layoutSearchRule.setVisibility(View.VISIBLE);
-                else
+                    btnSearchRule.setText("-" + btnSearchRule.getText().toString().substring(1));
+                } else {
                     layoutSearchRule.setVisibility(View.GONE);
+                    btnSearchRule.setText("+" + btnSearchRule.getText().toString().substring(1));
+                }
             }
         });
         btnGalleryRule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(layoutGalleryRule.getVisibility() == View.GONE)
+                if (layoutGalleryRule.getVisibility() == View.GONE) {
                     layoutGalleryRule.setVisibility(View.VISIBLE);
-                else
+                    btnGalleryRule.setText("-" + btnGalleryRule.getText().toString().substring(1));
+                } else {
                     layoutGalleryRule.setVisibility(View.GONE);
+                    btnGalleryRule.setText("+" + btnGalleryRule.getText().toString().substring(1));
+                }
             }
         });
+
+        categoryInputAdapter = new CategoryInputAdapter(new ListDataProvider(new ArrayList()));
+        rvCategory.setAdapter(categoryInputAdapter);
     }
 
     public String joinSelector(Selector selector) {
@@ -323,6 +360,12 @@ public class SitePropViewHolder {
         inputSearchUrl.setText(site.searchUrl);
         inputCookie.setText(site.cookie);
         inputFlag.setText(site.flag);
+
+        if (site.categories != null) {
+            categoryInputAdapter.getDataProvider().addAll(site.categories);
+            categoryInputAdapter.notifyDataSetChanged();
+        }
+
         if (site.picUrlSelector != null) {
             inputPicUrlSelectorSelector.setText(joinSelector(site.picUrlSelector));
             inputPicUrlSelectorRegex.setText(site.picUrlSelector.regex);
@@ -511,6 +554,21 @@ public class SitePropViewHolder {
         site.searchUrl = loadString(inputSearchUrl);
         site.cookie = loadString(inputCookie);
         site.flag = loadString(inputFlag);
+
+        //categories
+        List<Category> categories = categoryInputAdapter.getDataProvider().getItems();
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            if("".equals(category.title) || "".equals(category.url)){
+                categories.remove(i);
+                i--;
+            }else {
+                category.cid = i + 1;
+            }
+        }
+        if(categories.size()>0)
+            site.categories = categories;
+
         site.picUrlSelector = loadSelector(inputPicUrlSelectorSelector, inputPicUrlSelectorRegex, inputPicUrlSelectorReplacement);
 
         //index rule
