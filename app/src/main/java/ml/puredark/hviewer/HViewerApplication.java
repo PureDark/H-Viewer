@@ -20,6 +20,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import ml.puredark.hviewer.helpers.CrashHandler;
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.UpdateManager;
@@ -168,6 +169,10 @@ public class HViewerApplication extends Application {
         searchSuggestionHolder = new SearchSuggestionHolder(this);
 
         startService(new Intent(this, DownloadService.class));
+
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        //注册crashHandler
+        crashHandler.init(getApplicationContext());
     }
 
 

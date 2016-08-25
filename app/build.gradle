@@ -8,8 +8,8 @@ android {
         applicationId "ml.puredark.hviewer"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 6
-        versionName "0.2.0"
+        versionCode 7
+        versionName "0.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -68,6 +68,13 @@ dependencies {
 
     //http
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+
+    //email
+//    compile 'com.github.yesidlazaro:GmailBackground:1.1'
+    compile files('libs/activation.jar')
+    compile files('libs/additionnal.jar')
+    compile files('libs/mail.jar')
+    compile files('libs/commons-email-1.4.jar')
     
     //format, gson, jsoup, etc
     compile 'com.google.code.gson:gson:2.4'

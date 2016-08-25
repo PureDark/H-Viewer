@@ -108,7 +108,6 @@ public class MainActivity extends AnimationActivity {
         setSupportActionBar(toolbar);
         setContainer(coordinatorLayout);
 
-
         if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)) {
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchView.getLayoutParams();
             lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
