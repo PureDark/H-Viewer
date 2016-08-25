@@ -29,7 +29,7 @@ public class Site extends AbstractDataProvider.Data {
     }
 
     public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl, String loginUrl,
-                Rule indexRule, Rule galleryRule, Rule searchRule, Selector picUrlSelector) {
+                Rule indexRule, Rule galleryRule, Rule searchRule, Selector picUrlSelector, String flag) {
         this.sid = sid;
         this.title = title;
         this.indexUrl = indexUrl;
@@ -40,6 +40,7 @@ public class Site extends AbstractDataProvider.Data {
         this.galleryRule = galleryRule;
         this.searchRule = searchRule;
         this.picUrlSelector = picUrlSelector;
+        this.flag = flag;
     }
 
     public void setCategories(List<Category> categories){

@@ -4,20 +4,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
-import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Category;
-import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
-
-import static android.R.attr.id;
 
 public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int selectedCid = 0;
@@ -93,7 +88,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
