@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -21,7 +20,6 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
 
-import static android.R.attr.resource;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;

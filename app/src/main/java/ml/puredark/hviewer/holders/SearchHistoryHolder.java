@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.holders;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -9,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 

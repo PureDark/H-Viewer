@@ -1,23 +1,18 @@
 package ml.puredark.hviewer.activities;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,22 +23,14 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.adapters.DownloadTaskAdapter;
-import ml.puredark.hviewer.adapters.PictureAdapter;
 import ml.puredark.hviewer.adapters.ViewPagerAdapter;
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
-import ml.puredark.hviewer.beans.Picture;
-import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.services.DownloadService;
-import ml.puredark.hviewer.utils.DensityUtil;
-
-import static ml.puredark.hviewer.HViewerApplication.historyHolder;
 
 public class DownloadActivity extends AnimationActivity {
 

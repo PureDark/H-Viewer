@@ -3,31 +3,22 @@ package ml.puredark.hviewer.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.design.widget.CoordinatorLayout;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_ABOUT_LICENSE;
-import static ml.puredark.hviewer.activities.SettingActivity.SettingFragment.KEY_PREF_ABOUT_UPGRADE;
 
 public class AboutActivity extends AnimationActivity {
 

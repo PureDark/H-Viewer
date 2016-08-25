@@ -18,8 +18,6 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
-import static android.R.attr.editable;
-
 public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static int VIEW_TYPE_ADD_CATEGORY = 1;
     private final static int VIEW_TYPE_CATEGORY_INPUT = 2;

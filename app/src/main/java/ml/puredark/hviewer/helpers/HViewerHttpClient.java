@@ -1,10 +1,8 @@
 package ml.puredark.hviewer.helpers;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,10 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,16 +19,11 @@ import ml.puredark.hviewer.HViewerApplication;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
-import okhttp3.CookieJar;
 import okhttp3.FormBody;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.http.HttpMethod;
-
-import static android.R.attr.bitmap;
 
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());

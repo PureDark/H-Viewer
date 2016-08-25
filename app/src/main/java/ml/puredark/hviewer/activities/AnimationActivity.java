@@ -10,18 +10,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.nineoldandroids.animation.Animator;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.services.DownloadService;
 
 /**

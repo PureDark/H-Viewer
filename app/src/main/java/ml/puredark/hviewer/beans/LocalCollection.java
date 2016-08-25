@@ -1,10 +1,5 @@
 package ml.puredark.hviewer.beans;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
-
 public class LocalCollection extends Collection {
     public Site site;
 

@@ -7,17 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.MemoryCategory;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -32,8 +29,6 @@ import ml.puredark.hviewer.holders.SearchHistoryHolder;
 import ml.puredark.hviewer.holders.SearchSuggestionHolder;
 import ml.puredark.hviewer.holders.SiteHolder;
 import ml.puredark.hviewer.services.DownloadService;
-
-import static android.R.attr.data;
 
 public class HViewerApplication extends Application {
     public static Context mContext;
