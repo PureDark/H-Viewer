@@ -210,6 +210,12 @@ public class CollectionFragment extends MyFragment {
 
     @Override
     public void onSearch(String keyword) {
+        if(site==null || site.searchUrl == null || "".equals(site.searchUrl)){
+            AnimationActivity activity = (AnimationActivity) getActivity();
+            if (activity != null)
+                activity.showSnackBar("该站点不支持搜索");
+            return;
+        }
         try {
             keyword = URLEncoder.encode(keyword, "utf-8");
         } catch (UnsupportedEncodingException e) {

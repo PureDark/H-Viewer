@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
@@ -292,7 +294,7 @@ public class MainActivity extends AnimationActivity {
                 "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
                 "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
                 "http://www.wnacg.com/users-login.html",
-                indexRule, galleryRule, null, pic, null));
+                indexRule, galleryRule, null, pic, Site.FLAG_NO_RATING+"|"+Site.FLAG_NO_TAG));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://www.wnacg.org/albums-index-page-{page:1}.html"));
         categories.add(new Category(2, "同人志", "http://www.wnacg.com/albums-index-page-{page:1}-cate-5.html"));
@@ -329,7 +331,7 @@ public class MainActivity extends AnimationActivity {
                 "https://nhentai.net{idCode:}",
                 "https://nhentai.net/search/?q={keyword:}&page={page:1}",
                 "https://nhentai.net/login/",
-                indexRule, galleryRule, null, pic, null));
+                indexRule, galleryRule, null, pic, Site.FLAG_NO_RATING+"|"+Site.FLAG_NO_TAG));
 
         indexRule = new Rule();
         indexRule.item = new Selector("#ajaxtable tr.tr3.t_one:gt(10)", null, null, null, null);
@@ -348,7 +350,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(6, "草榴社区",
                 "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
                 "http://cl.deocool.pw/htm_data/{idCode:}.html",
-                "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
+                null,
                 "http://cl.deocool.pw/login.php",
                 indexRule, galleryRule, null, null, Site.FLAG_NO_COVER+"|"+Site.FLAG_NO_RATING+"|"+Site.FLAG_NO_TAG));
         categories = new ArrayList<>();
@@ -377,7 +379,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(9, "E-shuushuu",
                 "http://e-shuushuu.net/?page={page:1}",
                 "http://e-shuushuu.net/{idCode:}",
-                "http://e-shuushuu.net/?page={page:1}",
+                null,
                 "http://e-shuushuu.net/",
                 indexRule, galleryRule, null, null, null));
 
@@ -481,7 +483,7 @@ public class MainActivity extends AnimationActivity {
             selectSite(CollectionFragment.newInstance(site), site);
         }
 
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         HViewerApplication.checkUpdate(this);
 

@@ -39,6 +39,8 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryUrl;
     @BindView(R.id.input_searchUrl)
     MaterialEditText inputSearchUrl;
+    @BindView(R.id.input_loginUrl)
+    MaterialEditText inputLoginUrl;
     @BindView(R.id.input_flag)
     MaterialEditText inputFlag;
     @BindView(R.id.input_cookie)
@@ -358,6 +360,7 @@ public class SitePropViewHolder {
         inputIndexUrl.setText(site.indexUrl);
         inputGalleryUrl.setText(site.galleryUrl);
         inputSearchUrl.setText(site.searchUrl);
+        inputLoginUrl.setText(site.loginUrl);
         inputCookie.setText(site.cookie);
         inputFlag.setText(site.flag);
 
@@ -552,6 +555,7 @@ public class SitePropViewHolder {
         site.indexUrl = loadString(inputIndexUrl);
         site.galleryUrl = loadString(inputGalleryUrl);
         site.searchUrl = loadString(inputSearchUrl);
+        site.loginUrl = loadString(inputLoginUrl);
         site.cookie = loadString(inputCookie);
         site.flag = loadString(inputFlag);
 
@@ -622,7 +626,7 @@ public class SitePropViewHolder {
         site.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         site.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
 
-        if (site.indexUrl == null || site.galleryUrl == null || site.searchUrl == null ||
+        if (site.indexUrl == null || site.galleryUrl == null ||
                 site.indexRule.item == null || site.indexRule.idCode == null ||
                 site.galleryRule.item == null || site.galleryRule.pictureUrl == null)
             return null;

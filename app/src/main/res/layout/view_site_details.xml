@@ -41,7 +41,14 @@
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
             app:met_clearButton="true"
-            app:met_floatingLabelText="搜索URL"/>
+            app:met_floatingLabelText="搜索URL（可选）"/>
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/input_loginUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EditTextAddSite"
+            app:met_clearButton="true"
+            app:met_floatingLabelText="登录URL（可选）"/>
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/input_flag"
             android:layout_width="match_parent"
@@ -576,7 +583,7 @@
             android:layout_marginTop="@dimen/half_padding"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
-            android:text="- 搜索页规则"/>
+            android:text="- 搜索页规则（可选）"/>
 
         <LinearLayout
             android:id="@+id/layout_searchRule"
