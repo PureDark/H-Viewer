@@ -69,8 +69,8 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
 |  1   | [lofi.e-hentai](http://jsondepot.mcsky.org/15) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/1.lofi.png)  | PureDark |
-|  2   | [g.e-hentai](http://jsondepot.mcsky.org/16) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/2.g.png)  | PureDark |
-|  3   | [ex-hentai](http://jsondepot.mcsky.org/17) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.exhentai.png)  | PureDark |
+|  2   | [g.e-hentai](http://jsondepot.mcsky.org/24) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/2.g.png)  | PureDark |
+|  3   | [ex-hentai](http://jsondepot.mcsky.org/25) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.exhentai.png)  | PureDark |
 |  4   | [wnacg (绅士漫画)](http://jsondepot.mcsky.org/18) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.wnacg.png)  | PureDark |
 |  5   | [nhentai](http://jsondepot.mcsky.org/19) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.nhentai.png)  | PureDark |
 |  6   | [草榴社区](http://jsondepot.mcsky.org/20) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/6.草榴社区.png)  | PureDark |
@@ -82,7 +82,7 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
 |  1   | [E-shuushuu](http://jsondepot.mcsky.org/21) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.e-shuushuu.png)  | PureDark |
-|  2   | [pixiv](http://jsondepot.mcsky.org/22) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
+|  2   | [pixiv](http://jsondepot.mcsky.org/27) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
 
 
 ## How to make a custom rule of a new site
