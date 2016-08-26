@@ -45,7 +45,7 @@ public class FavouriteHolder {
     public List<Collection> getFavourites() {
         List<Collection> favourites = new ArrayList<>();
 
-        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " ORDER BY `id` DESC");
+        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " ORDER BY `fid` DESC");
         while (cursor.moveToNext()) {
             int i = cursor.getColumnIndex("json");
             int id = cursor.getInt(0);
