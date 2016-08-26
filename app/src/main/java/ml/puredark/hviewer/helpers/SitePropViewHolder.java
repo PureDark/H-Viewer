@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.helpers;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -275,6 +276,7 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryRulePictureThumbnailReplacement;
 
     private CategoryInputAdapter categoryInputAdapter;
+    private Site lastSite;
 
     public SitePropViewHolder(View view) {
         ButterKnife.bind(this, view);
@@ -356,6 +358,7 @@ public class SitePropViewHolder {
     }
 
     public void fillSitePropEditText(Site site) {
+        lastSite = site;
         inputTitle.setText(site.title);
         inputIndexUrl.setText(site.indexUrl);
         inputGalleryUrl.setText(site.galleryUrl);
@@ -626,6 +629,9 @@ public class SitePropViewHolder {
         site.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         site.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
 
+        if(lastSite!=null)
+            site.extraRule = lastSite.extraRule;
+        Log.d("SitePropViewHolder", "site.extraRule:" + site.extraRule);
         if (site.indexUrl == null || site.galleryUrl == null ||
                 site.indexRule.item == null || site.indexRule.idCode == null ||
                 site.galleryRule.item == null || site.galleryRule.pictureUrl == null)

@@ -82,7 +82,7 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
 |  1   | [E-shuushuu](http://jsondepot.mcsky.org/21) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.e-shuushuu.png)  | PureDark |
-|  2   | [pixiv](http://jsondepot.mcsky.org/27) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
+|  2   | [pixiv](http://jsondepot.mcsky.org/28) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
 
 
 ## How to make a custom rule of a new site
