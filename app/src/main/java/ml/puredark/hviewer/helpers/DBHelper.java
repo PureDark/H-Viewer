@@ -15,7 +15,7 @@ public class DBHelper {
 
     public synchronized void open(Context context) {
         close();
-        mSqliteHelper = new SQLiteHelper(context, dbName, null, 1);
+        mSqliteHelper = new SQLiteHelper(context, dbName, null, 2);
     }
 
     public synchronized void insert(String sql) {
@@ -108,13 +108,16 @@ public class DBHelper {
             db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text)");
             db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
             db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
-            db.execSQL("CREATE TABLE `downloads`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
             db.execSQL("CREATE TABLE `searchSuggestions`(`title` text primary key)");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+            if(oldVersion==1){
+                db.execSQL("DROP TABLE `downloads`;");
+                db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            }
         }
 
     }
