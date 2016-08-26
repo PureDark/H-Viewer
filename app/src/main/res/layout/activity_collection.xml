@@ -28,12 +28,11 @@
             app:titleEnabled="true">
 
 
-            <ml.puredark.hviewer.customs.ScalingImageView
+            <ImageView
                 android:id="@+id/backdrop"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:minHeight="@dimen/collection_app_bar_height"
-                android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.apache.commons.mail.SimpleEmail;
 
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 

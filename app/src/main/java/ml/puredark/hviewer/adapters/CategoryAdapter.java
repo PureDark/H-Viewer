@@ -13,13 +13,14 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int selectedCid = 0;
-    private AbstractDataProvider mProvider;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public CategoryAdapter(AbstractDataProvider mProvider) {
+    public CategoryAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -64,11 +65,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.mItemClickListener = listener;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 

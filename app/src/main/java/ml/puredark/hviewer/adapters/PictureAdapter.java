@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
@@ -12,22 +13,26 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private AbstractDataProvider mProvider;
+    private Context context;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
     private boolean repeatedThumbnail = false;
     private String cookie;
 
-    public PictureAdapter(AbstractDataProvider mProvider) {
+    public PictureAdapter(Context context, ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
+        this.context = context;
     }
 
     @Override
@@ -41,31 +46,49 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
-        Picture picture = (Picture) mProvider.getItem(position);
+        final Picture picture = (Picture) mProvider.getItem(position);
         final PictureViewHolder holder = (PictureViewHolder) viewHolder;
         if (!repeatedThumbnail)
-            HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail, cookie, picture.referer);
+            HViewerApplication.loadImageFromUrl(context, holder.ivPicture, picture.thumbnail, cookie, picture.referer);
         else
-            HViewerApplication.loadBitmapFromUrl(picture.thumbnail, cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+            HViewerApplication.loadBitmapFromUrl(context, picture.thumbnail, cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
 
                 @Override
                 public void onResourceReady(final Bitmap resource, GlideAnimation glideAnimation) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            List<Picture> pictures = mProvider.getItems();
+                            int count = 0;
+                            for (Picture pic : pictures) {
+                                if (picture.thumbnail.equals(pic.thumbnail))
+                                    count++;
+                            }
                             final Bitmap bitmap;
                             if (resource.getWidth() >= resource.getHeight()) {
-                                int width = resource.getWidth() / getItemCount();
+                                int width = resource.getWidth() / count;
                                 int height = resource.getHeight();
-                                int startX = width * position;
+                                int startX = width * (position % count);
                                 int startY = 0;
-                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                                if (width * 2 > height) {
+                                    if (startX + width > resource.getWidth())
+                                        width = resource.getWidth() - startX;
+                                    bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                                } else {
+                                    bitmap = resource;
+                                }
                             } else {
                                 int width = resource.getWidth();
-                                int height = resource.getHeight() / getItemCount();
+                                int height = resource.getHeight() / count;
                                 int startX = 0;
-                                int startY = height * position;
-                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                                int startY = height * (position % count);
+                                if (height * 2 > width) {
+                                    if (startY + height > resource.getHeight())
+                                        height = resource.getHeight() - startY;
+                                    bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                                } else {
+                                    bitmap = resource;
+                                }
                             }
                             holder.ivPicture.post(new Runnable() {
                                 @Override
@@ -111,11 +134,11 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         repeatedThumbnail = repeated;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 

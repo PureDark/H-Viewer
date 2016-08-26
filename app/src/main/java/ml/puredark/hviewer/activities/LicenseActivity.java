@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 public class LicenseActivity extends AnimationActivity {
 
@@ -47,7 +48,7 @@ public class LicenseActivity extends AnimationActivity {
 
         String license;
         try {
-            license = getFromAssets("License.txt");
+            license = SimpleFileUtil.getFromAssets(this, "License.txt");
         } catch (IOException e) {
             e.printStackTrace();
             license = "获取失败";
@@ -59,16 +60,6 @@ public class LicenseActivity extends AnimationActivity {
     @OnClick(R.id.btn_return)
     void back() {
         onBackPressed();
-    }
-
-    public String getFromAssets(String fileName) throws IOException {
-        InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
-        BufferedReader bufReader = new BufferedReader(inputReader);
-        String line = "";
-        String Result = "";
-        while ((line = bufReader.readLine()) != null)
-            Result += "\n"+line;
-        return Result;
     }
 
 }

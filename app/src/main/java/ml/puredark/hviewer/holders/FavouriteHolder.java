@@ -1,67 +1,78 @@
 package ml.puredark.hviewer.holders;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.helpers.DBHelper;
 
 /**
  * Created by PureDark on 2016/8/12.
  */
 
 public class FavouriteHolder {
-    private Context mContext;
-    private List<Collection> favourites;
+    private final static String dbName = "favourites";
+    private DBHelper dbHelper;
 
     public FavouriteHolder(Context context) {
-        this.mContext = context;
-        String favouriteStr = (String) SharedPreferencesUtil.getData(context, "Favourite", "[]");
-        favourites = new Gson().fromJson(favouriteStr, new TypeToken<ArrayList<LocalCollection>>() {
-        }.getType());
-    }
-
-    public void saveFavourite() {
-        SharedPreferencesUtil.saveData(mContext, "Favourite", new Gson().toJson(favourites));
+        dbHelper = new DBHelper();
+        dbHelper.open(context);
     }
 
     public void addFavourite(LocalCollection item) {
         if (item == null) return;
         deleteFavourite(item);
-        favourites.add(0, item);
-        saveFavourite();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("idCode", item.idCode);
+        contentValues.put("title", item.title);
+        contentValues.put("referer", item.referer);
+        contentValues.put("json", new Gson().toJson(item));
+        dbHelper.insert(dbName, contentValues);
     }
 
     public void deleteFavourite(Collection item) {
-        for (int i = 0, size = favourites.size(); i < size; i++) {
-            if (favourites.get(i).equals(item)) {
-                favourites.remove(i);
-                size--;
-                i--;
-            }
-        }
-        saveFavourite();
+        dbHelper.delete(dbName, "`idCode` = ? AND `title` = ? AND `referer` = ?",
+                new String[]{item.idCode, item.title, item.referer});
     }
 
     public List<Collection> getFavourites() {
-        if (favourites == null)
-            return new ArrayList<>();
-        else
-            return favourites;
+        List<Collection> favourites = new ArrayList<>();
+
+        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " ORDER BY `id` DESC");
+        while (cursor.moveToNext()) {
+            int i = cursor.getColumnIndex("json");
+            int id = cursor.getInt(0);
+            if (i >= 0) {
+                String json = cursor.getString(i);
+                Collection collection = new Gson().fromJson(json, LocalCollection.class);
+                collection.cid = id;
+                favourites.add(collection);
+            }
+        }
+
+        return favourites;
     }
 
     public boolean isFavourite(Collection item) {
-        for (int i = 0, size = favourites.size(); i < size; i++) {
-            if (favourites.get(i).equals(item))
-                return true;
+        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `idCode` = ? AND `title` = ? AND `referer` = ?",
+                new String[]{item.idCode, item.title, item.referer});
+        if (cursor.moveToNext())
+            return true;
+        else
+            return false;
+    }
+
+    public void onDestroy() {
+        if (dbHelper != null) {
+            dbHelper.close();
         }
-        return false;
     }
 
 }

@@ -28,8 +28,8 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
+import ml.puredark.hviewer.holders.SiteHolder;
 
-import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 
 public class AddSiteActivity extends AnimationActivity {
 
@@ -56,6 +56,8 @@ public class AddSiteActivity extends AnimationActivity {
 
     private SitePropViewHolder holder;
 
+    private SiteHolder siteHolder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,7 @@ public class AddSiteActivity extends AnimationActivity {
         setReturnButton(btnReturn);
 
         holder = new SitePropViewHolder(viewSiteDetails);
+        siteHolder = new SiteHolder(this);
 
     }
 

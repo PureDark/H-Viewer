@@ -23,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
-import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -50,9 +49,8 @@ import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
+import ml.puredark.hviewer.holders.SiteHolder;
 
-import static ml.puredark.hviewer.HViewerApplication.siteHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 
@@ -97,6 +95,8 @@ public class MainActivity extends AnimationActivity {
     private String currQuery;
     private boolean isSuggestionEmpty = true;
 
+    private SiteHolder siteHolder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +107,8 @@ public class MainActivity extends AnimationActivity {
         // User interface
         setSupportActionBar(toolbar);
         setContainer(coordinatorLayout);
+
+        siteHolder = new SiteHolder(this);
 
         if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)) {
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchView.getLayoutParams();
@@ -165,7 +167,7 @@ public class MainActivity extends AnimationActivity {
             }
         });
 
-        List<Site> sites = HViewerApplication.siteHolder.getSites();
+        List<Site> sites = siteHolder.getSites();
 
 //        sites.clear();
 //
@@ -207,9 +209,9 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule = new Rule();
 //        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
 //        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-//        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
-//        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
-//        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
+//        galleryRule.item = new Selector("div.gdt div", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://.*?.jpg)", null);
 //
 //        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 //
@@ -248,9 +250,9 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule = new Rule();
 //        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
 //        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-//        galleryRule.item = new Selector("div.gdtm", null, null, null, null);
-//        galleryRule.pictureUrl = new Selector("div a", "attr", "href", null, null);
-//        galleryRule.pictureThumbnail = new Selector("div", null, null, "<div.*?style=\".*?background:.*?url\\((.*?)\\)", null);
+//        galleryRule.item = new Selector("div.gdt div", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://.*?.jpg)", null);
 //
 //        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 //
@@ -387,7 +389,7 @@ public class MainActivity extends AnimationActivity {
 //        categories.add(new Category(2, "排行榜", "http://e-shuushuu.net/top.php?page={page:1}"));
 //        sites.get(sites.size() - 1).setCategories(categories);
 
-        AbstractDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
+        ListDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         siteAdapter = new SiteAdapter(dataProvider);
         rvSite.setAdapter(siteAdapter);
 
@@ -431,6 +433,7 @@ public class MainActivity extends AnimationActivity {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     siteHolder.deleteSite(site);
+                                                    siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                                                     siteAdapter.notifyDataSetChanged();
                                                 }
                                             }).setNegativeButton("取消", null).show();
@@ -463,7 +466,7 @@ public class MainActivity extends AnimationActivity {
             }
         });
 
-        AbstractDataProvider<Category> categoryProvider = new ListDataProvider<>(new ArrayList<Category>());
+        ListDataProvider<Category> categoryProvider = new ListDataProvider<>(new ArrayList<Category>());
         categoryAdapter = new CategoryAdapter(categoryProvider);
         categoryAdapter.setOnItemClickListener(new CategoryAdapter.OnItemClickListener() {
             @Override
@@ -535,7 +538,7 @@ public class MainActivity extends AnimationActivity {
         replaceFragment(fragment, site.title);
 
         if (site.categories != null && site.categories.size() > 0) {
-            AbstractDataProvider<Category> dataProvider = new ListDataProvider<>(site.categories);
+            ListDataProvider<Category> dataProvider = new ListDataProvider<>(site.categories);
             categoryAdapter.setDataProvider(dataProvider);
             categoryAdapter.notifyDataSetChanged();
 
@@ -600,6 +603,8 @@ public class MainActivity extends AnimationActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_ADD_SITE) {
+                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                siteAdapter.notifyDataSetChanged();
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();
@@ -611,6 +616,8 @@ public class MainActivity extends AnimationActivity {
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_MODIFY_SITE) {
+                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                siteAdapter.notifyDataSetChanged();
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();
@@ -650,7 +657,8 @@ public class MainActivity extends AnimationActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        HViewerApplication.siteHolder.saveSites();
+        if (siteHolder != null)
+            siteHolder.onDestroy();
         HViewerApplication.searchHistoryHolder.saveSearchHistory();
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
         new DownloadTaskHolder(this).saveDownloadTasks();

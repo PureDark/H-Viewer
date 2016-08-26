@@ -1,64 +1,73 @@
 package ml.puredark.hviewer.holders;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.helpers.DBHelper;
 
 /**
  * Created by PureDark on 2016/8/12.
  */
 
 public class HistoryHolder {
-    private Context mContext;
-    private List<Collection> histories;
+    private final static String dbName = "histories";
+    private DBHelper dbHelper;
 
     public HistoryHolder(Context context) {
-        this.mContext = context;
-        String historyStr = (String) SharedPreferencesUtil.getData(context, "History", "[]");
-        histories = new Gson().fromJson(historyStr, new TypeToken<ArrayList<LocalCollection>>() {
-        }.getType());
-    }
-
-    public void saveHistory() {
-        SharedPreferencesUtil.saveData(mContext, "History", new Gson().toJson(histories));
+        dbHelper = new DBHelper();
+        dbHelper.open(context);
     }
 
     public void addHistory(LocalCollection item) {
         if (item == null) return;
         deleteHistory(item);
-        histories.add(0, item);
-        trimHistory();
-        saveHistory();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("idCode", item.idCode);
+        contentValues.put("title", item.title);
+        contentValues.put("referer", item.referer);
+        contentValues.put("json", new Gson().toJson(item));
+        dbHelper.insert(dbName, contentValues);
     }
 
     public void deleteHistory(Collection item) {
-        for (int i = 0, size = histories.size(); i < size; i++) {
-            if (histories.get(i).equals(item)) {
-                histories.remove(i);
-                size--;
-                i--;
-            }
-        }
-        saveHistory();
+        dbHelper.delete(dbName, "`idCode` = ? AND `title` = ? AND `referer` = ?",
+                new String[]{item.idCode, item.title, item.referer});
     }
 
     public void trimHistory() {
-        while (histories.size() > 10)
-            histories.remove(10);
+        dbHelper.nonQuery("DELETE FROM " + dbName + " WHERE `hid` NOT IN (SELECT `hid` FROM " + dbName + " ORDER BY `hid` DESC LIMIT 0, 20)");
     }
 
     public List<Collection> getHistories() {
-        if (histories == null)
-            return new ArrayList<>();
-        else
-            return histories;
+        List<Collection> histories = new ArrayList<>();
+
+        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " ORDER BY `hid` DESC");
+        while (cursor.moveToNext()) {
+            int i = cursor.getColumnIndex("json");
+            int id = cursor.getInt(0);
+            if (i >= 0) {
+                String json = cursor.getString(i);
+                Collection collection = new Gson().fromJson(json, LocalCollection.class);
+                collection.cid = id;
+                histories.add(collection);
+            }
+        }
+
+        return histories;
+    }
+
+    public void onDestroy() {
+        if (dbHelper != null) {
+            trimHistory();
+            dbHelper.close();
+        }
     }
 }

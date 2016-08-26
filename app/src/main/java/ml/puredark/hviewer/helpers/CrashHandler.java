@@ -9,11 +9,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
-
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -29,8 +25,6 @@ import ml.puredark.hviewer.utils.EmailUtil;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
-
-import static ml.puredark.hviewer.HViewerApplication.mContext;
 
 /**
  * @author Stay

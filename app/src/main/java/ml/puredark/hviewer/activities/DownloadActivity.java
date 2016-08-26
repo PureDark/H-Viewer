@@ -9,7 +9,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -95,7 +94,12 @@ public class DownloadActivity extends AnimationActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        manager.unbindService(this);
+        try{
+            if(manager!=null) {
+                manager.unbindService(this);
+            }
+        }catch (Exception e){
+        }
     }
 
     private void initTabAndViewPager() {
@@ -117,7 +121,7 @@ public class DownloadActivity extends AnimationActivity {
         rvDownloading = (RecyclerView) viewDownloading.findViewById(R.id.rv_collection);
         rvDownloaded = (RecyclerView) viewDownloaded.findViewById(R.id.rv_collection);
 
-        downloadingTaskAdapter = new DownloadTaskAdapter(new ListDataProvider(downloadingTasks));
+        downloadingTaskAdapter = new DownloadTaskAdapter(this, new ListDataProvider(downloadingTasks));
         rvDownloading.setAdapter(downloadingTaskAdapter);
 
         downloadingTaskAdapter.setOnItemClickListener(new DownloadTaskAdapter.OnItemClickListener() {
@@ -152,7 +156,7 @@ public class DownloadActivity extends AnimationActivity {
             }
         });
 
-        downloadedTaskAdapter = new DownloadTaskAdapter(new ListDataProvider(downloadedTasks));
+        downloadedTaskAdapter = new DownloadTaskAdapter(this, new ListDataProvider(downloadedTasks));
         rvDownloaded.setAdapter(downloadedTaskAdapter);
 
         downloadedTaskAdapter.setOnItemClickListener(new DownloadTaskAdapter.OnItemClickListener() {
@@ -186,8 +190,8 @@ public class DownloadActivity extends AnimationActivity {
         List<DownloadTask> downloadTasks = manager.getDownloadTasks();
         downloadingTaskAdapter.getDataProvider().clear();
         downloadedTaskAdapter.getDataProvider().clear();
-        downloadingTasks = downloadingTaskAdapter.getDataProvider().getItems();
-        downloadedTasks = downloadedTaskAdapter.getDataProvider().getItems();
+        downloadingTasks = (List<DownloadTask>) downloadingTaskAdapter.getDataProvider().getItems();
+        downloadedTasks = (List<DownloadTask>) downloadedTaskAdapter.getDataProvider().getItems();
         for (DownloadTask task : downloadTasks) {
             if (task.status == DownloadTask.STATUS_COMPLETED)
                 downloadedTasks.add(task);
@@ -227,7 +231,6 @@ public class DownloadActivity extends AnimationActivity {
                 distinguishDownloadTasks();
                 startNextTaskInQueue();
             }
-            Log.d("DownloadReceiver", intent.getAction());
         }
 
     }

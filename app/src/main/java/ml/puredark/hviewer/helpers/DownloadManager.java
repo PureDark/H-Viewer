@@ -38,16 +38,8 @@ public class DownloadManager {
 
     public DownloadManager(Context context) {
         holder = new DownloadTaskHolder(context);
-        reorganizeTasks();
         context.bindService(new Intent(context, DownloadService.class), conn, BIND_AUTO_CREATE);
         checkNoMediaFile();
-    }
-
-    public void reorganizeTasks() {
-        int size = holder.getDownloadTasks().size();
-        for (int i = 0; i < size; i++) {
-            holder.getDownloadTasks().get(i).did = i + 1;
-        }
     }
 
     private void checkNoMediaFile(){
@@ -74,7 +66,8 @@ public class DownloadManager {
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (holder.isInList(task) || binder == null)
             return false;
-        holder.addDownloadTask(task);
+        int did = holder.addDownloadTask(task);
+        task.did = did;
         if (!isDownloading())
             startDownload(task);
         return true;

@@ -3,6 +3,7 @@ package ml.puredark.hviewer.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -76,8 +77,8 @@ public class CollectionFragment extends MyFragment {
         mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
 
         List<Collection> collections = new ArrayList<>();
-        AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
-        adapter = new CollectionAdapter(dataProvider);
+        ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
+        adapter = new CollectionAdapter(getContext(), dataProvider);
         rvCollection.setAdapter(adapter);
 
         Bundle bundle = getArguments();
@@ -234,9 +235,19 @@ public class CollectionFragment extends MyFragment {
     @Override
     public void onCategorySelected(Category category){
         currUrl = category.url;
-        if(rvCollection!=null)
+        if(rvCollection!=null) {
             rvCollection.setRefreshing(true);
-        getCollections(null, startPage);
+            getCollections(null, startPage);
+        }else{
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if(rvCollection!=null) {
+                        rvCollection.setRefreshing(true);
+                        getCollections(null, startPage);
+                    }
+                }
+            }, 300);
+        }
     }
 
     @Override

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ListDataProvider<T extends AbstractDataProvider.Data> extends AbstractDataProvider<T> {
+public class ListDataProvider<T extends AbstractDataProvider.Data> extends AbstractDataProvider<T, List> {
 
     private List<T> items;
 
@@ -36,8 +36,12 @@ public class ListDataProvider<T extends AbstractDataProvider.Data> extends Abstr
         items = new ArrayList<>();
     }
 
-    public void addItem(T item) {
+    @Override
+    public void setDataSet(List datas) {
+        items = datas;
+    }
 
+    public void addItem(T item) {
         items.add(item);
     }
 

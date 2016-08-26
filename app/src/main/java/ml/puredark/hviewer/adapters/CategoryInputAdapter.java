@@ -17,13 +17,14 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static int VIEW_TYPE_ADD_CATEGORY = 1;
     private final static int VIEW_TYPE_CATEGORY_INPUT = 2;
-    private AbstractDataProvider mProvider;
+    private ListDataProvider mProvider;
 
-    public CategoryInputAdapter(AbstractDataProvider mProvider) {
+    public CategoryInputAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -56,6 +57,9 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
         }else if(viewHolder instanceof CategoryInputViewHolder){
             CategoryInputViewHolder holder = (CategoryInputViewHolder) viewHolder;
             Category category = (Category) mProvider.getItem(position);
+            if(category==null){
+                category = new Category(0, "", "");
+            }
             holder.inputCategoryTitle.setText(category.title);
             holder.inputCategoryUrl.setText(category.url);
         }
@@ -82,11 +86,11 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
             return VIEW_TYPE_CATEGORY_INPUT;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 

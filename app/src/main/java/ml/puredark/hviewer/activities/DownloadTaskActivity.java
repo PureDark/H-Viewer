@@ -52,7 +52,7 @@ public class DownloadTaskActivity extends AnimationActivity {
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.backdrop)
-    ScalingImageView backdrop;
+    ImageView backdrop;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tab_layout)
@@ -161,7 +161,7 @@ public class DownloadTaskActivity extends AnimationActivity {
 
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
-        pictureAdapter = new PictureAdapter(new ListDataProvider(task.collection.pictures));
+        pictureAdapter = new PictureAdapter(this, new ListDataProvider(task.collection.pictures));
         pictureAdapter.setCookie(task.collection.site.cookie);
         rvIndex.setAdapter(pictureAdapter);
 

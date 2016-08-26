@@ -102,7 +102,7 @@ public class SettingActivity extends AnimationActivity {
         }
 
         public void checkUpdate(){
-            String url = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
+            String url = getString(R.string.update_site_url);
             HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, Object result) {

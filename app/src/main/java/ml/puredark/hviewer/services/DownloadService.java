@@ -104,8 +104,14 @@ public class DownloadService extends Service {
                         Bitmap bitmap = (Bitmap) result;
                         loadBitmap(picture, task, bitmap);
                     } else {
+                        if(result == null)
+                            onFailure(null);
+
                         picture.pic = RuleParser.getPictureUrl((String) result, task.collection.site.picUrlSelector, picture.url);
-                        loadBitmap(picture, task, null);
+                        if(picture.pic==null)
+                            onFailure(null);
+                        else
+                            loadBitmap(picture, task, null);
                     }
                 }
 
@@ -125,7 +131,7 @@ public class DownloadService extends Service {
         if (bitmap != null) {
             saveBitmap(picture, task, bitmap);
         } else
-            HViewerApplication.loadBitmapFromUrl(picture.pic, task.collection.site.cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+            HViewerApplication.loadBitmapFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                 private DownloadTask myTask = task;
 
                 @Override

@@ -135,7 +135,7 @@ public class HViewerHttpClient {
         public void onResponse(Call call, Response response) throws IOException {
             final String contentType = response.header("Content-Type");
             final Object body;
-            if (contentType != null || contentType.contains("image")) {
+            if (contentType != null && contentType.contains("image")) {
                 body = BitmapFactory.decodeStream(response.body().byteStream());
             } else {
                 byte[] b = response.body().bytes();

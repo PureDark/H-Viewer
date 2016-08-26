@@ -24,11 +24,8 @@ import ml.puredark.hviewer.helpers.CrashHandler;
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.UpdateManager;
-import ml.puredark.hviewer.holders.FavouriteHolder;
-import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 import ml.puredark.hviewer.holders.SearchSuggestionHolder;
-import ml.puredark.hviewer.holders.SiteHolder;
 import ml.puredark.hviewer.services.DownloadService;
 
 public class HViewerApplication extends Application {
@@ -36,9 +33,6 @@ public class HViewerApplication extends Application {
     // 全局变量，用于跨Activity传递复杂对象的引用
     public static Object temp, temp2;
 
-    public static SiteHolder siteHolder;
-    public static HistoryHolder historyHolder;
-    public static FavouriteHolder favouriteHolder;
     public static SearchHistoryHolder searchHistoryHolder;
     public static SearchSuggestionHolder searchSuggestionHolder;
 
@@ -74,15 +68,15 @@ public class HViewerApplication extends Application {
         return false;
     }
 
-    public static void loadImageFromUrl(ImageView imageView, String url) {
-        loadImageFromUrl(imageView, url, null, null);
+    public static void loadImageFromUrl(Context context,ImageView imageView, String url) {
+        loadImageFromUrl(context, imageView, url, null, null);
     }
 
-    public static void loadImageFromUrl(ImageView imageView, String url, String cookie) {
-        loadImageFromUrl(imageView, url, cookie, null);
+    public static void loadImageFromUrl(Context context,ImageView imageView, String url, String cookie) {
+        loadImageFromUrl(context, imageView, url, cookie, null);
     }
 
-    public static void loadImageFromUrl(ImageView imageView, String url, String cookie, String referer) {
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
         imageView.setImageBitmap(null);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
@@ -92,20 +86,21 @@ public class HViewerApplication extends Application {
                         .addHeader("cookie", cookie)
                         .addHeader("referer", referer)
                         .build());
-                Glide.with(mContext).load(glideUrl).into(imageView);
+
+                Glide.with(context).load(glideUrl).into(imageView);
             } else {
                 GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
                         .addHeader("cookie", cookie)
                         .addHeader("referer", referer)
                         .build());
-                Glide.with(mContext).load(glideUrl).into(imageView);
+                Glide.with(context).load(glideUrl).into(imageView);
             }
         }else{
-            Glide.with(mContext).load(url).into(imageView);
+            Glide.with(context).load(url).into(imageView);
         }
     }
 
-    public static void loadBitmapFromUrl(String url, String cookie, String referer, SimpleTarget listener){
+    public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, SimpleTarget listener){
         if (url != null) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
@@ -114,19 +109,19 @@ public class HViewerApplication extends Application {
                         .addHeader("cookie", cookie)
                         .addHeader("referer", referer)
                         .build());
-                Glide.with(mContext).load(glideUrl).asBitmap().into(listener);
+                Glide.with(context).load(glideUrl).asBitmap().into(listener);
             } else {
                 GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
                         .addHeader("cookie", cookie)
                         .addHeader("referer", referer)
                         .build());
-                Glide.with(mContext).load(glideUrl).asBitmap().into(listener);
+                Glide.with(context).load(glideUrl).asBitmap().into(listener);
             }
         }
     }
 
     public static void checkUpdate(final Context context){
-        String url = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
+        String url = context.getString(R.string.update_site_url);
         HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
@@ -162,9 +157,6 @@ public class HViewerApplication extends Application {
         super.onCreate();
         mContext = this;
 
-        siteHolder = new SiteHolder(this);
-        historyHolder = new HistoryHolder(this);
-        favouriteHolder = new FavouriteHolder(this);
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);
 

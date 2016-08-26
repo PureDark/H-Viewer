@@ -15,14 +15,15 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int selectedSid = 0;
-    private AbstractDataProvider mProvider;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
     private MaterialAnimatedSwitch.OnCheckedChangeListener mOnCheckedChangeListener;
 
-    public SiteAdapter(AbstractDataProvider mProvider) {
+    public SiteAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -114,11 +115,11 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mOnCheckedChangeListener = listener;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 
@@ -163,7 +164,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     switchListGrid.toggle();
                 }
             });
-            if (mOnCheckedChangeListener != null && getAdapterPosition() >= 0)
+            if (mOnCheckedChangeListener != null)
                 switchListGrid.setOnCheckedChangeListener(mOnCheckedChangeListener);
         }
     }

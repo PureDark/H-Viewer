@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -11,16 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionMenu;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -46,13 +39,13 @@ import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
-import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.DownloadManager;
-import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
+import ml.puredark.hviewer.holders.FavouriteHolder;
+import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 
@@ -61,7 +54,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.backdrop)
-    ScalingImageView backdrop;
+    ImageView backdrop;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tab_layout)
@@ -94,6 +87,9 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     private boolean isIndexComplete = false;
 
     private DownloadManager manager;
+
+    private HistoryHolder historyHolder;
+    private FavouriteHolder favouriteHolder;
 
 
     @Override
@@ -145,41 +141,45 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         rvIndex.setRefreshing(true);
         getCollectionDetail(startPage);
 
+        historyHolder = new HistoryHolder(this);
+        favouriteHolder = new FavouriteHolder(this);
         //加入历史记录
-        HViewerApplication.historyHolder.addHistory((LocalCollection) myCollection);
+        historyHolder.addHistory((LocalCollection) myCollection);
     }
 
     private void initCover(String cover) {
         if (cover != null) {
-            Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            /* 给背景封面加上高斯模糊 */
-                            final Bitmap overlay = FastBlur.doBlur(resource.copy(Bitmap.Config.ARGB_8888, true), 2, true);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    backdrop.setImageBitmap(overlay);
-                                    /* 让背景的封面大图来回缓慢移动 */
-                                    float targetY = (overlay.getHeight() > overlay.getWidth()) ? -0.4f : 0f;
-                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
-                                    translateAnimation.setDuration(50000);
-                                    translateAnimation.setRepeatCount(-1);
-                                    translateAnimation.setRepeatMode(Animation.REVERSE);
-                                    translateAnimation.setInterpolator(new LinearInterpolator());
-                                    backdrop.startAnimation(translateAnimation);
-                                }
-                            });
-                        }
-                    }).start();
-                }
-            });
+            /* 因为部分人在doBlur时OOM，暂时先禁用高斯模糊效果 */
+//            Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
+//                @Override
+//                public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            /* 给背景封面加上高斯模糊 */
+//                            final Bitmap overlay = FastBlur.doBlur(resource.copy(Bitmap.Config.ARGB_8888, true), 2, true);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    backdrop.setImageBitmap(overlay);
+//                                    /* 让背景的封面大图来回缓慢移动 */
+//                                    float targetY = (overlay.getHeight() > overlay.getWidth()) ? -0.4f : 0f;
+//                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
+//                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
+//                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
+//                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
+//                                    translateAnimation.setDuration(50000);
+//                                    translateAnimation.setRepeatCount(-1);
+//                                    translateAnimation.setRepeatMode(Animation.REVERSE);
+//                                    translateAnimation.setInterpolator(new LinearInterpolator());
+//                                    backdrop.startAnimation(translateAnimation);
+//                                }
+//                            });
+//                        }
+//                    }).start();
+//                }
+//            });
+            HViewerApplication.loadImageFromUrl(this, backdrop, cover, site.cookie, collection.referer);
         }
     }
 
@@ -203,7 +203,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
         List<Picture> pictures = new ArrayList<>();
-        pictureAdapter = new PictureAdapter(new ListDataProvider(pictures));
+        pictureAdapter = new PictureAdapter(this, new ListDataProvider(pictures));
         pictureAdapter.setCookie(site.cookie);
         pictureAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
         rvIndex.setAdapter(pictureAdapter);
@@ -274,6 +274,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
+                if(result==null)
+                    return;
                 myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.galleryRule, url);
 
                 refreshDescription();
@@ -332,7 +334,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        HViewerApplication.favouriteHolder.addFavourite((LocalCollection) myCollection);
+        favouriteHolder.addFavourite((LocalCollection) myCollection);
         showSnackBar("收藏成功！");
     }
 
@@ -358,6 +360,10 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         super.onDestroy();
         if(manager!=null)
             manager.unbindService(this);
+        if(historyHolder!=null)
+            historyHolder.onDestroy();
+        if(favouriteHolder!=null)
+            favouriteHolder.onDestroy();
     }
 
     public class CollectionViewHolder {

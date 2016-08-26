@@ -24,8 +24,7 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-
-import static ml.puredark.hviewer.HViewerApplication.historyHolder;
+import ml.puredark.hviewer.holders.HistoryHolder;
 
 public class HistoryActivity extends AnimationActivity {
 
@@ -42,6 +41,8 @@ public class HistoryActivity extends AnimationActivity {
 
     private CollectionAdapter adapter;
 
+    private HistoryHolder historyHolder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +56,10 @@ public class HistoryActivity extends AnimationActivity {
 
         tvTitle.setText("历史纪录");
 
-        List<Collection> collections = HViewerApplication.historyHolder.getHistories();
-        AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
-        adapter = new CollectionAdapter(dataProvider);
+        historyHolder = new HistoryHolder(this);
+        List<Collection> collections = historyHolder.getHistories();
+        ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
+        adapter = new CollectionAdapter(this, dataProvider);
         rvCollection.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
@@ -84,6 +86,7 @@ public class HistoryActivity extends AnimationActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 historyHolder.deleteHistory(collection);
+                                adapter.getDataProvider().setDataSet(historyHolder.getHistories());
                                 adapter.notifyDataSetChanged();
                             }
                         }).setNegativeButton("取消", null).show();
@@ -95,5 +98,12 @@ public class HistoryActivity extends AnimationActivity {
     @OnClick(R.id.btn_return)
     void back() {
         onBackPressed();
+    }
+
+    @Override
+    public void onDestroy(){
+        if(historyHolder!=null)
+            historyHolder.onDestroy();
+        super.onDestroy();
     }
 }

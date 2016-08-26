@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,15 +27,16 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
     public final static int TYPE_GRID = 2;
-
-    private AbstractDataProvider mProvider;
+    private Context context;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
     private Site site;
     private boolean isGrid = false;
 
-    public CollectionAdapter(AbstractDataProvider mProvider) {
+    public CollectionAdapter(Context context, ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
+        this.context = context;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie, collection.referer);
+            HViewerApplication.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
             holder.tvCategory.setText(collection.category);
@@ -91,7 +93,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            HViewerApplication.loadImageFromUrl(holder.ivCover, collection.cover, cookie, collection.referer);
+            HViewerApplication.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
         }
     }
 
@@ -128,11 +130,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.site = site;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 

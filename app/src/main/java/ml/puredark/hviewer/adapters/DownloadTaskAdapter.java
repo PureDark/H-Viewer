@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +26,14 @@ import ml.puredark.hviewer.dataproviders.ListDataProvider;
 public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static int VIEW_TYPE_DOWNLOADING = 1;
     private final static int VIEW_TYPE_DOWNLOADED = 2;
-    private AbstractDataProvider mProvider;
+    private Context context;
+    private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public DownloadTaskAdapter(AbstractDataProvider mProvider) {
+    public DownloadTaskAdapter(Context context, ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
+        this.context = context;
     }
 
     @Override
@@ -56,7 +59,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         DownloadTask task = (DownloadTask) mProvider.getItem(position);
         if (viewHolder instanceof DownloadingTaskViewHolder) {
             DownloadingTaskViewHolder holder = (DownloadingTaskViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, task.collection.cover, null);
+            HViewerApplication.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);
@@ -81,7 +84,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.btnStartPause.setImageResource(resID);
         } else if (viewHolder instanceof DownloadedTaskViewHolder) {
             DownloadedTaskViewHolder holder = (DownloadedTaskViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(holder.ivCover, task.collection.cover, null);
+            HViewerApplication.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);
@@ -114,11 +117,11 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.mItemClickListener = listener;
     }
 
-    public AbstractDataProvider getDataProvider() {
+    public ListDataProvider getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(AbstractDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider mProvider) {
         this.mProvider = mProvider;
     }
 

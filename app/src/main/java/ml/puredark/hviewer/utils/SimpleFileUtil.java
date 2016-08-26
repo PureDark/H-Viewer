@@ -1,8 +1,13 @@
 package ml.puredark.hviewer.utils;
 
+import android.content.Context;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * 文件读写工具类
@@ -106,6 +111,16 @@ public class SimpleFileUtil {
             System.out.println(e.getMessage());
         }
         return ret;
+    }
+
+    public static String getFromAssets(Context context, String fileName) throws IOException {
+        InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
+        BufferedReader bufReader = new BufferedReader(inputReader);
+        String line = "";
+        String Result = "";
+        while ((line = bufReader.readLine()) != null)
+            Result += "\n"+line;
+        return Result;
     }
 
 }

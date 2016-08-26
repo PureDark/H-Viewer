@@ -19,6 +19,7 @@ import com.nineoldandroids.animation.Animator;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.customs.AnimationOnActivity;
+import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.services.DownloadService;
 
 /**
@@ -146,6 +147,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     public void onDestroy() {
         super.onDestroy();
+        new DownloadTaskHolder(this).onDestroy();
         if (appBar != null)
             appBar.removeOnOffsetChangedListener(this);
     }

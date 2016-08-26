@@ -32,6 +32,7 @@ import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
+import ml.puredark.hviewer.holders.SiteHolder;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.QRCodeUtil;
 import okhttp3.FormBody;
@@ -66,6 +67,8 @@ public class ModifySiteActivity extends AnimationActivity {
 
     private boolean isPosting = false;
 
+    private SiteHolder siteHolder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +99,8 @@ public class ModifySiteActivity extends AnimationActivity {
         }
 
         holder = new SitePropViewHolder(viewSiteDetails);
+
+        siteHolder = new SiteHolder(this);
 
         holder.fillSitePropEditText(site);
     }
@@ -223,14 +228,7 @@ public class ModifySiteActivity extends AnimationActivity {
         newSite.sid = site.sid;
         HViewerApplication.temp = newSite;
 
-        List<Site> sites = HViewerApplication.siteHolder.getSites();
-        for (int i = 0; i < sites.size(); i++) {
-            Site currSite = sites.get(i);
-            if (currSite.sid == newSite.sid) {
-                sites.remove(i);
-                sites.add(i, newSite);
-            }
-        }
+        siteHolder.updateSite(newSite);
 
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);

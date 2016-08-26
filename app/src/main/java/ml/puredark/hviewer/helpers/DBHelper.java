@@ -5,24 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class DBHelper {
-    private static DBHelper sDBHelper = null;
+    private final static String dbName = "hviewer.db";
     private SQLiteHelper mSqliteHelper = null;
 
-    private DBHelper() {
+    public DBHelper() {
     }
 
-    public synchronized static DBHelper instance() {
-        if (sDBHelper == null) {
-            sDBHelper = new DBHelper();
-        }
-
-        return sDBHelper;
-    }
-
-    public synchronized void open(Context context, String dbName) {
+    public synchronized void open(Context context) {
         close();
         mSqliteHelper = new SQLiteHelper(context, dbName, null, 1);
     }
@@ -67,6 +58,27 @@ public class DBHelper {
         return mSqliteHelper.getReadableDatabase().rawQuery(sql, null);
     }
 
+    public synchronized Cursor query(String sql, String[] args) {
+        if (mSqliteHelper == null) {
+            return null;
+        }
+        return mSqliteHelper.getReadableDatabase().rawQuery(sql, args);
+    }
+
+    public synchronized void nonQuery(String sql) {
+        if (mSqliteHelper == null) {
+            return;
+        }
+        mSqliteHelper.getReadableDatabase().execSQL(sql);
+    }
+
+    public synchronized void nonQuery(String sql, String[] args) {
+        if (mSqliteHelper == null) {
+            return;
+        }
+        mSqliteHelper.getReadableDatabase().execSQL(sql, args);
+    }
+
     public synchronized int delete(String table, String whereClause,
                                    String[] whereArgs) {
         if (mSqliteHelper == null) {
@@ -85,17 +97,19 @@ public class DBHelper {
 
     public class SQLiteHelper extends SQLiteOpenHelper {
 
-        final private String CREATE_TABLE_SQL = "create table dict(_id integer primary key autoincrement, word, detail)";
-
         public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
                               int version) {
             super(context, name, factory, version);
         }
 
-        //1、创建SQLiteOpenHelper的子类，并重写onCreate及onUpgrade方法。
+        //创建SQLiteOpenHelper的子类，并重写onCreate及onUpgrade方法。
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL(CREATE_TABLE_SQL);
+            db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text)");
+            db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            db.execSQL("CREATE TABLE `downloads`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            db.execSQL("CREATE TABLE `searchSuggestions`(`title` text primary key)");
         }
 
         @Override

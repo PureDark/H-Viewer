@@ -24,8 +24,8 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.holders.FavouriteHolder;
 
-import static ml.puredark.hviewer.HViewerApplication.favouriteHolder;
 public class FavouriteActivity extends AnimationActivity {
 
     @BindView(R.id.coordinator_layout)
@@ -41,6 +41,8 @@ public class FavouriteActivity extends AnimationActivity {
 
     private CollectionAdapter adapter;
 
+    private FavouriteHolder favouriteHolder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +56,11 @@ public class FavouriteActivity extends AnimationActivity {
 
         tvTitle.setText("收藏夹");
 
-        List<Collection> collections = HViewerApplication.favouriteHolder.getFavourites();
-        AbstractDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
-        adapter = new CollectionAdapter(dataProvider);
+        favouriteHolder = new FavouriteHolder(this);
+
+        List<Collection> collections = favouriteHolder.getFavourites();
+        ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
+        adapter = new CollectionAdapter(this, dataProvider);
         rvCollection.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
@@ -83,6 +87,7 @@ public class FavouriteActivity extends AnimationActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 favouriteHolder.deleteFavourite(collection);
+                                adapter.getDataProvider().setDataSet(favouriteHolder.getFavourites());
                                 adapter.notifyDataSetChanged();
                             }
                         }).setNegativeButton("取消", null).show();
@@ -94,5 +99,12 @@ public class FavouriteActivity extends AnimationActivity {
     @OnClick(R.id.btn_return)
     void back() {
         onBackPressed();
+    }
+
+    @Override
+    public void onDestroy(){
+        if(favouriteHolder!=null)
+            favouriteHolder.onDestroy();
+        super.onDestroy();
     }
 }
