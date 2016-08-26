@@ -101,7 +101,7 @@ public class HViewerApplication extends Application {
     }
 
     public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, SimpleTarget listener){
-        if (url != null) {
+        if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
                 GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
@@ -117,6 +117,8 @@ public class HViewerApplication extends Application {
                         .build());
                 Glide.with(context).load(glideUrl).asBitmap().into(listener);
             }
+        }else{
+            listener.onLoadFailed(null, null);
         }
     }
 

@@ -156,7 +156,6 @@ public class PictureViewerActivity extends AppCompatActivity {
 
                 @Override
                 public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                    super.onLoadFailed(e, errorDrawable);
                     progressBar.setVisibility(View.GONE);
                 }
 
