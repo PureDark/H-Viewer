@@ -13,12 +13,13 @@ public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_NO_COVER = "noCover";
     public final static String FLAG_NO_RATING = "noRating";
     public final static String FLAG_NO_TAG = "noTag";
+    public final static String FLAG_SECOND_LEVEL_GALLERY = "secondLevelGallery";
     public final static String FLAG_REPEATED_THUMBNAIL = "repeatedThumbnail";
     public int sid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
-    public Rule indexRule, galleryRule, searchRule;
+    public Rule indexRule, galleryRule, searchRule, extraRule;
     public Selector picUrlSelector;
     public String cookie = "";
     public String flag = "";

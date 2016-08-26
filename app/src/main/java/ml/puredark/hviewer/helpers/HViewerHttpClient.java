@@ -3,6 +3,7 @@ package ml.puredark.hviewer.helpers;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -43,6 +44,7 @@ public class HViewerHttpClient {
 
     public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
         if (url == null || !url.startsWith("http")) {
+            Log.d("HViewerHttpClient", "url = "+url);
             callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
             return;
         }

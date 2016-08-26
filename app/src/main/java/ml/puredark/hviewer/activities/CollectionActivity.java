@@ -247,7 +247,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     }
 
-    private void refreshDescription(){
+    private void refreshDescription() {
         getSupportActionBar().setTitle(myCollection.title);
         holder.tvTitle.setText(myCollection.title);
         holder.tvUploader.setText(myCollection.uploader);
@@ -274,13 +274,13 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
-                if(result==null)
+                if (result == null)
                     return;
                 myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.galleryRule, url);
 
                 refreshDescription();
 
-                if(myCollection.tags!=null) {
+                if (myCollection.tags != null) {
                     for (Tag tag : myCollection.tags) {
                         HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
                     }
@@ -288,29 +288,53 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                 HViewerApplication.searchSuggestionHolder.removeDuplicate();
 
                 if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
-                    if (page == startPage) {
-                        pictureAdapter.getDataProvider().clear();
-                        pictureAdapter.getDataProvider().addAll(myCollection.pictures);
-                        pictureAdapter.notifyDataSetChanged();
-                        if (picturePagerAdapter != null)
-                            picturePagerAdapter.notifyDataSetChanged();
-                        currPage = page;
-                        getCollectionDetail(currPage + 1);
-                    } else if (!pictureAdapter.getDataProvider().getItems().contains(myCollection.pictures.get(0))) {
-                        int currPid = pictureAdapter.getItemCount() + 1;
-                        for(int i = 0; i< myCollection.pictures.size(); i++){
-                            myCollection.pictures.get(i).pid = currPid + i;
-                        }
-                        pictureAdapter.getDataProvider().addAll(myCollection.pictures);
-                        pictureAdapter.notifyDataSetChanged();
-                        if (picturePagerAdapter != null)
-                            picturePagerAdapter.notifyDataSetChanged();
-                        currPage = page;
-                        getCollectionDetail(currPage + 1);
+                    final Picture picture = myCollection.pictures.get(0);
+                    if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !hasPicPosfix(picture.url) && site.extraRule != null) {
+                        HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                            @Override
+                            public void onSuccess(String contentType, Object result) {
+                                myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
+                                pictureAdapter.getDataProvider().clear();
+                                pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                                pictureAdapter.notifyDataSetChanged();
+                                if (picturePagerAdapter != null)
+                                    picturePagerAdapter.notifyDataSetChanged();
+                                isIndexComplete = true;
+                                myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                                rvIndex.setPullLoadMoreCompleted();
+                            }
+
+                            @Override
+                            public void onFailure(HViewerHttpClient.HttpError error) {
+                                showSnackBar(error.getErrorString());
+                                rvIndex.setPullLoadMoreCompleted();
+                            }
+                        });
                     } else {
-                        isIndexComplete = true;
-                        myCollection.pictures = pictureAdapter.getDataProvider().getItems();
-                        rvIndex.setPullLoadMoreCompleted();
+                        if (page == startPage) {
+                            pictureAdapter.getDataProvider().clear();
+                            pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                            pictureAdapter.notifyDataSetChanged();
+                            if (picturePagerAdapter != null)
+                                picturePagerAdapter.notifyDataSetChanged();
+                            currPage = page;
+                            getCollectionDetail(currPage + 1);
+                        } else if (!pictureAdapter.getDataProvider().getItems().contains(myCollection.pictures.get(0))) {
+                            int currPid = pictureAdapter.getItemCount() + 1;
+                            for (int i = 0; i < myCollection.pictures.size(); i++) {
+                                myCollection.pictures.get(i).pid = currPid + i;
+                            }
+                            pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                            pictureAdapter.notifyDataSetChanged();
+                            if (picturePagerAdapter != null)
+                                picturePagerAdapter.notifyDataSetChanged();
+                            currPage = page;
+                            getCollectionDetail(currPage + 1);
+                        } else {
+                            isIndexComplete = true;
+                            myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                            rvIndex.setPullLoadMoreCompleted();
+                        }
                     }
                 } else {
                     isIndexComplete = true;
@@ -323,6 +347,10 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             public void onFailure(HViewerHttpClient.HttpError error) {
                 showSnackBar(error.getErrorString());
                 rvIndex.setPullLoadMoreCompleted();
+            }
+
+            private boolean hasPicPosfix(String url) {
+                return url != null && (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".bmp"));
             }
         });
     }
@@ -358,11 +386,11 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(manager!=null)
+        if (manager != null)
             manager.unbindService(this);
-        if(historyHolder!=null)
+        if (historyHolder != null)
             historyHolder.onDestroy();
-        if(favouriteHolder!=null)
+        if (favouriteHolder != null)
             favouriteHolder.onDestroy();
     }
 

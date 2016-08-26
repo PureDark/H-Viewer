@@ -74,10 +74,12 @@ public class RegexValidateUtil {
     }
 
     public static String getAbsoluteUrlFromRelative(String url, String host) {
+        if(url.startsWith("http://")||url.startsWith("https://"))
+            return url;
         if (url.startsWith("/"))
             return getHostFromUrl(host) + url;
         else if (url.startsWith("./"))
-            return geCurrDirFromUrl(host) + url;
+            return geCurrDirFromUrl(host) + url.substring(2);
         else if (url.startsWith("../")) {
             Pattern p = Pattern.compile("(https?://[\\w./]*/).*/", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(url);
@@ -89,6 +91,6 @@ public class RegexValidateUtil {
             String prefix = (matcher.find()) ? matcher.group(1) : "";
             return prefix + url.substring(6);
         } else
-            return url;
+            return geCurrDirFromUrl(host) + url;
     }
 }

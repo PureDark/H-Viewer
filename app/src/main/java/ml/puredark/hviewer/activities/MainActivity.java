@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.holders.SiteHolder;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -388,6 +390,37 @@ public class MainActivity extends AnimationActivity {
 //        categories.add(new Category(1, "首页", "http://e-shuushuu.net/?page={page:1}"));
 //        categories.add(new Category(2, "排行榜", "http://e-shuushuu.net/top.php?page={page:1}"));
 //        sites.get(sites.size() - 1).setCategories(categories);
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("ul._image-items > li.image-item", null, null, null, null);
+//        indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(.*)", null);
+//        indexRule.title = new Selector("a > h1.title", "html", null, null, null);
+//        indexRule.uploader = new Selector("a.user", "html", null, null, null);
+//        indexRule.cover = new Selector("a.work > div._layout-thumbnail > img._thumbnail", "attr", "src", null, null);
+//        indexRule.datetime = new Selector("a.work > div._layout-thumbnail > img._thumbnail", "attr", "src", ".*img/(\\d{4})/(\\d{2})/(\\d{2})/(\\d{2})/(\\d{2})/(\\d{2})", "$1-$2-$3 $4:$5:$6");
+//
+//        galleryRule = new Rule();
+//        galleryRule.title = new Selector("div.ui-expander-target > h1.title", "html", null, null, null);
+//        galleryRule.uploader = new Selector("a.user-link > hi.user", "html", null, null, null);
+//        galleryRule.datetime = new Selector("ul.meta > li:eq(0)", "html", null, null, null);
+//        galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
+//        galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
+//        galleryRule.item = new Selector("body", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("div.works_display", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://.*?.jpg)\"", null);
+//        galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", null, null);
+//
+//        Rule extraRule = new Rule();
+//        extraRule.item = new Selector("div.item-container", null, null, null, null);
+//        extraRule.pictureUrl = new Selector("img", "attr", "data-src", null, null);
+//        extraRule.pictureThumbnail = new Selector("img", "attr", "data-src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
+//
+//        sites.add(new Site(10, "Pixiv",
+//                "http://www.pixiv.net/new_illust.php?p={page:1}",
+//                "http://www.pixiv.net/member_illust.php?mode=medium&illust_id={idCode:}",
+//                "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",
+//                "https://accounts.pixiv.net/login",
+//                indexRule, galleryRule, null, null, Site.FLAG_SECOND_LEVEL_GALLERY));
+//        sites.get(sites.size() - 1).extraRule = extraRule;
 
         ListDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         siteAdapter = new SiteAdapter(dataProvider);
