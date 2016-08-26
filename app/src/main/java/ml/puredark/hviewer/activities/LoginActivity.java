@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.activities;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
@@ -72,10 +74,17 @@ public class LoginActivity extends AnimationActivity {
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient(){
             @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                CookieManager cookieManager = CookieManager.getInstance();
+                String cookies = cookieManager.getCookie(url);
+                site.cookie = cookies;
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 CookieManager cookieManager = CookieManager.getInstance();
                 String cookies = cookieManager.getCookie(url);
-                Log.d("LoginActivity", "Cookies = " + cookies);
                 site.cookie = cookies;
                 showSnackBar("请在登录成功后返回到主界面");
                 super.onPageFinished(view, url);
@@ -86,6 +95,9 @@ public class LoginActivity extends AnimationActivity {
 
     @OnClick(R.id.btn_return)
     void back() {
+        HViewerApplication.temp = site;
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
         onBackPressed();
     }
 }
