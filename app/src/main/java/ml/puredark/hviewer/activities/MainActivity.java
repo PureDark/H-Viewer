@@ -620,6 +620,7 @@ public class MainActivity extends AnimationActivity {
                 siteAdapter.notifyDataSetChanged();
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
+                    siteHolder.updateSite(site);
                     Handler handler = new Handler();
                     final Runnable r = new Runnable() {
                         public void run() {
@@ -631,6 +632,7 @@ public class MainActivity extends AnimationActivity {
             } else if (requestCode == RESULT_LOGIN) {
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
+                    siteHolder.updateSite(site);
                     Handler handler = new Handler();
                     final Runnable r = new Runnable() {
                         public void run() {
