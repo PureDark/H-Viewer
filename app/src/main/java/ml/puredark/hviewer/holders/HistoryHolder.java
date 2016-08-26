@@ -51,8 +51,8 @@ public class HistoryHolder {
     }
 
     public void trimHistory() {
-        while (histories.size() > 20)
-            histories.remove(20);
+        while (histories.size() > 10)
+            histories.remove(10);
     }
 
     public List<Collection> getHistories() {

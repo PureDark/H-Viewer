@@ -150,7 +150,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     }
 
     private void initCover(String cover) {
-        if (cover != null && !CollectionActivity.this.isDestroyed()) {
+        if (cover != null) {
             Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -356,7 +356,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @Override
     public void onDestroy() {
         super.onDestroy();
-        manager.unbindService(this);
+        if(manager!=null)
+            manager.unbindService(this);
     }
 
     public class CollectionViewHolder {

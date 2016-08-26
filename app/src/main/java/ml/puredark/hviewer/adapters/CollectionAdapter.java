@@ -173,14 +173,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -189,14 +189,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             rippleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;

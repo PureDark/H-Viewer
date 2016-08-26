@@ -148,14 +148,19 @@ public class CollectionFragment extends MyFragment {
         final Rule rule;
         if(keyword==null){
             rule = site.indexRule;
+            keyword = "";
         }else{
             rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
         }
+        if(currUrl==null)
+            return;
         final String url = currUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
                 .replaceAll("\\{keyword:\\}", keyword);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
+                if(!(result instanceof String))
+                    return;
                 if (page == startPage) {
                     adapter.getDataProvider().clear();
                 }

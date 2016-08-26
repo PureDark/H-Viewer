@@ -42,16 +42,16 @@ public class HViewerHttpClient {
     }
 
     public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
-        if(url==null||!url.startsWith("http")) {
+        if (url == null || !url.startsWith("http")) {
             callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
             return;
         }
         if (HViewerApplication.isNetworkAvailable()) {
             HRequestBuilder builder = new HRequestBuilder();
-            if(cookies!=null){
+            if (cookies != null) {
                 String cookieString = "";
-                for(Cookie cookie : cookies){
-                    cookieString += cookie.name()+"="+cookie.value()+"; ";
+                for (Cookie cookie : cookies) {
+                    cookieString += cookie.name() + "=" + cookie.value() + "; ";
                 }
                 builder.addHeader("cookie", cookieString);
             }
@@ -75,16 +75,16 @@ public class HViewerHttpClient {
     }
 
     public static void post(String url, RequestBody body, List<Cookie> cookies, final OnResponseListener callback) {
-        if(url==null||!url.startsWith("http")) {
+        if (url == null || !url.startsWith("http")) {
             callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
             return;
         }
         if (HViewerApplication.isNetworkAvailable()) {
             HRequestBuilder builder = new HRequestBuilder();
-            if(cookies!=null){
+            if (cookies != null) {
                 String cookieString = "";
-                for(Cookie cookie : cookies){
-                    cookieString += cookie.name()+"="+cookie.value()+"; ";
+                for (Cookie cookie : cookies) {
+                    cookieString += cookie.name() + "=" + cookie.value() + "; ";
                 }
                 builder.addHeader("cookie", cookieString);
             }
@@ -135,9 +135,9 @@ public class HViewerHttpClient {
         public void onResponse(Call call, Response response) throws IOException {
             final String contentType = response.header("Content-Type");
             final Object body;
-            if(contentType.contains("image")){
+            if (contentType != null || contentType.contains("image")) {
                 body = BitmapFactory.decodeStream(response.body().byteStream());
-            }else{
+            } else {
                 byte[] b = response.body().bytes();
                 String charset = getCharset(new String(b));
                 body = new String(b, charset);
@@ -154,7 +154,7 @@ public class HViewerHttpClient {
     /**
      * 获得字符集
      */
-    public static String getCharset (String html){
+    public static String getCharset(String html) {
         Document doc = Jsoup.parse(html);
         Elements eles = doc.select("meta[http-equiv=Content-Type]");
         Iterator<Element> itor = eles.iterator();

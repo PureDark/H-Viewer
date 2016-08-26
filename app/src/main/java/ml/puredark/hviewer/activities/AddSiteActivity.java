@@ -164,7 +164,9 @@ public class AddSiteActivity extends AnimationActivity {
     private Site parseSite(String json) {
         try {
             Site site = new Gson().fromJson(json, Site.class);
-            if (site.indexRule == null || site.galleryRule == null)
+            if (site == null || site.indexUrl == null || site.galleryUrl == null ||
+                    site.indexRule.item == null || site.indexRule.idCode == null ||
+                    site.galleryRule.item == null || site.galleryRule.pictureUrl == null)
                 showSnackBar("输入的规则缺少信息");
             return site;
         } catch (JsonSyntaxException e) {

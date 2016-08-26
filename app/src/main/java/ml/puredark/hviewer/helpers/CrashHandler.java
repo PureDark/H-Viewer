@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.utils.EmailUtil;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -93,7 +94,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        EmailUtil.sendEmail(EmailUtil.fromEmail, file.getName(), SimpleFileUtil.readString(filePath, "utf-8"));
+                        EmailUtil.sendEmail(EmailUtil.fromEmail, "v"+HViewerApplication.getVersionName()+" "+file.getName(),
+                                SimpleFileUtil.readString(filePath, "utf-8"));
                     }
                 }).start();
             }else{
@@ -230,7 +232,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         String time = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(new Date(System.currentTimeMillis()));
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             String path = DownloadManager.getDownloadPath();
-            String name = "carsh-" + time + ".log";
+            String name = "crash-" + time + ".log";
             String filePath = path + File.separator + name;
             filePath = ImageScaleUtil.createIfNotExist(filePath);
             try {

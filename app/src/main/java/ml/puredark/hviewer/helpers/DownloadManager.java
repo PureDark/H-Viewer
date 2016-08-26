@@ -93,7 +93,10 @@ public class DownloadManager {
     }
 
     public void unbindService(Context context) {
-        context.unbindService(conn);
+        try {
+            context.unbindService(conn);
+        }catch(Exception e){
+        }
     }
 
 }

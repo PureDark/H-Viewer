@@ -144,14 +144,14 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         mItemClickListener.onItemClick(v, getAdapterPosition(), switchListGrid.isChecked());
                 }
             });
             container.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -163,7 +163,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     switchListGrid.toggle();
                 }
             });
-            if (mOnCheckedChangeListener != null)
+            if (mOnCheckedChangeListener != null && getAdapterPosition() >= 0)
                 switchListGrid.setOnCheckedChangeListener(mOnCheckedChangeListener);
         }
     }

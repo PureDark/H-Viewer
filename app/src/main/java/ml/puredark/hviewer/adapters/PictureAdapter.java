@@ -43,10 +43,10 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         Picture picture = (Picture) mProvider.getItem(position);
         final PictureViewHolder holder = (PictureViewHolder) viewHolder;
-        if(!repeatedThumbnail)
+        if (!repeatedThumbnail)
             HViewerApplication.loadImageFromUrl(holder.ivPicture, picture.thumbnail, cookie, picture.referer);
         else
-            HViewerApplication.loadBitmapFromUrl(picture.thumbnail, cookie, picture.referer,  new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+            HViewerApplication.loadBitmapFromUrl(picture.thumbnail, cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
 
                 @Override
                 public void onResourceReady(final Bitmap resource, GlideAnimation glideAnimation) {
@@ -54,15 +54,15 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         @Override
                         public void run() {
                             final Bitmap bitmap;
-                            if(resource.getWidth() >=  resource.getHeight()){
-                                int width = resource.getWidth()/getItemCount();
+                            if (resource.getWidth() >= resource.getHeight()) {
+                                int width = resource.getWidth() / getItemCount();
                                 int height = resource.getHeight();
                                 int startX = width * position;
                                 int startY = 0;
                                 bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
-                            }else{
+                            } else {
                                 int width = resource.getWidth();
-                                int height = resource.getHeight()/getItemCount();
+                                int height = resource.getHeight() / getItemCount();
                                 int startX = 0;
                                 int startY = height * position;
                                 bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
@@ -103,11 +103,11 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.mItemClickListener = listener;
     }
 
-    public void setCookie(String cookie){
+    public void setCookie(String cookie) {
         this.cookie = cookie;
     }
 
-    public void setRepeatedThumbnail(boolean repeated){
+    public void setRepeatedThumbnail(boolean repeated) {
         repeatedThumbnail = repeated;
     }
 
@@ -133,7 +133,8 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mItemClickListener.onItemClick(v, getAdapterPosition());
+                    if (mItemClickListener != null && getAdapterPosition() >= 0)
+                        mItemClickListener.onItemClick(v, getAdapterPosition());
                 }
             });
         }

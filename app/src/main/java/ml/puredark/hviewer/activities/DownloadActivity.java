@@ -87,13 +87,13 @@ public class DownloadActivity extends AnimationActivity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         distinguishDownloadTasks();
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         manager.unbindService(this);
     }
@@ -124,13 +124,13 @@ public class DownloadActivity extends AnimationActivity {
             @Override
             public void onItemClick(View v, int position) {
                 DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
-                if(task.status==DownloadTask.STATUS_DOWNLOADING) {
+                if (task.status == DownloadTask.STATUS_DOWNLOADING) {
                     manager.pauseDownload();
-                }else if(task.status==DownloadTask.STATUS_IN_QUEUE){
+                } else if (task.status == DownloadTask.STATUS_IN_QUEUE) {
                     task.status = DownloadTask.STATUS_PAUSED;
-                }else if(task.status==DownloadTask.STATUS_PAUSED){
+                } else if (task.status == DownloadTask.STATUS_PAUSED) {
                     task.status = DownloadTask.STATUS_IN_QUEUE;
-                    if(!manager.isDownloading())
+                    if (!manager.isDownloading())
                         startNextTaskInQueue();
                 }
                 downloadingTaskAdapter.notifyDataSetChanged();
@@ -182,14 +182,14 @@ public class DownloadActivity extends AnimationActivity {
 
     }
 
-    private void distinguishDownloadTasks(){
+    private void distinguishDownloadTasks() {
         List<DownloadTask> downloadTasks = manager.getDownloadTasks();
         downloadingTaskAdapter.getDataProvider().clear();
         downloadedTaskAdapter.getDataProvider().clear();
         downloadingTasks = downloadingTaskAdapter.getDataProvider().getItems();
         downloadedTasks = downloadedTaskAdapter.getDataProvider().getItems();
-        for(DownloadTask task : downloadTasks){
-            if(task.status==DownloadTask.STATUS_COMPLETED)
+        for (DownloadTask task : downloadTasks) {
+            if (task.status == DownloadTask.STATUS_COMPLETED)
                 downloadedTasks.add(task);
             else
                 downloadingTasks.add(task);
@@ -198,9 +198,9 @@ public class DownloadActivity extends AnimationActivity {
         downloadedTaskAdapter.notifyDataSetChanged();
     }
 
-    private void startNextTaskInQueue(){
-        for(DownloadTask task : downloadingTasks){
-            if(task.status==DownloadTask.STATUS_IN_QUEUE){
+    private void startNextTaskInQueue() {
+        for (DownloadTask task : downloadingTasks) {
+            if (task.status == DownloadTask.STATUS_IN_QUEUE) {
                 manager.startDownload(task);
                 break;
             }
@@ -212,20 +212,17 @@ public class DownloadActivity extends AnimationActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(DownloadService.ON_START)||
+            if (intent.getAction().equals(DownloadService.ON_START) ||
                     intent.getAction().equals(DownloadService.ON_PROGRESS)) {
                 downloadingTaskAdapter.notifyDataSetChanged();
-            }
-            else if(intent.getAction().equals(DownloadService.ON_PAUSE)) {
+            } else if (intent.getAction().equals(DownloadService.ON_PAUSE)) {
                 startNextTaskInQueue();
-            }
-            else if(intent.getAction().equals(DownloadService.ON_FAILURE)){
+            } else if (intent.getAction().equals(DownloadService.ON_FAILURE)) {
                 String message = intent.getStringExtra("message");
-                message = ("".equals(message))?"下载失败，请重试":message;
+                message = ("".equals(message)) ? "下载失败，请重试" : message;
                 showSnackBar(message);
                 downloadingTaskAdapter.notifyDataSetChanged();
-            }
-            else if(intent.getAction().equals(DownloadService.ON_COMPLETE)){
+            } else if (intent.getAction().equals(DownloadService.ON_COMPLETE)) {
                 showSnackBar("任务下载成功");
                 distinguishDownloadTasks();
                 startNextTaskInQueue();

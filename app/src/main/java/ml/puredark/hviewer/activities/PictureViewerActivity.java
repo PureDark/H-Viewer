@@ -127,33 +127,37 @@ public class PictureViewerActivity extends AppCompatActivity {
         }
 
         private void getPictureUrl(final ImageView imageView, final Picture picture, final Site site) {
-            HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+            if(picture.url.endsWith(".jpg")||picture.url.endsWith(".png")||picture.url.endsWith(".bmp")){
+                picture.pic = picture.url;
+                HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie, picture.referer);
+            }else
+                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
 
-                @Override
-                public void onSuccess(String contentType, Object result) {
-                    if (result == null || result.equals(""))
-                        return;
-                    if (contentType.contains("image") && result instanceof Bitmap) {
-                        picture.pic = picture.url;
-                        imageView.setImageBitmap((Bitmap) result);
-                    } else {
-                        picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
-                        picture.retries = 0;
-                        picture.referer = picture.url;
-                        HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie, picture.referer);
+                    @Override
+                    public void onSuccess(String contentType, Object result) {
+                        if (result == null || result.equals(""))
+                            return;
+                        if (contentType.contains("image") && result instanceof Bitmap) {
+                            picture.pic = picture.url;
+                            imageView.setImageBitmap((Bitmap) result);
+                        } else {
+                            picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
+                            picture.retries = 0;
+                            picture.referer = picture.url;
+                            HViewerApplication.loadImageFromUrl(imageView, picture.pic, site.cookie, picture.referer);
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(HViewerHttpClient.HttpError error) {
-                    if (picture.retries < 15) {
-                        getPictureUrl(imageView, picture, site);
-                        picture.retries++;
-                    } else {
-                        picture.retries = 0;
+                    @Override
+                    public void onFailure(HViewerHttpClient.HttpError error) {
+                        if (picture.retries < 15) {
+                            getPictureUrl(imageView, picture, site);
+                            picture.retries++;
+                        } else {
+                            picture.retries = 0;
+                        }
                     }
-                }
-            });
+                });
         }
     }
 
