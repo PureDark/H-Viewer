@@ -18,9 +18,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionMenu;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -110,36 +107,9 @@ public class DownloadTaskActivity extends AnimationActivity {
     }
 
     private void initCover(String cover) {
-        if (cover != null && !DownloadTaskActivity.this.isDestroyed())
-            Glide.with(DownloadTaskActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            /* 给背景封面加上高斯模糊 */
-                            final Bitmap overlay = FastBlur.doBlur(resource.copy(Bitmap.Config.ARGB_8888, true), 2, true);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    backdrop.setImageBitmap(overlay);
-                                    /* 让背景的封面大图来回缓慢移动 */
-                                    float targetY = (overlay.getHeight() > overlay.getWidth()) ? -0.4f : 0f;
-                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
-                                    translateAnimation.setDuration(50000);
-                                    translateAnimation.setRepeatCount(-1);
-                                    translateAnimation.setRepeatMode(Animation.REVERSE);
-                                    translateAnimation.setInterpolator(new LinearInterpolator());
-                                    backdrop.startAnimation(translateAnimation);
-                                }
-                            });
-                        }
-                    }).start();
-                }
-            });
+        if (cover != null){
+            HViewerApplication.loadImageFromUrl(this, backdrop, cover);
+        }
     }
 
     private void initTabAndViewPager() {

@@ -138,7 +138,9 @@ public class HViewerHttpClient {
             final String contentType = response.header("Content-Type");
             final Object body;
             if (contentType != null && contentType.contains("image")) {
-                body = BitmapFactory.decodeStream(response.body().byteStream());
+                // 不经过图片加载库容易导致OOM，宁愿重新加载一次
+//                body = BitmapFactory.decodeStream(response.body().byteStream());
+                body = null;
             } else {
                 byte[] b = response.body().bytes();
                 String charset = getCharset(new String(b));

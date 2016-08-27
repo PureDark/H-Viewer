@@ -69,12 +69,6 @@ public class AddSiteActivity extends AnimationActivity {
 
         setContainer(coordinatorLayout);
 
-        if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)) {
-            CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) edittextContainer.getLayoutParams();
-            lp.topMargin += MDStatusBarCompat.getStatusBarHeight(this);
-            edittextContainer.setLayoutParams(lp);
-        }
-
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
 

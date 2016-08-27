@@ -15,9 +15,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="ml.puredark.hviewer.customs.CustomCachingGlideModule"
-            android:value="GlideModule" />
 
         <activity
             android:name=".activities.MainActivity"

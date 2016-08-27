@@ -6,12 +6,16 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.view.View;
 
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
+import com.facebook.datasource.DataSource;
+import com.facebook.datasource.DataSubscriber;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 
 import java.io.IOException;
+import java.lang.annotation.Target;
+import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.DownloadTask;
@@ -131,17 +135,16 @@ public class DownloadService extends Service {
         if (bitmap != null) {
             saveBitmap(picture, task, bitmap);
         } else
-            HViewerApplication.loadBitmapFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+            HViewerApplication.loadBitmapFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer,  new BaseBitmapDataSubscriber() {
                 private DownloadTask myTask = task;
 
                 @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                    saveBitmap(picture, myTask, resource);
+                public void onNewResultImpl(@Nullable Bitmap bitmap) {
+                    saveBitmap(picture, myTask, bitmap);
                 }
 
                 @Override
-                public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                    super.onLoadFailed(e, errorDrawable);
+                public void onFailureImpl(DataSource dataSource) {
                     if (picture.retries < 15) {
                         picture.status = Picture.STATUS_DOWNLOADING;
                         loadBitmap(picture, task, null);

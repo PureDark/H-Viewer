@@ -13,6 +13,6 @@
         android:layout_height="match_parent"
         app:layoutManager="GridLayoutManager"
         app:spanCount="3"
-        tools:listitem="@layout/item_picture_index"></com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView>
+        tools:listitem="@layout/item_picture_index"/>
 
 </LinearLayout>

@@ -3,16 +3,18 @@ package ml.puredark.hviewer.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
+import com.facebook.datasource.DataSource;
+import com.facebook.datasource.DataSubscriber;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 
+import java.lang.annotation.Target;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,6 +23,8 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+
+import static android.R.attr.resource;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
@@ -51,10 +55,11 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (!repeatedThumbnail)
             HViewerApplication.loadImageFromUrl(context, holder.ivPicture, picture.thumbnail, cookie, picture.referer);
         else
-            HViewerApplication.loadBitmapFromUrl(context, picture.thumbnail, cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-
+            HViewerApplication.loadBitmapFromUrl(context, picture.thumbnail, cookie, picture.referer,  new BaseBitmapDataSubscriber() {
                 @Override
-                public void onResourceReady(final Bitmap resource, GlideAnimation glideAnimation) {
+                public void onNewResultImpl(@Nullable final Bitmap resource) {
+                    if(resource==null)
+                        return;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -101,8 +106,7 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
 
                 @Override
-                public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                    super.onLoadFailed(e, errorDrawable);
+                public void onFailureImpl(DataSource dataSource) {
                 }
             });
     }

@@ -1,14 +1,13 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,27 +15,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
+import com.facebook.common.logging.FLog;
+import com.facebook.datasource.DataSource;
+import com.facebook.datasource.DataSubscriber;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.image.QualityInfo;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.ExViewPager;
+import ml.puredark.hviewer.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
-
-import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
-import static ml.puredark.hviewer.services.DownloadService.ON_FAILURE;
 
 
 public class PictureViewerActivity extends AppCompatActivity {
@@ -44,7 +46,7 @@ public class PictureViewerActivity extends AppCompatActivity {
     @BindView(R.id.tv_count)
     TextView tvCount;
     @BindView(R.id.view_pager)
-    ExViewPager viewPager;
+    MultiTouchViewPager viewPager;
 
     private PicturePagerAdapter picturePagerAdapter;
 
@@ -93,6 +95,11 @@ public class PictureViewerActivity extends AppCompatActivity {
         viewPager.setCurrentItem(position);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     public static class PicturePagerAdapter extends PagerAdapter {
         private Site site;
         public List<Picture> pictures;
@@ -119,8 +126,7 @@ public class PictureViewerActivity extends AppCompatActivity {
             if (views[position] != null) {
                 container.removeView(views[position]);
                 ImageView imageView = (ImageView) views[position].findViewById(R.id.iv_picture);
-                if(imageView!=null) {
-                    Glide.clear(imageView);
+                if (imageView != null) {
                 }
             }
         }
@@ -134,8 +140,7 @@ public class PictureViewerActivity extends AppCompatActivity {
             if (site.picUrlSelector == null) {
                 picture.pic = picture.url;
                 loadImage(container.getContext(), picture, imageView, progressBar);
-            }
-            if (picture.pic != null) {
+            } else if (picture.pic != null) {
                 loadImage(container.getContext(), picture, imageView, progressBar);
             } else {
                 getPictureUrl(container.getContext(), imageView, progressBar, picture, site);
@@ -145,20 +150,29 @@ public class PictureViewerActivity extends AppCompatActivity {
             return view;
         }
 
-        private void loadImage(Context context, Picture picture, final ImageView imageView, final ProgressBarCircularIndeterminate progressBar){
-            HViewerApplication.loadBitmapFromUrl(context, picture.pic, site.cookie, picture.referer, new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-
+        private void loadImage(Context context, Picture picture, final ImageView imageView, final ProgressBarCircularIndeterminate progressBar) {
+            HViewerApplication.loadImageFromUrl(context, imageView, picture.pic, site.cookie, picture.referer,  new BaseControllerListener<ImageInfo>() {
                 @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
+                    super.onFinalImageSet(id, imageInfo, anim);
+                    if (imageInfo == null) {
+                        return;
+                    }
                     progressBar.setVisibility(View.GONE);
-                    imageView.setImageBitmap(resource);
+                    if(imageView instanceof PhotoDraweeView) {
+                        ((PhotoDraweeView)imageView).update(imageInfo.getWidth(), imageInfo.getHeight());
+                    }
                 }
 
                 @Override
-                public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                    progressBar.setVisibility(View.GONE);
+                public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
                 }
 
+                @Override
+                public void onFailure(String id, Throwable throwable) {
+                    FLog.e(getClass(), throwable, "Error loading %s", id);
+                    progressBar.setVisibility(View.GONE);
+                }
             });
         }
 

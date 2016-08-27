@@ -8,18 +8,38 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.LazyHeaders;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.datasource.DataSubscriber;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.IOException;
+import java.util.WeakHashMap;
+
+import me.relex.photodraweeview.PhotoDraweeView;
+import ml.puredark.hviewer.customs.MyOkHttpNetworkFetcher;
 import ml.puredark.hviewer.helpers.CrashHandler;
 import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
@@ -27,6 +47,11 @@ import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 import ml.puredark.hviewer.holders.SearchSuggestionHolder;
 import ml.puredark.hviewer.services.DownloadService;
+import okhttp3.Authenticator;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 
 public class HViewerApplication extends Application {
     public static Context mContext;
@@ -35,12 +60,22 @@ public class HViewerApplication extends Application {
 
     public static SearchHistoryHolder searchHistoryHolder;
     public static SearchSuggestionHolder searchSuggestionHolder;
+    public static Gson gson;
+
+    //为了Fresco请求时可以根据不同Uri加不同的header，必须要得有一个全局变量（Fresco的硬伤）
+    public static WeakHashMap<Uri, String> headers = new WeakHashMap<>();
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    public static String getVersionName(){
+    public static Gson getGson() {
+        if (gson == null)
+            gson = new Gson();
+        return gson;
+    }
+
+    public static String getVersionName() {
         PackageManager packageManager = mContext.getPackageManager();
         PackageInfo packInfo;
         try {
@@ -68,61 +103,86 @@ public class HViewerApplication extends Application {
         return false;
     }
 
-    public static void loadImageFromUrl(Context context,ImageView imageView, String url) {
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url) {
         loadImageFromUrl(context, imageView, url, null, null);
     }
 
-    public static void loadImageFromUrl(Context context,ImageView imageView, String url, String cookie) {
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie) {
         loadImageFromUrl(context, imageView, url, cookie, null);
     }
 
     public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
-        imageView.setImageBitmap(null);
+        Uri uri = Uri.parse(url);
+        JsonObject header = new JsonObject();
+        header.addProperty("cookie", cookie);
+        header.addProperty("referer", referer);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
-                GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
-                        .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
-                        .addHeader("cookie", cookie)
-                        .addHeader("referer", referer)
-                        .build());
-
-                Glide.with(context).load(glideUrl).into(imageView);
-            } else {
-                GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                        .addHeader("cookie", cookie)
-                        .addHeader("referer", referer)
-                        .build());
-                Glide.with(context).load(glideUrl).into(imageView);
+                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+                headers.put(uri, getGson().toJson(header));
             }
-        }else{
-            Glide.with(context).load(url).into(imageView);
+            headers.put(uri, getGson().toJson(header));
+        }
+        if (imageView instanceof PhotoDraweeView) {
+            ((PhotoDraweeView) imageView).setPhotoUri(uri, context);
+            Log.d("HViewerApplication", "PhotoDraweeView");
+        }else if (imageView instanceof SimpleDraweeView) {
+            ((SimpleDraweeView) imageView).setImageURI(uri, context);
+            Log.d("HViewerApplication", "SimpleDraweeView");
         }
     }
 
-    public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, SimpleTarget listener){
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
+        Uri uri = Uri.parse(url);
+        JsonObject header = new JsonObject();
+        header.addProperty("cookie", cookie);
+        header.addProperty("referer", referer);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
-                GlideUrl glideUrl = new GlideUrl(proxy.getProxyUrl(), new LazyHeaders.Builder()
-                        .addHeader(proxy.getHeaderKey(), proxy.getHeaderValue())
-                        .addHeader("cookie", cookie)
-                        .addHeader("referer", referer)
-                        .build());
-                Glide.with(context).load(glideUrl).asBitmap().into(listener);
-            } else {
-                GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
-                        .addHeader("cookie", cookie)
-                        .addHeader("referer", referer)
-                        .build());
-                Glide.with(context).load(glideUrl).asBitmap().into(listener);
+                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+                headers.put(uri, getGson().toJson(header));
             }
-        }else{
-            listener.onLoadFailed(null, null);
+            headers.put(uri, getGson().toJson(header));
+        }
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setCallerContext(context)
+                .setControllerListener(controllerListener)
+                .setUri(uri)
+                .build();
+        if (imageView instanceof PhotoDraweeView) {
+            ((PhotoDraweeView) imageView).setController(controller);
+            Log.d("HViewerApplication", "PhotoDraweeView");
+        }else if (imageView instanceof SimpleDraweeView) {
+            ((SimpleDraweeView) imageView).setController(controller);
+            Log.d("HViewerApplication", "SimpleDraweeView");
         }
     }
 
-    public static void checkUpdate(final Context context){
+    public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, BaseBitmapDataSubscriber dataSubscriber) {
+        if (url != null && url.startsWith("http")) {
+            Uri uri = Uri.parse(url);
+            JsonObject header = new JsonObject();
+            header.addProperty("cookie", cookie);
+            header.addProperty("referer", referer);
+            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
+                HProxy proxy = new HProxy(url);
+                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+            }
+            headers.put(uri, getGson().toJson(header));
+            ImagePipeline imagePipeline = Fresco.getImagePipeline();
+            ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
+            ImageRequest request = builder.build();
+            DataSource<CloseableReference<CloseableImage>>
+                    dataSource = imagePipeline.fetchDecodedImage(request, context);
+            dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
+        } else {
+            dataSubscriber.onFailure(null);
+        }
+    }
+
+    public static void checkUpdate(final Context context) {
         String url = context.getString(R.string.update_site_url);
         HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
             @Override
@@ -130,10 +190,10 @@ public class HViewerApplication extends Application {
                 try {
                     JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
                     boolean prerelease = version.get("prerelease").getAsBoolean();
-                    if(prerelease)
+                    if (prerelease)
                         return;
                     JsonArray assets = version.get("assets").getAsJsonArray();
-                    if(assets.size()>0) {
+                    if (assets.size() > 0) {
                         String oldVersion = HViewerApplication.getVersionName();
                         String newVersion = version.get("tag_name").getAsString().substring(1);
                         String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
@@ -141,7 +201,7 @@ public class HViewerApplication extends Application {
                         new UpdateManager(context, url, newVersion + "版本更新", detail)
                                 .checkUpdateInfo(oldVersion, newVersion);
                     }
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -159,6 +219,12 @@ public class HViewerApplication extends Application {
         super.onCreate();
         mContext = this;
 
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
+                .setNetworkFetcher(new MyOkHttpNetworkFetcher(okHttpClient))
+                .build();
+        Fresco.initialize(this, config);
+
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);
 
@@ -168,8 +234,6 @@ public class HViewerApplication extends Application {
         //注册crashHandler
         crashHandler.init(getApplicationContext());
     }
-
-
 
 
 }
