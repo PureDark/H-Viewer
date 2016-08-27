@@ -2,15 +2,17 @@ package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ public class LoginActivity extends AnimationActivity {
     WebView webView;
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.app_bar)
+    AppBarLayout appBar;
 
     private Site site;
 
@@ -42,10 +46,17 @@ public class LoginActivity extends AnimationActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        MDStatusBarCompat.setOrdinaryToolBar(this);
+
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            toolbar.setFitsSystemWindows(true);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) appBar.getLayoutParams();
+            lp.height = (int) (MDStatusBarCompat.getStatusBarHeight(this) +
+                    getResources().getDimension(R.dimen.tool_bar_height));
+            appBar.setLayoutParams(lp);
+        }
 
         setContainer(coordinatorLayout);
         /* 为返回按钮加载图标 */
@@ -62,7 +73,7 @@ public class LoginActivity extends AnimationActivity {
             return;
         }
 
-        tvTitle.setText("登录"+site.title);
+        tvTitle.setText("登录" + site.title);
 
         WebSettings settings = webView.getSettings();
         settings.setSupportZoom(true);
@@ -72,7 +83,7 @@ public class LoginActivity extends AnimationActivity {
 //        settings.setUseWideViewPort(true);
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 CookieManager cookieManager = CookieManager.getInstance();

@@ -202,8 +202,8 @@ public class PictureViewerActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(HViewerHttpClient.HttpError error) {
                         if (picture.retries < 15) {
-                            getPictureUrl(context, imageView, progressBar, picture, site);
                             picture.retries++;
+                            getPictureUrl(context, imageView, progressBar, picture, site);
                         } else {
                             picture.retries = 0;
                         }

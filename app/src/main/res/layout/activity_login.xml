@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.CollectionActivity">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,17 +21,19 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/tool_bar_height"
-                android:paddingLeft="-16dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="-16dp"
+                android:paddingEnd="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 app:contentInsetStart="0dp"
+                app:layout_collapseMode="pin"
                 android:fitsSystemWindows="true"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clipChildren="false"
-                    android:clipToPadding="false">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <ImageView
                         android:id="@+id/btn_return"
@@ -42,9 +45,10 @@
 
                     <TextView
                         android:id="@+id/tv_title"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
                         tools:text="登录"
                         android:textAppearance="@style/ActionBar.Title" />
                 </LinearLayout>

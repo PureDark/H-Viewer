@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tool_bar_height"
                 android:paddingLeft="-16dp"
-                android:paddingTop="@dimen/status_bar_height"
+                android:gravity="bottom"
                 app:contentInsetStart="0dp"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay">

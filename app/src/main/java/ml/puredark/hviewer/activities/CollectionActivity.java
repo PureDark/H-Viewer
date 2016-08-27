@@ -99,6 +99,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         ButterKnife.bind(this);
         MDStatusBarCompat.setCollapsingToolbar(this, coordinatorLayout, appBar, backdrop, toolbar);
 
+
         setContainer(coordinatorLayout);
 
         /* 为返回按钮加载图标 */

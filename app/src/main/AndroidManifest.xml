@@ -73,7 +73,8 @@
         <activity
             android:name=".activities.AboutActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.LoginActivity"></activity>
+        <activity android:name=".activities.LoginActivity"
+            android:windowSoftInputMode="adjustPan" ></activity>
     </application>
 
 </manifest>

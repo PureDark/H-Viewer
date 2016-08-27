@@ -146,9 +146,9 @@ public class DownloadService extends Service {
                 @Override
                 public void onFailureImpl(DataSource dataSource) {
                     if (picture.retries < 15) {
+                        picture.retries++;
                         picture.status = Picture.STATUS_DOWNLOADING;
                         loadBitmap(picture, task, null);
-                        picture.retries++;
                     } else {
                         picture.retries = 0;
                         task.status = STATUS_PAUSED;
