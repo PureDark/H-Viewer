@@ -94,6 +94,8 @@ public class DownloadTaskHolder {
     }
 
     public void setAllPaused() {
+        if(downloadTasks==null)
+            return;
         for (DownloadTask task : downloadTasks) {
             if (task.status == DownloadTask.STATUS_DOWNLOADING) {
                 task.status = DownloadTask.STATUS_PAUSED;
