@@ -2,6 +2,7 @@ package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -79,6 +81,13 @@ public class DownloadTaskActivity extends AnimationActivity {
         setContentView(R.layout.activity_collection);
         ButterKnife.bind(this);
         MDStatusBarCompat.setCollapsingToolbar(this, coordinatorLayout, appBar, backdrop, toolbar);
+
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
+            lp.height = (int) (getResources().getDimension(R.dimen.tool_bar_height));
+            lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
+            toolbar.setLayoutParams(lp);
+        }
 
         setContainer(coordinatorLayout);
 

@@ -1,6 +1,8 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -10,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -99,6 +102,12 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         ButterKnife.bind(this);
         MDStatusBarCompat.setCollapsingToolbar(this, coordinatorLayout, appBar, backdrop, toolbar);
 
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
+            lp.height = (int) (getResources().getDimension(R.dimen.tool_bar_height));
+            lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
+            toolbar.setLayoutParams(lp);
+        }
 
         setContainer(coordinatorLayout);
 
@@ -359,6 +368,17 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @OnClick(R.id.btn_return)
     void back() {
         onBackPressed();
+    }
+
+    @OnClick(R.id.fab_browser)
+    void fab_browser() {
+        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", myCollection.idCode)
+                .replaceAll("\\{page:" + startPage + "\\}", "" + startPage);
+        Intent intent= new Intent();
+        intent.setAction("android.intent.action.VIEW");
+        Uri content_url = Uri.parse(url);
+        intent.setData(content_url);
+        startActivity(intent);
     }
 
     @OnClick(R.id.fab_favor)

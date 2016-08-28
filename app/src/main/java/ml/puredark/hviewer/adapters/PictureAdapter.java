@@ -2,23 +2,16 @@ package ml.puredark.hviewer.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
-import com.facebook.datasource.DataSubscriber;
-import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.request.BasePostprocessor;
 
-import java.lang.annotation.Target;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,10 +20,6 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
-
-import static android.R.attr.bitmap;
-import static android.R.attr.resource;
-import static android.R.attr.y;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
@@ -60,87 +49,64 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final PictureViewHolder holder = (PictureViewHolder) viewHolder;
         if (!repeatedThumbnail)
             HViewerApplication.loadImageFromUrl(context, holder.ivPicture, picture.thumbnail, cookie, picture.referer);
-        else{
-            Log.d("PictureAdapter", "repeatedThumbnail");
-            HViewerApplication.loadImageFromUrl(context, holder.ivPicture, picture.thumbnail, cookie, picture.referer,  new BasePostprocessor() {
+        else {
+            holder.ivPicture.setImageBitmap(null);
+            holder.ivPicture.setTag("pid=" + picture.pid);
+            HViewerApplication.loadBitmapFromUrl(context, picture.thumbnail, cookie, picture.referer, new BaseBitmapDataSubscriber() {
                 @Override
-                public String getName() {
-                    return "dividePostprocessor";
+                public void onNewResultImpl(@Nullable final Bitmap resource) {
+                    if (resource == null)
+                        return;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<Picture> pictures = mProvider.getItems();
+                            int count = 0;
+                            for (Picture pic : pictures) {
+                                if (picture.thumbnail.equals(pic.thumbnail))
+                                    count++;
+                            }
+                            final Bitmap bitmap;
+                            if (resource.getWidth() >= resource.getHeight()) {
+                                int width = resource.getWidth() / count;
+                                int height = resource.getHeight();
+                                int startX = width * (position % count);
+                                int startY = 0;
+                                if (width * 2 > height) {
+                                    if (startX + width > resource.getWidth())
+                                        width = resource.getWidth() - startX;
+                                    bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                                } else {
+                                    bitmap = resource;
+                                }
+                            } else {
+                                int width = resource.getWidth();
+                                int height = resource.getHeight() / count;
+                                int startX = 0;
+                                int startY = height * (position % count);
+                                if (height * 2 > width) {
+                                    if (startY + height > resource.getHeight())
+                                        height = resource.getHeight() - startY;
+                                    bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                                } else {
+                                    bitmap = resource;
+                                }
+                            }
+                            holder.ivPicture.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(("pid=" + picture.pid).equals(holder.ivPicture.getTag())) {
+                                        holder.ivPicture.setImageBitmap(bitmap);
+                                        holder.ivPicture.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                    }
+                                }
+                            });
+                        }
+                    }).start();
                 }
 
                 @Override
-                public void process(Bitmap bitmap) {
-                    super.process(bitmap);
-                    Log.d("PictureAdapter", "dividePostprocessor process");
-                }
-
-                @Override
-                public CloseableReference<Bitmap> process(Bitmap sourceBitmap, PlatformBitmapFactory bitmapFactory) {
-                    Log.d("PictureAdapter", "dividePostprocessor");
-                    CloseableReference<Bitmap> bitmapRef = null;
-                    try {
-                        List<Picture> pictures = mProvider.getItems();
-                        int count = 0;
-                        for (Picture pic : pictures) {
-                            if (picture.thumbnail.equals(pic.thumbnail))
-                                count++;
-                        }
-                        if (sourceBitmap.getWidth() >= sourceBitmap.getHeight()) {
-                            int width = sourceBitmap.getWidth() / count;
-                            int height = sourceBitmap.getHeight();
-                            int startX = width * (position % count);
-                            int startY = 0;
-                            if (width * 2 > height) {
-                                Log.d("PictureAdapter", "width:" + width + " height:" + height);
-                                if (startX + width > sourceBitmap.getWidth())
-                                    width = sourceBitmap.getWidth() - startX;
-                                bitmapRef = bitmapFactory.createBitmap(width, height);
-                                Bitmap destBitmap = bitmapRef.get();
-                                for (int x = startX; x < destBitmap.getWidth(); x++) {
-                                    for (int y = startY; y < destBitmap.getHeight(); y++) {
-                                        destBitmap.setPixel(x, y, sourceBitmap.getPixel(x, y));
-                                    }
-                                }
-                                Log.d("PictureAdapter", "startX:" + startX + " startY:" + startY);
-                            } else {
-//                                bitmapRef = bitmapFactory.createBitmap(sourceBitmap.getWidth(), sourceBitmap.getHeight());
-//                                Bitmap destBitmap = bitmapRef.get();
-//                                for (int x = 0; x < destBitmap.getWidth(); x++) {
-//                                    for (int y = 0; y < destBitmap.getHeight(); y++) {
-//                                        destBitmap.setPixel(x, y, sourceBitmap.getPixel(x, y));
-//                                    }
-//                                }
-                            }
-                        } else {
-                            int width = sourceBitmap.getWidth();
-                            int height = sourceBitmap.getHeight() / count;
-                            int startX = 0;
-                            int startY = height * (position % count);
-                            if (height * 2 > width) {
-                                if (startY + height > sourceBitmap.getHeight())
-                                    height = sourceBitmap.getHeight() - startY;
-                                bitmapRef = bitmapFactory.createBitmap(width, height);
-                                Bitmap destBitmap = bitmapRef.get();
-                                for (int x = startX; x < destBitmap.getWidth(); x++) {
-                                    for (int y = startY; y < destBitmap.getHeight(); y++) {
-                                        destBitmap.setPixel(x, y, sourceBitmap.getPixel(x, y));
-                                    }
-                                }
-                            } else {
-//                                bitmapRef = bitmapFactory.createBitmap(sourceBitmap.getWidth(), sourceBitmap.getHeight());
-//                                Bitmap destBitmap = bitmapRef.get();
-//                                for (int x = 0; x < destBitmap.getWidth(); x++) {
-//                                    for (int y = 0; y < destBitmap.getHeight(); y++) {
-//                                        destBitmap.setPixel(x, y, sourceBitmap.getPixel(x, y));
-//                                    }
-//                                }
-                            }
-                        }
-                        return CloseableReference.cloneOrNull(bitmapRef);
-                    } finally {
-                        if(bitmapRef!=null)
-                            CloseableReference.closeSafely(bitmapRef);
-                    }
+                public void onFailureImpl(DataSource dataSource) {
                 }
             });
         }

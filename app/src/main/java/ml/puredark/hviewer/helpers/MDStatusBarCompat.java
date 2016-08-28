@@ -128,7 +128,7 @@ public class MDStatusBarCompat {
             toolbar.setFitsSystemWindows(true);
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
             lp.height = (int) (getStatusBarHeight(activity) +
-                    activity.getResources().getDimension(R.dimen.abc_action_bar_default_height_material));
+                    activity.getResources().getDimension(R.dimen.tool_bar_height));
             toolbar.setLayoutParams(lp);
             setKKStatusBar(activity, R.color.statusBar);
             setCollapsingToolbarStatus(appBarLayout);
