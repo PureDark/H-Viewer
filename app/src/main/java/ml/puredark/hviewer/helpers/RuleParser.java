@@ -41,8 +41,8 @@ public class RuleParser {
     }
 
     public static List<Collection> getCollections(List<Collection> collections, String html, Rule rule, String sourceUrl) {
-        Document doc = Jsoup.parse(html);
         try {
+            Document doc = Jsoup.parse(html);
             Elements elements = doc.select(rule.item.selector);
             for (Element element : elements) {
                 String itemStr;
@@ -74,8 +74,8 @@ public class RuleParser {
     }
 
     public static Collection getCollectionDetail(Collection collection, String html, Rule rule, String sourceUrl) {
-        Document element = Jsoup.parse(html);
         try {
+            Document element = Jsoup.parse(html);
             collection = getCollectionDetail(collection, element, rule, sourceUrl);
         } catch (Exception e) {
             e.printStackTrace();
@@ -217,8 +217,8 @@ public class RuleParser {
     }
 
     public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
-        Document doc = Jsoup.parse(html);
         try {
+            Document doc = Jsoup.parse(html);
             return parseSingleProperty(doc, selector, sourceUrl, true);
         } catch (Exception e) {
             e.printStackTrace();
