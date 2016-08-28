@@ -692,12 +692,12 @@ public class MainActivity extends AnimationActivity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (siteHolder != null)
             siteHolder.onDestroy();
         HViewerApplication.searchHistoryHolder.saveSearchHistory();
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
-        new DownloadTaskHolder(this).saveDownloadTasks();
+        new DownloadTaskHolder(this).setAllPaused();
+        super.onDestroy();
     }
 
     @OnClick(R.id.btn_setting)

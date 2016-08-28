@@ -9,6 +9,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -231,6 +232,7 @@ public class DownloadActivity extends AnimationActivity {
                 distinguishDownloadTasks();
                 startNextTaskInQueue();
             }
+            Log.d("MyDownloadReceiver", intent.getAction());
         }
 
     }

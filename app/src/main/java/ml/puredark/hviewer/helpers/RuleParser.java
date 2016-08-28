@@ -42,38 +42,49 @@ public class RuleParser {
 
     public static List<Collection> getCollections(List<Collection> collections, String html, Rule rule, String sourceUrl) {
         Document doc = Jsoup.parse(html);
-        Elements elements = doc.select(rule.item.selector);
-        for (Element element : elements) {
-            String itemStr;
-            if ("attr".equals(rule.item.fun)) {
-                itemStr = element.attr(rule.title.param);
-            } else if ("html".equals(rule.item.fun)) {
-                itemStr = element.html();
-            } else {
-                itemStr = element.toString();
-            }
-            if (rule.item.regex != null) {
-                Pattern pattern = Pattern.compile(rule.item.regex);
-                Matcher matcher = pattern.matcher(itemStr);
-                if (!matcher.find()) {
-                    continue;
+        try {
+            Elements elements = doc.select(rule.item.selector);
+            for (Element element : elements) {
+                String itemStr;
+                if ("attr".equals(rule.item.fun)) {
+                    itemStr = element.attr(rule.title.param);
+                } else if ("html".equals(rule.item.fun)) {
+                    itemStr = element.html();
+                } else {
+                    itemStr = element.toString();
                 }
+                if (rule.item.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.item.regex);
+                    Matcher matcher = pattern.matcher(itemStr);
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                }
+
+                Collection collection = new Collection(collections.size() + 1);
+                collection = getCollectionDetail(collection, element, rule, sourceUrl);
+
+                collections.add(collection);
             }
-
-            Collection collection = new Collection(collections.size() + 1);
-            collection = getCollectionDetail(collection, element, rule, sourceUrl);
-
-            collections.add(collection);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            return collections;
         }
-        return collections;
     }
 
     public static Collection getCollectionDetail(Collection collection, String html, Rule rule, String sourceUrl) {
         Document element = Jsoup.parse(html);
-        return getCollectionDetail(collection, element, rule, sourceUrl);
+        try {
+            collection = getCollectionDetail(collection, element, rule, sourceUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            return collection;
+        }
     }
 
-    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) {
+    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) throws Exception{
         Elements temp;
 
         String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false);
@@ -171,7 +182,7 @@ public class RuleParser {
         return collection;
     }
 
-    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl) {
+    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl) throws Exception{
         String prop = "";
 
         if (selector != null) {
@@ -207,7 +218,12 @@ public class RuleParser {
 
     public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
         Document doc = Jsoup.parse(html);
-        return parseSingleProperty(doc, selector, sourceUrl, true);
+        try {
+            return parseSingleProperty(doc, selector, sourceUrl, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
 }

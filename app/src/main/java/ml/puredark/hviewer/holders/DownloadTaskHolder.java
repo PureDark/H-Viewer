@@ -30,7 +30,6 @@ public class DownloadTaskHolder {
     public void saveDownloadTasks() {
         if(downloadTasks==null)
             return;
-        setAllPaused(downloadTasks);
         for (DownloadTask item : downloadTasks) {
             ContentValues contentValues = new ContentValues();
             contentValues.put("idCode", item.collection.idCode);
@@ -94,8 +93,8 @@ public class DownloadTaskHolder {
             return false;
     }
 
-    private void setAllPaused(List<DownloadTask> items) {
-        for (DownloadTask task : items) {
+    public void setAllPaused() {
+        for (DownloadTask task : downloadTasks) {
             if (task.status == DownloadTask.STATUS_DOWNLOADING) {
                 task.status = DownloadTask.STATUS_PAUSED;
             }

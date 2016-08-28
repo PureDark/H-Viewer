@@ -33,13 +33,13 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_nav_menu, parent, false);
         // 在这里对View的参数进行设置
-        RuleViewHolder vh = new RuleViewHolder(v);
+        SiteViewHolder vh = new SiteViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        RuleViewHolder holder = (RuleViewHolder) viewHolder;
+        SiteViewHolder holder = (SiteViewHolder) viewHolder;
         if (position == getItemCount() - 1) {
             holder.ivIcon.setImageResource(R.drawable.ic_add_black);
             holder.tvTitle.setText("添加新站点");
@@ -129,7 +129,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         boolean onItemLongClick(View v, int position);
     }
 
-    public class RuleViewHolder extends RecyclerView.ViewHolder {
+    public class SiteViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.container)
         MaterialRippleLayout container;
         @BindView(R.id.iv_icon)
@@ -139,7 +139,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @BindView(R.id.switch_list_grid)
         MaterialAnimatedSwitch switchListGrid;
 
-        public RuleViewHolder(View view) {
+        public SiteViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
             container.setOnClickListener(new View.OnClickListener() {
@@ -152,7 +152,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             container.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()-1)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;

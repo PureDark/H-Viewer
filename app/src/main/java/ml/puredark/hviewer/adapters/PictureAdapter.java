@@ -2,7 +2,11 @@ package ml.puredark.hviewer.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,7 +96,8 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     bitmap = resource;
                                 }
                             }
-                            holder.ivPicture.post(new Runnable() {
+
+                            new Handler(context.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
                                     if(("pid=" + picture.pid).equals(holder.ivPicture.getTag())) {

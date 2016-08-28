@@ -136,8 +136,10 @@ public class HViewerApplication extends Application {
                     .build();
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setCallerContext(context)
+                    .setTapToRetryEnabled(true)
                     .setAutoPlayAnimations(true)
                     .setImageRequest(request)
+                    .setOldController(((SimpleDraweeView) imageView).getController())
                     .setControllerListener(controllerListener)
                     .setUri(uri)
                     .build();

@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,8 +142,10 @@ public class PictureViewerActivity extends AppCompatActivity {
                 picture.pic = picture.url;
                 loadImage(container.getContext(), picture, imageView, progressBar);
             } else if (picture.pic != null) {
+                Log.d("PicturePagerAdapter", "picture.pid:" + picture.pid + " loadImage picture.pic:" + picture.pic);
                 loadImage(container.getContext(), picture, imageView, progressBar);
             } else {
+                Log.d("PicturePagerAdapter", "picture.pid:" + picture.pid + " getPictureUrl");
                 getPictureUrl(container.getContext(), imageView, progressBar, picture, site);
             }
             views[position] = view;
@@ -152,6 +155,12 @@ public class PictureViewerActivity extends AppCompatActivity {
 
         private void loadImage(Context context, Picture picture, final ImageView imageView, final ProgressBarCircularIndeterminate progressBar) {
             HViewerApplication.loadImageFromUrl(context, imageView, picture.pic, site.cookie, picture.referer,  new BaseControllerListener<ImageInfo>() {
+                @Override
+                public void onSubmit(String id, Object callerContext) {
+                    super.onSubmit(id, callerContext);
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+
                 @Override
                 public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
                     super.onFinalImageSet(id, imageInfo, anim);
@@ -179,28 +188,37 @@ public class PictureViewerActivity extends AppCompatActivity {
         private void getPictureUrl(final Context context, final ImageView imageView, final ProgressBarCircularIndeterminate progressBar, final Picture picture, final Site site) {
             if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
                 picture.pic = picture.url;
+                Log.d("PicturePagerAdapter", "picture.pid:" + picture.pid + " getPictureUrl picture.pic:" + picture.pic);
                 loadImage(context, picture, imageView, progressBar);
             } else
                 HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
 
                     @Override
                     public void onSuccess(String contentType, Object result) {
+                        Log.d("PicturePagerAdapter", "picture.pid:" + picture.pid + " getPictureUrl contentType: "+contentType+" resultNull:" + (result == null ));
                         if (result == null || result.equals(""))
                             return;
-                        if (contentType.contains("image") && result instanceof Bitmap) {
+                        if (contentType.contains("image")) {
                             picture.pic = picture.url;
-                            imageView.setImageBitmap((Bitmap) result);
-                            progressBar.setVisibility(View.GONE);
+                            if(result instanceof Bitmap) {
+                                imageView.setImageBitmap((Bitmap) result);
+                                progressBar.setVisibility(View.GONE);
+                            }else{
+                                Log.d("PicturePagerAdapter", "picture.pid:" + picture.pid + " getPictureUrl loadImage picture.pic:" + picture.pic);
+                                loadImage(context, picture, imageView, progressBar);
+                            }
                         } else {
                             picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
                             picture.retries = 0;
                             picture.referer = picture.url;
+                            Log.d("PicturePagerAdapter", "picture.pid:" + picture.pid + " getPictureUrl loadImage picture.pic:" + picture.pic);
                             loadImage(context, picture, imageView, progressBar);
                         }
                     }
 
                     @Override
                     public void onFailure(HViewerHttpClient.HttpError error) {
+                        Log.d("PicturePagerAdapter", "load failed picture.retries:" + picture.retries + " picture.url:" + picture.url);
                         if (picture.retries < 15) {
                             picture.retries++;
                             getPictureUrl(context, imageView, progressBar, picture, site);
