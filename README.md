@@ -9,6 +9,8 @@ An android feed reader application which fetch data with selector and regular ex
 
 Note that this app is still in alpha stage, and so bugs and creashes you may often run into. If that happens, please post an issue to address it, so I can fix it.
 
+* 近期准备只修BUG，不更新新功能，等到比较稳定了就进入Beta，然后有个稳定版之后大概我先弃坑一段时间，有事情忙
+
 ## Preview
 
 ![](https://github.com/PureDark/H-Viewer/raw/master/images/1.png)
