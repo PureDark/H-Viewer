@@ -68,14 +68,16 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 
 ## Sites' QR Code
 
-### ACG图站 —— ACG picture sites
+
+### ACG图站 —— ACG picture sites  
 
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
 |  1   | [E-shuushuu](http://jsondepot.mcsky.org/21) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.e-shuushuu.png)  | PureDark |
 |  2   | [pixiv](http://jsondepot.mcsky.org/46) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
 
-### 绅士漫画站 —— Hentai sites
+
+### 绅士漫画站 —— Hentai sites  
 
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
@@ -84,9 +86,10 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 |  3   | [ex-hentai](http://jsondepot.mcsky.org/45) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.exhentai.png)  | PureDark |
 |  4   | [wnacg (绅士漫画)](http://jsondepot.mcsky.org/18) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.wnacg.png)  | PureDark |
 |  5   | [nhentai](http://jsondepot.mcsky.org/19) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.nhentai.png)  | PureDark |
-|  6   | [117漫画](http://jsondepot.mcsky.org/47) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/11.117.png)  | PureDark |
+|  6   | [117漫画](http://jsondepot.mcsky.org/47) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/11.177.png)  | PureDark |
 
-### 真人图站
+
+### 真人图站  
 
 |  ID  | Site's Json  | QR Code | Author |
 | ---- | ------------- | ------------- | ------------- |
