@@ -402,6 +402,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @Override
     public void onResume() {
         super.onResume();
+        picturePagerAdapter = null;
     }
 
     @Override

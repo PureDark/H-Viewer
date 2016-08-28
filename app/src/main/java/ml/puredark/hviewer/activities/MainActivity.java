@@ -204,7 +204,7 @@ public class MainActivity extends AnimationActivity {
 //        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
 //        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
 //        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
-//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
+//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(//|init~)(.*?org)[~/]([^~]*\\.jpg)[~\"]", "http://$2/$3");
 //        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
 //        indexRule.datetime = new Selector("td.itd[style]", "html", null, null, null);
 //        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-?(\\d+)px -?(\\d+)px", "5-$1/16-($2-1)/40");
@@ -212,15 +212,15 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule = new Rule();
 //        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
 //        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-//        galleryRule.item = new Selector("div.gdt div", null, null, null, null);
+//        galleryRule.item = new Selector("div.gdtl,div.gdtm", null, null, null, null);
 //        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
-//        galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://.*?.jpg)", null);
+//        galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://[^\"]*?\\.jpg)", null);
 //
 //        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 //
 //        sites.add(new Site(2, "G.E-hentai",
 //                "http://g.e-hentai.org/?page={page:0}",
-//                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}&nw=always",
+//                "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
 //                "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
 //                "https://forums.e-hentai.org/index.php?act=Login",
 //                indexRule, galleryRule, null, pic, Site.FLAG_REPEATED_THUMBNAIL));
@@ -245,7 +245,7 @@ public class MainActivity extends AnimationActivity {
 //        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
 //        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
 //        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
-//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(t/.*.jpg)", "http://ehgt.org/$1");
+//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(//|init~)(.*?org)[~/]([^~]*\\.jpg)[~\"]", "http://$2/$3");
 //        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
 //        indexRule.datetime = new Selector("td.itd[style]", "html", null, null, null);
 //        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-?(\\d+)px -?(\\d+)px", "5-$1/16-($2-1)/40");
@@ -253,15 +253,15 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule = new Rule();
 //        galleryRule.title = new Selector("h1#gj", "html", null, null, null);
 //        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
-//        galleryRule.item = new Selector("div.gdt div", null, null, null, null);
+//        galleryRule.item = new Selector("div.gdtl,div.gdtm", null, null, null, null);
 //        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
-//        galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://.*?.jpg)", null);
+//        galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://[^\"]*?\\.jpg)", null);
 //
 //        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 //
 //        sites.add(new Site(3, "Ex-hentai",
 //                "https://exhentai.org/?page={page:0}",
-//                "http://exhentai.org/g/{idCode:}/?p={page:0}&nw=always",
+//                "http://exhentai.org/g/{idCode:}/?p={page:0}",
 //                "http://exhentai.org/?f_search={keyword:}&page={page:0}",
 //                "https://forums.e-hentai.org/index.php?act=Login",
 //                indexRule, galleryRule, null, pic, Site.FLAG_REPEATED_THUMBNAIL));
@@ -408,7 +408,7 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
 //        galleryRule.item = new Selector("body", null, null, null, null);
 //        galleryRule.pictureUrl = new Selector("div.works_display", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://.*?.jpg)\"", null);
-//        galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", null, null);
+//        galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 //
 //        Rule extraRule = new Rule();
 //        extraRule.item = new Selector("div.item-container", null, null, null, null);
