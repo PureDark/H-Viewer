@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -12,9 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -35,14 +31,14 @@ import ml.puredark.hviewer.adapters.PictureAdapter;
 import ml.puredark.hviewer.adapters.TagAdapter;
 import ml.puredark.hviewer.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.beans.DownloadTask;
+import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
-import ml.puredark.hviewer.customs.ScalingImageView;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.utils.DensityUtil;
 
@@ -110,14 +106,32 @@ public class DownloadTaskActivity extends AnimationActivity {
         toolbar.setTitle(task.collection.title);
         setSupportActionBar(toolbar);
 
+        parseCollection(task.collection);
+
         initCover(task.collection.cover);
         initTabAndViewPager();
         refreshDescription();
     }
 
     private void initCover(String cover) {
-        if (cover != null){
+        if (cover != null) {
             HViewerApplication.loadImageFromUrl(this, backdrop, cover);
+        }
+    }
+
+    //给上个版本擦屁股，给没有加file://的地址加上
+    private void parseCollection(LocalCollection collection) {
+        if(collection==null)
+            return;
+        if (collection.cover != null && !collection.cover.startsWith("file://"))
+            collection.cover = "file://" + collection.cover;
+        if (collection.pictures != null) {
+            for (Picture picture : collection.pictures) {
+                if (picture.thumbnail != null && !picture.thumbnail.startsWith("file://"))
+                    picture.thumbnail = "file://" + picture.thumbnail;
+                if (picture.pic != null && !picture.pic.startsWith("file://"))
+                    picture.pic = "file://" + picture.pic;
+            }
         }
     }
 
@@ -170,7 +184,7 @@ public class DownloadTaskActivity extends AnimationActivity {
 
     }
 
-    private void refreshDescription(){
+    private void refreshDescription() {
         toolbar.setTitle(task.collection.title);
         holder.tvTitle.setText(task.collection.title);
         holder.tvUploader.setText(task.collection.uploader);

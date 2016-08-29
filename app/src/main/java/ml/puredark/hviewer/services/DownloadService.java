@@ -179,10 +179,10 @@ public class DownloadService extends Service {
             }
             ImageScaleUtil.saveToFile(HViewerApplication.mContext, bitmap, filePath);
             if (picture.pid == 0) {
-                task.collection.cover = filePath;
+                task.collection.cover = "file://"+filePath;
             }
-            picture.thumbnail = filePath;
-            picture.pic = filePath;
+            picture.thumbnail = "file://"+filePath;
+            picture.pic = "file://"+filePath;
             picture.retries = 0;
             picture.status = Picture.STATUS_DOWNLOADED;
             Intent intent = new Intent(ON_PROGRESS);
