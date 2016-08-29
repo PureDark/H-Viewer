@@ -3,6 +3,7 @@ package ml.puredark.hviewer.customs;
 import android.net.Uri;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.imagepipeline.image.EncodedImage;
@@ -18,6 +19,7 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
 
 import ml.puredark.hviewer.HViewerApplication;
@@ -52,6 +54,9 @@ public class MyOkHttpNetworkFetcher extends
     private static final String TOTAL_TIME = "total_time";
     private static final String IMAGE_SIZE = "image_size";
 
+    //为了Fresco请求时可以根据不同Uri加不同的header，必须要得有一个全局变量（Fresco的硬伤）
+    public static WeakHashMap<Uri, String> headers = new WeakHashMap<>();
+
     private final OkHttpClient mOkHttpClient;
 
     private Executor mCancellationExecutor;
@@ -75,7 +80,7 @@ public class MyOkHttpNetworkFetcher extends
     public void fetch(final OkHttpNetworkFetchState fetchState, final Callback callback) {
         fetchState.submitTime = SystemClock.elapsedRealtime();
         final Uri uri = fetchState.getUri();
-        String headerStr = HViewerApplication.headers.get(uri);
+        String headerStr = headers.get(uri);
         Request.Builder builder = new Request.Builder();
         try{
             if(headerStr!=null&&!"".equals(headerStr)){

@@ -204,7 +204,7 @@ public class MainActivity extends AnimationActivity {
 //        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
 //        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
 //        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
-//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(//|init~)(.*?org)[~/]([^~]*\\.jpg)[~\"]", "http://$2/$3");
+//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(//|inits?~)(.*?org)[~/]([^~]*\\.jpg)[~\"]", "http://$2/$3");
 //        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
 //        indexRule.datetime = new Selector("td.itd[style]", "html", null, null, null);
 //        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-?(\\d+)px -?(\\d+)px", "5-$1/16-($2-1)/40");
@@ -245,7 +245,7 @@ public class MainActivity extends AnimationActivity {
 //        indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
 //        indexRule.title = new Selector("td.itd div div.it5 a", "html", null, null, null);
 //        indexRule.uploader = new Selector("td.itu div a", "html", null, null, null);
-//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(//|init~)(.*?org)[~/]([^~]*\\.jpg)[~\"]", "http://$2/$3");
+//        indexRule.cover = new Selector("td.itd div div.it2", "html", null, "(//|inits?~)(.*?org)[~/]([^~]*\\.jpg)[~\"]", "http://$2/$3");
 //        indexRule.category = new Selector("td.itdc a img", "attr", "alt", null, null);
 //        indexRule.datetime = new Selector("td.itd[style]", "html", null, null, null);
 //        indexRule.rating = new Selector("td.itd div div.it4 div", "attr", "style", "background-position:-?(\\d+)px -?(\\d+)px", "5-$1/16-($2-1)/40");
@@ -360,6 +360,34 @@ public class MainActivity extends AnimationActivity {
 //        categories = new ArrayList<>();
 //        categories.add(new Category(1, "贴图区", "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}"));
 //        categories.add(new Category(2, "自拍区", "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}"));
+//        sites.get(sites.size() - 1).setCategories(categories);
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("div.post_box", null, null, null, null);
+//        indexRule.idCode = new Selector("div.c-top div.tit h2 a", "attr", "href", "html/(.*)\\.html", null);
+//        indexRule.title = new Selector("div.c-top div.tit h2 a", "html", null, null, null);
+//        indexRule.cover = new Selector("div.c-con a[rel='bookmark'] img", "attr", "src", null, null);
+//        indexRule.category = new Selector("div.c-top div.tit p span a", "html", null, null, null);
+//        indexRule.datetime = new Selector("div.c-top div.datetime", "html", null, "(\\d{4})<br>(\\d{2})-(\\d{2})", "$1-$2-$3");
+//
+//        galleryRule = new Rule();
+//        galleryRule.tags = new Selector("div#taglist table tr td:eq(1) div a", "html", null, null, null);
+//        galleryRule.item = new Selector("div.entry-content > p", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("img", "attr", "src", null, null);
+//        galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
+//
+//        sites.add(new Site(7, "177漫画",
+//                "http://www.177pic66.com/page/{page:1}?variant=zh-hans",
+//                "http://www.177pic66.com/html/{idCode:}.html/{page:1}",
+//                "http://www.177pic66.com/page/{page:1}?s={keyword:}&variant=zh-hans",
+//                null,
+//                indexRule, galleryRule, null, null, Site.FLAG_NO_RATING));
+//
+//        categories = new ArrayList<>();
+//        categories.add(new Category(1, "首页", "http://www.177pic66.com/page/{page:1}?variant=zh-hans"));
+//        categories.add(new Category(2, "中文漫画", "http://www.177pic66.com/html/category/tt/page/{page:1}?variant=zh-hans"));
+//        categories.add(new Category(3, "全彩CG", "http://www.177pic66.com/html/category/cg/page/{page:1}?variant=zh-hans"));
+//        categories.add(new Category(4, "日文漫画", "http://www.177pic66.com/html/category/jj/page/{page:1}?variant=zh-hans"));
 //        sites.get(sites.size() - 1).setCategories(categories);
 //
 //

@@ -41,6 +41,8 @@ public class LoginActivity extends AnimationActivity {
 
     private Site site;
 
+    private boolean checking = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +99,10 @@ public class LoginActivity extends AnimationActivity {
                 CookieManager cookieManager = CookieManager.getInstance();
                 String cookies = cookieManager.getCookie(url);
                 site.cookie = cookies;
-                showSnackBar("请在登录成功后返回到主界面");
+                if(checking)
+                    back();
+                else
+                    showSnackBar("登录成功后请点击右上角图标进行首页访问测试");
                 super.onPageFinished(view, url);
             }
         });
@@ -110,5 +115,14 @@ public class LoginActivity extends AnimationActivity {
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         onBackPressed();
+    }
+
+    @OnClick(R.id.btn_visit_index)
+    void check() {
+        if(checking)
+            return;
+        checking = true;
+        showSnackBar("正在打开首页，成功自动返回主界面");
+        webView.loadUrl(site.indexUrl);
     }
 }

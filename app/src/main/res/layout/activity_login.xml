@@ -51,6 +51,14 @@
                         android:gravity="center_vertical"
                         tools:text="登录"
                         android:textAppearance="@style/ActionBar.Title" />
+
+                    <ImageView
+                        android:id="@+id/btn_visit_index"
+                        android:layout_width="@dimen/tool_bar_height"
+                        android:layout_height="@dimen/tool_bar_height"
+                        android:padding="14dp"
+                        android:background="@drawable/bg_button"
+                        app:srcCompat="@drawable/ic_check_white"/>
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>

@@ -11,14 +11,12 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -34,9 +32,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.util.WeakHashMap;
-
-import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.customs.MyOkHttpNetworkFetcher;
 import ml.puredark.hviewer.helpers.CrashHandler;
 import ml.puredark.hviewer.helpers.HProxy;
@@ -55,9 +50,6 @@ public class HViewerApplication extends Application {
     public static SearchHistoryHolder searchHistoryHolder;
     public static SearchSuggestionHolder searchSuggestionHolder;
     public static Gson gson;
-
-    //为了Fresco请求时可以根据不同Uri加不同的header，必须要得有一个全局变量（Fresco的硬伤）
-    public static WeakHashMap<Uri, String> headers = new WeakHashMap<>();
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -126,16 +118,16 @@ public class HViewerApplication extends Application {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
                 header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-                headers.put(uri, getGson().toJson(header));
+                MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
             }
-            headers.put(uri, getGson().toJson(header));
+            MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
         }
         if (imageView instanceof SimpleDraweeView) {
             ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                     .setPostprocessor(postprocessor)
                     .build();
             DraweeController controller = Fresco.newDraweeControllerBuilder()
-                    //.setCallerContext(context)
+                    .setCallerContext(context)
                     .setTapToRetryEnabled(true)
                     .setAutoPlayAnimations(true)
                     .setImageRequest(request)
@@ -157,7 +149,7 @@ public class HViewerApplication extends Application {
             HProxy proxy = new HProxy(url);
             header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
         }
-        headers.put(uri, getGson().toJson(header));
+        MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
         ImageRequest request = builder.build();
