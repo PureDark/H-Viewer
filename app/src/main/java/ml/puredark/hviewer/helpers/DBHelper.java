@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper {
     private final static String dbName = "hviewer.db";
@@ -15,7 +16,7 @@ public class DBHelper {
 
     public synchronized void open(Context context) {
         close();
-        mSqliteHelper = new SQLiteHelper(context, dbName, null, 2);
+        mSqliteHelper = new SQLiteHelper(context, dbName, null, 3);
     }
 
     public synchronized void insert(String sql) {
@@ -105,18 +106,31 @@ public class DBHelper {
         //创建SQLiteOpenHelper的子类，并重写onCreate及onUpgrade方法。
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text)");
-            db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
-            db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
-            db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer)");
+            db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
+            db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
+            db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
             db.execSQL("CREATE TABLE `searchSuggestions`(`title` text primary key)");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            if(oldVersion==1){
+            Log.d("SQLiteHelper", "onUpgrade: oldVersion="+oldVersion+" newVersion="+newVersion);
+            if(oldVersion==1 && newVersion==2){
                 db.execSQL("DROP TABLE `downloads`;");
                 db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+            }else if(oldVersion==1 && newVersion==3){
+                db.execSQL("DROP TABLE `downloads`;");
+                db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+                db.execSQL("ALTER TABLE `sites` RENAME TO `_temp_sites`;");
+                db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer)");
+                db.execSQL("INSERT INTO `sites` SELECT `sid`, `title`, `indexUrl`, `galleryUrl`, `json`,`sid` AS `index` FROM `_temp_sites`;");
+                db.execSQL("DROP TABLE `_temp_sites`;");
+            }else if(oldVersion==2 && newVersion==3){
+                db.execSQL("ALTER TABLE `sites` RENAME TO `_temp_sites`;");
+                db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer)");
+                db.execSQL("INSERT INTO `sites` SELECT `sid`, `title`, `indexUrl`, `galleryUrl`, `json`,`sid` AS `index` FROM `_temp_sites`;");
+                db.execSQL("DROP TABLE `_temp_sites`;");
             }
         }
 

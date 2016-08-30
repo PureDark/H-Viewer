@@ -8,8 +8,8 @@ android {
         applicationId "ml.puredark.hviewer"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 20
-        versionName "0.3.7"
+        versionCode 21
+        versionName "0.3.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -38,11 +38,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    //Pull Load More
-    compile("com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9") {
-        exclude group: 'com.android.support'
-    }
-
     //Google offical
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:cardview-v7:24.1.1'
@@ -57,6 +52,14 @@ dependencies {
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.MiguelCatalan:MaterialSearchView:v1.4.0'
     compile 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
+    compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.9.3@aar'){
+        transitive=true
+    }
+
+    //Pull Load More
+    compile("com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9") {
+        exclude group: 'com.android.support'
+    }
     
     //butter knife
     compile 'com.jakewharton:butterknife:8.2.1'

@@ -225,8 +225,8 @@ public class ModifySiteActivity extends AnimationActivity {
             return;
         }
         newSite.sid = site.sid;
+        newSite.index = site.index;
         HViewerApplication.temp = newSite;
-
         siteHolder.updateSite(newSite);
 
         Intent intent = new Intent();

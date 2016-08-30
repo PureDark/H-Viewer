@@ -24,6 +24,7 @@ public class Site extends AbstractDataProvider.Data {
     public Selector picUrlSelector;
     public String cookie = "";
     public String flag = "";
+    public int index;
 
     public Site() {
     }

@@ -1,6 +1,8 @@
 package ml.puredark.hviewer.adapters;
 
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,22 +11,28 @@ import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
+import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.utils.ViewUtil;
 
-public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements DraggableItemAdapter<RecyclerView.ViewHolder> {
     public int selectedSid = 0;
     private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
+    private OnItemMoveListener onItemMoveListener;
     private MaterialAnimatedSwitch.OnCheckedChangeListener mOnCheckedChangeListener;
 
     public SiteAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
-        setHasStableIds(false);
+        setHasStableIds(true);
     }
 
     @Override
@@ -109,6 +117,9 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mItemClickListener = listener;
     }
+    public void setOnItemMoveListener(OnItemMoveListener listener) {
+        this.onItemMoveListener = listener;
+    }
 
     public void setOnCheckedChangeListener(MaterialAnimatedSwitch.OnCheckedChangeListener listener) {
         this.mOnCheckedChangeListener = listener;
@@ -127,8 +138,11 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         boolean onItemLongClick(View v, int position);
     }
+    public interface OnItemMoveListener {
+        void onItemMove(int fromPosition, int toPosition);
+    }
 
-    public class SiteViewHolder extends RecyclerView.ViewHolder {
+    public class SiteViewHolder extends AbstractDraggableItemViewHolder {
         @BindView(R.id.container)
         MaterialRippleLayout container;
         @BindView(R.id.iv_icon)
@@ -167,4 +181,38 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 switchListGrid.setOnCheckedChangeListener(mOnCheckedChangeListener);
         }
     }
+
+    // 以下是拖拽排序相关实现
+
+    @Override
+    public void onMoveItem(int fromPosition, int toPosition) {
+
+        if (fromPosition == toPosition) {
+            return;
+        }
+
+        mProvider.moveItem(fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        if(onItemMoveListener!=null)
+            onItemMoveListener.onItemMove(fromPosition, toPosition);
+    }
+
+    @Override
+    public boolean onCheckCanStartDrag(RecyclerView.ViewHolder viewHolder, int position, int x, int y) {
+        SiteViewHolder holder = (SiteViewHolder) viewHolder;
+        final View dragHandleView = holder.ivIcon;
+        return ViewUtil.hitTest(dragHandleView, x, y);
+    }
+
+    @Override
+    public ItemDraggableRange onGetItemDraggableRange(RecyclerView.ViewHolder holder, int position) {
+        // no drag-sortable range specified
+        return null;
+    }
+
+    @Override
+    public boolean onCheckCanDrop(int draggingPosition, int dropPosition) {
+        return true;
+    }
+
 }

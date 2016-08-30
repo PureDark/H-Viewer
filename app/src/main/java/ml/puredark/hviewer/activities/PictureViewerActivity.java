@@ -123,9 +123,8 @@ public class PictureViewerActivity extends AppCompatActivity {
         }
 
         public void clearItems() {
-            site = null;
             pictures = null;
-            viewHolders = null;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -179,6 +178,7 @@ public class PictureViewerActivity extends AppCompatActivity {
         }
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
+            if (site == null) return;
             HViewerApplication.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
                 @Override
                 public void onSubmit(String id, Object callerContext) {

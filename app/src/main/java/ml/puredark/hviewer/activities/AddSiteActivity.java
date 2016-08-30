@@ -128,6 +128,7 @@ public class AddSiteActivity extends AnimationActivity {
             sid = Math.max(sid, site.sid + 1);
         }
         newSite.sid = sid;
+        newSite.index = sid;
 
         HViewerApplication.temp = newSite;
         siteHolder.addSite(newSite);

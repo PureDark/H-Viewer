@@ -2,6 +2,7 @@ package ml.puredark.hviewer.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,6 +25,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.h6ah4i.android.widget.advrecyclerview.decoration.ItemShadowDecorator;
+import com.h6ah4i.android.widget.advrecyclerview.decoration.SimpleListDividerDecorator;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
+import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -50,6 +56,7 @@ import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.holders.SiteHolder;
 
+import static java.security.AccessController.getContext;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 
@@ -86,6 +93,9 @@ public class MainActivity extends AnimationActivity {
 
     private SiteAdapter siteAdapter;
     private CategoryAdapter categoryAdapter;
+
+    private RecyclerView.Adapter mWrappedAdapter;
+    private RecyclerViewDragDropManager mRecyclerViewDragDropManager;
 
     //记录当前加载的是哪个Fragment
     private MyFragment currFragment;
@@ -521,8 +531,17 @@ public class MainActivity extends AnimationActivity {
 //        sites.get(sites.size() - 1).extraRule = extraRule;
 
         ListDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
+        // drag & drop manager
+        mRecyclerViewDragDropManager = new RecyclerViewDragDropManager();
+        mRecyclerViewDragDropManager.setInitiateOnMove(false);
+        mRecyclerViewDragDropManager.setInitiateOnTouch(true);
+
         siteAdapter = new SiteAdapter(dataProvider);
-        rvSite.setAdapter(siteAdapter);
+        // wrap for dragging
+        mWrappedAdapter = mRecyclerViewDragDropManager.createWrappedAdapter(siteAdapter);
+        rvSite.setAdapter(mWrappedAdapter);
+
+        mRecyclerViewDragDropManager.attachRecyclerView(rvSite);
 
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
@@ -574,6 +593,18 @@ public class MainActivity extends AnimationActivity {
                         .setNegativeButton("取消", null)
                         .show();
                 return true;
+            }
+        });
+
+        siteAdapter.setOnItemMoveListener(new SiteAdapter.OnItemMoveListener() {
+            @Override
+            public void onItemMove(int fromPosition, int toPosition) {
+                List<Site> sites = siteAdapter.getDataProvider().getItems();
+                for(int i = 0; i < sites.size(); i++){
+                    Site site = sites.get(i);
+                    site.index = i+1;
+                    siteHolder.updateSiteIndex(site);
+                }
             }
         });
 
@@ -751,7 +782,6 @@ public class MainActivity extends AnimationActivity {
                 siteAdapter.notifyDataSetChanged();
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
-                    siteHolder.updateSite(site);
                     Handler handler = new Handler();
                     final Runnable r = new Runnable() {
                         public void run() {
@@ -788,12 +818,34 @@ public class MainActivity extends AnimationActivity {
     }
 
     @Override
+    public void onPause() {
+        mRecyclerViewDragDropManager.cancelDrag();
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
         if (siteHolder != null)
             siteHolder.onDestroy();
         HViewerApplication.searchHistoryHolder.saveSearchHistory();
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
         new DownloadTaskHolder(this).setAllPaused();
+
+        if (mRecyclerViewDragDropManager != null) {
+            mRecyclerViewDragDropManager.release();
+            mRecyclerViewDragDropManager = null;
+        }
+
+        if (rvSite != null) {
+            rvSite.setItemAnimator(null);
+            rvSite.setAdapter(null);
+            rvSite = null;
+        }
+
+        if (mWrappedAdapter != null) {
+            WrapperAdapterUtils.releaseAll(mWrappedAdapter);
+            mWrappedAdapter = null;
+        }
         super.onDestroy();
     }
 

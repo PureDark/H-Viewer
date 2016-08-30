@@ -28,10 +28,11 @@ public class SiteHolder {
     public void addSite(Site item) {
         if (item == null) return;
         ContentValues contentValues = new ContentValues();
-        contentValues.put("title", item.title);
-        contentValues.put("indexUrl", item.indexUrl);
-        contentValues.put("galleryUrl", item.galleryUrl);
-        contentValues.put("json", new Gson().toJson(item));
+        contentValues.put("`title`", item.title);
+        contentValues.put("`indexUrl`", item.indexUrl);
+        contentValues.put("`galleryUrl`", item.galleryUrl);
+        contentValues.put("`index`", item.index);
+        contentValues.put("`json`", new Gson().toJson(item));
         dbHelper.insert(dbName, contentValues);
     }
 
@@ -42,10 +43,18 @@ public class SiteHolder {
 
     public void updateSite(Site item){
         ContentValues contentValues = new ContentValues();
-        contentValues.put("title", item.title);
-        contentValues.put("indexUrl", item.indexUrl);
-        contentValues.put("galleryUrl", item.galleryUrl);
-        contentValues.put("json", new Gson().toJson(item));
+        contentValues.put("`title`", item.title);
+        contentValues.put("`indexUrl`", item.indexUrl);
+        contentValues.put("`galleryUrl`", item.galleryUrl);
+        contentValues.put("`index`", item.index);
+        contentValues.put("`json`", new Gson().toJson(item));
+        dbHelper.update(dbName, contentValues, "sid = ?",
+                new String[]{item.sid + ""});
+    }
+
+    public void updateSiteIndex(Site item){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("`index`", item.index);
         dbHelper.update(dbName, contentValues, "sid = ?",
                 new String[]{item.sid + ""});
     }
@@ -53,7 +62,7 @@ public class SiteHolder {
     public List<Site> getSites() {
         List<Site> sites = new ArrayList<>();
 
-        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " ORDER BY `sid` DESC");
+        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " ORDER BY `index` ASC");
         while (cursor.moveToNext()) {
             int i = cursor.getColumnIndex("json");
             int id = cursor.getInt(0);
