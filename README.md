@@ -1,12 +1,9 @@
 # H-Viewer
 
-<a href="https://play.google.com/store/apps/details?id=ml.puredark.hviewer"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="48"></a>
-
-### CI STATUS
-
 [![Build Status](https://travis-ci.org/PureDark/H-Viewer.svg?branch=master)](https://travis-ci.org/PureDark/H-Viewer)
 
-### DESCRIPTION
+
+<a href="https://play.google.com/store/apps/details?id=ml.puredark.hviewer"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="48"></a>
 
 一个使用选择器和正则表达式来从网站获取数据的安卓绅士阅览器
 
