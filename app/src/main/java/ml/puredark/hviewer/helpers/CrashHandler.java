@@ -26,6 +26,8 @@ import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 /**
  * @author Stay
  *         在Application中统一捕获异常，保存到文件中下次再打开时上传
@@ -107,12 +109,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             //如果用户没有处理则让系统默认的异常处理器来处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {  //如果自己处理了异常，则不会弹出错误对话框，则需要手动退出app
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
+            if(!(ex instanceof OutOfMemoryError)) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(10);
             }
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(10);
         }
     }
 
@@ -128,6 +132,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private boolean handleException(final Throwable ex) {
         if (ex == null) {
             return false;
+        }
+        if(ex instanceof OutOfMemoryError){
+            // OOM一般是解码Bitmap造成的，不影响程序继续运行
+            return true;
         }
         //使用Toast来显示异常信息
         new Thread() {

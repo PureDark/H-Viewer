@@ -32,10 +32,15 @@ public class RuleParser {
 
     public static Map<String, String> parseUrl(String url) {
         Map<String, String> map = new HashMap<>();
-        Pattern pattern = Pattern.compile("\\{(.*?):(.*?)\\}", DOTALL);
+        Pattern pattern = Pattern.compile("\\{([^\\{\\}]*?):([^\\{\\}]*?)\\}", DOTALL);
         Matcher matcher = pattern.matcher(url);
         while (matcher.find()) {
             map.put(matcher.group(1), matcher.group(2));
+        }
+        Pattern pattern2 = Pattern.compile("\\{([^\\{\\}]*?):(.*?\\{.*?\\}.*?)\\}", DOTALL);
+        Matcher matcher2 = pattern2.matcher(url);
+        while (matcher2.find()) {
+            map.put(matcher2.group(1), matcher2.group(2));
         }
         return map;
     }

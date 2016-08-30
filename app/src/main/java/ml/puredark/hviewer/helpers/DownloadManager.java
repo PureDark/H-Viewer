@@ -8,10 +8,13 @@ import android.os.IBinder;
 
 import java.util.List;
 
+import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.activities.SettingActivity;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.services.DownloadService;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.content.Context.BIND_AUTO_CREATE;
@@ -22,7 +25,6 @@ import static android.content.Context.BIND_AUTO_CREATE;
 
 public class DownloadManager {
     private final static String DEFAULT_PATH = "/sdcard/H-Viewer/download";
-    private static String downloadPath;
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -47,6 +49,7 @@ public class DownloadManager {
     }
 
     public static String getDownloadPath() {
+        String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
         if (downloadPath != null)
             return downloadPath;
         else

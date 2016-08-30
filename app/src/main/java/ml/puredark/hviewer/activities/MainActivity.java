@@ -19,12 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
-import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -45,14 +43,12 @@ import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.AppBarStateChangeListener;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.fragments.CollectionFragment;
 import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.holders.SiteHolder;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -390,8 +386,81 @@ public class MainActivity extends AnimationActivity {
 //        categories.add(new Category(4, "日文漫画", "http://www.177pic66.com/html/category/jj/page/{page:1}?variant=zh-hans"));
 //        sites.get(sites.size() - 1).setCategories(categories);
 //
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("div.post", null, null, null, null);
+//        indexRule.idCode = new Selector("h2 > a", "attr", "href", "/(\\d+).html", null);
+//        indexRule.title = new Selector("h2 > a", "attr", "title", null, null);
+//        indexRule.cover = new Selector("div.more-field > div.box > a", "attr", "href", null, null);
+//        indexRule.category = new Selector("div.blog_info > ul > li.cat > a", "html", null, null, null);
+//        indexRule.datetime = new Selector("div.blog_info > ul > li.cal", "html", null, "(\\d{4}.\\d{2}.\\d{2}. [0-9:]+)", null);
+//        indexRule.tags = new Selector("div.blog_info > ul > li.tag > a[rel='tag']", "html", null, null, null);
+//
+//        galleryRule = new Rule();
+//        galleryRule.item = new Selector("div.box > a", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("this", "attr", "href", null, null);
+//
+//        sites.add(new Site(8, "二次萌エロ画像ブログ",
+//                "http://moeimg.net/page/{page:1}",
+//                "http://moeimg.net/{idCode:}.html",
+//                "http://moeimg.net/?cat=0&s={keyword:}&submit=%E6%A4%9C%E7%B4%A2",
+//                null,
+//                indexRule, galleryRule, null, null, Site.FLAG_NO_RATING));
+//
+//        categories = new ArrayList<>();
+//        categories.add(new Category(1, "首页", "http://moeimg.net/page/{page:1}"));
+//        categories.add(new Category(2, "エロ画像", "http://moeimg.net/category/%E3%82%A8%E3%83%AD%E7%94%BB%E5%83%8F/page/{page:1}"));
+//        categories.add(new Category(3, "非エロ・微エロ画像", "http://moeimg.net/category/%E9%9D%9E%E3%82%A8%E3%83%AD%E3%83%BB%E5%BE%AE%E3%82%A8%E3%83%AD%E7%94%BB%E5%83%8F/page/{page:1}"));
+//        categories.add(new Category(4, "ネタ画像", "http://moeimg.net/category/%E3%83%8D%E3%82%BF%E7%94%BB%E5%83%8F/page/{page:1}"));
+//        sites.get(sites.size() - 1).setCategories(categories);
+//
 //
 //        /*******非和谐站*******/
+//
+//        indexRule = new Rule();
+//        indexRule.item = new Selector("div#postlist > div.pin", null, null, null, null);
+//        indexRule.idCode = new Selector("div.pin-coat a", "attr", "href", "http://.*?/(\\d+)", null);
+//        indexRule.title = new Selector("div.pin-coat > a span", "html", null, null, null);
+//        indexRule.cover = new Selector("div.pin-coat > a img", "attr", "original", null, null);
+//        indexRule.datetime = new Selector("div.pin-coat div.pin-data span.timer span", "html", null, null, null);
+//
+//        galleryRule = new Rule();
+//        galleryRule.datetime = new Selector("div.main-header > div.main-meta > span:eq(0)", "html", null, null, null);
+//        galleryRule.category = new Selector("div.main-header > div.main-meta > span:eq(1) > a", "html", null, null, null);
+//        galleryRule.tags = new Selector("div.main-tags > a[rel='tag']", "html", null, null, null);
+//        galleryRule.item = new Selector("div.main-body p > a", null, null, null, null);
+//        galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
+//        galleryRule.pictureThumbnail = new Selector("this", "attr", "href", null, null);
+//
+//        sites.add(new Site(10, "绝对领域",
+//                "http://www.jdlingyu.moe/page/{page:1}/",
+//                "http://www.jdlingyu.moe/{idCode:}/",
+//                "http://www.jdlingyu.moe/page/{page:1}/?s={keyword:}",
+//                "http://www.jdlingyu.moe/wp-login.php",
+//                indexRule, galleryRule, null, null, Site.FLAG_NO_PAGE_ONE+"|"+Site.FLAG_NO_RATING));
+//
+//        categories = new ArrayList<>();
+//        categories.add(new Category(1, "首页", "http://www.jdlingyu.moe/page/{page:1}/"));
+//        categories.add(new Category(2, "专题", "http://www.jdlingyu.moe/%e4%b8%93%e9%a2%98/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(3, "专题->自拍", "http://www.jdlingyu.moe/%e8%87%aa%e6%8b%8d/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(4, "专题->放流", "http://www.jdlingyu.moe/%e4%b8%93%e9%a2%98/%e6%94%be%e6%b5%81/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(5, "专题->独家", "http://www.jdlingyu.moe/%e4%b8%93%e9%a2%98/%e7%8b%ac%e5%ae%b6/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(6, "专题->漫展最前线", "http://www.jdlingyu.moe/%e4%b8%93%e9%a2%98/mzzqx/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(7, "特点", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(8, "特点->胖次", "http://www.jdlingyu.moe/%e8%83%96%e6%ac%a1/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(9, "特点->丝袜", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e4%b8%9d%e8%a2%9c/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(10, "特点->汉服", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e6%b1%89%e6%9c%8d/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(11, "特点->死库水", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e6%ad%bb%e5%ba%93%e6%b0%b4/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(12, "特点->体操服", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e4%bd%93%e6%93%8d%e6%9c%8d/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(13, "特点->女仆装", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e5%a5%b3%e4%bb%86%e8%a3%85/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(14, "特点->水手服", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e6%b0%b4%e6%89%8b%e6%9c%8d/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(15, "特点->和服", "http://www.jdlingyu.moe/%e7%89%b9%e7%82%b9/%e5%92%8c%e6%9c%8d%e6%b5%b4%e8%a1%a3/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(16, "弄潮", "http://www.jdlingyu.moe/%e5%bc%84%e6%bd%ae/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(16, "弄潮->束缚", "http://www.jdlingyu.moe/%e5%bc%84%e6%bd%ae/%e6%9d%9f%e7%bc%9a/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(17, "Cosplay", "http://www.jdlingyu.moe/cosplay/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(18, "写真", "http://www.jdlingyu.moe/%e5%86%99%e7%9c%9f/{pageStr:page/{page:1}/}"));
+//        categories.add(new Category(19, "下载", "http://www.jdlingyu.moe/%e4%b8%8b%e8%bd%bd/{pageStr:page/{page:1}/}"));
+//        sites.get(sites.size() - 1).setCategories(categories);
 //
 //        indexRule = new Rule();
 //        indexRule.item = new Selector("div.display:has(.thumb)", null, null, null, null);
@@ -408,7 +477,7 @@ public class MainActivity extends AnimationActivity {
 //        galleryRule.pictureUrl = new Selector("a.thumb_image", "attr", "href", null, null);
 //        galleryRule.pictureThumbnail = new Selector("a.thumb_image img", "attr", "src", null, null);
 //
-//        sites.add(new Site(9, "E-shuushuu",
+//        sites.add(new Site(11, "E-shuushuu",
 //                "http://e-shuushuu.net/?page={page:1}",
 //                "http://e-shuushuu.net/{idCode:}",
 //                null,
@@ -443,7 +512,7 @@ public class MainActivity extends AnimationActivity {
 //        extraRule.pictureUrl = new Selector("img", "attr", "data-src", null, null);
 //        extraRule.pictureThumbnail = new Selector("img", "attr", "data-src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 //
-//        sites.add(new Site(10, "Pixiv",
+//        sites.add(new Site(12, "Pixiv",
 //                "http://www.pixiv.net/new_illust.php?p={page:1}",
 //                "http://www.pixiv.net/member_illust.php?mode=medium&illust_id={idCode:}",
 //                "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",

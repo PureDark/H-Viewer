@@ -20,7 +20,6 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

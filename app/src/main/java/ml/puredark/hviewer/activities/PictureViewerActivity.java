@@ -34,8 +34,6 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 
-import static android.R.attr.id;
-
 
 public class PictureViewerActivity extends AppCompatActivity {
 
@@ -94,12 +92,15 @@ public class PictureViewerActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
+        picturePagerAdapter.clearItems();
         super.onDestroy();
     }
 
     public static class PicturePagerAdapter extends PagerAdapter {
         private Site site;
         public List<Picture> pictures;
+
+        private PictureViewHolder[] viewHolders = new PictureViewHolder[1000];
 
         public PicturePagerAdapter(Site site, List<Picture> pictures) {
             this.site = site;
@@ -121,11 +122,15 @@ public class PictureViewerActivity extends AppCompatActivity {
             }
         }
 
-        private PictureViewHolder[] viewHolders = new PictureViewHolder[1000];
+        public void clearItems() {
+            site = null;
+            pictures = null;
+            viewHolders = null;
+        }
 
         @Override
         public int getCount() {
-            return pictures.size();
+            return (pictures == null) ? 0 : pictures.size();
         }
 
         @Override
@@ -136,7 +141,7 @@ public class PictureViewerActivity extends AppCompatActivity {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             if (viewHolders[position] != null) {
-                if(viewHolders[position].view != null)
+                if (viewHolders[position].view != null)
                     container.removeView(viewHolders[position].view);
                 viewHolders[position] = null;
             }

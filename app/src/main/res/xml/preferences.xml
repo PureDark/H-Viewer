@@ -36,6 +36,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="pref_download_settings"
+        android:title="@string/settings_download">
+
+        <Preference
+            android:defaultValue=""
+            android:key="pref_download_path"
+            android:singleLine="true"
+            android:title="@string/settings_download_path"
+            android:summary="@string/settings_download_path_summary"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="pref_about"
         android:title="@string/settings_about">
 

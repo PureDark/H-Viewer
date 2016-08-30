@@ -20,7 +20,6 @@ import com.google.gson.JsonParser;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.io.IOException;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

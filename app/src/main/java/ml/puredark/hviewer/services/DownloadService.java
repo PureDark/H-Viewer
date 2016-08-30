@@ -3,19 +3,14 @@ package ml.puredark.hviewer.services;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import com.facebook.datasource.DataSource;
-import com.facebook.datasource.DataSubscriber;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 
 import java.io.IOException;
-import java.lang.annotation.Target;
-import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.DownloadTask;
@@ -97,25 +92,39 @@ public class DownloadService extends Service {
             return;
         }
         final Picture picture = currPic;
-        if (picture.pic != null) {
+        if (task.collection.site.picUrlSelector == null) {
+            picture.pic = picture.url;
+            loadBitmap(picture, task, null);
+        } else if (picture.pic != null) {
             loadBitmap(picture, task, null);
         } else {
+            getPictureUrl(picture, task);
+        }
+    }
+
+    private void getPictureUrl(final Picture picture, final DownloadTask task) {
+        if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
+            picture.pic = picture.url;
+            loadBitmap(picture, task, null);
+        } else
             HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+
                 @Override
                 public void onSuccess(String contentType, Object result) {
-                    if (contentType.contains("image") && result instanceof Bitmap) {
+                    if (result == null || result.equals(""))
+                        onFailure(null);
+                    else if (contentType.contains("image")) {
                         picture.pic = picture.url;
-                        Bitmap bitmap = (Bitmap) result;
-                        loadBitmap(picture, task, bitmap);
-                    } else {
-                        if(result == null)
-                            onFailure(null);
-
-                        picture.pic = RuleParser.getPictureUrl((String) result, task.collection.site.picUrlSelector, picture.url);
-                        if(picture.pic==null)
-                            onFailure(null);
-                        else
+                        if (result instanceof Bitmap) {
+                            loadBitmap(picture, task, (Bitmap) result);
+                        } else {
                             loadBitmap(picture, task, null);
+                        }
+                    } else {
+                        picture.pic = RuleParser.getPictureUrl((String) result, task.collection.site.picUrlSelector, picture.url);
+                        picture.retries = 0;
+                        picture.referer = picture.url;
+                        loadBitmap(picture, task, null);
                     }
                 }
 
@@ -128,7 +137,6 @@ public class DownloadService extends Service {
                     sendBroadcast(intent);
                 }
             });
-        }
     }
 
     private void loadBitmap(final Picture picture, final DownloadTask task, Bitmap bitmap) {
@@ -199,6 +207,8 @@ public class DownloadService extends Service {
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "文件保存失败，请检查剩余空间");
             sendBroadcast(intent);
+        }catch (OutOfMemoryError error){
+            // 这里就算OOM了，就当作下载失败，不影响程序继续运行
         }
     }
 

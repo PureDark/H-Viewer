@@ -14,7 +14,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

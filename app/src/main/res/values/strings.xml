@@ -20,6 +20,11 @@
     <string name="settings_proxy_picture_summary">在下载图片时使用 HProxy</string>
     <string name="settings_proxy_server">更改 HProxy 服务器</string>
 
+
+    <string name="settings_download">下载设置</string>
+    <string name="settings_download_path">更改保存位置</string>
+    <string name="settings_download_path_summary">/sdcard/H-Viewer/download</string>
+
     <string name="settings_about">关于</string>
     <string name="settings_about_upgrade">检查更新</string>
     <string name="settings_about_license">开源协议</string>

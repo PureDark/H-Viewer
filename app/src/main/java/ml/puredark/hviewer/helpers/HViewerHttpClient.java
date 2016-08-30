@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.helpers;
 
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;

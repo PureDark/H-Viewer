@@ -11,6 +11,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -281,6 +282,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     private void getCollectionDetail(final int page) {
         final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", myCollection.idCode)
                 .replaceAll("\\{page:" + startPage + "\\}", "" + page);
+        Log.d("CollectionActivity", url);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {

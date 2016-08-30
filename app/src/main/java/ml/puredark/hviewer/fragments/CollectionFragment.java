@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,6 @@ import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.customs.AutoFitGridLayoutManager;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
@@ -50,6 +50,7 @@ public class CollectionFragment extends MyFragment {
 
     private String currUrl = null;
     private String keyword = null;
+    private Map<String, String> matchResult;
     private int startPage;
     private int currPage;
 
@@ -111,19 +112,10 @@ public class CollectionFragment extends MyFragment {
 
         if (site != null) {
             adapter.setSite(site);
-            Map<String, String> map = RuleParser.parseUrl(site.indexUrl);
-            String pageStr = map.get("page");
-            try {
-                startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
-                currPage = startPage;
-            } catch (NumberFormatException e) {
-                startPage = 0;
-                currPage = startPage;
-            }
+            parseUrl(site.indexUrl);
             currUrl = site.indexUrl;
             rvCollection.setRefreshing(true);
             getCollections(null, startPage);
-
         }
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
             @Override
@@ -147,20 +139,28 @@ public class CollectionFragment extends MyFragment {
     private void getCollections(String keyword, final int page) {
         this.keyword = keyword;
         final Rule rule;
-        if(keyword==null){
+        if (keyword == null) {
             rule = site.indexRule;
             keyword = "";
-        }else{
+        } else {
             rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
         }
-        if(currUrl==null)
+        if (currUrl == null || site == null)
             return;
-        final String url = currUrl.replaceAll("\\{page:" + startPage + "\\}", "" + page)
-                .replaceAll("\\{keyword:\\}", keyword);
+        final String url;
+        if (site.hasFlag(Site.FLAG_NO_PAGE_ONE) && page == startPage) {
+            url = currUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", "")
+                    .replaceAll("\\{page:" + startPage + "\\}", "" + page)
+                    .replaceAll("\\{keyword:\\}", keyword);
+        } else {
+            url = currUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
+                    .replaceAll("\\{page:" + startPage + "\\}", "" + page)
+                    .replaceAll("\\{keyword:\\}", keyword);
+        }
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
-                if(!(result instanceof String))
+                if (!(result instanceof String))
                     return;
                 if (page == startPage) {
                     adapter.getDataProvider().clear();
@@ -216,7 +216,7 @@ public class CollectionFragment extends MyFragment {
 
     @Override
     public void onSearch(String keyword) {
-        if(site==null || site.searchUrl == null || "".equals(site.searchUrl)){
+        if (site == null || site.searchUrl == null || "".equals(site.searchUrl)) {
             AnimationActivity activity = (AnimationActivity) getActivity();
             if (activity != null)
                 activity.showSnackBar("该站点不支持搜索");
@@ -232,16 +232,30 @@ public class CollectionFragment extends MyFragment {
         getCollections(keyword, startPage);
     }
 
+    private void parseUrl(String url) {
+        matchResult = RuleParser.parseUrl(url);
+        String pageStr = matchResult.get("page");
+        try {
+            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+            currPage = startPage;
+        } catch (NumberFormatException e) {
+            startPage = 0;
+            currPage = startPage;
+        }
+    }
+
     @Override
-    public void onCategorySelected(Category category){
+    public void onCategorySelected(Category category) {
         currUrl = category.url;
-        if(rvCollection!=null) {
+        if (rvCollection != null) {
+            parseUrl(currUrl);
             rvCollection.setRefreshing(true);
             getCollections(null, startPage);
-        }else{
+        } else {
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    if(rvCollection!=null) {
+                    if (rvCollection != null) {
+                        parseUrl(currUrl);
                         rvCollection.setRefreshing(true);
                         getCollections(null, startPage);
                     }

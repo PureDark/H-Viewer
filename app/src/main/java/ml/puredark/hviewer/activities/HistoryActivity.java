@@ -21,7 +21,6 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.HistoryHolder;

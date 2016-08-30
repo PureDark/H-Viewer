@@ -3,7 +3,6 @@ package ml.puredark.hviewer.customs;
 import android.net.Uri;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.imagepipeline.image.EncodedImage;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
 
-import ml.puredark.hviewer.HViewerApplication;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
