@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
@@ -98,7 +99,7 @@ public class SettingActivity extends AnimationActivity {
             String proxyServer = getPreferenceManager().getSharedPreferences().getString(KEY_PREF_PROXY_SERVER, null);
             if (proxyServer != null)
                 getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setSummary(proxyServer);
-            String downloadPath = getPreferenceManager().getSharedPreferences().getString(KEY_PREF_DOWNLOAD_PATH, null);
+            String downloadPath = DownloadManager.getDownloadPath();
             if (downloadPath != null)
                 getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(downloadPath);
             getPreferenceScreen().setOnPreferenceChangeListener(this);
