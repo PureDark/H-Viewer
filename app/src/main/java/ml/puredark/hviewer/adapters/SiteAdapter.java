@@ -199,6 +199,8 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public boolean onCheckCanStartDrag(RecyclerView.ViewHolder viewHolder, int position, int x, int y) {
+        if(position==getItemCount()-1)
+            return false;
         SiteViewHolder holder = (SiteViewHolder) viewHolder;
         final View dragHandleView = holder.ivIcon;
         return ViewUtil.hitTest(dragHandleView, x, y);
