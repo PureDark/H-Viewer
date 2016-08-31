@@ -206,7 +206,8 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public ItemDraggableRange onGetItemDraggableRange(RecyclerView.ViewHolder holder, int position) {
-        return new ItemDraggableRange(0, getItemCount()-2);
+        int end = Math.max(0,getItemCount()-2);
+        return new ItemDraggableRange(0, end);
     }
 
     @Override
