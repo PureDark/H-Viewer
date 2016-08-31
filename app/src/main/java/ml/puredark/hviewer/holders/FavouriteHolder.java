@@ -37,6 +37,10 @@ public class FavouriteHolder {
         dbHelper.insert(dbName, contentValues);
     }
 
+    public void clear(){
+        dbHelper.delete(dbName, "", null);
+    }
+
     public void deleteFavourite(Collection item) {
         dbHelper.delete(dbName, "`idCode` = ? AND `title` = ? AND `referer` = ?",
                 new String[]{item.idCode, item.title, item.referer});

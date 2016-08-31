@@ -100,6 +100,20 @@ public class FavouriteActivity extends AnimationActivity {
         onBackPressed();
     }
 
+    @OnClick(R.id.btn_clear_all)
+    void clear() {
+        new AlertDialog.Builder(FavouriteActivity.this).setTitle("是否清空收藏夹？")
+                .setMessage("清空后将无法恢复")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        favouriteHolder.clear();
+                        adapter.getDataProvider().setDataSet(favouriteHolder.getFavourites());
+                        adapter.notifyDataSetChanged();
+                    }
+                }).setNegativeButton("取消", null).show();
+    }
+
     @Override
     public void onDestroy(){
         if(favouriteHolder!=null)

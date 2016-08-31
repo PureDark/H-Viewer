@@ -99,6 +99,20 @@ public class HistoryActivity extends AnimationActivity {
         onBackPressed();
     }
 
+    @OnClick(R.id.btn_clear_all)
+    void clear() {
+        new AlertDialog.Builder(HistoryActivity.this).setTitle("是否清空历史纪录？")
+                .setMessage("清空后将无法恢复")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        historyHolder.clear();
+                        adapter.getDataProvider().setDataSet(historyHolder.getHistories());
+                        adapter.notifyDataSetChanged();
+                    }
+                }).setNegativeButton("取消", null).show();
+    }
+
     @Override
     public void onDestroy(){
         if(historyHolder!=null)

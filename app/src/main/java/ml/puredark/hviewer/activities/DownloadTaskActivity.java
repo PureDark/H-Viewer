@@ -10,6 +10,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -123,8 +124,6 @@ public class DownloadTaskActivity extends AnimationActivity {
     private void parseCollection(LocalCollection collection) {
         if(collection==null)
             return;
-        if (collection.cover != null && !collection.cover.startsWith("file://"))
-            collection.cover = "file://" + collection.cover;
         if (collection.pictures != null) {
             for (Picture picture : collection.pictures) {
                 if (picture.thumbnail != null && !picture.thumbnail.startsWith("file://"))
@@ -132,6 +131,8 @@ public class DownloadTaskActivity extends AnimationActivity {
                 if (picture.pic != null && !picture.pic.startsWith("file://"))
                     picture.pic = "file://" + picture.pic;
             }
+            if(collection.pictures.size()>0)
+                collection.cover = collection.pictures.get(0).pic;
         }
     }
 
