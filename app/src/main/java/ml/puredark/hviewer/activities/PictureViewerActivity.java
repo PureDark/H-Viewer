@@ -133,7 +133,7 @@ public class PictureViewerActivity extends AppCompatActivity {
 
         @Override
         public void notifyDataSetChanged() {
-            if (pictures.size() > viewHolders.size()) {
+            if (pictures!=null && pictures.size() > viewHolders.size()) {
                 int size = pictures.size() - viewHolders.size();
                 for (int i = 0; i < size; i++)
                     viewHolders.add(null);
