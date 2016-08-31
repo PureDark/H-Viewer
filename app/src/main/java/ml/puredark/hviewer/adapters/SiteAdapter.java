@@ -1,8 +1,6 @@
 package ml.puredark.hviewer.adapters;
 
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,6 +115,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mItemClickListener = listener;
     }
+
     public void setOnItemMoveListener(OnItemMoveListener listener) {
         this.onItemMoveListener = listener;
     }
@@ -138,6 +137,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         boolean onItemLongClick(View v, int position);
     }
+
     public interface OnItemMoveListener {
         void onItemMove(int fromPosition, int toPosition);
     }
@@ -165,7 +165,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             container.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()-1)
+                    if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount() - 1)
                         return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                     else
                         return false;
@@ -193,7 +193,7 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         mProvider.moveItem(fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
-        if(onItemMoveListener!=null)
+        if (onItemMoveListener != null)
             onItemMoveListener.onItemMove(fromPosition, toPosition);
     }
 
@@ -206,12 +206,13 @@ public class SiteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public ItemDraggableRange onGetItemDraggableRange(RecyclerView.ViewHolder holder, int position) {
-        // no drag-sortable range specified
-        return null;
+        return new ItemDraggableRange(0, getItemCount()-2);
     }
 
     @Override
     public boolean onCheckCanDrop(int draggingPosition, int dropPosition) {
+        if (draggingPosition == getItemCount() - 1 || dropPosition == getItemCount() - 1)
+            return false;
         return true;
     }
 

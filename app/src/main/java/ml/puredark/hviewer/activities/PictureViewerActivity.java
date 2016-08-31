@@ -20,6 +20,7 @@ import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -92,7 +93,8 @@ public class PictureViewerActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        picturePagerAdapter.clearItems();
+        if (picturePagerAdapter != null)
+            picturePagerAdapter.clearItems();
         super.onDestroy();
     }
 
@@ -100,11 +102,13 @@ public class PictureViewerActivity extends AppCompatActivity {
         private Site site;
         public List<Picture> pictures;
 
-        private PictureViewHolder[] viewHolders = new PictureViewHolder[1000];
+        private List<PictureViewHolder> viewHolders = new ArrayList<>();
 
         public PicturePagerAdapter(Site site, List<Picture> pictures) {
             this.site = site;
             this.pictures = pictures;
+            for (int i = 0; i < pictures.size(); i++)
+                viewHolders.add(null);
         }
 
         public static class PictureViewHolder {
@@ -128,6 +132,16 @@ public class PictureViewerActivity extends AppCompatActivity {
         }
 
         @Override
+        public void notifyDataSetChanged() {
+            if (pictures.size() > viewHolders.size()) {
+                int size = pictures.size() - viewHolders.size();
+                for (int i = 0; i < size; i++)
+                    viewHolders.add(null);
+            }
+            super.notifyDataSetChanged();
+        }
+
+        @Override
         public int getCount() {
             return (pictures == null) ? 0 : pictures.size();
         }
@@ -139,10 +153,10 @@ public class PictureViewerActivity extends AppCompatActivity {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            if (viewHolders[position] != null) {
-                if (viewHolders[position].view != null)
-                    container.removeView(viewHolders[position].view);
-                viewHolders[position] = null;
+            if (viewHolders.size() > position && viewHolders.get(position) != null) {
+                if (viewHolders.get(position).view != null)
+                    container.removeView(viewHolders.get(position).view);
+                viewHolders.set(position, null);
             }
         }
 
@@ -172,7 +186,7 @@ public class PictureViewerActivity extends AppCompatActivity {
                     }
                 }
             });
-            viewHolders[position] = viewHolder;
+            viewHolders.set(position, viewHolder);
             container.addView(viewHolder.view, 0);
             return viewHolder.view;
         }
