@@ -32,7 +32,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.PictureViewerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="user" />
         <activity
             android:name=".activities.SettingActivity"
             android:screenOrientation="portrait" />

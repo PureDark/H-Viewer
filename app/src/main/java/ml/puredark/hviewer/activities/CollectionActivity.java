@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,11 +14,18 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
 import com.github.clans.fab.FloatingActionMenu;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -45,6 +53,7 @@ import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.DownloadManager;
+import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
@@ -52,6 +61,8 @@ import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.holders.FavouriteHolder;
 import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.utils.DensityUtil;
+
+import static android.R.attr.resource;
 
 
 public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -161,37 +172,39 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     private void initCover(String cover) {
         if (cover != null) {
-            /* 因为部分人在doBlur时OOM，暂时先禁用高斯模糊效果 */
-//            Glide.with(CollectionActivity.this).load(cover).asBitmap().into(new SimpleTarget<Bitmap>() {
-//                @Override
-//                public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            /* 给背景封面加上高斯模糊 */
-//                            final Bitmap overlay = FastBlur.doBlur(resource.copy(Bitmap.Config.ARGB_8888, true), 2, true);
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    backdrop.setImageBitmap(overlay);
-//                                    /* 让背景的封面大图来回缓慢移动 */
-//                                    float targetY = (overlay.getHeight() > overlay.getWidth()) ? -0.4f : 0f;
-//                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
-//                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-//                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-//                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
-//                                    translateAnimation.setDuration(50000);
-//                                    translateAnimation.setRepeatCount(-1);
-//                                    translateAnimation.setRepeatMode(Animation.REVERSE);
-//                                    translateAnimation.setInterpolator(new LinearInterpolator());
-//                                    backdrop.startAnimation(translateAnimation);
-//                                }
-//                            });
-//                        }
-//                    }).start();
-//                }
-//            });
-            ImageLoader.loadImageFromUrl(this, backdrop, cover, site.cookie, collection.referer);
+            ImageLoader.loadBitmapFromUrl(this, cover, site.cookie, collection.referer, new BaseBitmapDataSubscriber() {
+                @Override
+                protected void onNewResultImpl(final Bitmap bitmap) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            /* 给背景封面加上高斯模糊 */
+                            final Bitmap overlay = FastBlur.doBlur(bitmap.copy(Bitmap.Config.ARGB_8888, true), 2, true);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    backdrop.setImageBitmap(overlay);
+                                    /* 让背景的封面大图来回缓慢移动 */
+                                    float targetY = (overlay.getHeight() > overlay.getWidth()) ? -0.4f : 0f;
+                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
+                                    translateAnimation.setDuration(50000);
+                                    translateAnimation.setRepeatCount(-1);
+                                    translateAnimation.setRepeatMode(Animation.REVERSE);
+                                    translateAnimation.setInterpolator(new LinearInterpolator());
+                                    backdrop.startAnimation(translateAnimation);
+                                }
+                            });
+                        }
+                    }).start();
+                }
+
+                @Override
+                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                }
+            });
         }
     }
 

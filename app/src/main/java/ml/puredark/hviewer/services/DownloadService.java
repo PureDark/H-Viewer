@@ -99,9 +99,9 @@ public class DownloadService extends Service {
         final Picture picture = currPic;
         if (task.collection.site.picUrlSelector == null) {
             picture.pic = picture.url;
-            loadBitmap(picture, task, null);
+            loadPicture(picture, task, null);
         } else if (picture.pic != null) {
-            loadBitmap(picture, task, null);
+            loadPicture(picture, task, null);
         } else {
             getPictureUrl(picture, task);
         }
@@ -110,7 +110,7 @@ public class DownloadService extends Service {
     private void getPictureUrl(final Picture picture, final DownloadTask task) {
         if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
             picture.pic = picture.url;
-            loadBitmap(picture, task, null);
+            loadPicture(picture, task, null);
         } else
             HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
 
@@ -121,15 +121,15 @@ public class DownloadService extends Service {
                     else if (contentType.contains("image")) {
                         picture.pic = picture.url;
                         if (result instanceof Bitmap) {
-                            loadBitmap(picture, task, (Bitmap) result);
+                            loadPicture(picture, task, (Bitmap) result);
                         } else {
-                            loadBitmap(picture, task, null);
+                            loadPicture(picture, task, null);
                         }
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, task.collection.site.picUrlSelector, picture.url);
                         picture.retries = 0;
                         picture.referer = picture.url;
-                        loadBitmap(picture, task, null);
+                        loadPicture(picture, task, null);
                     }
                 }
 
@@ -144,10 +144,10 @@ public class DownloadService extends Service {
             });
     }
 
-    private void loadBitmap(final Picture picture, final DownloadTask task, Bitmap bitmap) {
+    private void loadPicture(final Picture picture, final DownloadTask task, Bitmap bitmap) {
         if (bitmap != null) {
             savePicture(picture, task, bitmap);
-        } else
+        } else {
             ImageLoader.loadResourceFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
                         private DownloadTask myTask = task;
@@ -173,7 +173,7 @@ public class DownloadService extends Service {
                             if (picture.retries < 15) {
                                 picture.retries++;
                                 picture.status = Picture.STATUS_DOWNLOADING;
-                                loadBitmap(picture, task, null);
+                                loadPicture(picture, task, null);
                             } else {
                                 picture.retries = 0;
                                 task.status = STATUS_PAUSED;
@@ -184,6 +184,7 @@ public class DownloadService extends Service {
                             }
                         }
                     });
+        }
     }
 
     private void savePicture(Picture picture, DownloadTask task, Object pic) {
@@ -219,10 +220,12 @@ public class DownloadService extends Service {
                 filePath = task.path + fileName;
 
                 SimpleFileUtil.createIfNotExist(filePath);
-                SimpleFileUtil.writeBytes(filePath, bytes);
+                if(!SimpleFileUtil.writeBytes(filePath, bytes)){
+                    throw new IOException();
+                }
             }else
                 return;
-            if (picture.pid == 0) {
+            if (picture.pid == 1) {
                 task.collection.cover = "file://" + filePath;
             }
             picture.thumbnail = "file://" + filePath;

@@ -1,25 +1,37 @@
 package ml.puredark.hviewer.activities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.BaseDataSubscriber;
+import com.facebook.datasource.DataSource;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
+import net.rdrei.android.dirchooser.DirectoryChooserFragment;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,16 +43,20 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.MultiTouchViewPager;
+import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
+import ml.puredark.hviewer.utils.FileType;
+import ml.puredark.hviewer.utils.ImageScaleUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
-import static ml.puredark.hviewer.helpers.ImageLoader.loadImageFromUrl;
 
+public class PictureViewerActivity extends AnimationActivity {
 
-public class PictureViewerActivity extends AppCompatActivity {
-
+    @BindView(R.id.container)
+    LinearLayout container;
     @BindView(R.id.tv_count)
     TextView tvCount;
     @BindView(R.id.view_pager)
@@ -54,6 +70,7 @@ public class PictureViewerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_picture_viewer);
         ButterKnife.bind(this);
         MDStatusBarCompat.setImageTransparent(this);
+        setContainer(container);
 
         if (HViewerApplication.temp instanceof PicturePagerAdapter)
             picturePagerAdapter = (PicturePagerAdapter) HViewerApplication.temp;
@@ -64,6 +81,8 @@ public class PictureViewerActivity extends AppCompatActivity {
             return;
         }
         HViewerApplication.temp = null;
+
+        picturePagerAdapter.setActivity(this);
 
         int position = getIntent().getIntExtra("position", 0);
 
@@ -102,10 +121,17 @@ public class PictureViewerActivity extends AppCompatActivity {
     }
 
     public static class PicturePagerAdapter extends PagerAdapter {
+        private AnimationActivity activity;
+
         private Site site;
+
         public List<Picture> pictures;
 
         private List<PictureViewHolder> viewHolders = new ArrayList<>();
+
+        private DirectoryChooserFragment mDialog;
+
+        private String lastPath = DownloadManager.getDownloadPath();
 
         public PicturePagerAdapter(Site site, List<Picture> pictures) {
             this.site = site;
@@ -134,9 +160,13 @@ public class PictureViewerActivity extends AppCompatActivity {
             notifyDataSetChanged();
         }
 
+        public void setActivity(AnimationActivity activity) {
+            this.activity = activity;
+        }
+
         @Override
         public void notifyDataSetChanged() {
-            if (pictures!=null && pictures.size() > viewHolders.size()) {
+            if (pictures != null && pictures.size() > viewHolders.size()) {
                 int size = pictures.size() - viewHolders.size();
                 for (int i = 0; i < size; i++)
                     viewHolders.add(null);
@@ -189,10 +219,93 @@ public class PictureViewerActivity extends AppCompatActivity {
                     }
                 }
             });
+            viewHolder.ivPicture.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (activity != null) {
+                        new AlertDialog.Builder(activity).setTitle("保存图片？")
+                                .setMessage("是否保存当前图片")
+                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                .initialDirectory(lastPath)
+                                                .newDirectoryName("download")
+                                                .allowNewDirectoryNameModification(true)
+                                                .build();
+                                        mDialog = DirectoryChooserFragment.newInstance(config);
+                                        mDialog.setDirectoryChooserListener(new DirectoryChooserFragment.OnFragmentInteractionListener() {
+                                            @Override
+                                            public void onSelectDirectory(@NonNull String path) {
+                                                lastPath = path;
+                                                loadPicture(picture, path);
+                                                mDialog.dismiss();
+                                            }
+
+                                            @Override
+                                            public void onCancelChooser() {
+                                                mDialog.dismiss();
+                                            }
+                                        });
+                                        mDialog.show(activity.getFragmentManager(), null);
+                                    }
+                                }).setNegativeButton("否", null).show();
+                    }
+                    return true;
+                }
+            });
             viewHolders.set(position, viewHolder);
             container.addView(viewHolder.view, 0);
             return viewHolder.view;
         }
+
+        private void loadPicture(final Picture picture, final String path) {
+            ImageLoader.loadResourceFromUrl(activity, picture.pic, site.cookie, picture.referer,
+                    new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
+
+                        @Override
+                        protected void onNewResultImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+                            if (!dataSource.isFinished()) {
+                                return;
+                            }
+                            CloseableReference<PooledByteBuffer> ref = dataSource.getResult();
+                            if (ref != null) {
+                                try {
+                                    PooledByteBuffer imageBuffer = ref.get();
+                                    savePicture(picture, path, imageBuffer);
+                                } finally {
+                                    CloseableReference.closeSafely(ref);
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+
+                        }
+                    });
+        }
+
+        private void savePicture(Picture picture, String path, PooledByteBuffer buffer) {
+            try {
+                String fileName, filePath;
+                byte[] bytes = new byte[buffer.size()];
+                buffer.read(0, bytes, 0, buffer.size());
+                fileName = picture.pid + "";
+                String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
+                fileName += "." + postfix;
+                filePath = path + "/" + fileName;
+                SimpleFileUtil.createIfNotExist(filePath);
+                if(SimpleFileUtil.writeBytes(filePath, bytes)) {
+                    activity.showSnackBar("保存成功");
+                }else{
+                    activity.showSnackBar("保存失败，请检查剩余空间");
+                }
+            } catch (OutOfMemoryError error) {
+                activity.showSnackBar("保存失败，内存不足");
+            }
+        }
+
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
             if (site == null) return;

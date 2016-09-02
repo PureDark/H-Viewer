@@ -126,7 +126,7 @@ public class DownloadTaskActivity extends AnimationActivity {
             return;
         if (collection.pictures != null) {
             if(collection.pictures.size()>0)
-                collection.cover = collection.pictures.get(0).pic;
+                collection.cover = collection.pictures.get(0).thumbnail;
         }
     }
 
