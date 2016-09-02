@@ -21,6 +21,7 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.helpers.ImageLoader;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
@@ -49,11 +50,11 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final Picture picture = (Picture) mProvider.getItem(position);
         final PictureViewHolder holder = (PictureViewHolder) viewHolder;
         if (!repeatedThumbnail)
-            HViewerApplication.loadImageFromUrl(context, holder.ivPicture, picture.thumbnail, cookie, picture.referer);
+            ImageLoader.loadThumbFromUrl(context, holder.ivPicture, 100, 140, picture.thumbnail, cookie, picture.referer);
         else {
             holder.ivPicture.setImageBitmap(null);
             holder.ivPicture.setTag("pid=" + picture.pid);
-            HViewerApplication.loadBitmapFromUrl(context, picture.thumbnail, cookie, picture.referer, new BaseBitmapDataSubscriber() {
+            ImageLoader.loadBitmapFromUrl(context, picture.thumbnail, cookie, picture.referer, new BaseBitmapDataSubscriber() {
                 @Override
                 public void onNewResultImpl(@Nullable final Bitmap resource) {
                     if (resource == null)

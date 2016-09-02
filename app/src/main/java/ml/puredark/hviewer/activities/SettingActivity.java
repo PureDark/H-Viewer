@@ -103,6 +103,13 @@ public class SettingActivity extends AnimationActivity {
             if (downloadPath != null)
                 getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(downloadPath);
             getPreferenceScreen().setOnPreferenceChangeListener(this);
+            final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                    .initialDirectory("/")
+                    .newDirectoryName("download")
+                    .allowNewDirectoryNameModification(true)
+                    .build();
+            mDialog = DirectoryChooserFragment.newInstance(config);
+            mDialog.setTargetFragment(this, 0);
         }
 
         @Override
@@ -137,14 +144,6 @@ public class SettingActivity extends AnimationActivity {
                 Intent intent = new Intent(activity, AboutActivity.class);
                 startActivity(intent);
             } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_PATH)) {
-                String downloadPath = DownloadManager.getDownloadPath();
-                final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                        .initialDirectory(downloadPath)
-                        .newDirectoryName("download")
-                        .allowNewDirectoryNameModification(true)
-                        .build();
-                mDialog = DirectoryChooserFragment.newInstance(config);
-                mDialog.setTargetFragment(this, 0);
                 mDialog.show(getFragmentManager(), null);
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);

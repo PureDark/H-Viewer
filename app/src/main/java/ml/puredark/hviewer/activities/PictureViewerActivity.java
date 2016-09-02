@@ -32,8 +32,11 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
+
+import static ml.puredark.hviewer.helpers.ImageLoader.loadImageFromUrl;
 
 
 public class PictureViewerActivity extends AppCompatActivity {
@@ -193,7 +196,7 @@ public class PictureViewerActivity extends AppCompatActivity {
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
             if (site == null) return;
-            HViewerApplication.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
+            ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
                 @Override
                 public void onSubmit(String id, Object callerContext) {
                     super.onSubmit(id, callerContext);

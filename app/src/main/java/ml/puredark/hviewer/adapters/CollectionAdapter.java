@@ -22,6 +22,7 @@ import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.helpers.ImageLoader;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
@@ -62,7 +63,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            HViewerApplication.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
+            ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
             holder.tvCategory.setText(collection.category);
@@ -92,7 +93,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            HViewerApplication.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
+            ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
         }
     }
 

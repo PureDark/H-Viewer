@@ -40,6 +40,7 @@ import ml.puredark.hviewer.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.utils.DensityUtil;
 
@@ -107,7 +108,7 @@ public class DownloadTaskActivity extends AnimationActivity {
         toolbar.setTitle(task.collection.title);
         setSupportActionBar(toolbar);
 
-        parseCollection(task.collection);
+        setCover(task.collection);
 
         initCover(task.collection.cover);
         initTabAndViewPager();
@@ -116,21 +117,14 @@ public class DownloadTaskActivity extends AnimationActivity {
 
     private void initCover(String cover) {
         if (cover != null) {
-            HViewerApplication.loadImageFromUrl(this, backdrop, cover);
+            ImageLoader.loadImageFromUrl(this, backdrop, cover);
         }
     }
 
-    //给上个版本擦屁股，给没有加file://的地址加上
-    private void parseCollection(LocalCollection collection) {
+    private void setCover(LocalCollection collection) {
         if(collection==null)
             return;
         if (collection.pictures != null) {
-            for (Picture picture : collection.pictures) {
-                if (picture.thumbnail != null && !picture.thumbnail.startsWith("file://"))
-                    picture.thumbnail = "file://" + picture.thumbnail;
-                if (picture.pic != null && !picture.pic.startsWith("file://"))
-                    picture.pic = "file://" + picture.pic;
-            }
             if(collection.pictures.size()>0)
                 collection.cover = collection.pictures.get(0).pic;
         }

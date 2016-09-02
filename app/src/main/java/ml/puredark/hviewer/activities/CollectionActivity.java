@@ -46,6 +46,7 @@ import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.holders.FavouriteHolder;
@@ -190,7 +191,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 //                    }).start();
 //                }
 //            });
-            HViewerApplication.loadImageFromUrl(this, backdrop, cover, site.cookie, collection.referer);
+            ImageLoader.loadImageFromUrl(this, backdrop, cover, site.cookie, collection.referer);
         }
     }
 

@@ -21,6 +21,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.helpers.ImageLoader;
 
 public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static int VIEW_TYPE_DOWNLOADING = 1;
@@ -58,7 +59,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         DownloadTask task = (DownloadTask) mProvider.getItem(position);
         if (viewHolder instanceof DownloadingTaskViewHolder) {
             DownloadingTaskViewHolder holder = (DownloadingTaskViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
+            ImageLoader.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);
@@ -83,7 +84,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.btnStartPause.setImageResource(resID);
         } else if (viewHolder instanceof DownloadedTaskViewHolder) {
             DownloadedTaskViewHolder holder = (DownloadedTaskViewHolder) viewHolder;
-            HViewerApplication.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
+            ImageLoader.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);

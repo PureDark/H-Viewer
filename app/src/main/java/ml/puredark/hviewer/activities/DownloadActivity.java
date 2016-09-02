@@ -32,6 +32,8 @@ import ml.puredark.hviewer.helpers.DownloadManager;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.services.DownloadService;
 
+import static ml.puredark.hviewer.HViewerApplication.temp;
+
 public class DownloadActivity extends AnimationActivity {
 
     @BindView(R.id.btn_return)
@@ -144,15 +146,31 @@ public class DownloadActivity extends AnimationActivity {
             @Override
             public boolean onItemLongClick(View v, int position) {
                 final DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
-                new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
-                        .setMessage("删除后将无法恢复")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                new AlertDialog.Builder(DownloadActivity.this)
+                        .setTitle("操作")
+                        .setItems(new String[]{"浏览", "删除"}, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                manager.deleteDownloadTask(task);
-                                distinguishDownloadTasks();
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (i == 0) {
+                                    HViewerApplication.temp = task;
+                                    Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
+                                    startActivity(intent);
+                                } else if (i == 1) {
+                                    new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
+                                            .setMessage("删除后将无法恢复")
+                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    manager.deleteDownloadTask(task);
+                                                    distinguishDownloadTasks();
+                                                }
+                                            }).setNegativeButton("取消", null).show();
+                                }
                             }
-                        }).setNegativeButton("取消", null).show();
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
                 return true;
             }
         });

@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
+import static android.R.attr.bitmap;
+
 /**
  * Created by PureDark on 2016/5/11.
  */

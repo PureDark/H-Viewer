@@ -89,75 +89,6 @@ public class HViewerApplication extends Application {
         return false;
     }
 
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url) {
-        loadImageFromUrl(context, imageView, url, null, null, null, null);
-    }
-
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie) {
-        loadImageFromUrl(context, imageView, url, cookie, null, null, null);
-    }
-
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
-        loadImageFromUrl(context, imageView, url, cookie, referer, null, null);
-    }
-
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
-        loadImageFromUrl(context, imageView, url, cookie, referer, controllerListener, null);
-    }
-
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, Postprocessor postprocessor) {
-        loadImageFromUrl(context, imageView, url, cookie, referer, null, postprocessor);
-    }
-
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener, Postprocessor postprocessor) {
-        Uri uri = Uri.parse(url);
-        JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
-        if (url != null && url.startsWith("http")) {
-            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
-                HProxy proxy = new HProxy(url);
-                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-                MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
-            }
-            MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
-        }
-        if (imageView instanceof SimpleDraweeView) {
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                    .setPostprocessor(postprocessor)
-                    .build();
-            DraweeController controller = Fresco.newDraweeControllerBuilder()
-                    .setCallerContext(context)
-                    .setTapToRetryEnabled(true)
-                    .setAutoPlayAnimations(true)
-                    .setImageRequest(request)
-                    .setOldController(((SimpleDraweeView) imageView).getController())
-                    .setControllerListener(controllerListener)
-                    .setUri(uri)
-                    .build();
-            ((SimpleDraweeView) imageView).setController(controller);
-        }
-    }
-
-    public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, BaseBitmapDataSubscriber dataSubscriber) {
-
-        Uri uri = Uri.parse((url != null && url.startsWith("http")) ? url : "");
-        JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
-        if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
-            HProxy proxy = new HProxy(url);
-            header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-        }
-        MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
-        ImagePipeline imagePipeline = Fresco.getImagePipeline();
-        ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
-        ImageRequest request = builder.build();
-        DataSource<CloseableReference<CloseableImage>>
-                dataSource = imagePipeline.fetchDecodedImage(request, context);
-        dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
-    }
-
     public static void checkUpdate(final Context context) {
         String url = context.getString(R.string.update_site_url);
         HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
@@ -198,6 +129,7 @@ public class HViewerApplication extends Application {
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
                 .setNetworkFetcher(new MyOkHttpNetworkFetcher(okHttpClient))
+                .setDownsampleEnabled(true)
                 .build();
         Fresco.initialize(this, config);
 

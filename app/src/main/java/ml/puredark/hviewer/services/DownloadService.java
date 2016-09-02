@@ -5,19 +5,24 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.memory.PooledByteBuffer;
 
+import java.io.File;
 import java.io.IOException;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.RuleParser;
+import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
@@ -141,56 +146,87 @@ public class DownloadService extends Service {
 
     private void loadBitmap(final Picture picture, final DownloadTask task, Bitmap bitmap) {
         if (bitmap != null) {
-            saveBitmap(picture, task, bitmap);
+            savePicture(picture, task, bitmap);
         } else
-            HViewerApplication.loadBitmapFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer,  new BaseBitmapDataSubscriber() {
-                private DownloadTask myTask = task;
+            ImageLoader.loadResourceFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer,
+                    new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
+                        private DownloadTask myTask = task;
 
-                @Override
-                public void onNewResultImpl(@Nullable Bitmap bitmap) {
-                    saveBitmap(picture, myTask, bitmap);
-                }
+                        @Override
+                        protected void onNewResultImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+                            if (!dataSource.isFinished()) {
+                                return;
+                            }
+                            CloseableReference<PooledByteBuffer> ref = dataSource.getResult();
+                            if (ref != null) {
+                                try {
+                                    PooledByteBuffer imageBuffer = ref.get();
+                                    savePicture(picture, myTask, imageBuffer);
+                                } finally {
+                                    CloseableReference.closeSafely(ref);
+                                }
+                            }
+                        }
 
-                @Override
-                public void onFailureImpl(DataSource dataSource) {
-                    if (picture.retries < 15) {
-                        picture.retries++;
-                        picture.status = Picture.STATUS_DOWNLOADING;
-                        loadBitmap(picture, task, null);
-                    } else {
-                        picture.retries = 0;
-                        task.status = STATUS_PAUSED;
-                        picture.status = Picture.STATUS_WAITING;
-                        Intent intent = new Intent(ON_FAILURE);
-                        intent.putExtra("message", "图片下载失败，也许您需要代理");
-                        sendBroadcast(intent);
-                    }
-                }
-            });
+                        @Override
+                        protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+                            if (picture.retries < 15) {
+                                picture.retries++;
+                                picture.status = Picture.STATUS_DOWNLOADING;
+                                loadBitmap(picture, task, null);
+                            } else {
+                                picture.retries = 0;
+                                task.status = STATUS_PAUSED;
+                                picture.status = Picture.STATUS_WAITING;
+                                Intent intent = new Intent(ON_FAILURE);
+                                intent.putExtra("message", "图片下载失败，也许您需要代理");
+                                sendBroadcast(intent);
+                            }
+                        }
+                    });
     }
 
-    private void saveBitmap(Picture picture, DownloadTask task, Bitmap bitmap) {
+    private void savePicture(Picture picture, DownloadTask task, Object pic) {
         try {
-            String filePath = task.path + picture.pid + ".jpg";
-            if (task.collection.pictures.size() >= 100) {
-                if (picture.pid >= 99)
-                    filePath = task.path + picture.pid + ".jpg";
-                else if (picture.pid >= 9)
-                    filePath = task.path + "0" + picture.pid + ".jpg";
-                else
-                    filePath = task.path + "00" + picture.pid + ".jpg";
-            } else if (task.collection.pictures.size() >= 10) {
-                if (picture.pid >= 9)
-                    filePath = task.path + picture.pid + ".jpg";
-                else
-                    filePath = task.path + "0" + picture.pid + ".jpg";
-            }
-            ImageScaleUtil.saveToFile(HViewerApplication.mContext, bitmap, filePath);
+            String fileName, filePath;
+            if (pic instanceof Bitmap) {
+                if (task.collection.pictures.size() >= 1000) {
+                    fileName = String.format("%04d", picture.pid);
+                } else if (task.collection.pictures.size() >= 100) {
+                    fileName = String.format("%03d", picture.pid);
+                } else if (task.collection.pictures.size() >= 10) {
+                    fileName = String.format("%02d", picture.pid);
+                } else {
+                    fileName = picture.pid + "";
+                }
+                filePath = task.path + fileName + ".jpg";
+                ImageScaleUtil.saveToFile(HViewerApplication.mContext, (Bitmap) pic, filePath);
+            } else if (pic instanceof PooledByteBuffer) {
+                PooledByteBuffer buffer = (PooledByteBuffer) pic;
+                byte[] bytes = new byte[buffer.size()];
+                buffer.read(0, bytes, 0, buffer.size());
+                if (task.collection.pictures.size() >= 1000) {
+                    fileName = String.format("%04d", picture.pid);
+                } else if (task.collection.pictures.size() >= 100) {
+                    fileName = String.format("%03d", picture.pid);
+                } else if (task.collection.pictures.size() >= 10) {
+                    fileName = String.format("%02d", picture.pid);
+                } else {
+                    fileName = picture.pid + "";
+                }
+                String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
+                fileName += "." + postfix;
+                filePath = task.path + fileName;
+
+                SimpleFileUtil.createIfNotExist(filePath);
+                SimpleFileUtil.writeBytes(filePath, bytes);
+            }else
+                return;
             if (picture.pid == 0) {
-                task.collection.cover = "file://"+filePath;
+                task.collection.cover = "file://" + filePath;
             }
-            picture.thumbnail = "file://"+filePath;
-            picture.pic = "file://"+filePath;
+            picture.thumbnail = "file://" + filePath;
+            picture.pic = "file://" + filePath;
             picture.retries = 0;
             picture.status = Picture.STATUS_DOWNLOADED;
             Intent intent = new Intent(ON_PROGRESS);
@@ -207,7 +243,7 @@ public class DownloadService extends Service {
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "文件保存失败，请检查剩余空间");
             sendBroadcast(intent);
-        }catch (OutOfMemoryError error){
+        } catch (OutOfMemoryError error) {
             // 这里就算OOM了，就当作下载失败，不影响程序继续运行
         }
     }
