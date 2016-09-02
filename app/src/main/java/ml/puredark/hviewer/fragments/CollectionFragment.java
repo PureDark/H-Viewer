@@ -50,7 +50,6 @@ public class CollectionFragment extends MyFragment {
 
     private String currUrl = null;
     private String keyword = null;
-    private Map<String, String> matchResult;
     private int startPage;
     private int currPage;
 
@@ -147,16 +146,7 @@ public class CollectionFragment extends MyFragment {
         }
         if (currUrl == null || site == null)
             return;
-        final String url;
-        if (site.hasFlag(Site.FLAG_NO_PAGE_ONE) && page == startPage) {
-            url = currUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", "")
-                    .replaceAll("\\{page:" + startPage + "\\}", "" + page)
-                    .replaceAll("\\{keyword:\\}", keyword);
-        } else {
-            url = currUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
-                    .replaceAll("\\{page:" + startPage + "\\}", "" + page)
-                    .replaceAll("\\{keyword:\\}", keyword);
-        }
+        final String url = site.getListUrl(currUrl, page, keyword);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
@@ -233,8 +223,7 @@ public class CollectionFragment extends MyFragment {
     }
 
     private void parseUrl(String url) {
-        matchResult = RuleParser.parseUrl(url);
-        String pageStr = matchResult.get("page");
+        String pageStr = RuleParser.parseUrl(url).get("page");
         try {
             startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
             currPage = startPage;

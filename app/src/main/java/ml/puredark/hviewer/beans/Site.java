@@ -2,10 +2,12 @@ package ml.puredark.hviewer.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import okhttp3.Cookie;
 
@@ -75,6 +77,26 @@ public class Site extends AbstractDataProvider.Data {
             return false;
         else
             return this.flag.contains(flag);
+    }
+
+    public String getListUrl(String url, int page, String keyword){
+        Map<String, String> matchResult = RuleParser.parseUrl(url);
+        String pageStr = matchResult.get("page");
+        int startPage;
+        try {
+            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+        } catch (NumberFormatException e) {
+            startPage = 0;
+        }
+        url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
+                .replaceAll("\\{page:" + startPage + "\\}", "" + page)
+                .replaceAll("\\{keyword:\\}", keyword);
+        return url;
+    }
+
+    public String getGalleryUrl(String idCode, int page){
+        return galleryUrl.replaceAll("\\{idCode:\\}", idCode)
+                .replaceAll("\\{page:\\d+?\\}", "" + page);
     }
 
 }

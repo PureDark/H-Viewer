@@ -280,9 +280,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     }
 
     private void getCollectionDetail(final int page) {
-        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", myCollection.idCode)
-                .replaceAll("\\{page:" + startPage + "\\}", "" + page);
-        Log.d("CollectionActivity", url);
+        final String url = site.getGalleryUrl(myCollection.idCode, page);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
@@ -404,6 +402,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     @Override
     public void onResume() {
         super.onResume();
+        if (picturePagerAdapter != null)
+            picturePagerAdapter.clearItems();
         picturePagerAdapter = null;
     }
 
