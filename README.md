@@ -15,7 +15,7 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 
 * 近期准备只修BUG，不更新新功能，等到比较稳定了就进入Beta，然后有个稳定版之后大概我先弃坑一段时间，有事情忙
 
-### [查看所有站点](https://github.com/H-Viewer-Sites/Index)
+### [【查看所有站点】](https://github.com/H-Viewer-Sites/Index)
 
 ## Preview
 
