@@ -58,7 +58,7 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 
 3.点击右上角的二维码扫描按钮
 
-4.扫描下面的站点二维码
+4.扫描站点二维码
 
 ### 如果只有手机
 
@@ -68,42 +68,7 @@ Note that this app is still in alpha stage, and so bugs and creashes you may oft
 
 3.点击右上角的第一个按钮
 
-4.将点击下面网站名称打开的网页中的内容复制粘贴进去
-
-## Sites' QR Code
-
-
-### ACG图站 —— ACG picture sites  
-
-|  ID  | Site's Json  | QR Code | Author |
-| ---- | ------------- | ------------- | ------------- |
-|  1   | [E-shuushuu](http://jsondepot.mcsky.org/21) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/7.e-shuushuu.png)  | PureDark |
-|  2   | [pixiv](http://jsondepot.mcsky.org/46) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/10.pixiv.png)  | [manhong2112](https://github.com/manhong2112) |
-|  3   | [二次萌エロ画像ブログ](http://jsondepot.mcsky.org/51) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/13.二次萌エロ画像ブログ.png)  | PureDark |
-
-
-### 绅士漫画站 —— Hentai sites  
-
-|  ID  | Site's Json  | QR Code | Author |
-| ---- | ------------- | ------------- | ------------- |
-|  1   | [lofi.e-hentai](http://jsondepot.mcsky.org/15) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/1.lofi.png)  | PureDark |
-|  2   | [g.e-hentai](http://jsondepot.mcsky.org/48) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/2.g.png)  | PureDark |
-|  3   | [ex-hentai](http://jsondepot.mcsky.org/49) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/3.exhentai.png)  | PureDark |
-|  4   | [wnacg (绅士漫画)](http://jsondepot.mcsky.org/18) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/4.wnacg.png)  | PureDark |
-|  5   | [nhentai](http://jsondepot.mcsky.org/19) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/5.nhentai.png)  | PureDark |
-|  6   | [117漫画](http://jsondepot.mcsky.org/47) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/11.177.png)  | PureDark |
-
-
-### 真人图站  
-
-|  ID  | Site's Json  | QR Code | Author |
-| ---- | ------------- | ------------- | ------------- |
-|  1   | [草榴社区](http://jsondepot.mcsky.org/20) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/6.草榴社区.png)  | PureDark |
-|  2   | [秀人](http://jsondepot.mcsky.org/6) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/8.xiuren.png)  | lbq from v2ex |
-|  3   | [Rosi](http://jsondepot.mcsky.org/10) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/9.rosiyy.png)  | [vvyoko](https://github.com/vvyoko) |
-|  4   | [绝对领域](http://jsondepot.mcsky.org/52) | ![](https://github.com/PureDark/H-Viewer/raw/master/images/qrcodes/12.绝对领域.png)  | PureDark |
-
-
+4.将站点规则 JSON 内容复制粘贴进去
 
 ## How to make a custom rule of a new site
 Check our wiki
@@ -112,7 +77,7 @@ Check our wiki
 
 If anyone had created a new rule to share, please post a issue, I shall add it in README with your credit.
 
-如果谁创建了新的站点想要分享，请务必发一条issue告知我，我会把你的二维码贴到首页的README里，并附上你的名字。
+如果谁创建了新的站点想要分享，请至 [H-Viewer-Sites/Index](https://github.com/H-Viewer-Sites/Index) 提交一条 issues 以获得 Organization 的协作权。
 
 ## Using Proxy
 
