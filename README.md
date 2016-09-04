@@ -77,7 +77,7 @@ Check our wiki
 
 If anyone had created a new rule to share, please post a issue, I shall add it in README with your credit.
 
-如果谁创建了新的站点想要分享，请至 [H-Viewer-Sites/Index](https://github.com/H-Viewer-Sites/Index) 提交一条 issues 以获得 Organization 的协作权。
+如果谁创建了新的站点想要分享，请至 [H-Viewer-Sites/Apply](https://github.com/H-Viewer-Sites/Apply/issues) 提交一条 issues 以获得 Organization 的协作权，或者直接请求添加新站点。
 
 ## Using Proxy
 
