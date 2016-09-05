@@ -63,6 +63,7 @@ import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 import static android.R.attr.resource;
+import static ml.puredark.hviewer.beans.Picture.hasPicPosfix;
 
 
 public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -175,11 +176,12 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             ImageLoader.loadBitmapFromUrl(this, cover, site.cookie, collection.referer, new BaseBitmapDataSubscriber() {
                 @Override
                 protected void onNewResultImpl(final Bitmap bitmap) {
+                    final Bitmap myBitmap = bitmap.copy(Bitmap.Config.RGB_565, true);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             /* 给背景封面加上高斯模糊 */
-                            final Bitmap overlay = FastBlur.doBlur(bitmap.copy(Bitmap.Config.ARGB_8888, true), 2, true);
+                            final Bitmap overlay = FastBlur.doBlur(myBitmap, 2, true);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -313,7 +315,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
                 if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
                     final Picture picture = myCollection.pictures.get(0);
-                    if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !hasPicPosfix(picture.url) && site.extraRule != null) {
+                    if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
                         HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
                             @Override
                             public void onSuccess(String contentType, Object result) {
@@ -371,10 +373,6 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             public void onFailure(HViewerHttpClient.HttpError error) {
                 showSnackBar(error.getErrorString());
                 rvIndex.setPullLoadMoreCompleted();
-            }
-
-            private boolean hasPicPosfix(String url) {
-                return url != null && (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".bmp"));
             }
         });
     }

@@ -17,7 +17,8 @@ public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_NO_TAG = "noTag";
     public final static String FLAG_SECOND_LEVEL_GALLERY = "secondLevelGallery";
     public final static String FLAG_REPEATED_THUMBNAIL = "repeatedThumbnail";
-    public final static String FLAG_NO_PAGE_ONE = "noPageOne";
+    public final static String FLAG_SINGLE_PAGE_BIG_PICTURE = "singlePageBigPicture";
+
     public int sid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";

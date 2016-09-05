@@ -62,4 +62,8 @@ public class Picture extends AbstractDataProvider.Data {
         }
         return obj1.equals(obj2);
     }
+
+    public static boolean hasPicPosfix(String url) {
+        return url != null && (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".bmp") || url.endsWith(".gif") || url.endsWith(".webp"));
+    }
 }

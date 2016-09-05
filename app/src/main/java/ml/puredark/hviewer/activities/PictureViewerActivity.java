@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -31,7 +30,6 @@ import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +39,7 @@ import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.helpers.DownloadManager;
@@ -49,7 +48,6 @@ import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.FileType;
-import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 
@@ -198,24 +196,28 @@ public class PictureViewerActivity extends AnimationActivity {
             View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_picture_viewer, null);
             final PictureViewHolder viewHolder = new PictureViewHolder(view);
             final Picture picture = pictures.get(position);
-            if (site.picUrlSelector == null) {
+            if (picture.pic != null) {
+                loadImage(container.getContext(), picture, viewHolder);
+            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
+                getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl);
+            } else if (site.picUrlSelector == null) {
                 picture.pic = picture.url;
                 loadImage(container.getContext(), picture, viewHolder);
-            } else if (picture.pic != null) {
-                loadImage(container.getContext(), picture, viewHolder);
             } else {
-                getPictureUrl(container.getContext(), viewHolder, picture, site);
+                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector);
             }
             viewHolder.btnRefresh.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (site.picUrlSelector == null) {
+                    if (picture.pic != null) {
+                        loadImage(container.getContext(), picture, viewHolder);
+                    } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
+                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl);
+                    } else if (site.picUrlSelector == null) {
                         picture.pic = picture.url;
                         loadImage(container.getContext(), picture, viewHolder);
-                    } else if (picture.pic != null) {
-                        loadImage(container.getContext(), picture, viewHolder);
                     } else {
-                        getPictureUrl(container.getContext(), viewHolder, picture, site);
+                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector);
                     }
                 }
             });
@@ -296,9 +298,9 @@ public class PictureViewerActivity extends AnimationActivity {
                 fileName += "." + postfix;
                 filePath = path + "/" + fileName;
                 SimpleFileUtil.createIfNotExist(filePath);
-                if(SimpleFileUtil.writeBytes(filePath, bytes)) {
+                if (SimpleFileUtil.writeBytes(filePath, bytes)) {
                     activity.showSnackBar("保存成功");
-                }else{
+                } else {
                     activity.showSnackBar("保存失败，请检查剩余空间");
                 }
             } catch (OutOfMemoryError error) {
@@ -341,8 +343,8 @@ public class PictureViewerActivity extends AnimationActivity {
             });
         }
 
-        private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site) {
-            if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
+        private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site, final Selector selector) {
+            if (Picture.hasPicPosfix(picture.url)) {
                 picture.pic = picture.url;
                 loadImage(context, picture, viewHolder);
             } else
@@ -361,7 +363,7 @@ public class PictureViewerActivity extends AnimationActivity {
                                 loadImage(context, picture, viewHolder);
                             }
                         } else {
-                            picture.pic = RuleParser.getPictureUrl((String) result, site.picUrlSelector, picture.url);
+                            picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
                             picture.retries = 0;
                             picture.referer = picture.url;
                             loadImage(context, picture, viewHolder);
@@ -372,7 +374,7 @@ public class PictureViewerActivity extends AnimationActivity {
                     public void onFailure(HViewerHttpClient.HttpError error) {
                         if (picture.retries < 15) {
                             picture.retries++;
-                            getPictureUrl(context, viewHolder, picture, site);
+                            getPictureUrl(context, viewHolder, picture, site, selector);
                         } else {
                             picture.retries = 0;
                             viewHolder.progressBar.setVisibility(View.GONE);
