@@ -5,7 +5,7 @@
 
 <a href="https://play.google.com/store/apps/details?id=ml.puredark.hviewer"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="48"></a>
 
-（iOS 版本开发同期进行中，时间周期可能会较长，但是敬请期待！）
+*（iOS 版本开发同期进行中，时间周期可能会较长，但是敬请期待！）*
 
 一个使用选择器和正则表达式来从网站获取数据的安卓绅士阅览器
 
