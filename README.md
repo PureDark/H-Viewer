@@ -11,11 +11,11 @@
 
 An android feed reader application which fetch data with selector and regular expression.
 
-该应用仍处于前期alpha测试阶段，BUG和崩溃都是不可避免的常有，如果你遇到了，请在issues提交一条BUG报告，方便我复现并修复
+该应用仍处于前期alpha测试阶段，BUG和崩溃都是不可避免的常有，如果你遇到了，请在本 Repo 的 issues 版块提交一则报告，方便我复现并修复
 
 Note that this app is still in alpha stage, and so bugs and creashes you may often run into. If that happens, please post an issue to address it, so I can fix it.
 
-* 近期准备只修BUG，不更新新功能，等到比较稳定了就进入Beta，然后有个稳定版之后大概我先弃坑一段时间，有事情忙
+* 近期准备只修 BUG，不更新新功能，等到比较稳定了就进入 Bet a，然后有个稳定版之后大概我先弃坑一段时间，有事情忙
 
 ### [【查看所有站点】](https://github.com/H-Viewer-Sites/Index)
 
