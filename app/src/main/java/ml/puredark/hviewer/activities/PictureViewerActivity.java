@@ -48,7 +48,10 @@ import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.FileType;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
+
+import static ml.puredark.hviewer.utils.SharedPreferencesUtil.getData;
 
 
 public class PictureViewerActivity extends AnimationActivity {
@@ -106,7 +109,10 @@ public class PictureViewerActivity extends AnimationActivity {
         };
         viewPager.addOnPageChangeListener(listener);
 
-        viewPager.setOffscreenPageLimit(5);
+        int limit = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_VIEW_PRELOAD_PAGES, 2);
+
+        viewPager.setOffscreenPageLimit(limit);
 
         viewPager.setCurrentItem(position);
     }

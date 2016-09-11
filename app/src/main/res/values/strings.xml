@@ -20,6 +20,9 @@
     <string name="settings_proxy_picture_summary">在下载图片时使用 HProxy</string>
     <string name="settings_proxy_server">更改 HProxy 服务器</string>
 
+    <string name="settings_view">浏览设置</string>
+    <string name="settings_view_preload_pages">预加载页数</string>
+    <string name="settings_view_preload_pages_summary"> 3 页</string>
 
     <string name="settings_download">下载设置</string>
     <string name="settings_download_path">更改保存位置</string>

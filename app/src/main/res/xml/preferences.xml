@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:key="pref_proxy_settings"
         android:title="@string/settings_proxy">
@@ -32,6 +33,20 @@
             android:singleLine="true"
             android:title="@string/settings_proxy_server" />
 
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_view_settings"
+        android:title="@string/settings_view">
+
+        <de.leonardarnold.numberpickerpreference.NumberPickerPreference
+            android:defaultValue="2"
+            android:key="pref_view_preload_pages"
+            app:MaxValue="10"
+            app:MinValue="1"
+            android:summary=" %s 页"
+            android:title="预加载页数（如图片无法加载，请降低该值）" />
 
     </PreferenceCategory>
 

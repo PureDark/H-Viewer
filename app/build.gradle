@@ -8,8 +8,8 @@ android {
         applicationId "ml.puredark.hviewer"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 27
-        versionName "0.4.4"
+        versionCode 28
+        versionName "0.4.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -55,6 +55,7 @@ dependencies {
     compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.9.3@aar'){
         transitive=true
     }
+    compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
 
     //Pull Load More
     compile("com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9") {

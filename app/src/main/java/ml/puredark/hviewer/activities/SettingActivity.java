@@ -72,6 +72,8 @@ public class SettingActivity extends AnimationActivity {
         public static final String KEY_PREF_PROXY_PICTURE = "pref_proxy_picture";
         public static final String KEY_PREF_PROXY_SERVER = "pref_proxy_server";
 
+        public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
+
         public static final String KEY_PREF_DOWNLOAD_PATH = "pref_download_path";
 
         public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
@@ -96,9 +98,13 @@ public class SettingActivity extends AnimationActivity {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName(SharedPreferencesUtil.FILE_NAME);
             addPreferencesFromResource(R.xml.preferences);
+
             String proxyServer = getPreferenceManager().getSharedPreferences().getString(KEY_PREF_PROXY_SERVER, null);
             if (proxyServer != null)
                 getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setSummary(proxyServer);
+
+            int preloadPages = getPreferenceManager().getSharedPreferences().getInt(KEY_PREF_VIEW_PRELOAD_PAGES, 3);
+
             String downloadPath = DownloadManager.getDownloadPath();
             if (downloadPath != null)
                 getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(downloadPath);

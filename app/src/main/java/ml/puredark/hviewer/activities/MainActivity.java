@@ -447,7 +447,7 @@ public class MainActivity extends AnimationActivity {
 //                "http://www.jdlingyu.moe/{idCode:}/",
 //                "http://www.jdlingyu.moe/page/{page:1}/?s={keyword:}",
 //                "http://www.jdlingyu.moe/wp-login.php",
-//                indexRule, galleryRule, null, null, Site.FLAG_NO_PAGE_ONE+"|"+Site.FLAG_NO_RATING));
+//                indexRule, galleryRule, null, null, Site.FLAG_NO_RATING));
 //
 //        categories = new ArrayList<>();
 //        categories.add(new Category(1, "首页", "http://www.jdlingyu.moe/page/{page:1}/"));

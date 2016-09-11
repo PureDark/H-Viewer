@@ -62,6 +62,7 @@ public class ImageLoader {
         }
         if (imageView instanceof SimpleDraweeView) {
             ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setResizeOptions(new ResizeOptions(1080, 1920))
                     .build();
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setCallerContext(context)
@@ -73,6 +74,26 @@ public class ImageLoader {
                     .build();
             ((SimpleDraweeView) imageView).setController(controller);
         }
+    }
+
+    public static void preloadImageFromUrl(Context context, String url, String cookie, String referer){
+        Uri uri = Uri.parse(url);
+        JsonObject header = new JsonObject();
+        header.addProperty("cookie", cookie);
+        header.addProperty("referer", referer);
+        if (url != null && url.startsWith("http")) {
+            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
+                HProxy proxy = new HProxy(url);
+                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+                MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
+            }
+            MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
+        }
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                .setResizeOptions(new ResizeOptions(1080, 1920))
+                .build();
+        imagePipeline.prefetchToDiskCache(request, context);
     }
 
     public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, BaseBitmapDataSubscriber dataSubscriber) {

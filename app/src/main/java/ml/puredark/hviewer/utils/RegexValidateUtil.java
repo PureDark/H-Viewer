@@ -5,8 +5,6 @@ import java.util.regex.Pattern;
 
 /**
  * 使用正则表达式验证输入格式
- *
- * @author liuxing
  */
 public class RegexValidateUtil {
     /**
@@ -80,16 +78,17 @@ public class RegexValidateUtil {
             return getHostFromUrl(host) + url;
         else if (url.startsWith("./"))
             return geCurrDirFromUrl(host) + url.substring(2);
+        else if (url.startsWith("../../")) {
+            Pattern p = Pattern.compile("(https?://[\\w./]*/).*/.*/", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = p.matcher(url);
+            String prefix = (matcher.find()) ? matcher.group(1) : "";
+            return prefix + url.substring(6);
+        }
         else if (url.startsWith("../")) {
             Pattern p = Pattern.compile("(https?://[\\w./]*/).*/", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(url);
             String prefix = (matcher.find()) ? matcher.group(1) : "";
             return prefix + url.substring(3);
-        } else if (url.startsWith("../../")) {
-            Pattern p = Pattern.compile("(https?://[\\w./]*/).*/.*/", Pattern.CASE_INSENSITIVE);
-            Matcher matcher = p.matcher(url);
-            String prefix = (matcher.find()) ? matcher.group(1) : "";
-            return prefix + url.substring(6);
         } else
             return geCurrDirFromUrl(host) + url;
     }
