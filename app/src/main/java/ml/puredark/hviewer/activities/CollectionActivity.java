@@ -173,40 +173,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     private void initCover(String cover) {
         if (cover != null) {
-            ImageLoader.loadBitmapFromUrl(this, cover, site.cookie, collection.referer, new BaseBitmapDataSubscriber() {
-                @Override
-                protected void onNewResultImpl(final Bitmap bitmap) {
-                    final Bitmap myBitmap = bitmap.copy(Bitmap.Config.RGB_565, true);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            /* 给背景封面加上高斯模糊 */
-                            final Bitmap overlay = FastBlur.doBlur(myBitmap, 2, true);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    backdrop.setImageBitmap(overlay);
-                                    /* 让背景的封面大图来回缓慢移动 */
-                                    float targetY = (overlay.getHeight() > overlay.getWidth()) ? -0.4f : 0f;
-                                    Animation translateAnimation = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                            TranslateAnimation.RELATIVE_TO_SELF, targetY);
-                                    translateAnimation.setDuration(50000);
-                                    translateAnimation.setRepeatCount(-1);
-                                    translateAnimation.setRepeatMode(Animation.REVERSE);
-                                    translateAnimation.setInterpolator(new LinearInterpolator());
-                                    backdrop.startAnimation(translateAnimation);
-                                }
-                            });
-                        }
-                    }).start();
-                }
-
-                @Override
-                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-                }
-            });
+            ImageLoader.loadImageFromUrl(this, backdrop, cover, site.cookie, collection.referer);
         }
     }
 
@@ -313,8 +280,11 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                 }
                 HViewerApplication.searchSuggestionHolder.removeDuplicate();
 
+                // 如果当前页获取到的图片数量不为0，则进行后续判断是否添加进图片目录中
                 if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
+                    // 当前页获取到的第一个图片
                     final Picture picture = myCollection.pictures.get(0);
+                    // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
                     if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
                         HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
                             @Override
@@ -337,7 +307,9 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                             }
                         });
                     } else {
+                        // 没有flag的话
                         if (page == startPage) {
+                            // 当前获取的是第一页，则清空原目录中所有图片，再添加当前获取到的所有图片进入目录中
                             pictureAdapter.getDataProvider().clear();
                             pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                             pictureAdapter.notifyDataSetChanged();
@@ -346,6 +318,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                             currPage = page;
                             getCollectionDetail(currPage + 1);
                         } else if (!pictureAdapter.getDataProvider().getItems().contains(myCollection.pictures.get(0))) {
+                            // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
                             int currPid = pictureAdapter.getItemCount() + 1;
                             for (int i = 0; i < myCollection.pictures.size(); i++) {
                                 myCollection.pictures.get(i).pid = currPid + i;
@@ -357,12 +330,14 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                             currPage = page;
                             getCollectionDetail(currPage + 1);
                         } else {
+                            // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
                             isIndexComplete = true;
                             myCollection.pictures = pictureAdapter.getDataProvider().getItems();
                             rvIndex.setPullLoadMoreCompleted();
                         }
                     }
                 } else {
+                    // 获取到的图片数量为0，则直接判定已达到末尾
                     isIndexComplete = true;
                     myCollection.pictures = pictureAdapter.getDataProvider().getItems();
                     rvIndex.setPullLoadMoreCompleted();

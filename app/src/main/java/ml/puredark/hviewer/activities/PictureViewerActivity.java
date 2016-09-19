@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -206,11 +207,11 @@ public class PictureViewerActivity extends AnimationActivity {
                 loadImage(container.getContext(), picture, viewHolder);
             } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
                 getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl);
-            } else if (site.picUrlSelector == null) {
+            } else if (site.picUrlSelector != null) {
+                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector);
+            } else {
                 picture.pic = picture.url;
                 loadImage(container.getContext(), picture, viewHolder);
-            } else {
-                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector);
             }
             viewHolder.btnRefresh.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -316,6 +317,7 @@ public class PictureViewerActivity extends AnimationActivity {
 
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
+            Log.d("PicturePagerAdapter", "picture.pic = "+ picture.pic);
             if (site == null) return;
             ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
                 @Override
@@ -350,6 +352,7 @@ public class PictureViewerActivity extends AnimationActivity {
         }
 
         private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site, final Selector selector) {
+            Log.d("PicturePagerAdapter", "picture.url = "+ picture.url);
             if (Picture.hasPicPosfix(picture.url)) {
                 picture.pic = picture.url;
                 loadImage(context, picture, viewHolder);

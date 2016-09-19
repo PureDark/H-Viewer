@@ -23,6 +23,7 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.ImageLoader;
+import ml.puredark.hviewer.helpers.SiteFlagHandler;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
@@ -83,9 +84,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.rbRating.setRating(collection.rating);
             holder.tvSubmittime.setText(collection.datetime);
             if(site!=null) {
-                checkSiteFlags(holder, site);
+                checkSiteFlags(holder, site, collection);
             }else if (collection instanceof LocalCollection) {
-                checkSiteFlags(holder, ((LocalCollection) collection).site);
+                checkSiteFlags(holder, ((LocalCollection) collection).site, collection);
             }
         } else if (viewHolder instanceof CollectionGridViewHolder) {
             CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
@@ -97,13 +98,18 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private void checkSiteFlags(CollectionViewHolder holder, Site site) {
+    private void checkSiteFlags(CollectionViewHolder holder, Site site, Collection collection) {
         if (site.hasFlag(Site.FLAG_NO_COVER)) {
             holder.layoutCover.setVisibility(View.GONE);
-        } else if (site.hasFlag(Site.FLAG_NO_RATING)) {
+        }
+        if (site.hasFlag(Site.FLAG_NO_RATING)) {
             holder.rbRating.setVisibility(View.GONE);
-        } else if (site.hasFlag(Site.FLAG_NO_TAG)) {
+        }
+        if (site.hasFlag(Site.FLAG_NO_TAG)) {
             holder.rvTags.setVisibility(View.GONE);
+        }
+        if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY)) {
+            SiteFlagHandler.preloadGallery(holder, site, collection);
         }
     }
 
@@ -155,7 +161,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @BindView(R.id.layout_cover)
         RelativeLayout layoutCover;
         @BindView(R.id.iv_cover)
-        ImageView ivCover;
+        public ImageView ivCover;
         @BindView(R.id.tv_title)
         TextView tvTitle;
         @BindView(R.id.tv_uploader)
