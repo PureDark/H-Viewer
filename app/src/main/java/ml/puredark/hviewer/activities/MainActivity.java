@@ -475,7 +475,7 @@ public class MainActivity extends AnimationActivity {
         indexRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         indexRule.idCode = new Selector("div > a.thumb", "attr", "href", "/post/show/(\\d+)", null);
         indexRule.cover = new Selector("div > a.thumb > img", "attr", "src", null, null);
-        indexRule.category = new Selector("span.directlink-res", "html", null, null, null);
+        indexRule.category = new Selector("a > span.directlink-res", "html", null, null, null);
         indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
         indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
         indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
@@ -526,7 +526,7 @@ public class MainActivity extends AnimationActivity {
         indexRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         indexRule.idCode = new Selector("div > a.thumb", "attr", "href", "/post/show/(\\d+)", null);
         indexRule.cover = new Selector("div > a.thumb > img", "attr", "src", null, null);
-        indexRule.category = new Selector("span.directlink-res", "html", null, null, null);
+        indexRule.category = new Selector("a > span.directlink-res", "html", null, null, null);
         indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
         indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
         indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
@@ -578,7 +578,7 @@ public class MainActivity extends AnimationActivity {
         indexRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         indexRule.idCode = new Selector("div > a.thumb", "attr", "href", "/post/show/(\\d+)", null);
         indexRule.cover = new Selector("div > a.thumb > img", "attr", "src", null, null);
-        indexRule.category = new Selector("span.directlink-res", "html", null, null, null);
+        indexRule.category = new Selector("a > span.directlink-res", "html", null, null, null);
         indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
         indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
         indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);

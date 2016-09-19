@@ -1,7 +1,9 @@
 package ml.puredark.hviewer.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,20 +101,26 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void checkSiteFlags(CollectionViewHolder holder, Site site, Collection collection) {
+        if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY)) {
+            SiteFlagHandler.preloadGallery(holder, site, collection);
+        }
+    }
+
+    private void checkSiteFlags(CollectionViewHolder holder, Site site) {
         if (site.hasFlag(Site.FLAG_NO_COVER)) {
             holder.layoutCover.setVisibility(View.GONE);
         }
         if (site.hasFlag(Site.FLAG_NO_TITLE)) {
             holder.tvTitle.setVisibility(View.GONE);
+            if (site.hasFlag(Site.FLAG_NO_TITLE)) {
+                holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.HORIZONTAL));
+            }
         }
         if (site.hasFlag(Site.FLAG_NO_RATING)) {
             holder.rbRating.setVisibility(View.GONE);
         }
         if (site.hasFlag(Site.FLAG_NO_TAG)) {
             holder.rvTags.setVisibility(View.GONE);
-        }
-        if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY)) {
-            SiteFlagHandler.preloadGallery(holder, site, collection);
         }
     }
 
@@ -147,7 +155,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mProvider = mProvider;
     }
 
-
     public void setIsGrid(boolean isGrid) {
         this.isGrid = isGrid;
     }
@@ -181,6 +188,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public CollectionViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            if(site!=null) {
+                checkSiteFlags(this, site);
+            }
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
