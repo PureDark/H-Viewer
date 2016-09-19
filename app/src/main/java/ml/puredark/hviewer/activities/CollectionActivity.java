@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,20 +11,12 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
 import com.github.clans.fab.FloatingActionMenu;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -53,7 +44,6 @@ import ml.puredark.hviewer.customs.ExTabLayout;
 import ml.puredark.hviewer.customs.ExViewPager;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.DownloadManager;
-import ml.puredark.hviewer.helpers.FastBlur;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
@@ -61,9 +51,6 @@ import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.holders.FavouriteHolder;
 import ml.puredark.hviewer.holders.HistoryHolder;
 import ml.puredark.hviewer.utils.DensityUtil;
-
-import static android.R.attr.resource;
-import static ml.puredark.hviewer.beans.Picture.hasPicPosfix;
 
 
 public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -98,6 +85,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     private CollectionViewHolder holder;
 
+    private boolean onePage = false;
     private int startPage;
     private int currPage;
 
@@ -107,7 +95,6 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     private HistoryHolder historyHolder;
     private FavouriteHolder favouriteHolder;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +141,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         try {
             startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
             currPage = startPage;
+            if (pageStr == null)
+                onePage = true;
         } catch (NumberFormatException e) {
             startPage = 0;
             currPage = startPage;
@@ -263,6 +252,11 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     }
 
     private void getCollectionDetail(final int page) {
+        if(onePage && page > startPage) {
+            // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
+            rvIndex.setPullLoadMoreCompleted();
+            return;
+        }
         final String url = site.getGalleryUrl(myCollection.idCode, page);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
@@ -361,7 +355,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
     void fab_browser() {
         final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", myCollection.idCode)
                 .replaceAll("\\{page:" + startPage + "\\}", "" + startPage);
-        Intent intent= new Intent();
+        Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);
         intent.setData(content_url);

@@ -102,6 +102,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (site.hasFlag(Site.FLAG_NO_COVER)) {
             holder.layoutCover.setVisibility(View.GONE);
         }
+        if (site.hasFlag(Site.FLAG_NO_TITLE)) {
+            holder.tvTitle.setVisibility(View.GONE);
+        }
         if (site.hasFlag(Site.FLAG_NO_RATING)) {
             holder.rbRating.setVisibility(View.GONE);
         }

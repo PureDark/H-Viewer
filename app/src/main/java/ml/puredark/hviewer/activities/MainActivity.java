@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -51,6 +52,7 @@ import ml.puredark.hviewer.fragments.MyFragment;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.holders.DownloadTaskHolder;
 import ml.puredark.hviewer.holders.SiteHolder;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -175,6 +177,7 @@ public class MainActivity extends AnimationActivity {
 
         sites.clear();
 
+        // Lofi.E-hentai
         Rule indexRule = new Rule();
         indexRule.item = new Selector("#ig .ig", null, null, null, null);
         indexRule.idCode = new Selector("td.ii a", "attr", "href", "/g/(.*)", null);
@@ -191,15 +194,21 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a img", "attr", "src", null, null);
 
-        Selector pic = new Selector("img#sm", "attr", "src", null, null);
+        Rule extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#sm", "attr", "src", null, null);
+
+        //新设计中即将取消PicUrlSelector，使用singlePageBigPicture这个flag和extraRule来兼容大图是单页浏览的站点
+        //Selector pic = new Selector("img#sm", "attr", "src", null, null);
 
         sites.add(new Site(1, "Lofi.E-hentai",
                 "http://lofi.e-hentai.org/?page={page:0}",
                 "http://lofi.e-hentai.org/g/{idCode:}/{page:0}",
                 "http://lofi.e-hentai.org/?f_search={keyword:}&page={page:0}",
                 "https://forums.e-hentai.org/index.php?act=Login",
-                indexRule, galleryRule, null, pic, null));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE));
 
+        // G.E-hentai
         indexRule = new Rule();
         indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
         indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
@@ -217,14 +226,17 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://[^\"]*?\\.jpg)", null);
 
-        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("div.sni a img[style]", "attr", "src", null, null);
+        //pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 
         sites.add(new Site(2, "G.E-hentai",
                 "http://g.e-hentai.org/?page={page:0}",
                 "http://g.e-hentai.org/g/{idCode:}/?p={page:0}",
                 "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
                 "https://forums.e-hentai.org/index.php?act=Login",
-                indexRule, galleryRule, null, pic, Site.FLAG_REPEATED_THUMBNAIL));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_REPEATED_THUMBNAIL));
 
         List<Category> categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://g.e-hentai.org/?page={page:0}"));
@@ -240,7 +252,7 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(11, "MISC", "http://g.e-hentai.org/misc/{page:0}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
-
+        // Ex-hentai
         indexRule = new Rule();
         indexRule.item = new Selector("table.itg tr.gtr0,tr.gtr1", null, null, null, null);
         indexRule.idCode = new Selector("td.itd div div.it5 a", "attr", "href", "/g/(.*)", null);
@@ -258,14 +270,17 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://[^\"]*?\\.jpg)", null);
 
-        pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("div.sni a img[style]", "attr", "src", null, null);
+        //pic = new Selector("div.sni a img[style]", "attr", "src", null, null);
 
         sites.add(new Site(3, "Ex-hentai",
                 "https://exhentai.org/?page={page:0}",
                 "http://exhentai.org/g/{idCode:}/?p={page:0}",
                 "http://exhentai.org/?f_search={keyword:}&page={page:0}",
                 "https://forums.e-hentai.org/index.php?act=Login",
-                indexRule, galleryRule, null, pic, Site.FLAG_REPEATED_THUMBNAIL));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_REPEATED_THUMBNAIL));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://exhentai.org/?page={page:0}"));
         categories.add(new Category(2, "同人志", "http://exhentai.org/doujinshi/{page:0}"));
@@ -280,6 +295,7 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(11, "MISC", "http://exhentai.org/misc/{page:0}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+        // 绅士漫画
         indexRule = new Rule();
         indexRule.item = new Selector("div.gallary_wrap ul li.gallary_item", null, null, null, null);
         indexRule.idCode = new Selector("div.pic_box a", "attr", "href", "aid-(\\d+)", null);
@@ -292,14 +308,17 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-original", null, null);
 
-        pic = new Selector("img#picarea", "attr", "src", null, null);
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#picarea", "attr", "src", null, null);
+        //pic = new Selector("img#picarea", "attr", "src", null, null);
 
         sites.add(new Site(4, "绅士漫画",
                 "http://www.wnacg.org/albums-index-page-{page:1}.html",
                 "http://www.wnacg.org/photos-index-page-{page:1}-aid-{idCode:}.html",
                 "http://www.wnacg.org/albums-index-page-{page:1}-sname-{keyword:}.html",
                 "http://www.wnacg.com/users-login.html",
-                indexRule, galleryRule, null, pic, Site.FLAG_NO_RATING + "|" + Site.FLAG_NO_TAG));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_NO_RATING + "|" + Site.FLAG_NO_TAG));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://www.wnacg.org/albums-index-page-{page:1}.html"));
         categories.add(new Category(2, "同人志", "http://www.wnacg.com/albums-index-page-{page:1}-cate-5.html"));
@@ -315,6 +334,7 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(12, "杂志->日语", "http://www.wnacg.com/albums-index-page-{page:1}-cate-14.html"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+        // nhentai
         indexRule = new Rule();
         indexRule.item = new Selector("div.container div.gallery", null, null, null, null);
         indexRule.idCode = new Selector("a", "attr", "href", null, null);
@@ -329,15 +349,19 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-src", "(.*)", "https:$1");
 
-        pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#picarea", "attr", "src", null, null);
+        //pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
 
         sites.add(new Site(5, "nhentai",
                 "https://nhentai.net/?page={page:1}",
                 "https://nhentai.net{idCode:}",
                 "https://nhentai.net/search/?q={keyword:}&page={page:1}",
                 "https://nhentai.net/login/",
-                indexRule, galleryRule, null, pic, Site.FLAG_NO_RATING + "|" + Site.FLAG_NO_TAG));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_NO_RATING + "|" + Site.FLAG_NO_TAG));
 
+        // 草榴社区
         indexRule = new Rule();
         indexRule.item = new Selector("#ajaxtable tr.tr3.t_one:gt(10)", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(1) h3 a", "attr", "href", "htm_data/(.*?).html", null);
@@ -363,6 +387,7 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(2, "自拍区", "http://cl.deocool.pw/thread0806.php?fid=16&page={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+        // 177漫画
         indexRule = new Rule();
         indexRule.item = new Selector("div.post_box", null, null, null, null);
         indexRule.idCode = new Selector("div.c-top div.tit h2 a", "attr", "href", "html/(.*)\\.html", null);
@@ -391,6 +416,7 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(4, "日文漫画", "http://www.177pic66.com/html/category/jj/page/{page:1}?variant=zh-hans"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+        // 二次萌エロ画像ブログ
         indexRule = new Rule();
         indexRule.item = new Selector("div.post", null, null, null, null);
         indexRule.idCode = new Selector("h2 > a", "attr", "href", "/(\\d+).html", null);
@@ -420,6 +446,31 @@ public class MainActivity extends AnimationActivity {
         sites.get(sites.size() - 1).setCategories(categories);
 
 
+        // 二次元のエッチな画像
+        indexRule = new Rule();
+        indexRule.item = new Selector("section>div.post , #mainContent>div.post", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", "com/(.*).html", null);
+        indexRule.title = new Selector("section > h1 > a", "html", null, null, null);
+        indexRule.cover = new Selector("div.postImage > img", "attr", "src", null, null);
+        indexRule.category = new Selector("div.postDate > dl:first-child > dd > a", "html", null, null, null);
+        indexRule.datetime = new Selector("div.postDate > dl:nth-child(2) > dd", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.item = new Selector("div#entry > ul > li:not([class])", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("img", "attr", "src", null, null);
+        galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
+
+        sites.add(new Site(9, "二次元のエッチな画像",
+                "http://nijiero-ch.com/page/{page:1}",
+                "http://nijiero-ch.com/{idCode:}.html",
+                "http://nijiero-ch.com/?s={keyword:}&paged={page:1}",
+                "http://nijiero-ch.com/wp-login.php",
+                indexRule, galleryRule, null, null, Site.FLAG_NO_RATING + "|" + Site.FLAG_NO_TAG));
+
+
+        /*******booru图站*******/
+
+        // yande.re Post
         indexRule = new Rule();
         indexRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         indexRule.idCode = new Selector("div > a.thumb", "attr", "href", "/post/show/(\\d+)", null);
@@ -434,14 +485,15 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
 
-        sites.add(new Site(9, "Yande.re Post",
+        sites.add(new Site(31, "Yande.re Post",
                 "https://yande.re/post?page={page:1}",
                 "https://yande.re/post/show/{idCode:}",
                 "https://yande.re/post?tags={keyword:}",
                 "https://yande.re/user/login",
-                indexRule, galleryRule, null, null, null));
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_TITLE));
 
-
+        // yande.re Pool
         indexRule = new Rule();
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
@@ -458,19 +510,123 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a.thumb", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a.thumb > img", "attr", "src", null, null);
 
-        Rule extraRule = new Rule();
+        extraRule = new Rule();
         extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
 
-        sites.add(new Site(10, "Yande.re Pool",
+        sites.add(new Site(32, "Yande.re Pool",
                 "https://yande.re/pool?page={page:1}",
                 "https://yande.re/pool/show/{idCode:}",
                 "https://yande.re/pool?query={keyword:}",
                 "https://yande.re/user/login",
-                indexRule, galleryRule, null, null, Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
-        sites.get(sites.size() - 1).extraRule = extraRule;
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+        // lolibooru Post
+        indexRule = new Rule();
+        indexRule.item = new Selector("#post-list-posts > li", null, null, null, null);
+        indexRule.idCode = new Selector("div > a.thumb", "attr", "href", "/post/show/(\\d+)", null);
+        indexRule.cover = new Selector("div > a.thumb > img", "attr", "src", null, null);
+        indexRule.category = new Selector("span.directlink-res", "html", null, null, null);
+        indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
+        indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
+        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
+
+        galleryRule = new Rule();
+        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(33, "Lolibooru Post",
+                "https://lolibooru.moe/post?page={page:1}",
+                "https://lolibooru.moe/post/show/{idCode:}",
+                "https://lolibooru.moe/post?tags={keyword:}",
+                "https://lolibooru.moe/user/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_TITLE));
+
+        // lolibooru Pool
+        indexRule = new Rule();
+        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
+        indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
+        // booru的pool的封面是js动态显示的，无法通过选择器获取到
+        //indexRule.cover = new Selector("document div > a.thumb > img", "attr", "src", null, null);
+        indexRule.uploader = new Selector("td:eq(1)", "html", null, null, null);
+        indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
+        indexRule.datetime = new Selector("td:eq(4)", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.cover = new Selector("#post-list-posts > li:first-child a.thumb > img", "attr", "src", null, null);
+        galleryRule.item = new Selector("#post-list-posts > li", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a.thumb", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a.thumb > img", "attr", "src", null, null);
+
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(34, "Lolibooru Pool",
+                "https://lolibooru.moe/pool?page={page:1}",
+                "https://lolibooru.moe/pool/show/{idCode:}",
+                "https://lolibooru.moe/pool?query={keyword:}",
+                "https://lolibooru.moe/user/login",
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+
+        // konachan Post
+        indexRule = new Rule();
+        indexRule.item = new Selector("#post-list-posts > li", null, null, null, null);
+        indexRule.idCode = new Selector("div > a.thumb", "attr", "href", "/post/show/(\\d+)", null);
+        indexRule.cover = new Selector("div > a.thumb > img", "attr", "src", null, null);
+        indexRule.category = new Selector("span.directlink-res", "html", null, null, null);
+        indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
+        indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
+        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
+
+        galleryRule = new Rule();
+        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(35, "Konachan Post",
+                "https://konachan.net/post?page={page:1}",
+                "https://konachan.net/post/show/{idCode:}",
+                "https://konachan.net/post?tags={keyword:}",
+                "https://konachan.net/user/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_TITLE));
+
+        // konachan Pool
+        indexRule = new Rule();
+        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
+        indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
+        // booru的pool的封面是js动态显示的，无法通过选择器获取到
+        //indexRule.cover = new Selector("document div > a.thumb > img", "attr", "src", null, null);
+        indexRule.uploader = new Selector("td:eq(1)", "html", null, null, null);
+        indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
+        indexRule.datetime = new Selector("td:eq(4)", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.cover = new Selector("#post-list-posts > li:first-child a.thumb > img", "attr", "src", null, null);
+        galleryRule.item = new Selector("#post-list-posts > li", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a.thumb", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a.thumb > img", "attr", "src", null, null);
+
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(36, "Konachan Pool",
+                "https://konachan.net/pool?page={page:1}",
+                "https://konachan.net/pool/show/{idCode:}",
+                "https://konachan.net/pool?query={keyword:}",
+                "https://konachan.net/user/login",
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
 
         /*******非和谐站*******/
 
+        // 绝对领域
         indexRule = new Rule();
         indexRule.item = new Selector("div#postlist > div.pin", null, null, null, null);
         indexRule.idCode = new Selector("div.pin-coat a", "attr", "href", "http://.*?/(\\d+)", null);
@@ -486,7 +642,7 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", "attr", "href", null, null);
 
-        sites.add(new Site(20, "绝对领域",
+        sites.add(new Site(51, "绝对领域",
                 "http://www.jdlingyu.moe/page/{page:1}/",
                 "http://www.jdlingyu.moe/{idCode:}/",
                 "http://www.jdlingyu.moe/page/{page:1}/?s={keyword:}",
@@ -516,6 +672,7 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(19, "下载", "http://www.jdlingyu.moe/%e4%b8%8b%e8%bd%bd/{pageStr:page/{page:1}/}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+        // E-shuushuu
         indexRule = new Rule();
         indexRule.item = new Selector("div.display:has(.thumb)", null, null, null, null);
         indexRule.idCode = new Selector(".title h2 a", "attr", "href", null, null);
@@ -531,7 +688,7 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureUrl = new Selector("a.thumb_image", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a.thumb_image img", "attr", "src", null, null);
 
-        sites.add(new Site(21, "E-shuushuu",
+        sites.add(new Site(52, "E-shuushuu",
                 "http://e-shuushuu.net/?page={page:1}",
                 "http://e-shuushuu.net/{idCode:}",
                 null,
@@ -543,6 +700,8 @@ public class MainActivity extends AnimationActivity {
         categories.add(new Category(2, "排行榜", "http://e-shuushuu.net/top.php?page={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+
+        // Pixiv
         indexRule = new Rule();
         indexRule.item = new Selector("ul._image-items > li.image-item", null, null, null, null);
         indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(.*)", null);
@@ -565,13 +724,12 @@ public class MainActivity extends AnimationActivity {
         extraRule.pictureUrl = new Selector("img", "attr", "data-src", null, null);
         extraRule.pictureThumbnail = new Selector("img", "attr", "data-src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 
-        sites.add(new Site(22, "Pixiv",
+        sites.add(new Site(53, "Pixiv",
                 "http://www.pixiv.net/new_illust.php?p={page:1}",
                 "http://www.pixiv.net/member_illust.php?mode=medium&illust_id={idCode:}",
                 "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",
                 "https://accounts.pixiv.net/login",
-                indexRule, galleryRule, null, null, Site.FLAG_SECOND_LEVEL_GALLERY));
-        sites.get(sites.size() - 1).extraRule = extraRule;
+                indexRule, galleryRule, null, extraRule, Site.FLAG_SECOND_LEVEL_GALLERY));
 
         ListDataProvider<Site> dataProvider = new ListDataProvider<>(sites);
         // drag & drop manager
@@ -690,7 +848,7 @@ public class MainActivity extends AnimationActivity {
             selectSite(CollectionFragment.newInstance(site), site);
         }
 
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         HViewerApplication.checkUpdate(this);
 

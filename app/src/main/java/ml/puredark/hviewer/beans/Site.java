@@ -13,6 +13,7 @@ import okhttp3.Cookie;
 
 public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_NO_COVER = "noCover";
+    public final static String FLAG_NO_TITLE = "noTitle";
     public final static String FLAG_NO_RATING = "noRating";
     public final static String FLAG_NO_TAG = "noTag";
     public final static String FLAG_SECOND_LEVEL_GALLERY = "secondLevelGallery";
@@ -25,7 +26,10 @@ public class Site extends AbstractDataProvider.Data {
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
     public Rule indexRule, galleryRule, searchRule, extraRule;
+
+    @Deprecated
     public Selector picUrlSelector;
+
     public String cookie = "";
     public String flag = "";
     public int index;
@@ -34,7 +38,7 @@ public class Site extends AbstractDataProvider.Data {
     }
 
     public Site(int sid, String title, String indexUrl, String galleryUrl, String searchUrl, String loginUrl,
-                Rule indexRule, Rule galleryRule, Rule searchRule, Selector picUrlSelector, String flag) {
+                Rule indexRule, Rule galleryRule, Rule searchRule, Rule extraRule, String flag) {
         this.sid = sid;
         this.title = title;
         this.indexUrl = indexUrl;
@@ -44,7 +48,7 @@ public class Site extends AbstractDataProvider.Data {
         this.indexRule = indexRule;
         this.galleryRule = galleryRule;
         this.searchRule = searchRule;
-        this.picUrlSelector = picUrlSelector;
+        this.extraRule = extraRule;
         this.flag = flag;
     }
 
