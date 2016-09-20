@@ -11,6 +11,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -243,12 +244,14 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
+        holder.tvDescription.setText(Html.fromHtml(myCollection.description));
         collection.title = myCollection.title;
         collection.uploader = myCollection.uploader;
         collection.category = myCollection.category;
         collection.tags = myCollection.tags;
         collection.rating = myCollection.rating;
         collection.datetime = myCollection.datetime;
+        collection.description = myCollection.description;
     }
 
     private void getCollectionDetail(final int page) {
@@ -412,6 +415,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         RatingBar rbRating;
         @BindView(R.id.tv_submittime)
         TextView tvSubmittime;
+        @BindView(R.id.tv_description)
+        TextView tvDescription;
 
         public CollectionViewHolder(View view) {
             ButterKnife.bind(this, view);

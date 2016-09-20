@@ -9,6 +9,7 @@ public class Collection extends AbstractDataProvider.Data {
     public int cid;
     public String idCode = "";
     public String title = "", uploader = "", cover = "", category = "", datetime = "";
+    public String description;
     public float rating;
     public List<Tag> tags;
     public List<Picture> pictures;
@@ -19,7 +20,7 @@ public class Collection extends AbstractDataProvider.Data {
     }
 
     public Collection(int cid, String idCode, String title, String uploader, String cover, String category,
-                      String datetime, float rating, String referer, List<Tag> tags, List<Picture> pictures) {
+                      String datetime, String description, float rating, String referer, List<Tag> tags, List<Picture> pictures) {
         this.cid = cid;
         this.idCode = idCode;
         this.title = title;

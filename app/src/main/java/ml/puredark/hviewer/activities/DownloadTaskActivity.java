@@ -10,6 +10,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -192,6 +193,7 @@ public class DownloadTaskActivity extends AnimationActivity {
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(task.collection.rating);
         holder.tvSubmittime.setText(task.collection.datetime);
+        holder.tvDescription.setText(Html.fromHtml(task.collection.description));
     }
 
     @OnClick(R.id.btn_return)
@@ -223,6 +225,8 @@ public class DownloadTaskActivity extends AnimationActivity {
         RatingBar rbRating;
         @BindView(R.id.tv_submittime)
         TextView tvSubmittime;
+        @BindView(R.id.tv_description)
+        TextView tvDescription;
 
         public CollectionViewHolder(View view) {
             ButterKnife.bind(this, view);

@@ -304,6 +304,7 @@ public class MainActivity extends AnimationActivity {
         indexRule.datetime = new Selector("div.info div.info_col", "html", null, "(\\d{4}-\\d{2}-\\d{2})", null);
 
         galleryRule = new Rule();
+        galleryRule.description = new Selector("div.uwconn > p:last-child", "html", null, null, null);
         galleryRule.item = new Selector("div.gallary_wrap ul li.gallary_item div.pic_box", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-original", null, null);
@@ -488,7 +489,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(31, "Yande.re Post",
                 "https://yande.re/post?page={page:1}",
                 "https://yande.re/post/show/{idCode:}",
-                "https://yande.re/post?tags={keyword:}",
+                "https://yande.re/post?tags={keyword:}&page={page:1}",
                 "https://yande.re/user/login",
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
@@ -506,6 +507,7 @@ public class MainActivity extends AnimationActivity {
 
         galleryRule = new Rule();
         galleryRule.cover = new Selector("#post-list-posts > li:first-child a.thumb > img", "attr", "src", null, null);
+        galleryRule.description = new Selector("#pool-show > div:nth-child(2)", "html", null, null, null);
         galleryRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a.thumb", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a.thumb > img", "attr", "src", null, null);
@@ -516,7 +518,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(32, "Yande.re Pool",
                 "https://yande.re/pool?page={page:1}",
                 "https://yande.re/pool/show/{idCode:}",
-                "https://yande.re/pool?query={keyword:}",
+                "https://yande.re/pool?query={keyword:}&page={page:1}",
                 "https://yande.re/user/login",
                 indexRule, galleryRule, null, extraRule,
                 Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
@@ -539,7 +541,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(33, "Lolibooru Post",
                 "https://lolibooru.moe/post?page={page:1}",
                 "https://lolibooru.moe/post/show/{idCode:}",
-                "https://lolibooru.moe/post?tags={keyword:}",
+                "https://lolibooru.moe/post?tags={keyword:}&page={page:1}",
                 "https://lolibooru.moe/user/login",
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
@@ -549,14 +551,13 @@ public class MainActivity extends AnimationActivity {
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
         indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
-        // booru的pool的封面是js动态显示的，无法通过选择器获取到
-        //indexRule.cover = new Selector("document div > a.thumb > img", "attr", "src", null, null);
         indexRule.uploader = new Selector("td:eq(1)", "html", null, null, null);
         indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
         indexRule.datetime = new Selector("td:eq(4)", "html", null, null, null);
 
         galleryRule = new Rule();
         galleryRule.cover = new Selector("#post-list-posts > li:first-child a.thumb > img", "attr", "src", null, null);
+        galleryRule.description = new Selector("#pool-show > div:nth-child(2)", "html", null, null, null);
         galleryRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a.thumb", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a.thumb > img", "attr", "src", null, null);
@@ -567,7 +568,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(34, "Lolibooru Pool",
                 "https://lolibooru.moe/pool?page={page:1}",
                 "https://lolibooru.moe/pool/show/{idCode:}",
-                "https://lolibooru.moe/pool?query={keyword:}",
+                "https://lolibooru.moe/pool?query={keyword:}&page={page:1}",
                 "https://lolibooru.moe/user/login",
                 indexRule, galleryRule, null, extraRule,
                 Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
@@ -591,7 +592,7 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(35, "Konachan Post",
                 "https://konachan.net/post?page={page:1}",
                 "https://konachan.net/post/show/{idCode:}",
-                "https://konachan.net/post?tags={keyword:}",
+                "https://konachan.net/post?tags={keyword:}&page={page:1}",
                 "https://konachan.net/user/login",
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
@@ -601,14 +602,13 @@ public class MainActivity extends AnimationActivity {
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
         indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
-        // booru的pool的封面是js动态显示的，无法通过选择器获取到
-        //indexRule.cover = new Selector("document div > a.thumb > img", "attr", "src", null, null);
         indexRule.uploader = new Selector("td:eq(1)", "html", null, null, null);
         indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
         indexRule.datetime = new Selector("td:eq(4)", "html", null, null, null);
 
         galleryRule = new Rule();
         galleryRule.cover = new Selector("#post-list-posts > li:first-child a.thumb > img", "attr", "src", null, null);
+        galleryRule.description = new Selector("#pool-show > div:nth-child(2)", "html", null, null, null);
         galleryRule.item = new Selector("#post-list-posts > li", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a.thumb", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a.thumb > img", "attr", "src", null, null);
@@ -619,8 +619,56 @@ public class MainActivity extends AnimationActivity {
         sites.add(new Site(36, "Konachan Pool",
                 "https://konachan.net/pool?page={page:1}",
                 "https://konachan.net/pool/show/{idCode:}",
-                "https://konachan.net/pool?query={keyword:}",
+                "https://konachan.net/pool?query={keyword:}&page={page:1}",
                 "https://konachan.net/user/login",
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+        // 3dbooru Post
+        indexRule = new Rule();
+        indexRule.item = new Selector("span.thumb", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", "/post/show/(\\d+)", null);
+        indexRule.cover = new Selector("a > img", "attr", "src", null, null);
+        indexRule.uploader = new Selector("a > img", "attr", "title", "user:(\\w+)", null);
+        indexRule.rating = new Selector("a > img", "attr", "title", "rating:.*?(\\d+)", null);
+        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_]+)", null);
+
+        galleryRule = new Rule();
+        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(37, "3dbooru Post",
+                "http://behoimi.org/post?page={page:1}",
+                "http://behoimi.org/post/show/{idCode:}",
+                "http://behoimi.org/post?tags={keyword:}&page={page:1}",
+                "http://behoimi.org/user/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_TITLE));
+
+        // 3dbooru Pool
+        indexRule = new Rule();
+        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
+        indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
+        indexRule.uploader = new Selector("td:eq(1) > a", "html", null, null, null);
+        indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
+
+        galleryRule = new Rule();
+        galleryRule.cover = new Selector("span.thumb:first-child img", "attr", "src", null, null);
+        galleryRule.description = new Selector("#pool-show > div:nth-child(2)", "html", null, null, null);
+        galleryRule.item = new Selector("span.thumb", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a > img", "attr", "src", null, null);
+
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(38, "3dbooru Pool",
+                "http://behoimi.org/pool?page={page:1}",
+                "http://behoimi.org/pool/show/{idCode:}?page={page:1}",
+                "http://behoimi.org/pool?query={keyword:}?page={page:1}",
+                "http://behoimi.org/user/login",
                 indexRule, galleryRule, null, extraRule,
                 Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
 

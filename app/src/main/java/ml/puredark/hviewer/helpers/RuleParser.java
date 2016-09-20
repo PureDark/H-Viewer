@@ -104,6 +104,8 @@ public class RuleParser {
 
         String datetime = parseSingleProperty(element, rule.datetime, sourceUrl, false);
 
+        String description = parseSingleProperty(element, rule.description, sourceUrl, false);
+
         String ratingStr = parseSingleProperty(element, rule.rating, sourceUrl, false);
 
         float rating;
@@ -176,6 +178,8 @@ public class RuleParser {
             collection.category = category;
         if (datetime != null && !datetime.equals(""))
             collection.datetime = datetime;
+        if (description != null && !description.equals(""))
+            collection.description = description;
         if (rating > 0)
             collection.rating = rating;
         if (sourceUrl != null && !sourceUrl.equals(""))
