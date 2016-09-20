@@ -193,7 +193,8 @@ public class DownloadTaskActivity extends AnimationActivity {
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(task.collection.rating);
         holder.tvSubmittime.setText(task.collection.datetime);
-        holder.tvDescription.setText(Html.fromHtml(task.collection.description));
+        if(task.collection.description!=null)
+            holder.tvDescription.setText(Html.fromHtml(task.collection.description));
     }
 
     @OnClick(R.id.btn_return)

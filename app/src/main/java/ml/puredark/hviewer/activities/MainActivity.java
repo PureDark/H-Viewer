@@ -494,6 +494,19 @@ public class MainActivity extends AnimationActivity {
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
 
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "https://yande.re/post?page={page:1}"));
+        categories.add(new Category(2, "随机", "https://yande.re/post?page={page:1}&tags=order%3Arandom"));
+        categories.add(new Category(3, "热门（过去一天）", "https://yande.re/post/popular_recent?period=1d"));
+        categories.add(new Category(4, "热门（过去一周）", "https://yande.re/post/popular_recent?period=1w"));
+        categories.add(new Category(5, "热门（过去一月）", "https://yande.re/post/popular_recent?period=1m"));
+        categories.add(new Category(6, "热门（过去一年）", "https://yande.re/post/popular_recent?period=1y"));
+        categories.add(new Category(7, "热门（2016年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(8, "热门（2015年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(9, "热门（2014年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(10, "热门（2013年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2013"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
         // yande.re Pool
         indexRule = new Rule();
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
@@ -546,6 +559,19 @@ public class MainActivity extends AnimationActivity {
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
 
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "https://lolibooru.moe/post?page={page:1}"));
+        categories.add(new Category(2, "随机", "https://lolibooru.moe/post?page={page:1}&tags=order%3Arandom"));
+        categories.add(new Category(3, "热门（过去一天）", "https://lolibooru.moe/post/popular_recent?period=1d"));
+        categories.add(new Category(4, "热门（过去一周）", "https://lolibooru.moe/post/popular_recent?period=1w"));
+        categories.add(new Category(5, "热门（过去一月）", "https://lolibooru.moe/post/popular_recent?period=1m"));
+        categories.add(new Category(6, "热门（过去一年）", "https://lolibooru.moe/post/popular_recent?period=1y"));
+        categories.add(new Category(7, "热门（2016年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(8, "热门（2015年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(9, "热门（2014年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(10, "热门（2013年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2013"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
         // lolibooru Pool
         indexRule = new Rule();
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
@@ -597,6 +623,19 @@ public class MainActivity extends AnimationActivity {
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
 
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "https://konachan.net/post?page={page:1}"));
+        categories.add(new Category(2, "随机", "https://konachan.net/post?page={page:1}&tags=order%3Arandom"));
+        categories.add(new Category(3, "热门（过去一天）", "https://konachan.net/post/popular_recent?period=1d"));
+        categories.add(new Category(4, "热门（过去一周）", "https://konachan.net/post/popular_recent?period=1w"));
+        categories.add(new Category(5, "热门（过去一月）", "https://konachan.net/post/popular_recent?period=1m"));
+        categories.add(new Category(6, "热门（过去一年）", "https://konachan.net/post/popular_recent?period=1y"));
+        categories.add(new Category(7, "热门（2016年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(8, "热门（2015年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(9, "热门（2014年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(10, "热门（2013年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2013"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
         // konachan Pool
         indexRule = new Rule();
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
@@ -646,6 +685,17 @@ public class MainActivity extends AnimationActivity {
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
 
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "http://behoimi.org/post?page={page:1}"));
+        categories.add(new Category(2, "热门（过去一天）", "http://behoimi.org/post/popular_by_day"));
+        categories.add(new Category(3, "热门（过去一周）", "http://behoimi.org/post/popular_by_week"));
+        categories.add(new Category(4, "热门（过去一月）", "http://behoimi.org/post/popular_by_month"));
+        categories.add(new Category(6, "热门（2016年）", "http://behoimi.org/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(7, "热门（2015年）", "http://behoimi.org/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(8, "热门（2014年）", "http://behoimi.org/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(9, "热门（2013年）", "http://behoimi.org/post/popular_by_month?month={page:1}&year=2013"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
         // 3dbooru Pool
         indexRule = new Rule();
         indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
@@ -662,7 +712,7 @@ public class MainActivity extends AnimationActivity {
         galleryRule.pictureThumbnail = new Selector("a > img", "attr", "src", null, null);
 
         extraRule = new Rule();
-        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        extraRule.pictureUrl = new Selector("#image", "attr", "src", null, null);
 
         sites.add(new Site(38, "3dbooru Pool",
                 "http://behoimi.org/pool?page={page:1}",
@@ -762,12 +812,14 @@ public class MainActivity extends AnimationActivity {
         galleryRule.title = new Selector("div.ui-expander-target > h1.title", "html", null, null, null);
         galleryRule.uploader = new Selector("a.user-link > h1.user", "html", null, null, null);
         galleryRule.datetime = new Selector("ul.meta > li:eq(0)", "html", null, null, null);
+        galleryRule.description = new Selector("div.ui-expander-target > p.caption", "html", null, null, null);
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
         galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
         galleryRule.pictureUrl = new Selector("div.works_display", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://.*?.jpg)\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 
+        extraRule = new Rule();
         extraRule.item = new Selector("div.item-container", null, null, null, null);
         extraRule.pictureUrl = new Selector("img", "attr", "data-src", null, null);
         extraRule.pictureThumbnail = new Selector("img", "attr", "data-src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");

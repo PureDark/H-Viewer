@@ -108,11 +108,6 @@
             android:id="@+id/tv_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            tools:text="Zettai ryouiki-specific and other fetish stockings close-up shots.
-
-Pool and it's name are in reference to MPZero's signature set closing shot.
-
-This is the best pool btw <3"/>
+            android:layout_marginTop="@dimen/activity_vertical_margin"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

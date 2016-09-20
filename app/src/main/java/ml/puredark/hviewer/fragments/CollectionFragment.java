@@ -50,6 +50,8 @@ public class CollectionFragment extends MyFragment {
 
     private String currUrl = null;
     private String keyword = null;
+
+    private boolean onePage = false;
     private int startPage;
     private int currPage;
 
@@ -136,6 +138,11 @@ public class CollectionFragment extends MyFragment {
     }
 
     private void getCollections(String keyword, final int page) {
+        if(onePage && page > startPage) {
+            // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
+            rvCollection.setPullLoadMoreCompleted();
+            return;
+        }
         this.keyword = keyword;
         final Rule rule;
         if (keyword == null) {
@@ -218,6 +225,7 @@ public class CollectionFragment extends MyFragment {
             e.printStackTrace();
         }
         currUrl = site.searchUrl;
+        parseUrl(currUrl);
         rvCollection.setRefreshing(true);
         getCollections(keyword, startPage);
     }
@@ -227,6 +235,10 @@ public class CollectionFragment extends MyFragment {
         try {
             startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
             currPage = startPage;
+            if (pageStr == null)
+                onePage = true;
+            else
+                onePage = false;
         } catch (NumberFormatException e) {
             startPage = 0;
             currPage = startPage;

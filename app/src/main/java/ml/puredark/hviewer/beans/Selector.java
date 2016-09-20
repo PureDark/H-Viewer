@@ -13,4 +13,12 @@ public class Selector {
         this.replacement = replacement;
     }
 
+    @Override
+    public String toString(){
+        return "selector="+selector+"\n"+
+                "fun="+fun+"\n"+
+                "param="+param+"\n"+
+                "regex="+regex+"\n"+
+                "replacement="+replacement+"\n";
+    }
 }

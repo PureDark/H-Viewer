@@ -144,6 +144,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             currPage = startPage;
             if (pageStr == null)
                 onePage = true;
+            else
+                onePage = false;
         } catch (NumberFormatException e) {
             startPage = 0;
             currPage = startPage;
@@ -244,7 +246,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
-        holder.tvDescription.setText(Html.fromHtml(myCollection.description));
+        if(myCollection.description!=null)
+            holder.tvDescription.setText(Html.fromHtml(myCollection.description));
         collection.title = myCollection.title;
         collection.uploader = myCollection.uploader;
         collection.category = myCollection.category;
