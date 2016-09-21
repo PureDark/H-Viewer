@@ -53,7 +53,7 @@ public class HistoryActivity extends AnimationActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         MDStatusBarCompat.setOrdinaryToolBar(this);
 
-        tvTitle.setText("历史纪录");
+        tvTitle.setText("历史记录");
 
         historyHolder = new HistoryHolder(this);
         List<Collection> collections = historyHolder.getHistories();
