@@ -103,8 +103,6 @@ public class SettingActivity extends AnimationActivity {
             if (proxyServer != null)
                 getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setSummary(proxyServer);
 
-            int preloadPages = getPreferenceManager().getSharedPreferences().getInt(KEY_PREF_VIEW_PRELOAD_PAGES, 3);
-
             String downloadPath = DownloadManager.getDownloadPath();
             if (downloadPath != null)
                 getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(downloadPath);

@@ -29,7 +29,7 @@
         android:layout_weight="1"
         android:orientation="vertical"
         app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/item_nav_menu">
+        tools:listitem="@layout/item_site_group">
 
     </android.support.v7.widget.RecyclerView>
 

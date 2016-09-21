@@ -3,6 +3,7 @@ package ml.puredark.hviewer.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,7 +24,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
@@ -53,6 +56,8 @@ public class AddSiteActivity extends AnimationActivity {
     @BindView(R.id.fab_submit)
     FloatingActionButton fabSubmit;
 
+    private Pair<SiteGroup, List<Site>> pair;
+
     private SitePropViewHolder holder;
 
     private SiteHolder siteHolder;
@@ -70,6 +75,16 @@ public class AddSiteActivity extends AnimationActivity {
 
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
+
+        //获取传递过来的SiteGroup实例
+        if (HViewerApplication.temp instanceof Pair)
+            pair = (Pair<SiteGroup, List<Site>>) HViewerApplication.temp;
+
+        //获取失败则结束此界面
+        if (pair == null) {
+            finish();
+            return;
+        }
 
         holder = new SitePropViewHolder(viewSiteDetails);
         siteHolder = new SiteHolder(this);
@@ -122,16 +137,17 @@ public class AddSiteActivity extends AnimationActivity {
             showSnackBar("规则缺少必要参数，请检查");
             return;
         }
-        List<Site> sites = siteHolder.getSites();
-        int sid = 1;
-        for(Site site : sites){
-            sid = Math.max(sid, site.sid + 1);
-        }
+
+        newSite.gid = pair.first.gid;
+        siteHolder.addSite(newSite);
+        int sid = siteHolder.getMaxSiteId();
         newSite.sid = sid;
         newSite.index = sid;
+        siteHolder.updateSiteIndex(newSite);
+
+        pair.second.add(newSite);
 
         HViewerApplication.temp = newSite;
-        siteHolder.addSite(newSite);
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         finish();

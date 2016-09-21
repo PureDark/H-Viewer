@@ -95,4 +95,5 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

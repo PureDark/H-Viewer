@@ -6,12 +6,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ml.puredark.hviewer.customs.advrecyclerview.common.data.AbstractExpandableDataProvider;
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import okhttp3.Cookie;
 
-public class Site extends AbstractDataProvider.Data {
+public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_NO_COVER = "noCover";
     public final static String FLAG_NO_TITLE = "noTitle";
     public final static String FLAG_NO_RATING = "noRating";
@@ -21,7 +22,7 @@ public class Site extends AbstractDataProvider.Data {
     public final static String FLAG_SINGLE_PAGE_BIG_PICTURE = "singlePageBigPicture";
     public final static String FLAG_PRELOAD_GALLERY = "preloadGallery";
 
-    public int sid;
+    public int sid, gid;
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
@@ -56,10 +57,20 @@ public class Site extends AbstractDataProvider.Data {
         this.categories = categories;
     }
 
+    public void setGroupId(int gid){
+        this.gid = gid;
+    }
+
     @Override
-    public int getId() {
+    public long getChildId() {
         return sid;
     }
+
+    @Override
+    public String getText() {
+        return title;
+    }
+
 
     public List<Cookie> getCookies() {
         List<Cookie> cookies = new ArrayList<>();
@@ -104,5 +115,4 @@ public class Site extends AbstractDataProvider.Data {
         return galleryUrl.replaceAll("\\{idCode:\\}", idCode)
                 .replaceAll("\\{page:\\d+?\\}", "" + page);
     }
-
 }

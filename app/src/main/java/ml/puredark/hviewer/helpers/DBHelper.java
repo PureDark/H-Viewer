@@ -16,7 +16,7 @@ public class DBHelper {
 
     public synchronized void open(Context context) {
         close();
-        mSqliteHelper = new SQLiteHelper(context, dbName, null, 3);
+        mSqliteHelper = new SQLiteHelper(context, dbName, null, 4);
     }
 
     public synchronized void insert(String sql) {
@@ -106,7 +106,8 @@ public class DBHelper {
         //创建SQLiteOpenHelper的子类，并重写onCreate及onUpgrade方法。
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer)");
+            db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer, `gid` integer)");
+            db.execSQL("CREATE TABLE `siteGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
             db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
             db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
             db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
@@ -117,19 +118,39 @@ public class DBHelper {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.d("SQLiteHelper", "onUpgrade: oldVersion="+oldVersion+" newVersion="+newVersion);
             if(oldVersion==1 && newVersion==2){
-                db.execSQL("DROP TABLE `downloads`;");
-                db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
+                upgrade(db, 1, 2);
             }else if(oldVersion==1 && newVersion==3){
+                upgrade(db, 1, 2);
+                upgrade(db, 2, 3);
+            }else if(oldVersion==2 && newVersion==3){
+                upgrade(db, 2, 3);
+            }else if(oldVersion==1 && newVersion==4){
+                upgrade(db, 1, 2);
+                upgrade(db, 2, 3);
+                upgrade(db, 3, 4);
+            }else if(oldVersion==2 && newVersion==4){
+                upgrade(db, 2, 3);
+                upgrade(db, 3, 4);
+            }else if(oldVersion==3 && newVersion==4){
+                upgrade(db, 3, 4);
+            }
+        }
+
+        private void upgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+            if(oldVersion==1 && newVersion==2){
                 db.execSQL("DROP TABLE `downloads`;");
                 db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text)");
-                db.execSQL("ALTER TABLE `sites` RENAME TO `_temp_sites`;");
-                db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer)");
-                db.execSQL("INSERT INTO `sites` SELECT `sid`, `title`, `indexUrl`, `galleryUrl`, `json`,`sid` AS `index` FROM `_temp_sites`;");
-                db.execSQL("DROP TABLE `_temp_sites`;");
             }else if(oldVersion==2 && newVersion==3){
                 db.execSQL("ALTER TABLE `sites` RENAME TO `_temp_sites`;");
                 db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer)");
                 db.execSQL("INSERT INTO `sites` SELECT `sid`, `title`, `indexUrl`, `galleryUrl`, `json`,`sid` AS `index` FROM `_temp_sites`;");
+                db.execSQL("DROP TABLE `_temp_sites`;");
+            }else if(oldVersion==3 && newVersion==4){
+                db.execSQL("ALTER TABLE `sites` RENAME TO `_temp_sites`;");
+                db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer, `gid` integer)");
+                db.execSQL("CREATE TABLE `siteGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
+                db.execSQL("INSERT INTO `siteGroups` VALUES(1, \"未分类\", 1);");
+                db.execSQL("INSERT INTO `sites` SELECT `sid`, `title`, `indexUrl`, `galleryUrl`, `json`, `index`, 1 AS `gid` FROM `_temp_sites`;");
                 db.execSQL("DROP TABLE `_temp_sites`;");
             }
         }

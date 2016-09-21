@@ -45,7 +45,7 @@
             android:id="@+id/ripple_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:mrl_rippleOverlay="true"
+            app:mrl_rippleOverlay="false"
             app:mrl_rippleColor="@color/black"
             app:mrl_rippleAlpha="0.1"
             app:mrl_rippleDimension="10dp"

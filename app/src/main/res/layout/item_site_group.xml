@@ -29,7 +29,7 @@
             android:layout_marginLeft="@dimen/uni_padding"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:scaleType="centerInside"
-            tools:src="@drawable/ic_filter_1_black" />
+            tools:src="@drawable/ic_group_black" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -41,19 +41,13 @@
             android:layout_marginLeft="@dimen/half_margin"
             android:textColor="@color/black"
             android:textSize="18sp"
-            tools:text="E-hentai" />
-        <com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch
-            android:id="@+id/switch_list_grid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/half_margin"
-            app:base_release_color="@color/colorPrimaryDark"
-            app:base_press_color="@color/colorPrimaryDark"
-            app:ball_release_color="@color/colorPrimary"
-            app:ball_press_color="@color/colorPrimary"
-            app:icon_release="@drawable/icon_list"
-            app:icon_press="@drawable/icon_grid"
-            />
+            tools:text="未分类" />
+        <ml.puredark.hviewer.customs.advrecyclerview.common.widget.ExpandableItemIndicator
+            android:id="@+id/indicator"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="16dp"/>
     </LinearLayout>
 
 </com.balysv.materialripple.MaterialRippleLayout>

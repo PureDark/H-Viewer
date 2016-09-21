@@ -60,12 +60,4 @@ public class ListDataProvider<T extends AbstractDataProvider.Data> extends Abstr
     public void addAll(Collection items) {
         this.items.addAll(items);
     }
-
-    public void moveItem(int fromPosition, int toPosition) {
-        if (fromPosition == toPosition) {
-            return;
-        }
-        final T item = items.remove(fromPosition);
-        items.add(toPosition, item);
-    }
 }
