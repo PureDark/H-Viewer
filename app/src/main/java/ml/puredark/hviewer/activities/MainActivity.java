@@ -181,7 +181,8 @@ public class MainActivity extends AnimationActivity {
 
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
-//        List<Site> sites = ExampleSites.get();
+        List<Site> sites = ExampleSites.get();
+        siteGroups.get(0).second.addAll(sites);
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
 

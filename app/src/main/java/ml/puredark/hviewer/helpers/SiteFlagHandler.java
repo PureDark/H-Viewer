@@ -5,11 +5,13 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.facebook.datasource.DataSource;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +20,13 @@ import ml.puredark.hviewer.activities.PictureViewerActivity.PicturePagerAdapter;
 import ml.puredark.hviewer.adapters.CollectionAdapter;
 import ml.puredark.hviewer.adapters.PictureAdapter;
 import ml.puredark.hviewer.adapters.PictureAdapter.PictureViewHolder;
+import ml.puredark.hviewer.adapters.TagAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.dataproviders.ListDataProvider;
 
 /**
  * Created by PureDark on 2016/9/5.
@@ -111,7 +115,24 @@ public class SiteFlagHandler {
                 RuleParser.getCollectionDetail(collection, (String) result, site.galleryRule, url);
 
                 ImageLoader.loadImageFromUrl(holder.itemView.getContext(), holder.ivCover, collection.cover, site.cookie, collection.referer);
-
+                holder.tvTitle.setText(collection.title);
+                holder.tvUploader.setText(collection.uploader);
+                holder.tvCategory.setText(collection.category);
+                if (collection.tags == null) {
+                    holder.tvTitle.setMaxLines(2);
+                    holder.rvTags.setVisibility(View.GONE);
+                    holder.rvTags.setAdapter(
+                            new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                    );
+                } else {
+                    holder.tvTitle.setMaxLines(1);
+                    holder.rvTags.setVisibility(View.VISIBLE);
+                    holder.rvTags.setAdapter(
+                            new TagAdapter(new ListDataProvider<>(collection.tags))
+                    );
+                }
+                holder.rbRating.setRating(collection.rating);
+                holder.tvSubmittime.setText(collection.datetime);
                 if (collection.tags != null) {
                     for (Tag tag : collection.tags) {
                         HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);

@@ -77,7 +77,7 @@ public class ExampleSites {
                 "http://g.e-hentai.org/?f_search={keyword:}&page={page:0}",
                 "https://forums.e-hentai.org/index.php?act=Login",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_REPEATED_THUMBNAIL));
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_REPEATED_THUMBNAIL + "|" + Site.FLAG_PRELOAD_GALLERY));
 
         List<Category> categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://g.e-hentai.org/?page={page:0}"));
@@ -121,7 +121,7 @@ public class ExampleSites {
                 "http://exhentai.org/?f_search={keyword:}&page={page:0}",
                 "https://forums.e-hentai.org/index.php?act=Login",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_REPEATED_THUMBNAIL));
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_REPEATED_THUMBNAIL + "|" + Site.FLAG_PRELOAD_GALLERY));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://exhentai.org/?page={page:0}"));
         categories.add(new Category(2, "同人志", "http://exhentai.org/doujinshi/{page:0}"));
@@ -642,12 +642,13 @@ public class ExampleSites {
 
         // Pixiv
         indexRule = new Rule();
-        indexRule.item = new Selector("ul._image-items > li.image-item", null, null, null, null);
-        indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(.*)", null);
-        indexRule.title = new Selector("a > h1.title", "html", null, null, null);
-        indexRule.uploader = new Selector("a.user", "html", null, null, null);
-        indexRule.cover = new Selector("a.work > div._layout-thumbnail > img._thumbnail", "attr", "src", null, null);
-        indexRule.datetime = new Selector("a.work > div._layout-thumbnail > img._thumbnail", "attr", "src", ".*img/(\\d{4})/(\\d{2})/(\\d{2})/(\\d{2})/(\\d{2})/(\\d{2})", "$1-$2-$3 $4:$5:$6");
+        indexRule.item = new Selector("ul._image-items>li.image-item, section.ranking-item", null, null, null, null);
+        indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(\\d+)", null);
+        indexRule.cover = new Selector("a.work img._thumbnail", null, null, "\"(http://[^\"]*?\\.jpg)\"", null);
+        indexRule.title = new Selector("a>h1.title, h2>a.title", "html", null, null, null);
+        indexRule.uploader = new Selector("a.user, a.user-container>span", "html", null, null, null);
+        indexRule.category = new Selector("div.rank>h1>a", "html", null, null, null);
+        indexRule.datetime = new Selector("a.work img._thumbnail", null, null, ".*img/(\\d{4})/(\\d{2})/(\\d{2})/(\\d{2})/(\\d{2})/(\\d{2})", "$1-$2-$3 $4:$5:$6");
 
         galleryRule = new Rule();
         galleryRule.title = new Selector("div.ui-expander-target > h1.title", "html", null, null, null);
@@ -670,7 +671,24 @@ public class ExampleSites {
                 "http://www.pixiv.net/member_illust.php?mode=medium&illust_id={idCode:}",
                 "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",
                 "https://accounts.pixiv.net/login",
-                indexRule, galleryRule, null, extraRule, Site.FLAG_SECOND_LEVEL_GALLERY));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SECOND_LEVEL_GALLERY+"|"+Site.FLAG_PRELOAD_GALLERY));
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "http://www.pixiv.net/new_illust.php?p={page:1}"));
+        categories.add(new Category(1, "综合今日排行榜", "http://www.pixiv.net/ranking.php?mode=daily&p={page:1}"));
+        categories.add(new Category(1, "综合本周排行榜", "http://www.pixiv.net/ranking.php?mode=weekly&p={page:1}"));
+        categories.add(new Category(1, "综合本月排行榜", "http://www.pixiv.net/ranking.php?mode=monthly&p={page:1}"));
+        categories.add(new Category(2, "18R", "http://www.pixiv.net/new_illust_r18.php?p={page:1}"));
+        categories.add(new Category(3, "10000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=10000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(4, "5000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=5000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(5, "3000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=3000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(6, "1000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=1000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(7, "Loli", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E3%83%AD%E3%83%AA&p={page:1}"));
+        categories.add(new Category(8, "東方", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E6%9D%B1%E6%96%B9&p={page:1}"));
+        categories.add(new Category(9, "艦これ", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E8%89%A6%E3%81%93%E3%82%8C&p={page:1}"));
+        categories.add(new Category(10, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+        sites.get(sites.size() - 1).cookie = "p_ab_id=4; _gat=1; PHPSESSID=19726569_cf8243e85368f6e8965c6e19068b4da5; device_token=0074d3631c53eff71393c60ac338f0ef; a_type=0; __utmt=1; __utma=235335808.1998756366.1474474879.1474475016.1474475016.1; __utmb=235335808.1.10.1474475016; __utmc=235335808; __utmz=235335808.1474475016.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmv=235335808.|2=login%20ever=yes=1^3=plan=normal=1^5=gender=male=1^6=user_id=19726569=1; _ga=GA1.2.1998756366.1474474879; _gat_UA-74360115-3=1";
 
         return sites;
     }

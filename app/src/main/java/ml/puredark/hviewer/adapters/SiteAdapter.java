@@ -245,7 +245,8 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public void onMoveChildItem(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
-        if (fromGroupPosition == toGroupPosition && fromChildPosition == toChildPosition) {
+        if ((fromGroupPosition == toGroupPosition && fromChildPosition == toChildPosition)
+                || fromGroupPosition >= getGroupCount() || toGroupPosition >= getGroupCount() ) {
             return;
         }
         if(toChildPosition > mProvider.getChildCount(toGroupPosition))

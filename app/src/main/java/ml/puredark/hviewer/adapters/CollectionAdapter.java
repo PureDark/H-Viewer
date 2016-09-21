@@ -167,23 +167,23 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public class CollectionViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ripple_layout)
-        MaterialRippleLayout rippleLayout;
+        public MaterialRippleLayout rippleLayout;
         @BindView(R.id.layout_cover)
-        RelativeLayout layoutCover;
+        public RelativeLayout layoutCover;
         @BindView(R.id.iv_cover)
         public ImageView ivCover;
         @BindView(R.id.tv_title)
-        TextView tvTitle;
+        public TextView tvTitle;
         @BindView(R.id.tv_uploader)
-        TextView tvUploader;
+        public TextView tvUploader;
         @BindView(R.id.tv_category)
-        TextView tvCategory;
+        public TextView tvCategory;
         @BindView(R.id.rv_tags)
-        RecyclerView rvTags;
+        public RecyclerView rvTags;
         @BindView(R.id.rb_rating)
-        RatingBar rbRating;
+        public RatingBar rbRating;
         @BindView(R.id.tv_submittime)
-        TextView tvSubmittime;
+        public TextView tvSubmittime;
 
         public CollectionViewHolder(View view) {
             super(view);
