@@ -226,6 +226,7 @@ public class ModifySiteActivity extends AnimationActivity {
         }
         newSite.sid = site.sid;
         newSite.index = site.index;
+        newSite.gid = site.gid;
         HViewerApplication.temp = newSite;
         siteHolder.updateSite(newSite);
 
