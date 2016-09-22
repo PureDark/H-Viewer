@@ -98,11 +98,19 @@ public class SiteFlagHandler {
 
     public static void preloadGallery(final CollectionAdapter.CollectionViewHolder holder, final Site site, final Collection collection){
         //解析URL模板
-        Map<String, String> map = RuleParser.parseUrl(site.galleryUrl);
-        String pageStr = map.get("page");
+        String pageStr = RuleParser.parseUrl(site.galleryUrl).get("page");
         int startPage;
         try {
-            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+            if (pageStr == null) {
+                startPage = 0;
+            }else {
+                String[] pageStrs = pageStr.split(":");
+                if(pageStrs.length>1){
+                    startPage = Integer.parseInt(pageStrs[0]);
+                }else{
+                    startPage = Integer.parseInt(pageStr);
+                }
+            }
         } catch (NumberFormatException e) {
             startPage = 0;
         }
@@ -113,6 +121,8 @@ public class SiteFlagHandler {
                 if (result == null)
                     return;
                 RuleParser.getCollectionDetail(collection, (String) result, site.galleryRule, url);
+
+                collection.preloaded = true;
 
                 ImageLoader.loadImageFromUrl(holder.itemView.getContext(), holder.ivCover, collection.cover, site.cookie, collection.referer);
                 holder.tvTitle.setText(collection.title);
