@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.text.TextUtils;
 
+import java.io.File;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
@@ -44,8 +46,8 @@ public class DownloadManager {
         checkNoMediaFile();
     }
 
-    private void checkNoMediaFile(){
-        SimpleFileUtil.createIfNotExist(getDownloadPath()+"/.nomedia");
+    private void checkNoMediaFile() {
+        SimpleFileUtil.createIfNotExist(getDownloadPath() + "/.nomedia");
     }
 
     public static String getDownloadPath() {
@@ -71,6 +73,13 @@ public class DownloadManager {
             return false;
         int did = holder.addDownloadTask(task);
         task.did = did;
+        if (TextUtils.isEmpty(collection.title)) {
+            path = getDownloadPath() + "/" + collection.site.title + "_" + did + "/";
+        }else if(new File(path).exists()){
+            path = getDownloadPath() + "/" + collection.title + " (2)/";
+        }
+        task.path = path;
+        holder.updateDownloadTasks(task);
         if (!isDownloading())
             startDownload(task);
         return true;
@@ -91,7 +100,7 @@ public class DownloadManager {
     public void unbindService(Context context) {
         try {
             context.unbindService(conn);
-        }catch(Exception e){
+        } catch (Exception e) {
         }
     }
 

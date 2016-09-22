@@ -31,14 +31,18 @@ public class DownloadTaskHolder {
         if(downloadTasks==null)
             return;
         for (DownloadTask item : downloadTasks) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("idCode", item.collection.idCode);
-            contentValues.put("title", item.collection.title);
-            contentValues.put("referer", item.collection.referer);
-            contentValues.put("json", new Gson().toJson(item));
-            dbHelper.update(dbName, contentValues, "did = ?",
-                    new String[]{item.did + ""});
+            updateDownloadTasks(item);
         }
+    }
+
+    public void updateDownloadTasks(DownloadTask item){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("idCode", item.collection.idCode);
+        contentValues.put("title", item.collection.title);
+        contentValues.put("referer", item.collection.referer);
+        contentValues.put("json", new Gson().toJson(item));
+        dbHelper.update(dbName, contentValues, "did = ?",
+                new String[]{item.did + ""});
     }
 
     public int addDownloadTask(DownloadTask item) {
@@ -58,6 +62,12 @@ public class DownloadTaskHolder {
         dbHelper.delete(dbName, "`did` = ?",
                 new String[]{item.did + ""});
         downloadTasks.remove(item);
+    }
+
+    public int getMaxTaskId() {
+        Cursor cursor = dbHelper.query("SELECT MAX(`did`) AS `maxid` FROM " + dbName);
+        int maxId = (cursor.moveToNext()) ? cursor.getInt(0) : 0;
+        return maxId;
     }
 
     public List<DownloadTask> getDownloadTasks(){

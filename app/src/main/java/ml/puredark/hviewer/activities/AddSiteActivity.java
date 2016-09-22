@@ -139,8 +139,11 @@ public class AddSiteActivity extends AnimationActivity {
         }
 
         newSite.gid = pair.first.gid;
-        siteHolder.addSite(newSite);
-        int sid = siteHolder.getMaxSiteId();
+        int sid = siteHolder.addSite(newSite);
+        if(sid<0){
+            showSnackBar("插入数据库失败");
+            return;
+        }
         newSite.sid = sid;
         newSite.index = sid;
         siteHolder.updateSiteIndex(newSite);

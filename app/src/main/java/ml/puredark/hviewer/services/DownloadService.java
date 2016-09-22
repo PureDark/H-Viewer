@@ -5,18 +5,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 
-import java.io.File;
 import java.io.IOException;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Selector;
+import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.RuleParser;
@@ -97,17 +99,21 @@ public class DownloadService extends Service {
             return;
         }
         final Picture picture = currPic;
-        if (task.collection.site.picUrlSelector == null) {
+        if (picture.pic != null) {
+            loadPicture(picture, task, null);
+        } else if (task.collection.site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE)
+                && task.collection.site.extraRule != null
+                && task.collection.site.extraRule.pictureUrl != null) {
+            getPictureUrl(picture, task, task.collection.site.extraRule.pictureUrl);
+        } else if (task.collection.site.picUrlSelector != null) {
+            getPictureUrl(picture, task, task.collection.site.picUrlSelector);
+        } else {
             picture.pic = picture.url;
             loadPicture(picture, task, null);
-        } else if (picture.pic != null) {
-            loadPicture(picture, task, null);
-        } else {
-            getPictureUrl(picture, task);
         }
     }
 
-    private void getPictureUrl(final Picture picture, final DownloadTask task) {
+    private void getPictureUrl(final Picture picture, final DownloadTask task, final Selector selector) {
         if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
             picture.pic = picture.url;
             loadPicture(picture, task, null);
@@ -126,7 +132,7 @@ public class DownloadService extends Service {
                             loadPicture(picture, task, null);
                         }
                     } else {
-                        picture.pic = RuleParser.getPictureUrl((String) result, task.collection.site.picUrlSelector, picture.url);
+                        picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
                         picture.retries = 0;
                         picture.referer = picture.url;
                         loadPicture(picture, task, null);
@@ -139,6 +145,7 @@ public class DownloadService extends Service {
                     picture.status = Picture.STATUS_WAITING;
                     Intent intent = new Intent(ON_FAILURE);
                     intent.putExtra("message", "图片地址获取失败，请检查网络连接");
+                    Log.d("DownloadService", "url : " + picture.url);
                     sendBroadcast(intent);
                 }
             });

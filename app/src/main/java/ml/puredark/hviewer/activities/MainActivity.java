@@ -186,8 +186,8 @@ public class MainActivity extends AnimationActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-        List<Site> sites = ExampleSites.get();
-        siteGroups.get(0).second.addAll(sites);
+//        List<Site> sites = ExampleSites.get();
+//        siteGroups.get(0).second.addAll(sites);
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
 

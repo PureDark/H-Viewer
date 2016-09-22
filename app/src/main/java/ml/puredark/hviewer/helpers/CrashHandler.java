@@ -37,7 +37,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      * 是否开启日志输出,在Debug状态下开启,
      * 在Release状态下关闭以提示程序性能
      */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     /**
      * 系统默认的UncaughtException处理类
      */

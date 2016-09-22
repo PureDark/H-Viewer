@@ -352,7 +352,7 @@ public class ExampleSites {
 
         // yande.re Pool
         indexRule = new Rule();
-        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.item = new Selector("#pool-index > table > tbody > tr", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
         indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
         // booru的pool的封面是js动态显示的，无法通过选择器获取到
@@ -417,7 +417,7 @@ public class ExampleSites {
 
         // lolibooru Pool
         indexRule = new Rule();
-        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.item = new Selector("#pool-index > table > tbody > tr", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
         indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
         indexRule.uploader = new Selector("td:eq(1)", "html", null, null, null);
@@ -481,7 +481,7 @@ public class ExampleSites {
 
         // konachan Pool
         indexRule = new Rule();
-        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.item = new Selector("#pool-index > table > tbody > tr", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
         indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
         indexRule.uploader = new Selector("td:eq(1)", "html", null, null, null);
@@ -541,11 +541,11 @@ public class ExampleSites {
 
         // 3dbooru Pool
         indexRule = new Rule();
-        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
+        indexRule.item = new Selector("#pool-index > table > tbody > tr", null, null, null, null);
         indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
         indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
         indexRule.uploader = new Selector("td:eq(1) > a", "html", null, null, null);
-        indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
+        indexRule.datetime = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
 
         galleryRule = new Rule();
         galleryRule.cover = new Selector("span.thumb:first-child img", "attr", "src", null, null);
@@ -555,7 +555,7 @@ public class ExampleSites {
         galleryRule.pictureThumbnail = new Selector("a > img", "attr", "src", null, null);
 
         extraRule = new Rule();
-        extraRule.pictureUrl = new Selector("#image", "attr", "src", null, null);
+        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
 
         sites.add(new Site(38, "3dbooru Pool",
                 "http://behoimi.org/pool?page={page:1}",
@@ -579,7 +579,7 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
 
-        sites.add(new Site(37, "Gelbooru Post",
+        sites.add(new Site(39, "Gelbooru Post",
                 "http://gelbooru.com/index.php?page=post&s=list&tags=all&pid={page:0:42}",
                 "http://gelbooru.com/index.php?page=post&s=view&id={idCode:}",
                 "http://gelbooru.com/index.php?page=post&s=list&tags={keyword:}&pid={page:0:42}",
@@ -638,27 +638,78 @@ public class ExampleSites {
 
         // gelbooru Pool
         indexRule = new Rule();
-        indexRule.item = new Selector("#pool-index > table tr:gt(0)", null, null, null, null);
-        indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "/pool/show/(\\d+)", null);
-        indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
-        indexRule.uploader = new Selector("td:eq(1) > a", "html", null, null, null);
-        indexRule.category = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
+        indexRule.item = new Selector("#content > table tr", null, null, null, null);
+        indexRule.idCode = new Selector("td:first-child > a", "attr", "href", "id=(\\d+)", null);
+        indexRule.title = new Selector("td:nth-child(2)> div:first-child > a", "html", null, null, null);
+        indexRule.uploader = new Selector("td:nth-child(2) > span > a", "html", null, null, null);
+        indexRule.category = new Selector("td:nth-child(4)", "html", null, null, null);
+        indexRule.datetime = new Selector("td:nth-child(3)", "html", null, "(\\d+)", "共 $1 页");
 
         galleryRule = new Rule();
-        galleryRule.cover = new Selector("span.thumb:first-child img", "attr", "src", null, null);
-        galleryRule.description = new Selector("#pool-show > div:nth-child(2)", "html", null, null, null);
+        galleryRule.cover = new Selector("span.thumb img", "attr", "src", null, null);
+        galleryRule.description = new Selector("div#content > div", "html", null, null, null);
         galleryRule.item = new Selector("span.thumb", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a > img", "attr", "src", null, null);
 
         extraRule = new Rule();
-        extraRule.pictureUrl = new Selector("#image", "attr", "src", null, null);
+        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
 
-        sites.add(new Site(38, "3dbooru Pool",
-                "http://behoimi.org/pool?page={page:1}",
-                "http://behoimi.org/pool/show/{idCode:}?page={page:1}",
-                "http://behoimi.org/pool?query={keyword:}?page={page:1}",
-                "http://behoimi.org/user/login",
+        sites.add(new Site(40, "Gelbooru Pool",
+                "http://gelbooru.com/index.php?page=pool&s=list&pid={page:0:25}",
+                "http://gelbooru.com/index.php?page=pool&s=show&id={idCode:}",
+                null,
+                "http://gelbooru.com/index.php?page=account&s=login&code=00",
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+
+
+        // xbooru Post
+        indexRule = new Rule();
+        indexRule.item = new Selector("span.thumb", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", "&id=(\\d+)", null);
+        indexRule.cover = new Selector("a > img", "attr", "src", null, null);
+        indexRule.uploader = new Selector("a > img", "attr", "title", "rating:(\\w+)", "安全等级：$1");
+        indexRule.rating = new Selector("a > img", "attr", "title", "score:.*?(\\d+)", null);
+        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_]+)", null);
+
+        galleryRule = new Rule();
+        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(41, "Xbooru Post",
+                "http://xbooru.com/index.php?page=post&s=list&pid={page:0:42}",
+                "http://xbooru.com/index.php?page=post&s=view&id={idCode:}",
+                "http://xbooru.com/index.php?page=post&s=list&tags={keyword:}&pid={page:0:42}",
+                "http://xbooru.com/index.php?page=account&s=login&code=00",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_TITLE));
+
+        // xbooru Pool
+        indexRule = new Rule();
+        indexRule.item = new Selector("#pool-index > table > tbody > tr", null, null, null, null);
+        indexRule.idCode = new Selector("td:eq(0) > a", "attr", "href", "id=(\\d+)", null);
+        indexRule.title = new Selector("td:eq(0) > a", "html", null, null, null);
+        indexRule.uploader = new Selector("td:eq(1) > a", "html", null, null, null);
+        indexRule.datetime = new Selector("td:eq(2)", "html", null, "(\\d+)", "共 $1 页");
+
+        galleryRule = new Rule();
+        galleryRule.cover = new Selector("span.thumb img", "attr", "src", null, null);
+        galleryRule.description = new Selector("div#content > div", "html", null, null, null);
+        galleryRule.item = new Selector("span.thumb", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("a > img", "attr", "src", null, null);
+
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+
+        sites.add(new Site(42, "Xbooru Pool",
+                "http://xbooru.com/index.php?page=pool&s=list&pid={page:0:25}",
+                "http://xbooru.com/index.php?page=pool&s=show&id={idCode:}",
+                null,
+                "http://gelbooru.com/index.php?page=account&s=login&code=00",
                 indexRule, galleryRule, null, extraRule,
                 Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
 

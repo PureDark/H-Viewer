@@ -36,8 +36,8 @@ public class SiteHolder {
         dbHelper.insert(groupDbName, contentValues);
     }
 
-    public void addSite(Site item) {
-        if (item == null) return;
+    public int addSite(Site item) {
+        if (item == null) return -1;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`indexUrl`", item.indexUrl);
@@ -45,7 +45,7 @@ public class SiteHolder {
         contentValues.put("`index`", item.index);
         contentValues.put("`gid`", item.gid);
         contentValues.put("`json`", new Gson().toJson(item));
-        dbHelper.insert(dbName, contentValues);
+        return (int) dbHelper.insert(dbName, contentValues);
     }
 
     public void deleteSiteGroup(SiteGroup item) {

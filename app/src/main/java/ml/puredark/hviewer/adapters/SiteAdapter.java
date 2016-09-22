@@ -247,13 +247,11 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public void onMoveChildItem(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
-        Log.d("SiteAdapter", "toChildPosition:" + toChildPosition + "getChildCount:"+mProvider.getChildCount(toGroupPosition));
         if ((fromGroupPosition == toGroupPosition &&
                 (fromChildPosition == toChildPosition || toChildPosition >= mProvider.getChildCount(toGroupPosition)))
                 || fromGroupPosition >= mProvider.getGroupCount() || toGroupPosition >= mProvider.getGroupCount()) {
             return;
         }
-        Log.d("SiteAdapter", "fromChildPosition:" + fromChildPosition + "getChildCount:"+mProvider.getChildCount(fromGroupPosition));
         if(toChildPosition > mProvider.getChildCount(toGroupPosition))
             toChildPosition =  mProvider.getChildCount(toGroupPosition);
         mProvider.moveChildItem(fromGroupPosition, fromChildPosition, toGroupPosition, toChildPosition);
@@ -270,7 +268,6 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public boolean onCheckChildCanDrop(int draggingGroupPosition, int draggingChildPosition, int dropGroupPosition, int dropChildPosition) {
-        Log.d("onCheckChildCanDrop", draggingGroupPosition + " " +draggingChildPosition+ " " +dropGroupPosition+ " " +dropChildPosition);
         if (draggingGroupPosition >= mProvider.getGroupCount() || dropGroupPosition >= mProvider.getGroupCount() ||
             draggingChildPosition >= mProvider.getChildCount(draggingGroupPosition) || dropChildPosition >= mProvider.getChildCount(dropChildPosition))
             return false;
