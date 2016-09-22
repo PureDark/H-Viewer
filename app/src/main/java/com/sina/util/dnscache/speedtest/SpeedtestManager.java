@@ -34,7 +34,7 @@ public class SpeedtestManager implements ISpeedtest {
 
     /**
      * 
-     * @param url
+     * @param ip
      * @param host
      * @return
      */
@@ -52,7 +52,8 @@ public class SpeedtestManager implements ISpeedtest {
             }
         });
 
-        for (BaseSpeedTest st : mSpeedTests) {
+        for (int i = 0; i < mSpeedTests.size(); i++) {
+            BaseSpeedTest st = mSpeedTests.get(i);
             Tools.log("TAG", "测速模块" + st.getClass().getSimpleName() + "启动," + "\n优先级是：" + st.getPriority() + "\n该模块是否开启：" + st.isActivate());
             if (st.isActivate()) {
                 int rtt = st.speedTest(ip, host);

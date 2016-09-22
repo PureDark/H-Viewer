@@ -163,7 +163,8 @@ public class DNSCache {
      */
     private ArrayList<IpModel> filterInvalidIp(ArrayList<IpModel> ipModelArr) {
         ArrayList<IpModel> result = new ArrayList<IpModel>();
-        for (IpModel ipModel : ipModelArr) {
+        for (int i = 0; i < ipModelArr.size(); i++) {
+            IpModel ipModel = ipModelArr.get(i);
             if (!("" + SpeedtestManager.MAX_OVERTIME_RTT).equals(ipModel.rtt)) {
                 result.add(ipModel);
             }
@@ -344,13 +345,13 @@ public class DNSCache {
         }
 
         private void updateSpeedInfo(ArrayList<DomainModel> list) {
-            for (DomainModel domainModel : list) {
+            for (int m = 0; m < list.size(); m++) {
+                DomainModel domainModel = list.get(m);
                 ArrayList<IpModel> ipArray = domainModel.ipModelArr;
                 if (ipArray == null || ipArray.size() < 1) {
                     continue;
                 }
-                int size = ipArray.size();
-                for (int i = 0; i < size; i++) {
+                for (int i = 0; i < ipArray.size(); i++) {
                     IpModel ipModel = ipArray.get(i);
                     int rtt = speedtestManager.speedTest(ipModel.ip, domainModel.domain);
                     boolean succ = rtt > SpeedtestManager.OCUR_ERROR;
