@@ -553,14 +553,13 @@ public class SitePropViewHolder {
     }
 
     public Site fromEditTextToSite() {
-        Site site = new Site();
-        site.title = loadString(inputTitle);
-        site.indexUrl = loadString(inputIndexUrl);
-        site.galleryUrl = loadString(inputGalleryUrl);
-        site.searchUrl = loadString(inputSearchUrl);
-        site.loginUrl = loadString(inputLoginUrl);
-        site.cookie = loadString(inputCookie);
-        site.flag = loadString(inputFlag);
+        lastSite.title = loadString(inputTitle);
+        lastSite.indexUrl = loadString(inputIndexUrl);
+        lastSite.galleryUrl = loadString(inputGalleryUrl);
+        lastSite.searchUrl = loadString(inputSearchUrl);
+        lastSite.loginUrl = loadString(inputLoginUrl);
+        lastSite.cookie = loadString(inputCookie);
+        lastSite.flag = loadString(inputFlag);
 
         //categories
         List<Category> categories = categoryInputAdapter.getDataProvider().getItems();
@@ -574,72 +573,67 @@ public class SitePropViewHolder {
             }
         }
         if(categories.size()>0)
-            site.categories = categories;
+            lastSite.categories = categories;
 
-        site.picUrlSelector = loadSelector(inputPicUrlSelectorSelector, inputPicUrlSelectorRegex, inputPicUrlSelectorReplacement);
+        lastSite.picUrlSelector = loadSelector(inputPicUrlSelectorSelector, inputPicUrlSelectorRegex, inputPicUrlSelectorReplacement);
 
         //index rule
-        site.indexRule = new Rule();
-        site.indexRule.item = loadSelector(inputIndexRuleItemSelector, inputIndexRuleItemRegex, inputIndexRuleItemReplacement);
-        site.indexRule.idCode = loadSelector(inputIndexRuleIdCodeSelector, inputIndexRuleIdCodeRegex, inputIndexRuleIdCodeReplacement);
-        site.indexRule.title = loadSelector(inputIndexRuleTitleSelector, inputIndexRuleTitleRegex, inputIndexRuleTitleReplacement);
-        site.indexRule.uploader = loadSelector(inputIndexRuleUploaderSelector, inputIndexRuleUploaderRegex, inputIndexRuleUploaderReplacement);
-        site.indexRule.cover = loadSelector(inputIndexRuleCoverSelector, inputIndexRuleCoverRegex, inputIndexRuleCoverReplacement);
-        site.indexRule.category = loadSelector(inputIndexRuleCategorySelector, inputIndexRuleCategoryRegex, inputIndexRuleCategoryReplacement);
-        site.indexRule.datetime = loadSelector(inputIndexRuleDatetimeSelector, inputIndexRuleDatetimeRegex, inputIndexRuleDatetimeReplacement);
-        site.indexRule.rating = loadSelector(inputIndexRuleRatingSelector, inputIndexRuleRatingRegex, inputIndexRuleRatingReplacement);
-        site.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
-        site.indexRule.pictureUrl = loadSelector(inputIndexRulePictureUrlSelector, inputIndexRulePictureUrlRegex, inputIndexRulePictureUrlReplacement);
-        site.indexRule.pictureThumbnail = loadSelector(inputIndexRulePictureThumbnailSelector, inputIndexRulePictureThumbnailRegex, inputIndexRulePictureThumbnailReplacement);
+        lastSite.indexRule = new Rule();
+        lastSite.indexRule.item = loadSelector(inputIndexRuleItemSelector, inputIndexRuleItemRegex, inputIndexRuleItemReplacement);
+        lastSite.indexRule.idCode = loadSelector(inputIndexRuleIdCodeSelector, inputIndexRuleIdCodeRegex, inputIndexRuleIdCodeReplacement);
+        lastSite.indexRule.title = loadSelector(inputIndexRuleTitleSelector, inputIndexRuleTitleRegex, inputIndexRuleTitleReplacement);
+        lastSite.indexRule.uploader = loadSelector(inputIndexRuleUploaderSelector, inputIndexRuleUploaderRegex, inputIndexRuleUploaderReplacement);
+        lastSite.indexRule.cover = loadSelector(inputIndexRuleCoverSelector, inputIndexRuleCoverRegex, inputIndexRuleCoverReplacement);
+        lastSite.indexRule.category = loadSelector(inputIndexRuleCategorySelector, inputIndexRuleCategoryRegex, inputIndexRuleCategoryReplacement);
+        lastSite.indexRule.datetime = loadSelector(inputIndexRuleDatetimeSelector, inputIndexRuleDatetimeRegex, inputIndexRuleDatetimeReplacement);
+        lastSite.indexRule.rating = loadSelector(inputIndexRuleRatingSelector, inputIndexRuleRatingRegex, inputIndexRuleRatingReplacement);
+        lastSite.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
+        lastSite.indexRule.pictureUrl = loadSelector(inputIndexRulePictureUrlSelector, inputIndexRulePictureUrlRegex, inputIndexRulePictureUrlReplacement);
+        lastSite.indexRule.pictureThumbnail = loadSelector(inputIndexRulePictureThumbnailSelector, inputIndexRulePictureThumbnailRegex, inputIndexRulePictureThumbnailReplacement);
 
 
         //search rule
-        site.searchRule = new Rule();
-        site.searchRule.item = loadSelector(inputSearchRuleItemSelector, inputSearchRuleItemRegex, inputSearchRuleItemReplacement);
-        site.searchRule.idCode = loadSelector(inputSearchRuleIdCodeSelector, inputSearchRuleIdCodeRegex, inputSearchRuleIdCodeReplacement);
-        site.searchRule.title = loadSelector(inputSearchRuleTitleSelector, inputSearchRuleTitleRegex, inputSearchRuleTitleReplacement);
-        site.searchRule.uploader = loadSelector(inputSearchRuleUploaderSelector, inputSearchRuleUploaderRegex, inputSearchRuleUploaderReplacement);
-        site.searchRule.cover = loadSelector(inputSearchRuleCoverSelector, inputSearchRuleCoverRegex, inputSearchRuleCoverReplacement);
-        site.searchRule.category = loadSelector(inputSearchRuleCategorySelector, inputSearchRuleCategoryRegex, inputSearchRuleCategoryReplacement);
-        site.searchRule.datetime = loadSelector(inputSearchRuleDatetimeSelector, inputSearchRuleDatetimeRegex, inputSearchRuleDatetimeReplacement);
-        site.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
-        site.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
-        site.searchRule.pictureUrl = loadSelector(inputSearchRulePictureUrlSelector, inputSearchRulePictureUrlRegex, inputSearchRulePictureUrlReplacement);
-        site.searchRule.pictureThumbnail = loadSelector(inputSearchRulePictureThumbnailSelector, inputSearchRulePictureThumbnailRegex, inputSearchRulePictureThumbnailReplacement);
+        lastSite.searchRule = new Rule();
+        lastSite.searchRule.item = loadSelector(inputSearchRuleItemSelector, inputSearchRuleItemRegex, inputSearchRuleItemReplacement);
+        lastSite.searchRule.idCode = loadSelector(inputSearchRuleIdCodeSelector, inputSearchRuleIdCodeRegex, inputSearchRuleIdCodeReplacement);
+        lastSite.searchRule.title = loadSelector(inputSearchRuleTitleSelector, inputSearchRuleTitleRegex, inputSearchRuleTitleReplacement);
+        lastSite.searchRule.uploader = loadSelector(inputSearchRuleUploaderSelector, inputSearchRuleUploaderRegex, inputSearchRuleUploaderReplacement);
+        lastSite.searchRule.cover = loadSelector(inputSearchRuleCoverSelector, inputSearchRuleCoverRegex, inputSearchRuleCoverReplacement);
+        lastSite.searchRule.category = loadSelector(inputSearchRuleCategorySelector, inputSearchRuleCategoryRegex, inputSearchRuleCategoryReplacement);
+        lastSite.searchRule.datetime = loadSelector(inputSearchRuleDatetimeSelector, inputSearchRuleDatetimeRegex, inputSearchRuleDatetimeReplacement);
+        lastSite.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
+        lastSite.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
+        lastSite.searchRule.pictureUrl = loadSelector(inputSearchRulePictureUrlSelector, inputSearchRulePictureUrlRegex, inputSearchRulePictureUrlReplacement);
+        lastSite.searchRule.pictureThumbnail = loadSelector(inputSearchRulePictureThumbnailSelector, inputSearchRulePictureThumbnailRegex, inputSearchRulePictureThumbnailReplacement);
 
-        if (site.searchRule.item == null && site.searchRule.idCode == null
-                && site.searchRule.title == null && site.searchRule.uploader == null
-                && site.searchRule.cover == null && site.searchRule.category == null
-                && site.searchRule.datetime == null && site.searchRule.rating == null
-                && site.searchRule.tags == null && site.searchRule.pictureUrl == null
-                && site.searchRule.pictureThumbnail == null)
-            site.searchRule = null;
+        if (lastSite.searchRule.item == null && lastSite.searchRule.idCode == null
+                && lastSite.searchRule.title == null && lastSite.searchRule.uploader == null
+                && lastSite.searchRule.cover == null && lastSite.searchRule.category == null
+                && lastSite.searchRule.datetime == null && lastSite.searchRule.rating == null
+                && lastSite.searchRule.tags == null && lastSite.searchRule.pictureUrl == null
+                && lastSite.searchRule.pictureThumbnail == null)
+            lastSite.searchRule = null;
 
         //gallery rule
-        site.galleryRule = new Rule();
-        site.galleryRule.item = loadSelector(inputGalleryRuleItemSelector, inputGalleryRuleItemRegex, inputGalleryRuleItemReplacement);
-        site.galleryRule.idCode = loadSelector(inputGalleryRuleIdCodeSelector, inputGalleryRuleIdCodeRegex, inputGalleryRuleIdCodeReplacement);
-        site.galleryRule.title = loadSelector(inputGalleryRuleTitleSelector, inputGalleryRuleTitleRegex, inputGalleryRuleTitleReplacement);
-        site.galleryRule.uploader = loadSelector(inputGalleryRuleUploaderSelector, inputGalleryRuleUploaderRegex, inputGalleryRuleUploaderReplacement);
-        site.galleryRule.cover = loadSelector(inputGalleryRuleCoverSelector, inputGalleryRuleCoverRegex, inputGalleryRuleCoverReplacement);
-        site.galleryRule.category = loadSelector(inputGalleryRuleCategorySelector, inputGalleryRuleCategoryRegex, inputGalleryRuleCategoryReplacement);
-        site.galleryRule.datetime = loadSelector(inputGalleryRuleDatetimeSelector, inputGalleryRuleDatetimeRegex, inputGalleryRuleDatetimeReplacement);
-        site.galleryRule.rating = loadSelector(inputGalleryRuleRatingSelector, inputGalleryRuleRatingRegex, inputGalleryRuleRatingReplacement);
-        site.galleryRule.tags = loadSelector(inputGalleryRuleTagsSelector, inputGalleryRuleTagsRegex, inputGalleryRuleTagsReplacement);
-        site.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
-        site.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
+        lastSite.galleryRule = new Rule();
+        lastSite.galleryRule.item = loadSelector(inputGalleryRuleItemSelector, inputGalleryRuleItemRegex, inputGalleryRuleItemReplacement);
+        lastSite.galleryRule.idCode = loadSelector(inputGalleryRuleIdCodeSelector, inputGalleryRuleIdCodeRegex, inputGalleryRuleIdCodeReplacement);
+        lastSite.galleryRule.title = loadSelector(inputGalleryRuleTitleSelector, inputGalleryRuleTitleRegex, inputGalleryRuleTitleReplacement);
+        lastSite.galleryRule.uploader = loadSelector(inputGalleryRuleUploaderSelector, inputGalleryRuleUploaderRegex, inputGalleryRuleUploaderReplacement);
+        lastSite.galleryRule.cover = loadSelector(inputGalleryRuleCoverSelector, inputGalleryRuleCoverRegex, inputGalleryRuleCoverReplacement);
+        lastSite.galleryRule.category = loadSelector(inputGalleryRuleCategorySelector, inputGalleryRuleCategoryRegex, inputGalleryRuleCategoryReplacement);
+        lastSite.galleryRule.datetime = loadSelector(inputGalleryRuleDatetimeSelector, inputGalleryRuleDatetimeRegex, inputGalleryRuleDatetimeReplacement);
+        lastSite.galleryRule.rating = loadSelector(inputGalleryRuleRatingSelector, inputGalleryRuleRatingRegex, inputGalleryRuleRatingReplacement);
+        lastSite.galleryRule.tags = loadSelector(inputGalleryRuleTagsSelector, inputGalleryRuleTagsRegex, inputGalleryRuleTagsReplacement);
+        lastSite.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
+        lastSite.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
 
-        if(lastSite!=null) {
-            site.extraRule = lastSite.extraRule;
-            site.galleryRule.description = lastSite.extraRule.description;
-        }
-        Log.d("SitePropViewHolder", "site.extraRule:" + site.extraRule);
-        if (site.indexUrl == null || site.galleryUrl == null ||
-                site.indexRule.item == null || site.indexRule.idCode == null ||
-                site.galleryRule.item == null || site.galleryRule.pictureUrl == null)
+        if (lastSite.indexUrl == null || lastSite.galleryUrl == null ||
+                lastSite.indexRule.item == null || lastSite.indexRule.idCode == null ||
+                lastSite.galleryRule.item == null || lastSite.galleryRule.pictureUrl == null)
             return null;
         else
-            return site;
+            return lastSite;
     }
 
     private String loadString(EditText editText) {
