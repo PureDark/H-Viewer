@@ -14,9 +14,7 @@
  *    limitations under the License.
  */
 
-package ml.puredark.hviewer.customs.advrecyclerview.common.data;
-
-import java.util.List;
+package ml.puredark.hviewer.libraries.advrecyclerview.common.data;
 
 public abstract class AbstractExpandableDataProvider<G extends AbstractExpandableDataProvider.GroupData, C extends AbstractExpandableDataProvider.ChildData> {
     public static abstract class BaseData {

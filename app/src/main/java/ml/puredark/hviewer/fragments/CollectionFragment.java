@@ -157,6 +157,7 @@ public class CollectionFragment extends MyFragment {
         if (currUrl == null || site == null)
             return;
         final String url = site.getListUrl(currUrl, page, keyword);
+        Log.d("CollectionFragment", url);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {

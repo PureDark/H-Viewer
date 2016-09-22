@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package ml.puredark.hviewer.customs.advrecyclerview.common.widget;
+package ml.puredark.hviewer.libraries.advrecyclerview.common.widget;
 
 import android.content.Context;
 import android.os.Build;

@@ -8,34 +8,23 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
-import android.widget.ImageView;
 
-import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.imagepipeline.request.Postprocessor;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sina.util.dnscache.DNSCache;
+
+import java.util.concurrent.TimeUnit;
 
 import ml.puredark.hviewer.customs.MyOkHttpNetworkFetcher;
 import ml.puredark.hviewer.helpers.CrashHandler;
-import ml.puredark.hviewer.helpers.HProxy;
 import ml.puredark.hviewer.helpers.HViewerHttpClient;
+import ml.puredark.hviewer.helpers.HttpDns;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.holders.SearchHistoryHolder;
 import ml.puredark.hviewer.holders.SearchSuggestionHolder;
@@ -126,7 +115,11 @@ public class HViewerApplication extends Application {
         super.onCreate();
         mContext = this;
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .dns(new HttpDns())
+                .build();
         ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
                 .setNetworkFetcher(new MyOkHttpNetworkFetcher(okHttpClient))
                 .setDownsampleEnabled(true)
@@ -137,6 +130,8 @@ public class HViewerApplication extends Application {
         searchSuggestionHolder = new SearchSuggestionHolder(this);
 
         startService(new Intent(this, DownloadService.class));
+
+        DNSCache.Init(this);
 
         CrashHandler crashHandler = CrashHandler.getInstance();
         //注册crashHandler

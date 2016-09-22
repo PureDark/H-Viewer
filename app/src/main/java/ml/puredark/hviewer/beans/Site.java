@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ml.puredark.hviewer.customs.advrecyclerview.common.data.AbstractExpandableDataProvider;
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import okhttp3.Cookie;
@@ -106,8 +105,8 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
             startPage = 0;
         }
         url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
-                .replaceAll("\\{page:" + startPage + "\\}", "" + page)
-                .replaceAll("\\{keyword:\\}", keyword);
+                .replaceAll("\\{page:.*?\\}", "" + page)
+                .replaceAll("\\{keyword:.*?\\}", keyword);
         return url;
     }
 

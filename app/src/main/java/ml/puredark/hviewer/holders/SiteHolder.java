@@ -64,8 +64,7 @@ public class SiteHolder {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`index`", item.index);
-        contentValues.put("`json`", new Gson().toJson(item));
-        dbHelper.update(dbName, contentValues, "gid = ?",
+        dbHelper.update(groupDbName, contentValues, "gid = ?",
                 new String[]{item.gid + ""});
     }
 

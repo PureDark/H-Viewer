@@ -14,12 +14,9 @@
  *    limitations under the License.
  */
 
-package ml.puredark.hviewer.customs.advrecyclerview.common.widget;
+package ml.puredark.hviewer.libraries.advrecyclerview.common.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.drawable.Animatable;
-import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -28,9 +25,7 @@ import android.widget.ImageView;
 
 import ml.puredark.hviewer.R;
 
-// NOTE: AnimatedVectorDrawableCompat works on API level 11+
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-class ExpandableItemIndicatorImplAnim extends ExpandableItemIndicator.Impl {
+class ExpandableItemIndicatorImplNoAnim extends ExpandableItemIndicator.Impl {
     private ImageView mImageView;
 
     @Override
@@ -41,13 +36,7 @@ class ExpandableItemIndicatorImplAnim extends ExpandableItemIndicator.Impl {
 
     @Override
     public void setExpandedState(boolean isExpanded, boolean animate) {
-        if (animate) {
-            @DrawableRes int resId = isExpanded ? R.drawable.ic_expand_more_to_expand_less : R.drawable.ic_expand_less_to_expand_more;
-            mImageView.setImageResource(resId);
-            ((Animatable) mImageView.getDrawable()).start();
-        } else {
-            @DrawableRes int resId = isExpanded ? R.drawable.ic_expand_less : R.drawable.ic_expand_more;
-            mImageView.setImageResource(resId);
-        }
+        @DrawableRes int resId = (isExpanded) ? R.drawable.ic_expand_less : R.drawable.ic_expand_more;
+        mImageView.setImageResource(resId);
     }
 }

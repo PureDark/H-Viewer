@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
@@ -109,6 +110,9 @@ public class MainActivity extends AnimationActivity {
 
     private SiteHolder siteHolder;
 
+    //按下返回键次数
+    private int backCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -181,8 +185,9 @@ public class MainActivity extends AnimationActivity {
 
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
-//        List<Site> sites = ExampleSites.get();
-//        siteGroups.get(0).second.addAll(sites);
+        // 测试新站点用
+        List<Site> sites = ExampleSites.get();
+        siteGroups.get(0).second.addAll(sites);
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
 
@@ -607,7 +612,16 @@ public class MainActivity extends AnimationActivity {
         } else if (searchView.isSearchOpen()) {
             searchView.closeSearch();
         } else {
-            super.onBackPressed();
+            backCount++;
+            if(backCount==1)
+                showSnackBar("再按一次退出应用！");
+            else if(backCount>=2)
+                super.onBackPressed();
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    backCount = 0;
+                }
+            }, 1000);
         }
     }
 

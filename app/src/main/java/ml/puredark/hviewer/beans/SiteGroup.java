@@ -1,7 +1,7 @@
 package ml.puredark.hviewer.beans;
 
 
-import ml.puredark.hviewer.customs.advrecyclerview.common.data.AbstractExpandableDataProvider;
+import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 
 /**
  * Created by PureDark on 2016/9/21.

@@ -10,9 +10,11 @@ import android.widget.TextView;
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
+import com.h6ah4i.android.widget.advrecyclerview.expandable.ChildPositionItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.ExpandableDraggableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.ExpandableItemConstants;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.ExpandableItemViewHolder;
+import com.h6ah4i.android.widget.advrecyclerview.expandable.GroupPositionItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemAdapter;
 
@@ -21,7 +23,7 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
-import ml.puredark.hviewer.customs.advrecyclerview.common.widget.ExpandableItemIndicator;
+import ml.puredark.hviewer.libraries.advrecyclerview.common.widget.ExpandableItemIndicator;
 import ml.puredark.hviewer.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.utils.ViewUtil;
 
@@ -225,7 +227,7 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
     @Override
     public ItemDraggableRange onGetGroupItemDraggableRange(SiteGroupViewHolder holder, int groupPosition) {
         int end = Math.max(0, getGroupCount() - 2);
-        return new ItemDraggableRange(0, end);
+        return new GroupPositionItemDraggableRange(0, end);
     }
 
     @Override
@@ -245,10 +247,13 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public void onMoveChildItem(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
-        if ((fromGroupPosition == toGroupPosition && fromChildPosition == toChildPosition)
-                || fromGroupPosition >= getGroupCount() || toGroupPosition >= getGroupCount() ) {
+        Log.d("SiteAdapter", "toChildPosition:" + toChildPosition + "getChildCount:"+mProvider.getChildCount(toGroupPosition));
+        if ((fromGroupPosition == toGroupPosition &&
+                (fromChildPosition == toChildPosition || toChildPosition >= mProvider.getChildCount(toGroupPosition)))
+                || fromGroupPosition >= mProvider.getGroupCount() || toGroupPosition >= mProvider.getGroupCount()) {
             return;
         }
+        Log.d("SiteAdapter", "fromChildPosition:" + fromChildPosition + "getChildCount:"+mProvider.getChildCount(fromGroupPosition));
         if(toChildPosition > mProvider.getChildCount(toGroupPosition))
             toChildPosition =  mProvider.getChildCount(toGroupPosition);
         mProvider.moveChildItem(fromGroupPosition, fromChildPosition, toGroupPosition, toChildPosition);
@@ -258,15 +263,16 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public boolean onCheckGroupCanDrop(int draggingGroupPosition, int dropGroupPosition) {
-        if (draggingGroupPosition == getGroupCount() - 1 || dropGroupPosition == getGroupCount() - 1)
+        if (draggingGroupPosition >= mProvider.getGroupCount() || dropGroupPosition >= mProvider.getGroupCount())
             return false;
         return true;
     }
 
     @Override
     public boolean onCheckChildCanDrop(int draggingGroupPosition, int draggingChildPosition, int dropGroupPosition, int dropChildPosition) {
-        if (draggingGroupPosition == getGroupCount() - 1 || dropGroupPosition == getGroupCount() - 1 ||
-            draggingChildPosition == getChildCount(draggingGroupPosition) - 1 || dropChildPosition == getChildCount(dropChildPosition) - 1)
+        Log.d("onCheckChildCanDrop", draggingGroupPosition + " " +draggingChildPosition+ " " +dropGroupPosition+ " " +dropChildPosition);
+        if (draggingGroupPosition >= mProvider.getGroupCount() || dropGroupPosition >= mProvider.getGroupCount() ||
+            draggingChildPosition >= mProvider.getChildCount(draggingGroupPosition) || dropChildPosition >= mProvider.getChildCount(dropChildPosition))
             return false;
         return true;
     }

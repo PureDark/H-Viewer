@@ -276,6 +276,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         if(onePage && page > startPage) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
             rvIndex.setPullLoadMoreCompleted();
+            isIndexComplete = true;
             return;
         }
         final String url = site.getGalleryUrl(myCollection.idCode, page);

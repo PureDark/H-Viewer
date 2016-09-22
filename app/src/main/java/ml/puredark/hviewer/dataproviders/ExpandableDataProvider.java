@@ -4,7 +4,7 @@ import android.support.v4.util.Pair;
 
 import java.util.List;
 
-import ml.puredark.hviewer.customs.advrecyclerview.common.data.AbstractExpandableDataProvider;
+import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 
 public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.GroupData, C extends AbstractExpandableDataProvider.ChildData>
         extends AbstractExpandableDataProvider<G, C> {

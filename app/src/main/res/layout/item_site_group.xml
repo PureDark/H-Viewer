@@ -42,7 +42,7 @@
             android:textColor="@color/black"
             android:textSize="18sp"
             tools:text="未分类" />
-        <ml.puredark.hviewer.customs.advrecyclerview.common.widget.ExpandableItemIndicator
+        <ml.puredark.hviewer.libraries.advrecyclerview.common.widget.ExpandableItemIndicator
             android:id="@+id/indicator"
             android:layout_width="24dp"
             android:layout_height="24dp"
