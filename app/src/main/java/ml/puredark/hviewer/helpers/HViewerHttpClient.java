@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,10 @@ import okhttp3.Response;
 
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
-    private static OkHttpClient mClient = new OkHttpClient.Builder().build();
+    private static OkHttpClient mClient = new OkHttpClient.Builder()
+                                                .connectTimeout(30, TimeUnit.SECONDS)
+                                                .readTimeout(60, TimeUnit.SECONDS)
+                                                .build();
 
     public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {
         String[] paramStrings = paramsString.split("&");
