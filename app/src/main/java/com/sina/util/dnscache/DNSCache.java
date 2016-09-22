@@ -182,7 +182,7 @@ public class DNSCache {
     /**
      * 从httpdns 服务器重新拉取数据
      * 
-     * @param domainModel
+     * @param domain
      */
     private void checkUpdates(String domain, boolean speedTest) {
         if (isSupport(domain)) {
@@ -349,7 +349,9 @@ public class DNSCache {
                 if (ipArray == null || ipArray.size() < 1) {
                     continue;
                 }
-                for (IpModel ipModel : ipArray) {
+                int size = ipArray.size();
+                for (int i = 0; i < size; i++) {
+                    IpModel ipModel = ipArray.get(i);
                     int rtt = speedtestManager.speedTest(ipModel.ip, domainModel.domain);
                     boolean succ = rtt > SpeedtestManager.OCUR_ERROR;
                     if (succ) {

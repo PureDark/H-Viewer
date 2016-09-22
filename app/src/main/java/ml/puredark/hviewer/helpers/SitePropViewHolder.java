@@ -629,8 +629,10 @@ public class SitePropViewHolder {
         site.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         site.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
 
-        if(lastSite!=null)
+        if(lastSite!=null) {
             site.extraRule = lastSite.extraRule;
+            site.galleryRule.description = lastSite.extraRule.description;
+        }
         Log.d("SitePropViewHolder", "site.extraRule:" + site.extraRule);
         if (site.indexUrl == null || site.galleryUrl == null ||
                 site.indexRule.item == null || site.indexRule.idCode == null ||

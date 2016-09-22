@@ -808,7 +808,7 @@ public class ExampleSites {
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
         galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("div.works_display", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://.*?.jpg)\"", null);
+        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?.png)\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 
         extraRule = new Rule();
