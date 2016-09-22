@@ -14,6 +14,7 @@ public class Collection extends AbstractDataProvider.Data {
     public List<Tag> tags;
     public List<Picture> pictures;
     public String referer;
+    public boolean preloaded = false;
 
     public Collection(int cid) {
         this.cid = cid;
@@ -28,6 +29,7 @@ public class Collection extends AbstractDataProvider.Data {
         this.cover = cover;
         this.category = category;
         this.datetime = datetime;
+        this.description = description;
         this.rating = rating;
         this.referer = referer;
         this.tags = tags;

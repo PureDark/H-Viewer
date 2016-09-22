@@ -88,6 +88,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
 
     private boolean onePage = false;
     private int startPage;
+    private int pageStep = 1;
     private int currPage;
 
     private boolean isIndexComplete = false;
@@ -137,19 +138,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         manager = new DownloadManager(this);
 
         //解析URL模板
-        Map<String, String> map = RuleParser.parseUrl(site.galleryUrl);
-        String pageStr = map.get("page");
-        try {
-            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
-            currPage = startPage;
-            if (pageStr == null)
-                onePage = true;
-            else
-                onePage = false;
-        } catch (NumberFormatException e) {
-            startPage = 0;
-            currPage = startPage;
-        }
+        parseUrl(site.galleryUrl);
 
         initCover(myCollection.cover);
         initTabAndViewPager();
@@ -161,6 +150,32 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         favouriteHolder = new FavouriteHolder(this);
         //加入历史记录
         historyHolder.addHistory((LocalCollection) myCollection);
+    }
+
+    private void parseUrl(String url) {
+        String pageStr = RuleParser.parseUrl(url).get("page");
+        try {
+            if (pageStr == null) {
+                onePage = true;
+                startPage = 0;
+                pageStep = 1;
+            }else {
+                onePage = false;
+                String[] pageStrs = pageStr.split(":");
+                if(pageStrs.length>1){
+                    pageStep = Integer.parseInt(pageStrs[1]);
+                    startPage = Integer.parseInt(pageStrs[0]);
+                }else{
+                    pageStep = 1;
+                    startPage = Integer.parseInt(pageStr);
+                }
+            }
+            currPage = startPage;
+        } catch (NumberFormatException e) {
+            startPage = 0;
+            pageStep = 1;
+            currPage = startPage;
+        }
     }
 
     private void initCover(String cover) {
@@ -316,7 +331,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                             if (picturePagerAdapter != null)
                                 picturePagerAdapter.notifyDataSetChanged();
                             currPage = page;
-                            getCollectionDetail(currPage + 1);
+                            getCollectionDetail(currPage + pageStep);
                         } else if (!pictureAdapter.getDataProvider().getItems().contains(myCollection.pictures.get(0))) {
                             // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
                             int currPid = pictureAdapter.getItemCount() + 1;
@@ -328,7 +343,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
                             if (picturePagerAdapter != null)
                                 picturePagerAdapter.notifyDataSetChanged();
                             currPage = page;
-                            getCollectionDetail(currPage + 1);
+                            getCollectionDetail(currPage + pageStep);
                         } else {
                             // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
                             isIndexComplete = true;

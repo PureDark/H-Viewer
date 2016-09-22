@@ -37,6 +37,8 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
 
+import static android.R.attr.category;
+
 public class CollectionFragment extends MyFragment {
 
     @BindView(R.id.rv_collection)
@@ -53,6 +55,7 @@ public class CollectionFragment extends MyFragment {
 
     private boolean onePage = false;
     private int startPage;
+    private int pageStep = 1;
     private int currPage;
 
     public CollectionFragment() {
@@ -107,7 +110,7 @@ public class CollectionFragment extends MyFragment {
 
             @Override
             public void onLoadMore() {
-                getCollections(keyword, currPage + 1);
+                getCollections(keyword, currPage + pageStep);
             }
         });
 
@@ -233,14 +236,25 @@ public class CollectionFragment extends MyFragment {
     private void parseUrl(String url) {
         String pageStr = RuleParser.parseUrl(url).get("page");
         try {
-            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
-            currPage = startPage;
-            if (pageStr == null)
+            if (pageStr == null) {
                 onePage = true;
-            else
+                startPage = 0;
+                pageStep = 1;
+            }else {
                 onePage = false;
+                String[] pageStrs = pageStr.split(":");
+                if(pageStrs.length>1){
+                    pageStep = Integer.parseInt(pageStrs[1]);
+                    startPage = Integer.parseInt(pageStrs[0]);
+                }else{
+                    pageStep = 1;
+                    startPage = Integer.parseInt(pageStr);
+                }
+            }
+            currPage = startPage;
         } catch (NumberFormatException e) {
             startPage = 0;
+            pageStep = 1;
             currPage = startPage;
         }
     }

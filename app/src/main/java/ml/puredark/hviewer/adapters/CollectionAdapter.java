@@ -72,13 +72,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.tvCategory.setText(collection.category);
             if (collection.tags == null) {
                 holder.tvTitle.setMaxLines(2);
-                holder.rvTags.setVisibility(View.GONE);
                 holder.rvTags.setAdapter(
                         new TagAdapter(new ListDataProvider<>(new ArrayList()))
                 );
             } else {
                 holder.tvTitle.setMaxLines(1);
-                holder.rvTags.setVisibility(View.VISIBLE);
                 holder.rvTags.setAdapter(
                         new TagAdapter(new ListDataProvider<>(collection.tags))
                 );
@@ -101,7 +99,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void checkSiteFlags(CollectionViewHolder holder, Site site, Collection collection) {
-        if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY)) {
+        if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY) && !collection.preloaded) {
             SiteFlagHandler.preloadGallery(holder, site, collection);
         }
     }
@@ -120,7 +118,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.rbRating.setVisibility(View.GONE);
         }
         if (site.hasFlag(Site.FLAG_NO_TAG)) {
+            holder.tvTitle.setMaxLines(2);
             holder.rvTags.setVisibility(View.GONE);
+            holder.rvTags.setAdapter(
+                    new TagAdapter(new ListDataProvider<>(new ArrayList()))
+            );
         }
     }
 
