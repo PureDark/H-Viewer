@@ -31,6 +31,7 @@ public class HViewerHttpClient {
     private static OkHttpClient mClient = new OkHttpClient.Builder()
                                                 .connectTimeout(30, TimeUnit.SECONDS)
                                                 .readTimeout(60, TimeUnit.SECONDS)
+                                                .dns(new HttpDns())
                                                 .build();
 
     public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {

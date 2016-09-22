@@ -26,7 +26,7 @@ import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static ml.puredark.hviewer.HViewerApplication.mContext;
 
 /**
  * @author Stay
@@ -90,11 +90,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        EmailUtil.sendEmail(EmailUtil.fromEmail, "v"+HViewerApplication.getVersionName()+" "+file.getName(),
-                                SimpleFileUtil.readString(filePath, "utf-8"));
+                        if(!DEBUG) {
+                            EmailUtil.sendEmail(EmailUtil.fromEmail, "v" + HViewerApplication.getVersionName() + " " + file.getName(),
+                                    SimpleFileUtil.readString(filePath, "utf-8"));
+                        }else
+                            SharedPreferencesUtil.saveData(mContext, "unupload_log", false);
                     }
                 }).start();
-            }else{
+            } else {
                 SharedPreferencesUtil.saveData(mContext, "unupload_log", false);
             }
         }
@@ -109,14 +112,16 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             //如果用户没有处理则让系统默认的异常处理器来处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {  //如果自己处理了异常，则不会弹出错误对话框，则需要手动退出app
-            if(!(ex instanceof OutOfMemoryError)) {
+            if (!(ex instanceof OutOfMemoryError)) {
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                 }
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(10);
-//                mDefaultHandler.uncaughtException(thread, ex);
+                if (!DEBUG) {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(10);
+                } else
+                    mDefaultHandler.uncaughtException(thread, ex);
             }
         }
     }
@@ -134,7 +139,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
-        if(ex instanceof OutOfMemoryError){
+        if (ex instanceof OutOfMemoryError) {
             // OOM一般是解码Bitmap造成的，不影响程序继续运行
             return true;
         }
@@ -153,7 +158,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             }
 
         }.start();
-        if(DEBUG)
+        if (DEBUG)
             ex.printStackTrace();
         Log.d("CrashHandler", "catched");
         return true;
