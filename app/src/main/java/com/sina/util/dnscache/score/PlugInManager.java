@@ -1,15 +1,15 @@
 package com.sina.util.dnscache.score;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 import com.sina.util.dnscache.model.IpModel;
 import com.sina.util.dnscache.score.plugin.ErrNumPlugin;
 import com.sina.util.dnscache.score.plugin.PriorityPlugin;
 import com.sina.util.dnscache.score.plugin.SpeedTestPlugin;
 import com.sina.util.dnscache.score.plugin.SuccessNumPlugin;
 import com.sina.util.dnscache.score.plugin.SuccessTimePlugin;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class PlugInManager {
 
@@ -35,7 +35,8 @@ public class PlugInManager {
             return;
         }
         //恢复得分为0
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (null != temp) {
                 temp.grade = 0;
             } else {
