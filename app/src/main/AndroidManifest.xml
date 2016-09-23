@@ -34,7 +34,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.PictureViewerActivity"
-            android:screenOrientation="user" />
+            android:screenOrientation="user"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity
             android:name=".activities.SettingActivity"
             android:screenOrientation="portrait" />
@@ -78,11 +79,7 @@
             android:name=".activities.AboutActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.LoginActivity"
-            android:windowSoftInputMode="adjustPan" ></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:windowSoftInputMode="adjustPan" ></activity>
     </application>
 
 </manifest>

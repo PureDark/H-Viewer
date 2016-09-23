@@ -79,6 +79,11 @@ public class DownloadService extends Service {
         }
     }
 
+    public void stop(){
+        pauseNoBrocast();
+        currTask = null;
+    }
+
     public DownloadTask getCurrTask() {
         return currTask;
     }
@@ -180,6 +185,7 @@ public class DownloadService extends Service {
             savePicture(picture, task, bitmap);
         } else {
             String url = (highRes) ? picture.highRes : picture.pic;
+            Log.d("DownloadService", "loadPicture url : " + url);
             ImageLoader.loadResourceFromUrl(getApplicationContext(), url, task.collection.site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
                         private DownloadTask myTask = task;
@@ -314,6 +320,10 @@ public class DownloadService extends Service {
 
         public void pause() {
             DownloadService.this.pause();
+        }
+
+        public void stop(){
+            DownloadService.this.stop();
         }
 
         public DownloadTask getCurrTask() {

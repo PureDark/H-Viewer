@@ -95,6 +95,7 @@ public class DownloadManager {
 
     public void deleteDownloadTask(DownloadTask downloadTask) {
         holder.deleteDownloadTask(downloadTask);
+        binder.stop();
     }
 
     public void unbindService(Context context) {
