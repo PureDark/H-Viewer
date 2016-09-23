@@ -213,7 +213,7 @@ public class DownloadActivity extends AnimationActivity {
         downloadedTasks = (List<DownloadTask>) downloadedTaskAdapter.getDataProvider().getItems();
         for (DownloadTask task : downloadTasks) {
             if (task.status == DownloadTask.STATUS_COMPLETED)
-                downloadedTasks.add(task);
+                downloadedTasks.add(0, task);
             else
                 downloadingTasks.add(task);
         }
