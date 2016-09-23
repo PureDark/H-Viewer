@@ -52,8 +52,6 @@ import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
-import static ml.puredark.hviewer.utils.SharedPreferencesUtil.getData;
-
 
 public class PictureViewerActivity extends AnimationActivity {
 
@@ -206,9 +204,9 @@ public class PictureViewerActivity extends AnimationActivity {
             if (picture.pic != null) {
                 loadImage(container.getContext(), picture, viewHolder);
             } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-                getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl);
+                getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
             } else if (site.picUrlSelector != null) {
-                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector);
+                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
             } else {
                 picture.pic = picture.url;
                 loadImage(container.getContext(), picture, viewHolder);
@@ -219,12 +217,12 @@ public class PictureViewerActivity extends AnimationActivity {
                     if (picture.pic != null) {
                         loadImage(container.getContext(), picture, viewHolder);
                     } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl);
+                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
                     } else if (site.picUrlSelector == null) {
                         picture.pic = picture.url;
                         loadImage(container.getContext(), picture, viewHolder);
                     } else {
-                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector);
+                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
                     }
                 }
             });
@@ -317,7 +315,7 @@ public class PictureViewerActivity extends AnimationActivity {
 
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
-            Log.d("PicturePagerAdapter", "picture.pic = "+ picture.pic);
+            Log.d("PicturePagerAdapter", "picture.pic = " + picture.pic);
             if (site == null) return;
             ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
                 @Override
@@ -351,8 +349,8 @@ public class PictureViewerActivity extends AnimationActivity {
             });
         }
 
-        private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site, final Selector selector) {
-            Log.d("PicturePagerAdapter", "picture.url = "+ picture.url);
+        private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site, final Selector selector, final Selector highResSelector) {
+            Log.d("PicturePagerAdapter", "picture.url = " + picture.url);
             if (Picture.hasPicPosfix(picture.url)) {
                 picture.pic = picture.url;
                 loadImage(context, picture, viewHolder);
@@ -373,9 +371,14 @@ public class PictureViewerActivity extends AnimationActivity {
                             }
                         } else {
                             picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
-                            picture.retries = 0;
-                            picture.referer = picture.url;
-                            loadImage(context, picture, viewHolder);
+                            picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
+                            if (picture.pic != null) {
+                                picture.retries = 0;
+                                picture.referer = picture.url;
+                                loadImage(context, picture, viewHolder);
+                            } else {
+                                onFailure(null);
+                            }
                         }
                     }
 
@@ -383,7 +386,7 @@ public class PictureViewerActivity extends AnimationActivity {
                     public void onFailure(HViewerHttpClient.HttpError error) {
                         if (picture.retries < 15) {
                             picture.retries++;
-                            getPictureUrl(context, viewHolder, picture, site, selector);
+                            getPictureUrl(context, viewHolder, picture, site, selector, highResSelector);
                         } else {
                             picture.retries = 0;
                             viewHolder.progressBar.setVisibility(View.GONE);

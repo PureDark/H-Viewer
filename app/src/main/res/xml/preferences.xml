@@ -54,6 +54,12 @@
         android:key="pref_download_settings"
         android:title="@string/settings_download">
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_download_high_res"
+            android:title="@string/settings_download_high_res"
+            android:summary="@string/settings_download_high_res_summary"/>
+
         <Preference
             android:defaultValue=""
             android:key="pref_download_path"

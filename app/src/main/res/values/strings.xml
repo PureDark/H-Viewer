@@ -25,6 +25,8 @@
     <string name="settings_view_preload_pages_summary"> 3 页</string>
 
     <string name="settings_download">下载设置</string>
+    <string name="settings_download_high_res">优先下载原图</string>
+    <string name="settings_download_high_res_summary">是否在下载比在线浏览更高清的大图</string>
     <string name="settings_download_path">更改保存位置</string>
     <string name="settings_download_path_summary">/sdcard/H-Viewer/download</string>
 

@@ -325,9 +325,10 @@ public class ExampleSites {
         indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
 
         galleryRule = new Rule();
-        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.item = new Selector("body", null, null, null, null);
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
-        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(https://files.yande.re/image/.*?\\.(jpg|png|gif|bmp))\"", null);
+        galleryRule.pictureThumbnail = new Selector("#post-view", "html", null, "\"(https://assets.yande.re/data/preview/.*?\\.(jpg|png|gif|bmp))\"", null);
 
         sites.add(new Site(31, "Yande.re Post",
                 "https://yande.re/post?page={page:1}",
@@ -370,6 +371,7 @@ public class ExampleSites {
 
         extraRule = new Rule();
         extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        extraRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(https://files.yande.re/image/.*?\\.(jpg|png|gif|bmp))\"", null);
 
         sites.add(new Site(32, "Yande.re Pool",
                 "https://yande.re/pool?page={page:1}",
@@ -390,9 +392,10 @@ public class ExampleSites {
         indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
 
         galleryRule = new Rule();
-        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.item = new Selector("body", null, null, null, null);
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
-        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(https://lolibooru.moe/image/.*?\\.(jpg|png|gif|bmp))\"", null);
+        galleryRule.pictureThumbnail = new Selector("#post-view", "html", null, "\"https:\\\\/\\\\/lolibooru.moe\\\\/data\\\\/preview\\\\/(.*?\\.(jpg|png|gif|bmp))\"", "https://lolibooru.moe/data/preview/$1");
 
         sites.add(new Site(33, "Lolibooru Post",
                 "https://lolibooru.moe/post?page={page:1}",
@@ -433,6 +436,7 @@ public class ExampleSites {
 
         extraRule = new Rule();
         extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        extraRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(https://lolibooru.moe/image/.*?\\.(jpg|png|gif|bmp))\"", null);
 
         sites.add(new Site(34, "Lolibooru Pool",
                 "https://lolibooru.moe/pool?page={page:1}",
@@ -454,9 +458,10 @@ public class ExampleSites {
         indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
 
         galleryRule = new Rule();
-        galleryRule.item = new Selector("div.content", null, null, null, null);
+        galleryRule.item = new Selector("body", null, null, null, null);
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
-        galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", null, null);
+        galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(http://konachan.net/image/.*?\\.(jpg|png|gif|bmp))\"", null);
+        galleryRule.pictureThumbnail = new Selector("#post-view", "html", null, "\"http:\\\\/\\\\/konachan.net\\\\/data\\\\/preview\\\\/(.*?\\.(jpg|png|gif|bmp))\"", "http://konachan.net/data/preview/$1");
 
         sites.add(new Site(35, "Konachan Post",
                 "https://konachan.net/post?page={page:1}",
@@ -497,6 +502,7 @@ public class ExampleSites {
 
         extraRule = new Rule();
         extraRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
+        extraRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(http://konachan.net/image/.*?\\.(jpg|png|gif|bmp))\"", null);
 
         sites.add(new Site(36, "Konachan Pool",
                 "https://konachan.net/pool?page={page:1}",
@@ -808,7 +814,7 @@ public class ExampleSites {
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
         galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?.png)\"", null);
+        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(png|jpg|bmp|gif)))\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 
         extraRule = new Rule();

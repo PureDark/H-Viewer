@@ -74,6 +74,7 @@ public class SettingActivity extends AnimationActivity {
 
         public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
 
+        public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
         public static final String KEY_PREF_DOWNLOAD_PATH = "pref_download_path";
 
         public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";

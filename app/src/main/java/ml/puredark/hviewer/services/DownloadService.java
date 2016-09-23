@@ -15,6 +15,7 @@ import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import java.io.IOException;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.activities.SettingActivity;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
@@ -24,6 +25,7 @@ import ml.puredark.hviewer.helpers.ImageLoader;
 import ml.puredark.hviewer.helpers.RuleParser;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.ImageScaleUtil;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
@@ -44,6 +46,11 @@ public class DownloadService extends Service {
     private DownloadBinder binder;
 
     private DownloadTask currTask;
+
+    public boolean downloadHighRes(){
+        return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_HIGH_RES, false);
+    }
 
     public void start(final DownloadTask task) {
         pauseNoBrocast();
@@ -99,8 +106,13 @@ public class DownloadService extends Service {
             return;
         }
         final Picture picture = currPic;
-        if (picture.pic != null) {
-            loadPicture(picture, task, null);
+
+        if (picture.highRes != null && downloadHighRes()) {
+            picture.retries = 0;
+            loadPicture(picture, task, null, true);
+        } else if (picture.pic != null) {
+            picture.retries = 0;
+            loadPicture(picture, task, null, false);
         } else if (task.collection.site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE)
                 && task.collection.site.extraRule != null
                 && task.collection.site.extraRule.pictureUrl != null) {
@@ -109,14 +121,15 @@ public class DownloadService extends Service {
             getPictureUrl(picture, task, task.collection.site.picUrlSelector);
         } else {
             picture.pic = picture.url;
-            loadPicture(picture, task, null);
+            picture.retries = 0;
+            loadPicture(picture, task, null, false);
         }
     }
 
     private void getPictureUrl(final Picture picture, final DownloadTask task, final Selector selector) {
         if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
             picture.pic = picture.url;
-            loadPicture(picture, task, null);
+            loadPicture(picture, task, null, false);
         } else
             HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
 
@@ -127,15 +140,26 @@ public class DownloadService extends Service {
                     else if (contentType.contains("image")) {
                         picture.pic = picture.url;
                         if (result instanceof Bitmap) {
-                            loadPicture(picture, task, (Bitmap) result);
+                            loadPicture(picture, task, (Bitmap) result, false);
                         } else {
-                            loadPicture(picture, task, null);
+                            loadPicture(picture, task, null, false);
                         }
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
-                        picture.retries = 0;
-                        picture.referer = picture.url;
-                        loadPicture(picture, task, null);
+                        if(task.collection.site.galleryRule.pictureHighRes!=null) {
+                            picture.highRes = RuleParser.getPictureUrl((String) result, task.collection.site.galleryRule.pictureHighRes, picture.url);
+                        }
+                        if(picture.highRes !=null && downloadHighRes()) {
+                            picture.retries = 0;
+                            picture.referer = picture.url;
+                            loadPicture(picture, task, null, true);
+                        }else if (picture.pic != null) {
+                            picture.retries = 0;
+                            picture.referer = picture.url;
+                            loadPicture(picture, task, null, false);
+                        } else {
+                            onFailure(null);
+                        }
                     }
                 }
 
@@ -151,11 +175,12 @@ public class DownloadService extends Service {
             });
     }
 
-    private void loadPicture(final Picture picture, final DownloadTask task, Bitmap bitmap) {
+    private void loadPicture(final Picture picture, final DownloadTask task, Bitmap bitmap, final boolean highRes) {
         if (bitmap != null) {
             savePicture(picture, task, bitmap);
         } else {
-            ImageLoader.loadResourceFromUrl(getApplicationContext(), picture.pic, task.collection.site.cookie, picture.referer,
+            String url = (highRes) ? picture.highRes : picture.pic;
+            ImageLoader.loadResourceFromUrl(getApplicationContext(), url, task.collection.site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
                         private DownloadTask myTask = task;
 
@@ -180,7 +205,7 @@ public class DownloadService extends Service {
                             if (picture.retries < 15) {
                                 picture.retries++;
                                 picture.status = Picture.STATUS_DOWNLOADING;
-                                loadPicture(picture, task, null);
+                                loadPicture(picture, task, null, highRes);
                             } else {
                                 picture.retries = 0;
                                 task.status = STATUS_PAUSED;
@@ -227,10 +252,10 @@ public class DownloadService extends Service {
                 filePath = task.path + fileName;
 
                 SimpleFileUtil.createIfNotExist(filePath);
-                if(!SimpleFileUtil.writeBytes(filePath, bytes)){
+                if (!SimpleFileUtil.writeBytes(filePath, bytes)) {
                     throw new IOException();
                 }
-            }else
+            } else
                 return;
             if (picture.pid == 1) {
                 task.collection.cover = "file://" + filePath;

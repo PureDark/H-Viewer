@@ -1,7 +1,5 @@
 package ml.puredark.hviewer.beans;
 
-import java.lang.reflect.Field;
-
 import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
 
 public class Picture extends AbstractDataProvider.Data {
@@ -9,15 +7,16 @@ public class Picture extends AbstractDataProvider.Data {
     public final static int STATUS_DOWNLOADING = 2;
     public final static int STATUS_DOWNLOADED = 3;
     public int pid;
-    public String thumbnail, url, pic;
+    public String thumbnail, url, pic, highRes;
     public int retries;
     public int status = STATUS_WAITING;
     public String referer;
 
-    public Picture(int pid, String url, String thumbnail, String referer) {
+    public Picture(int pid, String url, String thumbnail, String highRes, String referer) {
         this.pid = pid;
         this.url = url;
         this.thumbnail = thumbnail;
+        this.highRes = highRes;
         this.referer = referer;
     }
 
@@ -30,25 +29,7 @@ public class Picture extends AbstractDataProvider.Data {
     public boolean equals(Object obj) {
         if ((obj instanceof Picture)) {
             Picture item = (Picture) obj;
-            boolean result = true;
-            Field[] fs = Picture.class.getDeclaredFields();
-            try {
-                for (Field f : fs) {
-                    if ("pid".equals(f.getName())
-                            || "pic".equals(f.getName())
-                            || "retries".equals(f.getName())
-                            || "status".equals(f.getName())
-                            || "referer".equals(f.getName()))
-                        continue;
-                    f.setAccessible(true);
-                    Object v1 = f.get(this);
-                    Object v2 = f.get(item);
-                    result &= equals(v1, v2);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return result;
+            return equals(item.thumbnail, thumbnail) && equals(item.url, url);
         }
         return false;
     }

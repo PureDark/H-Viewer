@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.helpers;
 
+import android.text.TextUtils;
+
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
@@ -71,9 +73,9 @@ public class RuleParser {
 
                 collections.add(collection);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             return collections;
         }
     }
@@ -84,12 +86,12 @@ public class RuleParser {
             collection = getCollectionDetail(collection, element, rule, sourceUrl);
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             return collection;
         }
     }
 
-    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) throws Exception{
+    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) throws Exception {
         Elements temp;
 
         String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false);
@@ -161,8 +163,9 @@ public class RuleParser {
             temp = element.select(rule.item.selector);
             for (Element pictureElement : temp) {
                 String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true);
+                String PictureHighRes = parseSingleProperty(pictureElement, rule.pictureHighRes, sourceUrl, true);
                 String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true);
-                pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail, sourceUrl));
+                pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
             }
         }
 
@@ -191,11 +194,11 @@ public class RuleParser {
         return collection;
     }
 
-    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl) throws Exception{
+    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
         String prop = "";
 
         if (selector != null) {
-            Elements temp = ("this".equals(selector.selector))?new Elements(element):element.select(selector.selector);
+            Elements temp = ("this".equals(selector.selector)) ? new Elements(element) : element.select(selector.selector);
             if (temp != null) {
                 if ("attr".equals(selector.fun)) {
                     prop = temp.attr(selector.param);
@@ -215,11 +218,14 @@ public class RuleParser {
                         } else {
                             prop = matcher.group(1);
                         }
-                    }else
+                    } else
                         prop = "";
                 }
-                if (isUrl)
+                if (isUrl) {
+                    if (TextUtils.isEmpty(prop))
+                        return null;
                     prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
+                }
             }
         }
         return StringEscapeUtils.unescapeHtml(prop);

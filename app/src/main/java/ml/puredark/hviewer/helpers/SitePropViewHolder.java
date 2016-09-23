@@ -553,6 +553,8 @@ public class SitePropViewHolder {
     }
 
     public Site fromEditTextToSite() {
+        if(lastSite==null)
+            lastSite = new Site();
         lastSite.title = loadString(inputTitle);
         lastSite.indexUrl = loadString(inputIndexUrl);
         lastSite.galleryUrl = loadString(inputGalleryUrl);
