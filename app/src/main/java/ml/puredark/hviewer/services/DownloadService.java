@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.common.references.CloseableReference;
@@ -112,18 +113,19 @@ public class DownloadService extends Service {
         }
         final Picture picture = currPic;
 
-        if (picture.highRes != null && downloadHighRes()) {
+        boolean highRes = downloadHighRes();
+        if (!TextUtils.isEmpty(picture.highRes) && highRes) {
             picture.retries = 0;
             loadPicture(picture, task, null, true);
-        } else if (picture.pic != null) {
+        } else if (!TextUtils.isEmpty(picture.pic) && !highRes) {
             picture.retries = 0;
             loadPicture(picture, task, null, false);
         } else if (task.collection.site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE)
                 && task.collection.site.extraRule != null
                 && task.collection.site.extraRule.pictureUrl != null) {
-            getPictureUrl(picture, task, task.collection.site.extraRule.pictureUrl);
+            getPictureUrl(picture, task, task.collection.site.extraRule.pictureUrl, task.collection.site.extraRule.pictureHighRes);
         } else if (task.collection.site.picUrlSelector != null) {
-            getPictureUrl(picture, task, task.collection.site.picUrlSelector);
+            getPictureUrl(picture, task, task.collection.site.picUrlSelector, null);
         } else {
             picture.pic = picture.url;
             picture.retries = 0;
@@ -131,8 +133,9 @@ public class DownloadService extends Service {
         }
     }
 
-    private void getPictureUrl(final Picture picture, final DownloadTask task, final Selector selector) {
-        if (picture.url.endsWith(".jpg") || picture.url.endsWith(".png") || picture.url.endsWith(".bmp")) {
+    private void getPictureUrl(final Picture picture, final DownloadTask task, final Selector selector, final Selector highResSelector) {
+        Log.d("DownloadService", picture.url);
+        if (Picture.hasPicPosfix(picture.url)) {
             picture.pic = picture.url;
             loadPicture(picture, task, null, false);
         } else
@@ -151,14 +154,12 @@ public class DownloadService extends Service {
                         }
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
-                        if(task.collection.site.galleryRule.pictureHighRes!=null) {
-                            picture.highRes = RuleParser.getPictureUrl((String) result, task.collection.site.galleryRule.pictureHighRes, picture.url);
-                        }
-                        if(picture.highRes !=null && downloadHighRes()) {
+                        picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
+                        if(!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
                             picture.retries = 0;
                             picture.referer = picture.url;
                             loadPicture(picture, task, null, true);
-                        }else if (picture.pic != null) {
+                        }else if (!TextUtils.isEmpty(picture.pic)) {
                             picture.retries = 0;
                             picture.referer = picture.url;
                             loadPicture(picture, task, null, false);
@@ -185,7 +186,6 @@ public class DownloadService extends Service {
             savePicture(picture, task, bitmap);
         } else {
             String url = (highRes) ? picture.highRes : picture.pic;
-            Log.d("DownloadService", "loadPicture url : " + url);
             ImageLoader.loadResourceFromUrl(getApplicationContext(), url, task.collection.site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
                         private DownloadTask myTask = task;

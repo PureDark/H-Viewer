@@ -2,6 +2,7 @@ package ml.puredark.hviewer.helpers;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.facebook.common.executors.CallerThreadExecutor;
@@ -9,7 +10,6 @@ import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -17,11 +17,9 @@ import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.imagepipeline.request.Postprocessor;
 import com.google.gson.JsonObject;
 
 import ml.puredark.hviewer.customs.MyOkHttpNetworkFetcher;
@@ -48,6 +46,10 @@ public class ImageLoader {
     }
 
     public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
+        if(TextUtils.isEmpty(url)) {
+            imageView.setImageURI(null);
+            return;
+        }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
         header.addProperty("cookie", cookie);
@@ -76,29 +78,10 @@ public class ImageLoader {
         }
     }
 
-    public static void preloadImageFromUrl(Context context, String url, String cookie, String referer){
-        Uri uri = Uri.parse(url);
-        JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
-        if (url != null && url.startsWith("http")) {
-            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
-                HProxy proxy = new HProxy(url);
-                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-                MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
-            }
-            MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
-        }
-        ImagePipeline imagePipeline = Fresco.getImagePipeline();
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                .setResizeOptions(new ResizeOptions(1080, 1920))
-                .build();
-        imagePipeline.prefetchToDiskCache(request, context);
-    }
-
     public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, BaseBitmapDataSubscriber dataSubscriber) {
-
-        Uri uri = Uri.parse((url != null && url.startsWith("http")) ? url : "");
+        if(TextUtils.isEmpty(url))
+            return;
+        Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
         header.addProperty("cookie", cookie);
         header.addProperty("referer", referer);
@@ -116,7 +99,9 @@ public class ImageLoader {
     }
 
     public static void loadResourceFromUrl(Context context, String url, String cookie, String referer, BaseDataSubscriber dataSubscriber) {
-        Uri uri = Uri.parse((url != null && url.startsWith("http")) ? url : "");
+        if(TextUtils.isEmpty(url))
+            return;
+        Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
         header.addProperty("cookie", cookie);
         header.addProperty("referer", referer);
@@ -147,6 +132,10 @@ public class ImageLoader {
     }
 
     public static void loadThumbFromUrl(Context context, ImageView imageView, int resizeWidthDp, int resizeHeightDp, String url, String cookie, String referer, ControllerListener controllerListener) {
+        if(TextUtils.isEmpty(url)) {
+            imageView.setImageURI(null);
+            return;
+        }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
         header.addProperty("cookie", cookie);
