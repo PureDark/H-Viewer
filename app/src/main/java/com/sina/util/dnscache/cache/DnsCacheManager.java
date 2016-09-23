@@ -126,8 +126,10 @@ public class DnsCacheManager extends DNSCacheDatabaseHelper implements IDnsCache
             ipModel.sp = domainModel.sp ;
             
             domainModel.ipModelArr.add(ipModel) ;
-
-            domainTTL = Math.min(domainTTL, Integer.valueOf(ipModel.ttl));
+            try {
+                domainTTL = Math.min(domainTTL, Integer.valueOf(ipModel.ttl));
+            }catch(NumberFormatException e){
+            }
 
         }
 

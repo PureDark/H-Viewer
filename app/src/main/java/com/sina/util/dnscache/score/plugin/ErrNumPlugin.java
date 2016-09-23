@@ -12,7 +12,8 @@ public class ErrNumPlugin implements IPlugIn {
     public void run(ArrayList<IpModel> list) {
         // 查找到最大错误数
         float MAX_ERRNUM = 0;
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.err_num == null || temp.err_num.equals(""))
                 continue;
             float err_num = Float.parseFloat(temp.err_num);
@@ -24,7 +25,8 @@ public class ErrNumPlugin implements IPlugIn {
         }
         float bi = getWeight() / MAX_ERRNUM;
         // 计算得分
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.err_num == null || temp.err_num.equals("")){
                 continue;
             }

@@ -43,7 +43,8 @@ public class PlugInManager {
                 return;
             }
         }
-        for (IPlugIn plug : plugIn) {
+        for (int i = 0; i < list.size(); i++) {
+            IPlugIn plug = plugIn.get(i);
             if (plug.isActivated()) {
                 plug.run(list);
             }

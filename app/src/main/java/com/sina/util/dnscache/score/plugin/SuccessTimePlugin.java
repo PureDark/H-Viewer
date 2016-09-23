@@ -12,7 +12,8 @@ public class SuccessTimePlugin implements IPlugIn {
     public void run(ArrayList<IpModel> list) {
         final float dayTime = 24 * 60;// 单位是minute
         final float bi = getWeight() / dayTime;
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.finally_success_time == null || temp.finally_success_time.equals(""))
                 continue;
             long lastSuccTime = Long.parseLong(temp.finally_success_time);

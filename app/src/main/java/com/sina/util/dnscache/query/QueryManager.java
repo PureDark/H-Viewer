@@ -88,7 +88,8 @@ public class QueryManager implements IQuery {
             return true;
         }
         ArrayList<IpModel> ips = domainModel.ipModelArr;
-        for (IpModel ipModel : ips) {
+        for (int i = 0; i < ips.size(); i++) {
+            IpModel ipModel = ips.get(i);
             //只要有一个是通的，就认为是有效数据
             if (!("" + SpeedtestManager.MAX_OVERTIME_RTT).equals(ipModel.rtt)) {
                 return false;

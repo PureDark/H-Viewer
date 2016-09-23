@@ -12,7 +12,8 @@ public class SuccessNumPlugin implements IPlugIn {
     public void run(ArrayList<IpModel> list) {
         // 查找到最大历史成功次数
         float MAX_SUCCESSNUM = 0;
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.success_num == null || temp.success_num.equals(""))
                 continue;
             float successNum = Float.parseFloat(temp.success_num);
@@ -24,7 +25,8 @@ public class SuccessNumPlugin implements IPlugIn {
         }
         float bi = getWeight() / MAX_SUCCESSNUM;
         // 计算得分
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.success_num == null || temp.success_num.equals("")){
                 continue;
             }

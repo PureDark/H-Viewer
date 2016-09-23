@@ -12,7 +12,8 @@ public class PriorityPlugin implements IPlugIn {
     public void run(ArrayList<IpModel> list) {
         // 查找到最大优先级
         float MAX_PRIORITY = 0;
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.priority == null || temp.priority.equals(""))
                 continue;
             float priority = Float.parseFloat(temp.priority);
@@ -24,7 +25,8 @@ public class PriorityPlugin implements IPlugIn {
         }
         float bi = getWeight() / MAX_PRIORITY;
         // 计算得分
-        for (IpModel temp : list) {
+        for (int i = 0; i < list.size(); i++) {
+            IpModel temp = list.get(i);
             if (temp.priority == null || temp.priority.equals("")){
                 continue;
             }

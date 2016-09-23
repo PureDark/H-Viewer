@@ -183,9 +183,11 @@ public class NetworkManager extends Constants{
 			try {
 				String ipv4;
 				ArrayList<NetworkInterface> mylist = Collections.list(NetworkInterface.getNetworkInterfaces());
-				for (NetworkInterface ni : mylist) {
+				for (int m = 0; m< mylist.size(); m++) {
+					NetworkInterface ni = mylist.get(m);
 					ArrayList<InetAddress> iaList = Collections.list(ni.getInetAddresses());
-					for (InetAddress address : iaList) {
+					for (int i = 0; i< iaList.size(); i++) {
+						InetAddress address = iaList.get(i);
 						if (!address.isLoopbackAddress() && Tools.isIPV4(ipv4 = address.getHostAddress())) {
 							return ipv4;
 						}
