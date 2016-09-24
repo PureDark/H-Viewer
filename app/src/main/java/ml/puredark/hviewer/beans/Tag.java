@@ -1,6 +1,6 @@
 package ml.puredark.hviewer.beans;
 
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 
 public class Tag extends AbstractDataProvider.Data {
     public int tid;

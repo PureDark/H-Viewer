@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
-import ml.puredark.hviewer.helpers.RuleParser;
+import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import okhttp3.Cookie;
 

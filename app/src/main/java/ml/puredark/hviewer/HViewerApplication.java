@@ -21,14 +21,14 @@ import com.sina.util.dnscache.DNSCache;
 
 import java.util.concurrent.TimeUnit;
 
-import ml.puredark.hviewer.customs.MyOkHttpNetworkFetcher;
-import ml.puredark.hviewer.helpers.CrashHandler;
-import ml.puredark.hviewer.helpers.HViewerHttpClient;
-import ml.puredark.hviewer.helpers.HttpDns;
+import ml.puredark.hviewer.http.MyOkHttpNetworkFetcher;
+import ml.puredark.hviewer.core.CrashHandler;
+import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.http.HttpDns;
 import ml.puredark.hviewer.helpers.UpdateManager;
-import ml.puredark.hviewer.holders.SearchHistoryHolder;
-import ml.puredark.hviewer.holders.SearchSuggestionHolder;
-import ml.puredark.hviewer.services.DownloadService;
+import ml.puredark.hviewer.dataholders.SearchHistoryHolder;
+import ml.puredark.hviewer.dataholders.SearchSuggestionHolder;
+import ml.puredark.hviewer.download.DownloadService;
 import okhttp3.OkHttpClient;
 
 public class HViewerApplication extends Application {

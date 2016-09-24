@@ -3,18 +3,14 @@
  */
 package com.sina.util.dnscache.net;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -23,13 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.sina.util.dnscache.Tools;
 
-import org.apache.http.conn.ssl.SSLSocketFactory;
-
-import ml.puredark.hviewer.helpers.HViewerHttpClient;
-import ml.puredark.hviewer.helpers.HttpDns;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Headers;
+import ml.puredark.hviewer.http.HttpDns;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

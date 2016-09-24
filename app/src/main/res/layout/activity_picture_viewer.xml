@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:fitsSystemWindows="false">
 
-        <ml.puredark.hviewer.customs.MultiTouchViewPager
+        <ml.puredark.hviewer.ui.customs.MultiTouchViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

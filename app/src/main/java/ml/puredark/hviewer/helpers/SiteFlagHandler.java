@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -13,20 +12,19 @@ import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.activities.PictureViewerActivity.PicturePagerAdapter;
-import ml.puredark.hviewer.adapters.CollectionAdapter;
-import ml.puredark.hviewer.adapters.PictureAdapter;
-import ml.puredark.hviewer.adapters.PictureAdapter.PictureViewHolder;
-import ml.puredark.hviewer.adapters.TagAdapter;
+import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
+import ml.puredark.hviewer.ui.adapters.PictureAdapter.PictureViewHolder;
+import ml.puredark.hviewer.ui.adapters.TagAdapter;
 import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.http.ImageLoader;
 
 /**
  * Created by PureDark on 2016/9/5.

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.CollectionActivity">
+    tools:context=".ui.activities.CollectionActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -81,7 +81,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ml.puredark.hviewer.customs.ExTabLayout
+        <ml.puredark.hviewer.ui.customs.ExTabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="44dp"
@@ -96,7 +96,7 @@
             app:tabTextColor="@color/colorPrimaryDark"
             app:tabTitleArray="目录,相关信息" />
 
-        <ml.puredark.hviewer.customs.ExViewPager
+        <ml.puredark.hviewer.ui.customs.ExViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.helpers;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -17,12 +16,12 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.adapters.CategoryInputAdapter;
+import ml.puredark.hviewer.ui.adapters.CategoryInputAdapter;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 import static java.util.regex.Pattern.DOTALL;
 

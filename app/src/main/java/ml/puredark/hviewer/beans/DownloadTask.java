@@ -1,6 +1,6 @@
 package ml.puredark.hviewer.beans;
 
-import ml.puredark.hviewer.dataproviders.AbstractDataProvider;
+import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 
 /**
  * Created by PureDark on 2016/8/15.
