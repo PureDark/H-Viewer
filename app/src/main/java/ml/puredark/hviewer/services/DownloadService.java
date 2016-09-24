@@ -32,6 +32,7 @@ import ml.puredark.hviewer.utils.SimpleFileUtil;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
+import static ml.puredark.hviewer.utils.SimpleFileUtil.createIfNotExist;
 
 /**
  * Created by PureDark on 2016/8/16.
@@ -48,7 +49,7 @@ public class DownloadService extends Service {
 
     private DownloadTask currTask;
 
-    public boolean downloadHighRes(){
+    public boolean downloadHighRes() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
                 SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_HIGH_RES, false);
     }
@@ -80,7 +81,7 @@ public class DownloadService extends Service {
         }
     }
 
-    public void stop(){
+    public void stop() {
         pauseNoBrocast();
         currTask = null;
     }
@@ -155,11 +156,11 @@ public class DownloadService extends Service {
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
                         picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
-                        if(!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
+                        if (!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
                             picture.retries = 0;
                             picture.referer = picture.url;
                             loadPicture(picture, task, null, true);
-                        }else if (!TextUtils.isEmpty(picture.pic)) {
+                        } else if (!TextUtils.isEmpty(picture.pic)) {
                             picture.retries = 0;
                             picture.referer = picture.url;
                             loadPicture(picture, task, null, false);
@@ -239,6 +240,7 @@ public class DownloadService extends Service {
                     fileName = picture.pid + "";
                 }
                 filePath = task.path + fileName + ".jpg";
+                createIfNotExist(HViewerApplication.mContext, task.path, fileName + ".jpg", false);
                 ImageScaleUtil.saveToFile(HViewerApplication.mContext, (Bitmap) pic, filePath);
             } else if (pic instanceof PooledByteBuffer) {
                 PooledByteBuffer buffer = (PooledByteBuffer) pic;
@@ -256,8 +258,7 @@ public class DownloadService extends Service {
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
                 filePath = task.path + fileName;
-
-                SimpleFileUtil.createIfNotExist(filePath);
+                SimpleFileUtil.createIfNotExist(HViewerApplication.mContext, task.path, fileName, false);
                 if (!SimpleFileUtil.writeBytes(filePath, bytes)) {
                     throw new IOException();
                 }
@@ -322,7 +323,7 @@ public class DownloadService extends Service {
             DownloadService.this.pause();
         }
 
-        public void stop(){
+        public void stop() {
             DownloadService.this.stop();
         }
 

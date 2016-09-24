@@ -1,12 +1,16 @@
 package ml.puredark.hviewer.adapters;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
@@ -16,14 +20,14 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
+import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.ImageLoader;
 
-public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapter.DownloadTaskViewHolder> {
     private final static int VIEW_TYPE_DOWNLOADING = 1;
     private final static int VIEW_TYPE_DOWNLOADED = 2;
     private Context context;
@@ -37,26 +41,23 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DownloadTaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_DOWNLOADING) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_download_task, parent, false);
-            // 在这里对View的参数进行设置
-            DownloadingTaskViewHolder vh = new DownloadingTaskViewHolder(v);
-            return vh;
+            return new DownloadingTaskViewHolder(v);
         } else if (viewType == VIEW_TYPE_DOWNLOADED) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_collection, parent, false);
-            // 在这里对View的参数进行设置
-            DownloadedTaskViewHolder vh = new DownloadedTaskViewHolder(v);
-            return vh;
+            return new DownloadedTaskViewHolder(v);
         }
         return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(DownloadTaskViewHolder viewHolder, int position) {
         DownloadTask task = (DownloadTask) mProvider.getItem(position);
+        checkSiteFlags(viewHolder, task.collection.site);
         if (viewHolder instanceof DownloadingTaskViewHolder) {
             DownloadingTaskViewHolder holder = (DownloadingTaskViewHolder) viewHolder;
             ImageLoader.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
@@ -89,11 +90,35 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);
             TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
-            adapter.getDataProvider().clear();
-            if (task.collection.tags != null)
-                adapter.getDataProvider().addAll(task.collection.tags);
+            if(adapter!=null) {
+                adapter.getDataProvider().clear();
+                if (task.collection.tags != null)
+                    adapter.getDataProvider().addAll(task.collection.tags);
+            }
             holder.rbRating.setRating(task.collection.rating);
             holder.tvSubmittime.setText(task.collection.datetime);
+        }
+    }
+
+    private void checkSiteFlags(DownloadTaskViewHolder holder, Site site) {
+        if (site.hasFlag(Site.FLAG_NO_COVER)) {
+            holder.layoutCover.setVisibility(View.GONE);
+        }
+        if (site.hasFlag(Site.FLAG_NO_TITLE)) {
+            holder.tvTitle.setVisibility(View.GONE);
+            if (site.hasFlag(Site.FLAG_NO_TITLE)) {
+                holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.HORIZONTAL));
+            }
+        }
+        if (site.hasFlag(Site.FLAG_NO_RATING)) {
+            holder.rbRating.setVisibility(View.GONE);
+        }
+        if (site.hasFlag(Site.FLAG_NO_TAG) && holder.rvTags != null) {
+            holder.tvTitle.setMaxLines(2);
+            holder.rvTags.setVisibility(View.GONE);
+            holder.rvTags.setAdapter(
+                    new TagAdapter(new ListDataProvider<>(new ArrayList()))
+            );
         }
     }
 
@@ -131,7 +156,11 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         boolean onItemLongClick(View v, int position);
     }
 
-    public class DownloadingTaskViewHolder extends RecyclerView.ViewHolder {
+    class DownloadTaskViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ripple_layout)
+        MaterialRippleLayout rippleLayout;
+        @BindView(R.id.layout_cover)
+        RelativeLayout layoutCover;
         @BindView(R.id.iv_cover)
         ImageView ivCover;
         @BindView(R.id.tv_title)
@@ -140,6 +169,21 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView tvUploader;
         @BindView(R.id.tv_category)
         TextView tvCategory;
+        @BindView(R.id.rv_tags)
+        @Nullable
+        RecyclerView rvTags;
+        @BindView(R.id.rb_rating)
+        RatingBar rbRating;
+        @BindView(R.id.tv_submittime)
+        TextView tvSubmittime;
+
+        DownloadTaskViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    class DownloadingTaskViewHolder extends DownloadTaskViewHolder {
         @BindView(R.id.tv_count)
         TextView tvCount;
         @BindView(R.id.btn_start_pause)
@@ -148,14 +192,8 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView tvPercentage;
         @BindView(R.id.progress_bar)
         ProgressBarDeterminate progressBar;
-        @BindView(R.id.rb_rating)
-        RatingBar rbRating;
-        @BindView(R.id.tv_submittime)
-        TextView tvSubmittime;
-        @BindView(R.id.ripple_layout)
-        MaterialRippleLayout rippleLayout;
 
-        public DownloadingTaskViewHolder(View view) {
+        DownloadingTaskViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
 
@@ -195,27 +233,10 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
-    public class DownloadedTaskViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.ripple_layout)
-        MaterialRippleLayout rippleLayout;
-        @BindView(R.id.iv_cover)
-        ImageView ivCover;
-        @BindView(R.id.tv_title)
-        TextView tvTitle;
-        @BindView(R.id.tv_uploader)
-        TextView tvUploader;
-        @BindView(R.id.tv_category)
-        TextView tvCategory;
-        @BindView(R.id.rv_tags)
-        RecyclerView rvTags;
-        @BindView(R.id.rb_rating)
-        RatingBar rbRating;
-        @BindView(R.id.tv_submittime)
-        TextView tvSubmittime;
+    class DownloadedTaskViewHolder extends DownloadTaskViewHolder {
 
-        public DownloadedTaskViewHolder(View view) {
+        DownloadedTaskViewHolder(View view) {
             super(view);
-            ButterKnife.bind(this, view);
             rvTags.setAdapter(
                     new TagAdapter(
                             new ListDataProvider<>(
@@ -233,10 +254,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
+                    return mItemClickListener != null && mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 }
             });
             rippleLayout.setOnClickListener(new View.OnClickListener() {
@@ -249,10 +267,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mItemClickListener != null)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
+                    return mItemClickListener != null && mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 }
             });
         }

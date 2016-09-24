@@ -302,7 +302,7 @@ public class PictureViewerActivity extends AnimationActivity {
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
                 filePath = path + "/" + fileName;
-                SimpleFileUtil.createIfNotExist(filePath);
+                SimpleFileUtil.createIfNotExist(HViewerApplication.mContext, path, fileName, false);
                 if (SimpleFileUtil.writeBytes(filePath, bytes)) {
                     activity.showSnackBar("保存成功");
                 } else {

@@ -2,6 +2,8 @@ package ml.puredark.hviewer.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -9,6 +11,7 @@ import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +32,7 @@ import ml.puredark.hviewer.helpers.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.UriUtil;
 
 public class SettingActivity extends AnimationActivity {
 
@@ -66,7 +70,7 @@ public class SettingActivity extends AnimationActivity {
     }
 
     public static class SettingFragment extends PreferenceFragment
-            implements Preference.OnPreferenceChangeListener, DirectoryChooserFragment.OnFragmentInteractionListener{
+            implements Preference.OnPreferenceChangeListener, DirectoryChooserFragment.OnFragmentInteractionListener {
         public static final String KEY_PREF_PROXY_ENABLED = "pref_proxy_enabled";
         public static final String KEY_PREF_PROXY_REQUEST = "pref_proxy_request";
         public static final String KEY_PREF_PROXY_PICTURE = "pref_proxy_picture";
@@ -80,6 +84,8 @@ public class SettingActivity extends AnimationActivity {
         public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
         public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
         public static final String KEY_PREF_ABOUT_H_VIEWER = "pref_about_h_viewer";
+
+        private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
         private AnimationActivity activity;
         private DirectoryChooserFragment mDialog;
@@ -105,11 +111,13 @@ public class SettingActivity extends AnimationActivity {
                 getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setSummary(proxyServer);
 
             String downloadPath = DownloadManager.getDownloadPath();
-            if (downloadPath != null)
-                getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(downloadPath);
+            if (downloadPath != null) {
+                String displayPath = Uri.decode(downloadPath);
+                getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);
+            }
             getPreferenceScreen().setOnPreferenceChangeListener(this);
             final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                    .initialDirectory("/")
+                    .initialDirectory((downloadPath.startsWith("/")) ? downloadPath : "/")
                     .newDirectoryName("download")
                     .allowNewDirectoryNameModification(true)
                     .build();
@@ -119,8 +127,8 @@ public class SettingActivity extends AnimationActivity {
 
         @Override
         public void onSelectDirectory(@NonNull String path) {
-            SharedPreferencesUtil.saveData(getActivity(), KEY_PREF_DOWNLOAD_PATH, path);
-            getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(path);
+            SharedPreferencesUtil.saveData(getActivity(), KEY_PREF_DOWNLOAD_PATH, Uri.encode(path));
+            getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(Uri.decode(path));
             mDialog.dismiss();
         }
 
@@ -140,7 +148,7 @@ public class SettingActivity extends AnimationActivity {
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             if (preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)) {
-                if(!checking)
+                if (!checking)
                     checkUpdate();
             } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
                 Intent intent = new Intent(activity, LicenseActivity.class);
@@ -149,9 +157,31 @@ public class SettingActivity extends AnimationActivity {
                 Intent intent = new Intent(activity, AboutActivity.class);
                 startActivity(intent);
             } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_PATH)) {
-                mDialog.show(getFragmentManager(), null);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                } else {
+                    mDialog.show(getFragmentManager(), null);
+                }
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (resultCode == RESULT_OK) {
+                if (requestCode == RESULT_CHOOSE_DIRECTORY) {
+                    Uri uriTree = data.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        getActivity().getContentResolver().takePersistableUriPermission(
+                                uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
+                    String path = uriTree.toString();
+                    String displayPath = Uri.decode(path);
+                    SharedPreferencesUtil.saveData(getActivity(), KEY_PREF_DOWNLOAD_PATH, path);
+                    getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);
+                }
+            }
         }
 
         public void checkUpdate() {

@@ -94,7 +94,6 @@ public class ImageScaleUtil {
     public static void saveToFile(Context context, Bitmap bitmap, String destPath) throws IOException{
         ImageView iv = new ImageView(context);
         iv.setImageBitmap(bitmap);
-        destPath = createIfNotExist(destPath);
         File file = new File(destPath);
         FileInputStream fis;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

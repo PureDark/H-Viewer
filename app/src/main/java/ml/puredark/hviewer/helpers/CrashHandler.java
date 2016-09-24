@@ -37,7 +37,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      * 是否开启日志输出,在Debug状态下开启,
      * 在Release状态下关闭以提示程序性能
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     /**
      * 系统默认的UncaughtException处理类
      */
@@ -242,7 +242,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             String path = DownloadManager.getDownloadPath();
             String name = "crash-" + time + ".log";
             String filePath = path + File.separator + name;
-            filePath = ImageScaleUtil.createIfNotExist(filePath);
+            SimpleFileUtil.createIfNotExist(mContext, path, name, false);
             try {
                 SimpleFileUtil.writeString(filePath, buffer.toString(), "utf-8");
                 SharedPreferencesUtil.saveData(mContext, "unupload_log", true);
