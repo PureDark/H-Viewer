@@ -398,7 +398,7 @@ public class PictureViewerActivity extends AnimationActivity {
         }
 
         private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site, final Selector selector, final Selector highResSelector) {
-            Log.d("PicturePagerAdapter", "picture.url = " + picture.url);
+            Logger.d("PicturePagerAdapter", "picture.url = " + picture.url);
             if (Picture.hasPicPosfix(picture.url)) {
                 picture.pic = picture.url;
                 loadImage(context, picture, viewHolder);
