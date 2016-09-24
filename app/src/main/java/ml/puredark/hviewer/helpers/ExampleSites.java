@@ -194,7 +194,7 @@ public class ExampleSites {
         galleryRule.pictureThumbnail = new Selector("a img", "attr", "data-src", "(.*)", "https:$1");
 
         extraRule = new Rule();
-        extraRule.pictureUrl = new Selector("img#picarea", "attr", "src", null, null);
+        extraRule.pictureUrl = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
         //pic = new Selector("#image-container a img", "attr", "src", "(.*)", "https:$1");
 
         sites.add(new Site(5, "nhentai",

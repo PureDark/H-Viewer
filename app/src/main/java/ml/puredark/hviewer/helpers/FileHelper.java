@@ -42,7 +42,7 @@ public class FileHelper {
     }
 
     public static boolean deleteFile(String fileName, String rootPath, String... subDirs){
-        return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, Uri.parse(rootPath), subDirs);
+        return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
     public static boolean writeBytes(DocumentFile file, byte[] data) {

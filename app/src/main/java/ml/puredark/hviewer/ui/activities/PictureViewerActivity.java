@@ -418,6 +418,8 @@ public class PictureViewerActivity extends AnimationActivity {
                         } else {
                             picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
                             picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
+                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " +picture.pic);
+                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " +picture.highRes);
                             if (picture.pic != null) {
                                 picture.retries = 0;
                                 picture.referer = picture.url;
