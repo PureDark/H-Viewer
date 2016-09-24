@@ -1,7 +1,7 @@
 package ml.puredark.hviewer.http;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.ui.activities.SettingActivity;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class HProxy {
@@ -27,23 +27,23 @@ public class HProxy {
 
     public static boolean isEnabled() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_PROXY_ENABLED, false);
+                SettingFragment.KEY_PREF_PROXY_ENABLED, false);
     }
 
     public static boolean isAllowRequest() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_PROXY_REQUEST, false);
+                SettingFragment.KEY_PREF_PROXY_REQUEST, false);
     }
 
     public static boolean isAllowPicture() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_PROXY_PICTURE, false);
+                SettingFragment.KEY_PREF_PROXY_PICTURE, false);
     }
 
     private static String getProxyServer() {
 //        return PROXY_DEFAULT_SERVER;
         String proxy = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_PROXY_SERVER, "");
+                SettingFragment.KEY_PREF_PROXY_SERVER, "");
         if (proxy.startsWith("http://") || proxy.startsWith("https://"))
             return proxy;
         else

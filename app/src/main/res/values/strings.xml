@@ -12,6 +12,8 @@
 
 
     <string name="settings_proxy">HProxy 设置</string>
+    <string name="settings_proxy_detail">设置HProxy代理</string>
+    <string name="settings_proxy_detail_summary">关于 HProxy 的信息请参阅应用主页</string>
     <string name="settings_proxy_enabled">启用 HProxy</string>
     <string name="settings_proxy_enabled_summary">关于 HProxy 的信息请参阅应用主页</string>
     <string name="settings_proxy_request">普通请求</string>
@@ -21,12 +23,14 @@
     <string name="settings_proxy_server">更改 HProxy 服务器</string>
 
     <string name="settings_view">浏览设置</string>
+    <string name="settings_view_high_res">优先浏览原图</string>
+    <string name="settings_view_high_res_summary">是否在浏览时加载高清原图，可能会降低加载速度</string>
     <string name="settings_view_preload_pages">预加载页数</string>
     <string name="settings_view_preload_pages_summary"> 3 页</string>
 
     <string name="settings_download">下载设置</string>
     <string name="settings_download_high_res">优先下载原图</string>
-    <string name="settings_download_high_res_summary">是否在下载比在线浏览更高清的大图</string>
+    <string name="settings_download_high_res_summary">是否在下载时下载高清原图</string>
     <string name="settings_download_path">更改保存位置</string>
     <string name="settings_download_path_summary">/sdcard/H-Viewer/download</string>
 

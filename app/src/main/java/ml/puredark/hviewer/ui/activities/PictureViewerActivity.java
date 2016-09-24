@@ -14,7 +14,6 @@ import android.support.v4.provider.DocumentFile;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,8 +35,6 @@ import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,11 +54,9 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
-
-import static ml.puredark.hviewer.ui.activities.SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_PATH;
 
 
 public class PictureViewerActivity extends AnimationActivity {
@@ -122,7 +117,7 @@ public class PictureViewerActivity extends AnimationActivity {
         viewPager.addOnPageChangeListener(listener);
 
         int limit = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_VIEW_PRELOAD_PAGES, 2);
+                SettingFragment.KEY_PREF_VIEW_PRELOAD_PAGES, 2);
 
         viewPager.setOffscreenPageLimit(limit);
 
@@ -311,6 +306,11 @@ public class PictureViewerActivity extends AnimationActivity {
             loadPicture(pictureToBeSaved, path);
         }
 
+        public boolean viewHighRes() {
+            return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                    SettingFragment.KEY_PREF_VIEW_HIGH_RES, false);
+        }
+
         private void loadPicture(final Picture picture, final String path) {
             ImageLoader.loadResourceFromUrl(activity, picture.pic, site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
@@ -361,9 +361,10 @@ public class PictureViewerActivity extends AnimationActivity {
 
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
-            Logger.d("PicturePagerAdapter", "picture.pic = " + picture.pic);
+            String url = (viewHighRes()) ? picture.highRes : picture.pic;
+            Logger.d("PicturePagerAdapter", "url = " + url);
             if (site == null) return;
-            ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
+            ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, url, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
                 @Override
                 public void onSubmit(String id, Object callerContext) {
                     super.onSubmit(id, callerContext);

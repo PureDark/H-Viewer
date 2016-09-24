@@ -76,9 +76,6 @@
         <activity
             android:name=".ui.activities.LicenseActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.activities.AboutActivity"
-            android:screenOrientation="portrait" />
         <activity android:name=".ui.activities.LoginActivity"
             android:windowSoftInputMode="adjustPan" ></activity>
     </application>

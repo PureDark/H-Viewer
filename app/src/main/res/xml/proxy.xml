@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="pref_proxy_settings"
+        android:title="@string/settings_proxy">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="pref_proxy_enabled"
+            android:title="@string/settings_proxy_enabled"
+            android:summary="@string/settings_proxy_enabled_summary"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_proxy_request"
+            android:dependency="pref_proxy_enabled"
+            android:title="@string/settings_proxy_request"
+            android:summary="@string/settings_proxy_request_summary"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_proxy_picture"
+            android:dependency="pref_proxy_enabled"
+            android:title="@string/settings_proxy_picture"
+            android:summary="@string/settings_proxy_picture_summary"/>
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="pref_proxy_server"
+            android:dependency="pref_proxy_enabled"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_proxy_server" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

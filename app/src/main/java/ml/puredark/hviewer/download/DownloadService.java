@@ -7,7 +7,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.ui.activities.SettingActivity;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
@@ -27,6 +25,7 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -51,7 +50,7 @@ public class DownloadService extends Service {
 
     public boolean downloadHighRes() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_HIGH_RES, false);
+                SettingFragment.KEY_PREF_DOWNLOAD_HIGH_RES, false);
     }
 
     public void start(final DownloadTask task) {

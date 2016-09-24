@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.download;
 
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,16 +8,14 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.text.TextUtils;
 
-import java.io.File;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.ui.activities.SettingActivity;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
-import ml.puredark.hviewer.utils.DocumentUtil;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.content.Context.BIND_AUTO_CREATE;
@@ -53,7 +50,7 @@ public class DownloadManager {
     }
 
     public static String getDownloadPath() {
-        String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
+        String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
         if (downloadPath != null)
             return downloadPath;
         else

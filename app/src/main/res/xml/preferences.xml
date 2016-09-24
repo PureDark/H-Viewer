@@ -1,44 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory
-        android:key="pref_proxy_settings"
-        android:title="@string/settings_proxy">
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="pref_proxy_enabled"
-            android:title="@string/settings_proxy_enabled"
-            android:summary="@string/settings_proxy_enabled_summary"/>
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="pref_proxy_request"
-            android:dependency="pref_proxy_enabled"
-            android:title="@string/settings_proxy_request"
-            android:summary="@string/settings_proxy_request_summary"/>
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="pref_proxy_picture"
-            android:dependency="pref_proxy_enabled"
-            android:title="@string/settings_proxy_picture"
-            android:summary="@string/settings_proxy_picture_summary"/>
-
-        <EditTextPreference
-            android:defaultValue=""
-            android:key="pref_proxy_server"
-            android:dependency="pref_proxy_enabled"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/settings_proxy_server" />
-
-
-    </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_view_settings"
         android:title="@string/settings_view">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_view_high_res"
+            android:title="@string/settings_view_high_res"
+            android:summary="@string/settings_view_high_res_summary"/>
 
         <de.leonardarnold.numberpickerpreference.NumberPickerPreference
             android:defaultValue="2"
@@ -46,7 +19,7 @@
             app:MaxValue="10"
             app:MinValue="1"
             android:summary=" %s 页"
-            android:title="预加载页数（如图片无法加载，请降低该值）" />
+            android:title="@string/settings_view_preload_pages" />
 
     </PreferenceCategory>
 
@@ -67,6 +40,17 @@
             android:title="@string/settings_download_path"
             android:summary="@string/settings_download_path_summary"/>
 
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:key="pref_proxy"
+        android:title="@string/settings_proxy">
+
+        <Preference
+            android:key="pref_proxy_detail"
+            android:title="@string/settings_proxy_detail"
+            android:summary="@string/settings_proxy_detail_summary" />
     </PreferenceCategory>
 
     <PreferenceCategory
