@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.ui.adapters.DownloadTaskAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.beans.DownloadTask;
@@ -155,13 +157,28 @@ public class DownloadActivity extends AnimationActivity {
                                     Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
                                     startActivity(intent);
                                 } else if (i == 1) {
-                                    new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
+                                    new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除下载记录？")
                                             .setMessage("删除后将无法恢复")
                                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     manager.deleteDownloadTask(task);
                                                     distinguishDownloadTasks();
+                                                    new Handler().postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
+                                                                    .setMessage("是否删除内存卡中对应图片？")
+                                                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                                                                            String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                                                                            FileHelper.deleteFile(dirName, rootPath);
+                                                                        }
+                                                                    }).setNegativeButton("取消", null).show();
+                                                        }
+                                                    }, 250);
                                                 }
                                             }).setNegativeButton("取消", null).show();
                                 }
@@ -195,6 +212,21 @@ public class DownloadActivity extends AnimationActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 manager.deleteDownloadTask(task);
                                 distinguishDownloadTasks();
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
+                                                .setMessage("是否删除内存卡中对应图片？")
+                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                                                        String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                                                        FileHelper.deleteFile(dirName, rootPath);
+                                                    }
+                                                }).setNegativeButton("取消", null).show();
+                                    }
+                                }, 250);
                             }
                         }).setNegativeButton("取消", null).show();
                 return true;

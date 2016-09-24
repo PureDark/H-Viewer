@@ -18,6 +18,35 @@ import static android.R.attr.data;
 
 public class DocumentUtil {
 
+    public static boolean isFileExist(Context context, String fileName, String rootPath, String... subDirs){
+        return isFileExist(context, fileName, Uri.parse(rootPath), subDirs);
+    }
+
+    public static boolean isFileExist(Context context, String fileName, Uri rootUri, String... subDirs){
+        DocumentFile root;
+        if("content".equals(rootUri.getScheme()))
+            root = DocumentFile.fromTreeUri(context, rootUri);
+        else
+            root = DocumentFile.fromFile(new File(rootUri.getPath()));
+        return isFileExist(fileName, root, subDirs);
+    }
+
+    public static boolean isFileExist(String fileName, DocumentFile root, String... subDirs){
+        DocumentFile parent = root;
+        for(int i = 0; i < subDirs.length; i++){
+            String subDirName = Uri.decode(subDirs[i]);
+            DocumentFile subDir = parent.findFile(subDirName);
+            if(subDir != null)
+                parent = subDir;
+            else
+                return false;
+        }
+        DocumentFile file = parent.findFile(fileName);
+        if(file!=null&&file.exists())
+            return true;
+        return false;
+    }
+
     public static DocumentFile createDirIfNotExist(Context context, String rootPath, String... subDirs){
         return createDirIfNotExist(context, Uri.parse(rootPath), subDirs);
     }
@@ -64,6 +93,34 @@ public class DocumentUtil {
             file = parent.createFile(mimeType, fileName);
         }
         return file;
+    }
+
+    public static boolean deleteFile(Context context, String fileName, String rootPath, String... subDirs){
+        return deleteFile(context, fileName, Uri.parse(rootPath), subDirs);
+    }
+
+    public static boolean deleteFile(Context context, String fileName, Uri rootUri, String... subDirs){
+        DocumentFile root;
+        if("content".equals(rootUri.getScheme()))
+            root = DocumentFile.fromTreeUri(context, rootUri);
+        else
+            root = DocumentFile.fromFile(new File(rootUri.getPath()));
+        return deleteFile(fileName, root, subDirs);
+    }
+
+    public static boolean deleteFile(String fileName, DocumentFile root, String... subDirs){
+        DocumentFile parent = root;
+        for(int i = 0; i < subDirs.length; i++){
+            String subDirName = Uri.decode(subDirs[i]);
+            DocumentFile subDir = parent.findFile(subDirName);
+            if(subDir != null)
+                parent = subDir;
+            else
+                return false;
+        }
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return file != null && file.exists() && file.delete();
     }
 
     public static boolean writeBytes(Context context, String filePath, byte[] data) {

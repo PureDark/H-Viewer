@@ -187,6 +187,9 @@ public class DownloadService extends Service {
             savePicture(picture, task, bitmap);
         } else {
             String url = (highRes) ? picture.highRes : picture.pic;
+            Logger.d("DownloadService", "loadPicture pic : " + picture.pic);
+            Logger.d("DownloadService", "loadPicture highRes : " + picture.highRes);
+            Logger.d("DownloadService", "loadPicture url : " + url);
             ImageLoader.loadResourceFromUrl(getApplicationContext(), url, task.collection.site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
                         private DownloadTask myTask = task;

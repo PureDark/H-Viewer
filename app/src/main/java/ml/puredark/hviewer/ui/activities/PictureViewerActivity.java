@@ -2,14 +2,19 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +36,8 @@ import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +49,8 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -52,6 +61,8 @@ import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
+import static ml.puredark.hviewer.ui.activities.SettingActivity.SettingFragment.KEY_PREF_DOWNLOAD_PATH;
+
 
 public class PictureViewerActivity extends AnimationActivity {
 
@@ -61,6 +72,8 @@ public class PictureViewerActivity extends AnimationActivity {
     TextView tvCount;
     @BindView(R.id.view_pager)
     MultiTouchViewPager viewPager;
+
+    private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
     private PicturePagerAdapter picturePagerAdapter;
 
@@ -123,18 +136,30 @@ public class PictureViewerActivity extends AnimationActivity {
         super.onDestroy();
     }
 
-    public static class PicturePagerAdapter extends PagerAdapter {
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == RESULT_CHOOSE_DIRECTORY) {
+                Uri uriTree = data.getData();
+                if (picturePagerAdapter != null)
+                    picturePagerAdapter.onSelectDirectory(uriTree);
+            }
+        }
+    }
+
+    public static class PicturePagerAdapter extends PagerAdapter implements DirectoryChooserFragment.OnFragmentInteractionListener{
+
         private AnimationActivity activity;
 
         private Site site;
 
         public List<Picture> pictures;
-
         private List<PictureViewHolder> viewHolders = new ArrayList<>();
 
         private DirectoryChooserFragment mDialog;
-
         private String lastPath = DownloadManager.getDownloadPath();
+        private Picture pictureToBeSaved;
 
         public PicturePagerAdapter(Site site, List<Picture> pictures) {
             this.site = site;
@@ -235,26 +260,20 @@ public class PictureViewerActivity extends AnimationActivity {
                                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                                .initialDirectory(lastPath)
-                                                .newDirectoryName("download")
-                                                .allowNewDirectoryNameModification(true)
-                                                .build();
-                                        mDialog = DirectoryChooserFragment.newInstance(config);
-                                        mDialog.setDirectoryChooserListener(new DirectoryChooserFragment.OnFragmentInteractionListener() {
-                                            @Override
-                                            public void onSelectDirectory(@NonNull String path) {
-                                                lastPath = path;
-                                                loadPicture(picture, path);
-                                                mDialog.dismiss();
-                                            }
-
-                                            @Override
-                                            public void onCancelChooser() {
-                                                mDialog.dismiss();
-                                            }
-                                        });
-                                        mDialog.show(activity.getFragmentManager(), null);
+                                        pictureToBeSaved = picture;
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                            activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                                        } else {
+                                            final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                    .initialDirectory(lastPath)
+                                                    .newDirectoryName("download")
+                                                    .allowNewDirectoryNameModification(true)
+                                                    .build();
+                                            mDialog = DirectoryChooserFragment.newInstance(config);
+                                            mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
+                                            mDialog.show(activity.getFragmentManager(), null);
+                                        }
                                     }
                                 }).setNegativeButton("否", null).show();
                     }
@@ -264,6 +283,32 @@ public class PictureViewerActivity extends AnimationActivity {
             viewHolders.set(position, viewHolder);
             container.addView(viewHolder.view, 0);
             return viewHolder.view;
+        }
+
+        @Override
+        public void onSelectDirectory(@NonNull String path) {
+            if(pictureToBeSaved==null)
+                return;
+            lastPath = path;
+            loadPicture(pictureToBeSaved, path);
+            mDialog.dismiss();
+        }
+
+        @Override
+        public void onCancelChooser() {
+            mDialog.dismiss();
+        }
+
+        public void onSelectDirectory(Uri rootUri){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                activity.getContentResolver().takePersistableUriPermission(
+                        rootUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+            String path = rootUri.toString();
+            if(pictureToBeSaved==null)
+                return;
+            lastPath = path;
+            loadPicture(pictureToBeSaved, path);
         }
 
         private void loadPicture(final Picture picture, final String path) {
@@ -279,7 +324,7 @@ public class PictureViewerActivity extends AnimationActivity {
                             if (ref != null) {
                                 try {
                                     PooledByteBuffer imageBuffer = ref.get();
-                                    savePicture(picture, path, imageBuffer);
+                                    savePicture(path, imageBuffer);
                                 } finally {
                                     CloseableReference.closeSafely(ref);
                                 }
@@ -293,17 +338,18 @@ public class PictureViewerActivity extends AnimationActivity {
                     });
         }
 
-        private void savePicture(Picture picture, String path, PooledByteBuffer buffer) {
+        private void savePicture(String path, PooledByteBuffer buffer) {
             try {
-                String fileName, filePath;
                 byte[] bytes = new byte[buffer.size()];
                 buffer.read(0, bytes, 0, buffer.size());
-                fileName = picture.pid + "";
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
-                fileName += "." + postfix;
-                filePath = path + "/" + fileName;
-                SimpleFileUtil.createIfNotExist(filePath);
-                if (SimpleFileUtil.writeBytes(filePath, bytes)) {
+                String fileName;
+                int i = 1;
+                do {
+                    fileName = (i++)+ "." + postfix;
+                }while (FileHelper.isFileExist(fileName, path));
+                DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
+                if (FileHelper.writeBytes(documentFile, bytes)) {
                     activity.showSnackBar("保存成功");
                 } else {
                     activity.showSnackBar("保存失败，请检查剩余空间");
@@ -315,7 +361,7 @@ public class PictureViewerActivity extends AnimationActivity {
 
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
-            Log.d("PicturePagerAdapter", "picture.pic = " + picture.pic);
+            Logger.d("PicturePagerAdapter", "picture.pic = " + picture.pic);
             if (site == null) return;
             ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, picture.pic, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
                 @Override

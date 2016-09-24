@@ -109,7 +109,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (site.hasFlag(Site.FLAG_NO_TITLE)) {
             holder.tvTitle.setVisibility(View.GONE);
-            if (site.hasFlag(Site.FLAG_NO_TITLE)) {
+            if (holder.rvTags != null) {
                 holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.HORIZONTAL));
             }
         }

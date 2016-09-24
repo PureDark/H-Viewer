@@ -175,7 +175,6 @@ public class SettingActivity extends AnimationActivity {
                                 uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     }
                     String path = uriTree.toString();
-                    path = Uri.encode("/sdcard/H-Viewer/download");
                     String displayPath = Uri.decode(path);
                     SharedPreferencesUtil.saveData(getActivity(), KEY_PREF_DOWNLOAD_PATH, path);
                     getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);

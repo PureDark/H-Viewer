@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.activities.AnimationActivity;
 import ml.puredark.hviewer.ui.activities.CollectionActivity;
 import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
@@ -154,7 +155,7 @@ public class CollectionFragment extends MyFragment {
         if (currUrl == null || site == null)
             return;
         final String url = site.getListUrl(currUrl, page, keyword);
-        Log.d("CollectionFragment", url);
+        Logger.d("CollectionFragment", url);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {

@@ -70,7 +70,7 @@ public class DownloadManager {
 
     public boolean createDownloadTask(LocalCollection collection) {
         String dirName = collection.title;
-        String path = getDownloadPath() + Uri.encode("/" + dirName);
+        String path = getDownloadPath() + "/" + Uri.encode(dirName);
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (holder.isInList(task) || binder == null)
             return false;
@@ -78,8 +78,10 @@ public class DownloadManager {
         task.did = did;
         if (TextUtils.isEmpty(collection.title)) {
             dirName = collection.site.title + "_" + did;
-        } else if (new File(path).exists()) {
-            dirName = collection.title + " (2)";
+        }
+        int i = 2;
+        while (FileHelper.isFileExist(dirName, getDownloadPath())) {
+            dirName = collection.title + " ("+(i++)+")";
         }
         path = getDownloadPath() + "/" + Uri.encode(dirName);
         FileHelper.createDirIfNotExist(getDownloadPath(), dirName);

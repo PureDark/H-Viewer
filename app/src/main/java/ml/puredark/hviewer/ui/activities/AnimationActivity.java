@@ -22,6 +22,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.nineoldandroids.animation.Animator;
 
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.customs.AnimationOnActivity;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
@@ -194,7 +195,7 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
             else if(intent.getAction().equals(DownloadService.ON_COMPLETE)){
                 showSnackBar("一个任务下载成功");
             }
-            Log.d("DownloadReceiver", intent.getAction());
+            Logger.d("DownloadReceiver", intent.getAction());
         }
 
     }

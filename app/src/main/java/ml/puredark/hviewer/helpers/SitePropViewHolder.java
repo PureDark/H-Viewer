@@ -51,14 +51,6 @@ public class SitePropViewHolder {
     @BindView(R.id.rv_category)
     RecyclerView rvCategory;
 
-    @BindView(R.id.input_picUrlSelector_selector)
-    MaterialEditText inputPicUrlSelectorSelector;
-    @BindView(R.id.input_picUrlSelector_regex)
-    MaterialEditText inputPicUrlSelectorRegex;
-    @BindView(R.id.input_picUrlSelector_replacement)
-    MaterialEditText inputPicUrlSelectorReplacement;
-
-
     @BindView(R.id.btn_indexRule)
     TextView btnIndexRule;
     @BindView(R.id.layout_indexRule)
@@ -117,18 +109,6 @@ public class SitePropViewHolder {
     MaterialEditText inputIndexRuleTagsRegex;
     @BindView(R.id.input_indexRule_tags_replacement)
     MaterialEditText inputIndexRuleTagsReplacement;
-    @BindView(R.id.input_indexRule_pictureUrl_selector)
-    MaterialEditText inputIndexRulePictureUrlSelector;
-    @BindView(R.id.input_indexRule_pictureUrl_regex)
-    MaterialEditText inputIndexRulePictureUrlRegex;
-    @BindView(R.id.input_indexRule_pictureUrl_replacement)
-    MaterialEditText inputIndexRulePictureUrlReplacement;
-    @BindView(R.id.input_indexRule_pictureThumbnail_selector)
-    MaterialEditText inputIndexRulePictureThumbnailSelector;
-    @BindView(R.id.input_indexRule_pictureThumbnail_regex)
-    MaterialEditText inputIndexRulePictureThumbnailRegex;
-    @BindView(R.id.input_indexRule_pictureThumbnail_replacement)
-    MaterialEditText inputIndexRulePictureThumbnailReplacement;
 
 
     @BindView(R.id.btn_searchRule)
@@ -189,18 +169,6 @@ public class SitePropViewHolder {
     MaterialEditText inputSearchRuleTagsRegex;
     @BindView(R.id.input_searchRule_tags_replacement)
     MaterialEditText inputSearchRuleTagsReplacement;
-    @BindView(R.id.input_searchRule_pictureUrl_selector)
-    MaterialEditText inputSearchRulePictureUrlSelector;
-    @BindView(R.id.input_searchRule_pictureUrl_regex)
-    MaterialEditText inputSearchRulePictureUrlRegex;
-    @BindView(R.id.input_searchRule_pictureUrl_replacement)
-    MaterialEditText inputSearchRulePictureUrlReplacement;
-    @BindView(R.id.input_searchRule_pictureThumbnail_selector)
-    MaterialEditText inputSearchRulePictureThumbnailSelector;
-    @BindView(R.id.input_searchRule_pictureThumbnail_regex)
-    MaterialEditText inputSearchRulePictureThumbnailRegex;
-    @BindView(R.id.input_searchRule_pictureThumbnail_replacement)
-    MaterialEditText inputSearchRulePictureThumbnailReplacement;
 
 
     @BindView(R.id.btn_galleryRule)
@@ -213,12 +181,6 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryRuleItemRegex;
     @BindView(R.id.input_galleryRule_item_replacement)
     MaterialEditText inputGalleryRuleItemReplacement;
-    @BindView(R.id.input_galleryRule_idCode_selector)
-    MaterialEditText inputGalleryRuleIdCodeSelector;
-    @BindView(R.id.input_galleryRule_idCode_regex)
-    MaterialEditText inputGalleryRuleIdCodeRegex;
-    @BindView(R.id.input_galleryRule_idCode_replacement)
-    MaterialEditText inputGalleryRuleIdCodeReplacement;
     @BindView(R.id.input_galleryRule_title_selector)
     MaterialEditText inputGalleryRuleTitleSelector;
     @BindView(R.id.input_galleryRule_title_regex)
@@ -255,24 +217,114 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryRuleRatingRegex;
     @BindView(R.id.input_galleryRule_rating_replacement)
     MaterialEditText inputGalleryRuleRatingReplacement;
+    @BindView(R.id.input_galleryRule_description_selector)
+    MaterialEditText inputGalleryRuleDescriptionSelector;
+    @BindView(R.id.input_galleryRule_description_regex)
+    MaterialEditText inputGalleryRuleDescriptionRegex;
+    @BindView(R.id.input_galleryRule_description_replacement)
+    MaterialEditText inputGalleryRuleDescriptionReplacement;
     @BindView(R.id.input_galleryRule_tags_selector)
     MaterialEditText inputGalleryRuleTagsSelector;
     @BindView(R.id.input_galleryRule_tags_regex)
     MaterialEditText inputGalleryRuleTagsRegex;
     @BindView(R.id.input_galleryRule_tags_replacement)
     MaterialEditText inputGalleryRuleTagsReplacement;
-    @BindView(R.id.input_galleryRule_pictureUrl_selector)
-    MaterialEditText inputGalleryRulePictureUrlSelector;
-    @BindView(R.id.input_galleryRule_pictureUrl_regex)
-    MaterialEditText inputGalleryRulePictureUrlRegex;
-    @BindView(R.id.input_galleryRule_pictureUrl_replacement)
-    MaterialEditText inputGalleryRulePictureUrlReplacement;
     @BindView(R.id.input_galleryRule_pictureThumbnail_selector)
     MaterialEditText inputGalleryRulePictureThumbnailSelector;
     @BindView(R.id.input_galleryRule_pictureThumbnail_regex)
     MaterialEditText inputGalleryRulePictureThumbnailRegex;
     @BindView(R.id.input_galleryRule_pictureThumbnail_replacement)
     MaterialEditText inputGalleryRulePictureThumbnailReplacement;
+    @BindView(R.id.input_galleryRule_pictureUrl_selector)
+    MaterialEditText inputGalleryRulePictureUrlSelector;
+    @BindView(R.id.input_galleryRule_pictureUrl_regex)
+    MaterialEditText inputGalleryRulePictureUrlRegex;
+    @BindView(R.id.input_galleryRule_pictureUrl_replacement)
+    MaterialEditText inputGalleryRulePictureUrlReplacement;
+    @BindView(R.id.input_galleryRule_pictureHighRes_selector)
+    MaterialEditText inputGalleryRulePictureHighResSelector;
+    @BindView(R.id.input_galleryRule_pictureHighRes_regex)
+    MaterialEditText inputGalleryRulePictureHighResRegex;
+    @BindView(R.id.input_galleryRule_pictureHighRes_replacement)
+    MaterialEditText inputGalleryRulePictureHighResReplacement;
+
+
+    @BindView(R.id.btn_extraRule)
+    TextView btnExtraRule;
+    @BindView(R.id.layout_extraRule)
+    LinearLayout layoutExtraRule;
+    @BindView(R.id.input_extraRule_item_selector)
+    MaterialEditText inputExtraRuleItemSelector;
+    @BindView(R.id.input_extraRule_item_regex)
+    MaterialEditText inputExtraRuleItemRegex;
+    @BindView(R.id.input_extraRule_item_replacement)
+    MaterialEditText inputExtraRuleItemReplacement;
+    @BindView(R.id.input_extraRule_title_selector)
+    MaterialEditText inputExtraRuleTitleSelector;
+    @BindView(R.id.input_extraRule_title_regex)
+    MaterialEditText inputExtraRuleTitleRegex;
+    @BindView(R.id.input_extraRule_title_replacement)
+    MaterialEditText inputExtraRuleTitleReplacement;
+    @BindView(R.id.input_extraRule_uploader_selector)
+    MaterialEditText inputExtraRuleUploaderSelector;
+    @BindView(R.id.input_extraRule_uploader_regex)
+    MaterialEditText inputExtraRuleUploaderRegex;
+    @BindView(R.id.input_extraRule_uploader_replacement)
+    MaterialEditText inputExtraRuleUploaderReplacement;
+    @BindView(R.id.input_extraRule_cover_selector)
+    MaterialEditText inputExtraRuleCoverSelector;
+    @BindView(R.id.input_extraRule_cover_regex)
+    MaterialEditText inputExtraRuleCoverRegex;
+    @BindView(R.id.input_extraRule_cover_replacement)
+    MaterialEditText inputExtraRuleCoverReplacement;
+    @BindView(R.id.input_extraRule_category_selector)
+    MaterialEditText inputExtraRuleCategorySelector;
+    @BindView(R.id.input_extraRule_category_regex)
+    MaterialEditText inputExtraRuleCategoryRegex;
+    @BindView(R.id.input_extraRule_category_replacement)
+    MaterialEditText inputExtraRuleCategoryReplacement;
+    @BindView(R.id.input_extraRule_datetime_selector)
+    MaterialEditText inputExtraRuleDatetimeSelector;
+    @BindView(R.id.input_extraRule_datetime_regex)
+    MaterialEditText inputExtraRuleDatetimeRegex;
+    @BindView(R.id.input_extraRule_datetime_replacement)
+    MaterialEditText inputExtraRuleDatetimeReplacement;
+    @BindView(R.id.input_extraRule_rating_selector)
+    MaterialEditText inputExtraRuleRatingSelector;
+    @BindView(R.id.input_extraRule_rating_regex)
+    MaterialEditText inputExtraRuleRatingRegex;
+    @BindView(R.id.input_extraRule_rating_replacement)
+    MaterialEditText inputExtraRuleRatingReplacement;
+    @BindView(R.id.input_extraRule_description_selector)
+    MaterialEditText inputExtraRuleDescriptionSelector;
+    @BindView(R.id.input_extraRule_description_regex)
+    MaterialEditText inputExtraRuleDescriptionRegex;
+    @BindView(R.id.input_extraRule_description_replacement)
+    MaterialEditText inputExtraRuleDescriptionReplacement;
+    @BindView(R.id.input_extraRule_tags_selector)
+    MaterialEditText inputExtraRuleTagsSelector;
+    @BindView(R.id.input_extraRule_tags_regex)
+    MaterialEditText inputExtraRuleTagsRegex;
+    @BindView(R.id.input_extraRule_tags_replacement)
+    MaterialEditText inputExtraRuleTagsReplacement;
+    @BindView(R.id.input_extraRule_pictureThumbnail_selector)
+    MaterialEditText inputExtraRulePictureThumbnailSelector;
+    @BindView(R.id.input_extraRule_pictureThumbnail_regex)
+    MaterialEditText inputExtraRulePictureThumbnailRegex;
+    @BindView(R.id.input_extraRule_pictureThumbnail_replacement)
+    MaterialEditText inputExtraRulePictureThumbnailReplacement;
+    @BindView(R.id.input_extraRule_pictureUrl_selector)
+    MaterialEditText inputExtraRulePictureUrlSelector;
+    @BindView(R.id.input_extraRule_pictureUrl_regex)
+    MaterialEditText inputExtraRulePictureUrlRegex;
+    @BindView(R.id.input_extraRule_pictureUrl_replacement)
+    MaterialEditText inputExtraRulePictureUrlReplacement;
+    @BindView(R.id.input_extraRule_pictureHighRes_selector)
+    MaterialEditText inputExtraRulePictureHighResSelector;
+    @BindView(R.id.input_extraRule_pictureHighRes_regex)
+    MaterialEditText inputExtraRulePictureHighResRegex;
+    @BindView(R.id.input_extraRule_pictureHighRes_replacement)
+    MaterialEditText inputExtraRulePictureHighResReplacement;
 
     private CategoryInputAdapter categoryInputAdapter;
     private Site lastSite;
@@ -327,6 +379,18 @@ public class SitePropViewHolder {
                 }
             }
         });
+        btnExtraRule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (layoutExtraRule.getVisibility() == View.GONE) {
+                    layoutExtraRule.setVisibility(View.VISIBLE);
+                    btnExtraRule.setText("-" + btnExtraRule.getText().toString().substring(1));
+                } else {
+                    layoutExtraRule.setVisibility(View.GONE);
+                    btnExtraRule.setText("+" + btnExtraRule.getText().toString().substring(1));
+                }
+            }
+        });
 
         categoryInputAdapter = new CategoryInputAdapter(new ListDataProvider(new ArrayList()));
         rvCategory.setAdapter(categoryInputAdapter);
@@ -371,11 +435,6 @@ public class SitePropViewHolder {
             categoryInputAdapter.notifyDataSetChanged();
         }
 
-        if (site.picUrlSelector != null) {
-            inputPicUrlSelectorSelector.setText(joinSelector(site.picUrlSelector));
-            inputPicUrlSelectorRegex.setText(site.picUrlSelector.regex);
-            inputPicUrlSelectorReplacement.setText(site.picUrlSelector.replacement);
-        }
         if (site.indexRule != null) {
             if (site.indexRule.item != null) {
                 inputIndexRuleItemSelector.setText(joinSelector(site.indexRule.item));
@@ -421,16 +480,6 @@ public class SitePropViewHolder {
                 inputIndexRuleTagsSelector.setText(joinSelector(site.indexRule.tags));
                 inputIndexRuleTagsRegex.setText(site.indexRule.tags.regex);
                 inputIndexRuleTagsReplacement.setText(site.indexRule.tags.replacement);
-            }
-            if (site.indexRule.pictureUrl != null) {
-                inputIndexRulePictureUrlSelector.setText(joinSelector(site.indexRule.pictureUrl));
-                inputIndexRulePictureUrlRegex.setText(site.indexRule.pictureUrl.regex);
-                inputIndexRulePictureUrlReplacement.setText(site.indexRule.pictureUrl.replacement);
-            }
-            if (site.indexRule.pictureThumbnail != null) {
-                inputIndexRulePictureThumbnailSelector.setText(joinSelector(site.indexRule.pictureThumbnail));
-                inputIndexRulePictureThumbnailRegex.setText(site.indexRule.pictureThumbnail.regex);
-                inputIndexRulePictureThumbnailReplacement.setText(site.indexRule.pictureThumbnail.replacement);
             }
         }
 
@@ -480,16 +529,6 @@ public class SitePropViewHolder {
                 inputSearchRuleTagsRegex.setText(site.searchRule.tags.regex);
                 inputSearchRuleTagsReplacement.setText(site.searchRule.tags.replacement);
             }
-            if (site.searchRule.pictureUrl != null) {
-                inputSearchRulePictureUrlSelector.setText(joinSelector(site.searchRule.pictureUrl));
-                inputSearchRulePictureUrlRegex.setText(site.searchRule.pictureUrl.regex);
-                inputSearchRulePictureUrlReplacement.setText(site.searchRule.pictureUrl.replacement);
-            }
-            if (site.searchRule.pictureThumbnail != null) {
-                inputSearchRulePictureThumbnailSelector.setText(joinSelector(site.searchRule.pictureThumbnail));
-                inputSearchRulePictureThumbnailRegex.setText(site.searchRule.pictureThumbnail.regex);
-                inputSearchRulePictureThumbnailReplacement.setText(site.searchRule.pictureThumbnail.replacement);
-            }
         }
 
         if (site.galleryRule != null) {
@@ -497,11 +536,6 @@ public class SitePropViewHolder {
                 inputGalleryRuleItemSelector.setText(joinSelector(site.galleryRule.item));
                 inputGalleryRuleItemRegex.setText(site.galleryRule.item.regex);
                 inputGalleryRuleItemReplacement.setText(site.galleryRule.item.replacement);
-            }
-            if (site.galleryRule.idCode != null) {
-                inputGalleryRuleIdCodeSelector.setText(joinSelector(site.galleryRule.idCode));
-                inputGalleryRuleIdCodeRegex.setText(site.galleryRule.idCode.regex);
-                inputGalleryRuleIdCodeReplacement.setText(site.galleryRule.idCode.replacement);
             }
             if (site.galleryRule.title != null) {
                 inputGalleryRuleTitleSelector.setText(joinSelector(site.galleryRule.title));
@@ -533,20 +567,93 @@ public class SitePropViewHolder {
                 inputGalleryRuleRatingRegex.setText(site.galleryRule.rating.regex);
                 inputGalleryRuleRatingReplacement.setText(site.galleryRule.rating.replacement);
             }
+            if (site.galleryRule.description != null) {
+                inputGalleryRuleDescriptionSelector.setText(joinSelector(site.galleryRule.description));
+                inputGalleryRuleDescriptionRegex.setText(site.galleryRule.description.regex);
+                inputGalleryRuleDescriptionReplacement.setText(site.galleryRule.description.replacement);
+            }
             if (site.galleryRule.tags != null) {
                 inputGalleryRuleTagsSelector.setText(joinSelector(site.galleryRule.tags));
                 inputGalleryRuleTagsRegex.setText(site.galleryRule.tags.regex);
                 inputGalleryRuleTagsReplacement.setText(site.galleryRule.tags.replacement);
+            }
+            if (site.galleryRule.pictureThumbnail != null) {
+                inputGalleryRulePictureThumbnailSelector.setText(joinSelector(site.galleryRule.pictureThumbnail));
+                inputGalleryRulePictureThumbnailRegex.setText(site.galleryRule.pictureThumbnail.regex);
+                inputGalleryRulePictureThumbnailReplacement.setText(site.galleryRule.pictureThumbnail.replacement);
             }
             if (site.galleryRule.pictureUrl != null) {
                 inputGalleryRulePictureUrlSelector.setText(joinSelector(site.galleryRule.pictureUrl));
                 inputGalleryRulePictureUrlRegex.setText(site.galleryRule.pictureUrl.regex);
                 inputGalleryRulePictureUrlReplacement.setText(site.galleryRule.pictureUrl.replacement);
             }
-            if (site.galleryRule.pictureThumbnail != null) {
-                inputGalleryRulePictureThumbnailSelector.setText(joinSelector(site.galleryRule.pictureThumbnail));
-                inputGalleryRulePictureThumbnailRegex.setText(site.galleryRule.pictureThumbnail.regex);
-                inputGalleryRulePictureThumbnailReplacement.setText(site.galleryRule.pictureThumbnail.replacement);
+            if (site.galleryRule.pictureHighRes != null) {
+                inputGalleryRulePictureHighResSelector.setText(joinSelector(site.galleryRule.pictureHighRes));
+                inputGalleryRulePictureHighResRegex.setText(site.galleryRule.pictureHighRes.regex);
+                inputGalleryRulePictureHighResReplacement.setText(site.galleryRule.pictureHighRes.replacement);
+            }
+
+            if (site.extraRule != null) {
+                if (site.extraRule.item != null) {
+                    inputExtraRuleItemSelector.setText(joinSelector(site.extraRule.item));
+                    inputExtraRuleItemRegex.setText(site.extraRule.item.regex);
+                    inputExtraRuleItemReplacement.setText(site.extraRule.item.replacement);
+                }
+                if (site.extraRule.title != null) {
+                    inputExtraRuleTitleSelector.setText(joinSelector(site.extraRule.title));
+                    inputExtraRuleTitleRegex.setText(site.extraRule.title.regex);
+                    inputExtraRuleTitleReplacement.setText(site.extraRule.title.replacement);
+                }
+                if (site.extraRule.uploader != null) {
+                    inputExtraRuleUploaderSelector.setText(joinSelector(site.extraRule.uploader));
+                    inputExtraRuleUploaderRegex.setText(site.extraRule.uploader.regex);
+                    inputExtraRuleUploaderReplacement.setText(site.extraRule.uploader.replacement);
+                }
+                if (site.extraRule.cover != null) {
+                    inputExtraRuleCoverSelector.setText(joinSelector(site.extraRule.cover));
+                    inputExtraRuleCoverRegex.setText(site.extraRule.cover.regex);
+                    inputExtraRuleCoverReplacement.setText(site.extraRule.cover.replacement);
+                }
+                if (site.extraRule.category != null) {
+                    inputExtraRuleCategorySelector.setText(joinSelector(site.extraRule.category));
+                    inputExtraRuleCategoryRegex.setText(site.extraRule.category.regex);
+                    inputExtraRuleCategoryReplacement.setText(site.extraRule.category.replacement);
+                }
+                if (site.extraRule.datetime != null) {
+                    inputExtraRuleDatetimeSelector.setText(joinSelector(site.extraRule.datetime));
+                    inputExtraRuleDatetimeRegex.setText(site.extraRule.datetime.regex);
+                    inputExtraRuleDatetimeReplacement.setText(site.extraRule.datetime.replacement);
+                }
+                if (site.extraRule.rating != null) {
+                    inputExtraRuleRatingSelector.setText(joinSelector(site.extraRule.rating));
+                    inputExtraRuleRatingRegex.setText(site.extraRule.rating.regex);
+                    inputExtraRuleRatingReplacement.setText(site.extraRule.rating.replacement);
+                }
+                if (site.extraRule.description != null) {
+                    inputExtraRuleDescriptionSelector.setText(joinSelector(site.extraRule.description));
+                    inputExtraRuleDescriptionRegex.setText(site.extraRule.description.regex);
+                    inputExtraRuleDescriptionReplacement.setText(site.extraRule.description.replacement);
+                }
+                if (site.extraRule.tags != null) {
+                    inputExtraRuleTagsSelector.setText(joinSelector(site.extraRule.tags));
+                    inputExtraRuleTagsRegex.setText(site.extraRule.tags.regex);
+                    inputExtraRuleTagsReplacement.setText(site.extraRule.tags.replacement);
+                }
+                if (site.extraRule.pictureThumbnail != null) {
+                    inputExtraRulePictureThumbnailSelector.setText(joinSelector(site.extraRule.pictureThumbnail));
+                    inputExtraRulePictureThumbnailRegex.setText(site.extraRule.pictureThumbnail.regex);
+                    inputExtraRulePictureThumbnailReplacement.setText(site.extraRule.pictureThumbnail.replacement);
+                }
+                if (site.extraRule.pictureUrl != null) {
+                    inputExtraRulePictureUrlSelector.setText(joinSelector(site.extraRule.pictureUrl));
+                    inputExtraRulePictureUrlRegex.setText(site.extraRule.pictureUrl.regex);
+                    inputExtraRulePictureUrlReplacement.setText(site.extraRule.pictureUrl.replacement);
+                }
+                if (site.extraRule.pictureHighRes != null) {
+                    inputExtraRulePictureHighResSelector.setText(joinSelector(site.extraRule.pictureHighRes));
+                    inputExtraRulePictureHighResRegex.setText(site.extraRule.pictureHighRes.regex);
+                    inputExtraRulePictureHighResReplacement.setText(site.extraRule.pictureHighRes.replacement);
+                }
             }
         }
     }
@@ -576,8 +683,6 @@ public class SitePropViewHolder {
         if(categories.size()>0)
             lastSite.categories = categories;
 
-        lastSite.picUrlSelector = loadSelector(inputPicUrlSelectorSelector, inputPicUrlSelectorRegex, inputPicUrlSelectorReplacement);
-
         //index rule
         lastSite.indexRule = new Rule();
         lastSite.indexRule.item = loadSelector(inputIndexRuleItemSelector, inputIndexRuleItemRegex, inputIndexRuleItemReplacement);
@@ -589,9 +694,6 @@ public class SitePropViewHolder {
         lastSite.indexRule.datetime = loadSelector(inputIndexRuleDatetimeSelector, inputIndexRuleDatetimeRegex, inputIndexRuleDatetimeReplacement);
         lastSite.indexRule.rating = loadSelector(inputIndexRuleRatingSelector, inputIndexRuleRatingRegex, inputIndexRuleRatingReplacement);
         lastSite.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
-        lastSite.indexRule.pictureUrl = loadSelector(inputIndexRulePictureUrlSelector, inputIndexRulePictureUrlRegex, inputIndexRulePictureUrlReplacement);
-        lastSite.indexRule.pictureThumbnail = loadSelector(inputIndexRulePictureThumbnailSelector, inputIndexRulePictureThumbnailRegex, inputIndexRulePictureThumbnailReplacement);
-
 
         //search rule
         lastSite.searchRule = new Rule();
@@ -604,8 +706,6 @@ public class SitePropViewHolder {
         lastSite.searchRule.datetime = loadSelector(inputSearchRuleDatetimeSelector, inputSearchRuleDatetimeRegex, inputSearchRuleDatetimeReplacement);
         lastSite.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
         lastSite.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
-        lastSite.searchRule.pictureUrl = loadSelector(inputSearchRulePictureUrlSelector, inputSearchRulePictureUrlRegex, inputSearchRulePictureUrlReplacement);
-        lastSite.searchRule.pictureThumbnail = loadSelector(inputSearchRulePictureThumbnailSelector, inputSearchRulePictureThumbnailRegex, inputSearchRulePictureThumbnailReplacement);
 
         if (lastSite.searchRule.item == null && lastSite.searchRule.idCode == null
                 && lastSite.searchRule.title == null && lastSite.searchRule.uploader == null
@@ -618,16 +718,33 @@ public class SitePropViewHolder {
         //gallery rule
         lastSite.galleryRule = new Rule();
         lastSite.galleryRule.item = loadSelector(inputGalleryRuleItemSelector, inputGalleryRuleItemRegex, inputGalleryRuleItemReplacement);
-        lastSite.galleryRule.idCode = loadSelector(inputGalleryRuleIdCodeSelector, inputGalleryRuleIdCodeRegex, inputGalleryRuleIdCodeReplacement);
         lastSite.galleryRule.title = loadSelector(inputGalleryRuleTitleSelector, inputGalleryRuleTitleRegex, inputGalleryRuleTitleReplacement);
         lastSite.galleryRule.uploader = loadSelector(inputGalleryRuleUploaderSelector, inputGalleryRuleUploaderRegex, inputGalleryRuleUploaderReplacement);
         lastSite.galleryRule.cover = loadSelector(inputGalleryRuleCoverSelector, inputGalleryRuleCoverRegex, inputGalleryRuleCoverReplacement);
         lastSite.galleryRule.category = loadSelector(inputGalleryRuleCategorySelector, inputGalleryRuleCategoryRegex, inputGalleryRuleCategoryReplacement);
         lastSite.galleryRule.datetime = loadSelector(inputGalleryRuleDatetimeSelector, inputGalleryRuleDatetimeRegex, inputGalleryRuleDatetimeReplacement);
         lastSite.galleryRule.rating = loadSelector(inputGalleryRuleRatingSelector, inputGalleryRuleRatingRegex, inputGalleryRuleRatingReplacement);
+        lastSite.galleryRule.description = loadSelector(inputGalleryRuleDescriptionSelector, inputGalleryRuleDescriptionRegex, inputGalleryRuleDescriptionReplacement);
         lastSite.galleryRule.tags = loadSelector(inputGalleryRuleTagsSelector, inputGalleryRuleTagsRegex, inputGalleryRuleTagsReplacement);
-        lastSite.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         lastSite.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
+        lastSite.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
+        lastSite.galleryRule.pictureHighRes = loadSelector(inputGalleryRulePictureHighResSelector, inputGalleryRulePictureHighResRegex, inputGalleryRulePictureHighResReplacement);
+
+
+        //extra rule
+        lastSite.extraRule = new Rule();
+        lastSite.extraRule.item = loadSelector(inputExtraRuleItemSelector, inputExtraRuleItemRegex, inputExtraRuleItemReplacement);
+        lastSite.extraRule.title = loadSelector(inputExtraRuleTitleSelector, inputExtraRuleTitleRegex, inputExtraRuleTitleReplacement);
+        lastSite.extraRule.uploader = loadSelector(inputExtraRuleUploaderSelector, inputExtraRuleUploaderRegex, inputExtraRuleUploaderReplacement);
+        lastSite.extraRule.cover = loadSelector(inputExtraRuleCoverSelector, inputExtraRuleCoverRegex, inputExtraRuleCoverReplacement);
+        lastSite.extraRule.category = loadSelector(inputExtraRuleCategorySelector, inputExtraRuleCategoryRegex, inputExtraRuleCategoryReplacement);
+        lastSite.extraRule.datetime = loadSelector(inputExtraRuleDatetimeSelector, inputExtraRuleDatetimeRegex, inputExtraRuleDatetimeReplacement);
+        lastSite.extraRule.rating = loadSelector(inputExtraRuleRatingSelector, inputExtraRuleRatingRegex, inputExtraRuleRatingReplacement);
+        lastSite.extraRule.description = loadSelector(inputExtraRuleDescriptionSelector, inputExtraRuleDescriptionRegex, inputExtraRuleDescriptionReplacement);
+        lastSite.extraRule.tags = loadSelector(inputExtraRuleTagsSelector, inputExtraRuleTagsRegex, inputExtraRuleTagsReplacement);
+        lastSite.extraRule.pictureThumbnail = loadSelector(inputExtraRulePictureThumbnailSelector, inputExtraRulePictureThumbnailRegex, inputExtraRulePictureThumbnailReplacement);
+        lastSite.extraRule.pictureUrl = loadSelector(inputExtraRulePictureUrlSelector, inputExtraRulePictureUrlRegex, inputExtraRulePictureUrlReplacement);
+        lastSite.extraRule.pictureHighRes = loadSelector(inputExtraRulePictureHighResSelector, inputExtraRulePictureHighResRegex, inputExtraRulePictureHighResReplacement);
 
         if (lastSite.indexUrl == null || lastSite.galleryUrl == null ||
                 lastSite.indexRule.item == null || lastSite.indexRule.idCode == null ||

@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.helpers;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
@@ -19,6 +20,10 @@ import ml.puredark.hviewer.utils.DocumentUtil;
 
 public class FileHelper {
 
+    public static boolean isFileExist(String fileName, String rootPath, String... subDirs){
+        return DocumentUtil.isFileExist(HViewerApplication.mContext, fileName, rootPath, subDirs);
+    }
+
     public static DocumentFile createFileIfNotExist(String fileName, String path, String... subDirs) {
         Logger.d("FileHelper", "fileName:" + fileName);
         Logger.d("FileHelper", "path:" + path);
@@ -34,6 +39,10 @@ public class FileHelper {
             path = "file://" + path;
         }
         return DocumentUtil.createDirIfNotExist(HViewerApplication.mContext, path, subDirs);
+    }
+
+    public static boolean deleteFile(String fileName, String rootPath, String... subDirs){
+        return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, Uri.parse(rootPath), subDirs);
     }
 
     public static boolean writeBytes(DocumentFile file, byte[] data) {
