@@ -110,21 +110,6 @@ public class ImageScaleUtil {
         }
     }
 
-    public static String createIfNotExist(String path) {
-        File file = new File(path);
-        if(!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        return path;
-    }
-
     public static String getFileMd5(File file) {
         try {
             String md5 = null;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -16,6 +17,8 @@ import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import java.io.IOException;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.activities.SettingActivity;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
@@ -25,14 +28,11 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.utils.FileType;
-import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
-import static ml.puredark.hviewer.utils.SimpleFileUtil.createIfNotExist;
 
 /**
  * Created by PureDark on 2016/8/16.
@@ -135,7 +135,7 @@ public class DownloadService extends Service {
     }
 
     private void getPictureUrl(final Picture picture, final DownloadTask task, final Selector selector, final Selector highResSelector) {
-        Log.d("DownloadService", picture.url);
+        Logger.d("DownloadService", picture.url);
         if (Picture.hasPicPosfix(picture.url)) {
             picture.pic = picture.url;
             loadPicture(picture, task, null, false);
@@ -176,7 +176,7 @@ public class DownloadService extends Service {
                     picture.status = Picture.STATUS_WAITING;
                     Intent intent = new Intent(ON_FAILURE);
                     intent.putExtra("message", "图片地址获取失败，请检查网络连接");
-                    Log.d("DownloadService", "url : " + picture.url);
+                    Logger.d("DownloadService", "url : " + picture.url);
                     sendBroadcast(intent);
                 }
             });
@@ -228,8 +228,9 @@ public class DownloadService extends Service {
 
     private void savePicture(Picture picture, DownloadTask task, Object pic) {
         try {
-            String fileName, filePath;
+            DocumentFile documentFile;
             if (pic instanceof Bitmap) {
+                String fileName;
                 if (task.collection.pictures.size() >= 1000) {
                     fileName = String.format("%04d", picture.pid);
                 } else if (task.collection.pictures.size() >= 100) {
@@ -239,10 +240,13 @@ public class DownloadService extends Service {
                 } else {
                     fileName = picture.pid + "";
                 }
-                filePath = task.path + fileName + ".jpg";
-                createIfNotExist(filePath);
-                ImageScaleUtil.saveToFile(HViewerApplication.mContext, (Bitmap) pic, filePath);
+                fileName += ".jpg";
+                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
+                FileHelper.saveBitmapToFile((Bitmap) pic, documentFile);
             } else if (pic instanceof PooledByteBuffer) {
+                String fileName;
                 PooledByteBuffer buffer = (PooledByteBuffer) pic;
                 byte[] bytes = new byte[buffer.size()];
                 buffer.read(0, bytes, 0, buffer.size());
@@ -257,18 +261,21 @@ public class DownloadService extends Service {
                 }
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
-                filePath = task.path + fileName;
-                SimpleFileUtil.createIfNotExist(filePath);
-                if (!SimpleFileUtil.writeBytes(filePath, bytes)) {
+                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
+                if (!FileHelper.writeBytes(documentFile, bytes)) {
                     throw new IOException();
                 }
             } else
                 return;
+            if(documentFile==null)
+                return;
             if (picture.pid == 1) {
-                task.collection.cover = "file://" + filePath;
+                task.collection.cover = documentFile.getUri().toString();
             }
-            picture.thumbnail = "file://" + filePath;
-            picture.pic = "file://" + filePath;
+            picture.thumbnail = documentFile.getUri().toString();
+            picture.pic = documentFile.getUri().toString();
             picture.retries = 0;
             picture.status = Picture.STATUS_DOWNLOADED;
             Intent intent = new Intent(ON_PROGRESS);

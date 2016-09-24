@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.ui.activities.SettingActivity;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
@@ -27,7 +28,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
  */
 
 public class DownloadManager {
-    private final static String DEFAULT_PATH = "/sdcard/H-Viewer/download";
+    private final static String DEFAULT_PATH = Uri.encode("/sdcard/H-Viewer/download");
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -48,7 +49,7 @@ public class DownloadManager {
     }
 
     private void checkNoMediaFile() {
-        DocumentUtil.createFileIfNotExist(HViewerApplication.mContext, ".nomedia", getDownloadPath());
+        FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
     }
 
     public static String getDownloadPath() {
@@ -67,7 +68,6 @@ public class DownloadManager {
         return holder.getDownloadTasks();
     }
 
-    @SuppressLint("NewApi")
     public boolean createDownloadTask(LocalCollection collection) {
         String dirName = collection.title;
         String path = getDownloadPath() + Uri.encode("/" + dirName);
@@ -81,7 +81,8 @@ public class DownloadManager {
         } else if (new File(path).exists()) {
             dirName = collection.title + " (2)";
         }
-        path = getDownloadPath() + Uri.encode("/" + dirName);
+        path = getDownloadPath() + "/" + Uri.encode(dirName);
+        FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
         task.path = path;
         holder.updateDownloadTasks(task);
         if (!isDownloading())
