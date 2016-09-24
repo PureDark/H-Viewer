@@ -240,7 +240,7 @@ public class DownloadService extends Service {
                     fileName = picture.pid + "";
                 }
                 filePath = task.path + fileName + ".jpg";
-                createIfNotExist(HViewerApplication.mContext, task.path, fileName + ".jpg", false);
+                createIfNotExist(filePath);
                 ImageScaleUtil.saveToFile(HViewerApplication.mContext, (Bitmap) pic, filePath);
             } else if (pic instanceof PooledByteBuffer) {
                 PooledByteBuffer buffer = (PooledByteBuffer) pic;
@@ -258,7 +258,7 @@ public class DownloadService extends Service {
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
                 filePath = task.path + fileName;
-                SimpleFileUtil.createIfNotExist(HViewerApplication.mContext, task.path, fileName, false);
+                SimpleFileUtil.createIfNotExist(filePath);
                 if (!SimpleFileUtil.writeBytes(filePath, bytes)) {
                     throw new IOException();
                 }

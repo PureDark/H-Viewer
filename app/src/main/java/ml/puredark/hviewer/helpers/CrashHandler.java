@@ -242,7 +242,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             String path = DownloadManager.getDownloadPath();
             String name = "crash-" + time + ".log";
             String filePath = path + File.separator + name;
-            SimpleFileUtil.createIfNotExist(mContext, path, name, false);
+            SimpleFileUtil.createIfNotExist(filePath);
             try {
                 SimpleFileUtil.writeString(filePath, buffer.toString(), "utf-8");
                 SharedPreferencesUtil.saveData(mContext, "unupload_log", true);
