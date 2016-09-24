@@ -14,6 +14,7 @@ import android.support.v4.provider.DocumentFile;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,14 +47,14 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
-import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -143,7 +144,7 @@ public class PictureViewerActivity extends AnimationActivity {
         }
     }
 
-    public static class PicturePagerAdapter extends PagerAdapter implements DirectoryChooserFragment.OnFragmentInteractionListener{
+    public static class PicturePagerAdapter extends PagerAdapter implements DirectoryChooserFragment.OnFragmentInteractionListener {
 
         private AnimationActivity activity;
 
@@ -282,7 +283,7 @@ public class PictureViewerActivity extends AnimationActivity {
 
         @Override
         public void onSelectDirectory(@NonNull String path) {
-            if(pictureToBeSaved==null)
+            if (pictureToBeSaved == null)
                 return;
             lastPath = path;
             loadPicture(pictureToBeSaved, path);
@@ -294,13 +295,13 @@ public class PictureViewerActivity extends AnimationActivity {
             mDialog.dismiss();
         }
 
-        public void onSelectDirectory(Uri rootUri){
+        public void onSelectDirectory(Uri rootUri) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 activity.getContentResolver().takePersistableUriPermission(
                         rootUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             }
             String path = rootUri.toString();
-            if(pictureToBeSaved==null)
+            if (pictureToBeSaved == null)
                 return;
             lastPath = path;
             loadPicture(pictureToBeSaved, path);
@@ -346,8 +347,8 @@ public class PictureViewerActivity extends AnimationActivity {
                 String fileName;
                 int i = 1;
                 do {
-                    fileName = (i++)+ "." + postfix;
-                }while (FileHelper.isFileExist(fileName, path));
+                    fileName = (i++) + "." + postfix;
+                } while (FileHelper.isFileExist(fileName, path));
                 DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
                 if (FileHelper.writeBytes(documentFile, bytes)) {
                     activity.showSnackBar("保存成功");
@@ -361,7 +362,7 @@ public class PictureViewerActivity extends AnimationActivity {
 
 
         private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
-            String url = (viewHighRes()) ? picture.highRes : picture.pic;
+            String url = (viewHighRes() && !TextUtils.isEmpty(picture.highRes)) ? picture.highRes : picture.pic;
             Logger.d("PicturePagerAdapter", "url = " + url);
             if (site == null) return;
             ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, url, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
@@ -419,8 +420,8 @@ public class PictureViewerActivity extends AnimationActivity {
                         } else {
                             picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
                             picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
-                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " +picture.pic);
-                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " +picture.highRes);
+                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
+                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
                             if (picture.pic != null) {
                                 picture.retries = 0;
                                 picture.referer = picture.url;
