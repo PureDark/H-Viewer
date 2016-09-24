@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.helpers.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
@@ -48,7 +49,7 @@ public class HViewerHttpClient {
 
     public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
         if (url == null || !url.startsWith("http")) {
-            Log.d("HViewerHttpClient", "url = "+url);
+            Logger.d("HViewerHttpClient", "url = "+url);
             callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
             return;
         }

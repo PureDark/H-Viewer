@@ -3,6 +3,7 @@ package ml.puredark.hviewer.core;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.utils.EmailUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
@@ -31,11 +33,6 @@ import ml.puredark.hviewer.utils.SimpleFileUtil;
  *         在Application中统一捕获异常，保存到文件中下次再打开时上传
  */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
-    /**
-     * 是否开启日志输出,在Debug状态下开启,
-     * 在Release状态下关闭以提示程序性能
-     */
-    public static final boolean DEBUG = true;
     /**
      * 系统默认的UncaughtException处理类
      */
@@ -88,7 +85,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if(!DEBUG) {
+                        if(!HViewerApplication.DEBUG) {
                             EmailUtil.sendEmail(EmailUtil.fromEmail, "v" + HViewerApplication.getVersionName() + " " + file.getName(),
                                     SimpleFileUtil.readString(filePath, "utf-8"));
                         }else
@@ -115,7 +112,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                 }
-                if (!DEBUG) {
+                if (!HViewerApplication.DEBUG) {
                     android.os.Process.killProcess(android.os.Process.myPid());
                     System.exit(10);
                 } else
@@ -156,9 +153,9 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             }
 
         }.start();
-        if (DEBUG)
+        if (HViewerApplication.DEBUG)
             ex.printStackTrace();
-        Log.d("CrashHandler", "catched");
+        Logger.d("CrashHandler", "catched");
         return true;
     }
 
@@ -237,7 +234,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         String time = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(new Date(System.currentTimeMillis()));
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String path = DownloadManager.getDownloadPath();
+            String path = Uri.decode(DownloadManager.getDownloadPath());
             String name = "crash-" + time + ".log";
             String filePath = path + File.separator + name;
             SimpleFileUtil.createIfNotExist(filePath);
@@ -245,10 +242,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 SimpleFileUtil.writeString(filePath, buffer.toString(), "utf-8");
                 SharedPreferencesUtil.saveData(mContext, "unupload_log", true);
                 SharedPreferencesUtil.saveData(mContext, "unupload_log_file_path", filePath);
-                Log.d("CrashHandler", "get");
+                Logger.d("CrashHandler", "get");
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("UncaughtHandler", "an error occured while writing file...", e);
+                Logger.e("UncaughtHandler", "an error occured while writing file...", e);
             }
         }
 

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import ml.puredark.hviewer.helpers.Logger;
+
 public class DBHelper {
     private final static String dbName = "hviewer.db";
     private SQLiteHelper mSqliteHelper = null;
@@ -116,7 +118,7 @@ public class DBHelper {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.d("SQLiteHelper", "onUpgrade: oldVersion="+oldVersion+" newVersion="+newVersion);
+            Logger.d("SQLiteHelper", "onUpgrade: oldVersion="+oldVersion+" newVersion="+newVersion);
             if(oldVersion==1 && newVersion==2){
                 upgrade(db, 1, 2);
             }else if(oldVersion==1 && newVersion==3){
