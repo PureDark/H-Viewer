@@ -341,14 +341,17 @@ public class ExampleSites {
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "https://yande.re/post?page={page:1}"));
         categories.add(new Category(2, "随机", "https://yande.re/post?page={page:1}&tags=order%3Arandom"));
-        categories.add(new Category(3, "热门（过去一天）", "https://yande.re/post/popular_recent?period=1d"));
-        categories.add(new Category(4, "热门（过去一周）", "https://yande.re/post/popular_recent?period=1w"));
-        categories.add(new Category(5, "热门（过去一月）", "https://yande.re/post/popular_recent?period=1m"));
-        categories.add(new Category(6, "热门（过去一年）", "https://yande.re/post/popular_recent?period=1y"));
-        categories.add(new Category(7, "热门（2016年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2016"));
-        categories.add(new Category(8, "热门（2015年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2015"));
-        categories.add(new Category(9, "热门（2014年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2014"));
-        categories.add(new Category(10, "热门（2013年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2013"));
+        categories.add(new Category(3, "评级：安全", "https://yande.re/post?tags=rating%3Asafe&page={page:1}"));
+        categories.add(new Category(4, "评级：存疑", "https://yande.re/post?tags=rating%3Aquestionable&page={page:1}"));
+        categories.add(new Category(5, "评级：露骨", "https://yande.re/post?tags=rating%3Aexplicit&page={page:1}"));
+        categories.add(new Category(6, "热门（过去一天）", "https://yande.re/post/popular_recent?period=1d"));
+        categories.add(new Category(7, "热门（过去一周）", "https://yande.re/post/popular_recent?period=1w"));
+        categories.add(new Category(8, "热门（过去一月）", "https://yande.re/post/popular_recent?period=1m"));
+        categories.add(new Category(9, "热门（过去一年）", "https://yande.re/post/popular_recent?period=1y"));
+        categories.add(new Category(10, "热门（2016年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(11, "热门（2015年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(12, "热门（2014年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(13, "热门（2013年）", "https://yande.re/post/popular_by_month?month={page:1}&year=2013"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         // yande.re Pool
@@ -408,14 +411,17 @@ public class ExampleSites {
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "https://lolibooru.moe/post?page={page:1}"));
         categories.add(new Category(2, "随机", "https://lolibooru.moe/post?page={page:1}&tags=order%3Arandom"));
-        categories.add(new Category(3, "热门（过去一天）", "https://lolibooru.moe/post/popular_recent?period=1d"));
-        categories.add(new Category(4, "热门（过去一周）", "https://lolibooru.moe/post/popular_recent?period=1w"));
-        categories.add(new Category(5, "热门（过去一月）", "https://lolibooru.moe/post/popular_recent?period=1m"));
-        categories.add(new Category(6, "热门（过去一年）", "https://lolibooru.moe/post/popular_recent?period=1y"));
-        categories.add(new Category(7, "热门（2016年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2016"));
-        categories.add(new Category(8, "热门（2015年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2015"));
-        categories.add(new Category(9, "热门（2014年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2014"));
-        categories.add(new Category(10, "热门（2013年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2013"));
+        categories.add(new Category(3, "评级：安全", "https://lolibooru.moe/post?tags=rating%3Asafe&page={page:1}"));
+        categories.add(new Category(4, "评级：存疑", "https://lolibooru.moe/post?tags=rating%3Aquestionable&page={page:1}"));
+        categories.add(new Category(5, "评级：露骨", "https://lolibooru.moe/post?tags=rating%3Aexplicit&page={page:1}"));
+        categories.add(new Category(6, "热门（过去一天）", "https://lolibooru.moe/post/popular_recent?period=1d"));
+        categories.add(new Category(7, "热门（过去一周）", "https://lolibooru.moe/post/popular_recent?period=1w"));
+        categories.add(new Category(8, "热门（过去一月）", "https://lolibooru.moe/post/popular_recent?period=1m"));
+        categories.add(new Category(9, "热门（过去一年）", "https://lolibooru.moe/post/popular_recent?period=1y"));
+        categories.add(new Category(10, "热门（2016年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(11, "热门（2015年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(12, "热门（2014年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(13, "热门（2013年）", "https://lolibooru.moe/post/popular_by_month?month={page:1}&year=2013"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         // lolibooru Pool
@@ -474,14 +480,17 @@ public class ExampleSites {
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "https://konachan.net/post?page={page:1}"));
         categories.add(new Category(2, "随机", "https://konachan.net/post?page={page:1}&tags=order%3Arandom"));
-        categories.add(new Category(3, "热门（过去一天）", "https://konachan.net/post/popular_recent?period=1d"));
-        categories.add(new Category(4, "热门（过去一周）", "https://konachan.net/post/popular_recent?period=1w"));
-        categories.add(new Category(5, "热门（过去一月）", "https://konachan.net/post/popular_recent?period=1m"));
-        categories.add(new Category(6, "热门（过去一年）", "https://konachan.net/post/popular_recent?period=1y"));
-        categories.add(new Category(7, "热门（2016年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2016"));
-        categories.add(new Category(8, "热门（2015年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2015"));
-        categories.add(new Category(9, "热门（2014年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2014"));
-        categories.add(new Category(10, "热门（2013年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2013"));
+        categories.add(new Category(3, "评级：安全", "https://konachan.net/post?tags=rating%3Asafe&page={page:1}"));
+        categories.add(new Category(4, "评级：存疑", "https://konachan.net/post?tags=rating%3Aquestionable&page={page:1}"));
+        categories.add(new Category(5, "评级：露骨", "https://konachan.net/post?tags=rating%3Aexplicit&page={page:1}"));
+        categories.add(new Category(6, "热门（过去一天）", "https://konachan.net/post/popular_recent?period=1d"));
+        categories.add(new Category(7, "热门（过去一周）", "https://konachan.net/post/popular_recent?period=1w"));
+        categories.add(new Category(8, "热门（过去一月）", "https://konachan.net/post/popular_recent?period=1m"));
+        categories.add(new Category(9, "热门（过去一年）", "https://konachan.net/post/popular_recent?period=1y"));
+        categories.add(new Category(10, "热门（2016年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2016"));
+        categories.add(new Category(11, "热门（2015年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2015"));
+        categories.add(new Category(12, "热门（2014年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2014"));
+        categories.add(new Category(13, "热门（2013年）", "https://konachan.net/post/popular_by_month?month={page:1}&year=2013"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         // konachan Pool
@@ -537,6 +546,9 @@ public class ExampleSites {
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://behoimi.org/post?page={page:1}"));
+        categories.add(new Category(3, "评级：安全", "http://behoimi.org/post?tags=rating%3Asafe&page={page:1}"));
+        categories.add(new Category(4, "评级：存疑", "http://behoimi.org/post?tags=rating%3Aquestionable&page={page:1}"));
+        categories.add(new Category(5, "评级：露骨", "http://behoimi.org/post?tags=rating%3Aexplicit&page={page:1}"));
         categories.add(new Category(2, "热门（过去一天）", "http://behoimi.org/post/popular_by_day"));
         categories.add(new Category(3, "热门（过去一周）", "http://behoimi.org/post/popular_by_week"));
         categories.add(new Category(4, "热门（过去一月）", "http://behoimi.org/post/popular_by_month"));
@@ -598,51 +610,54 @@ public class ExampleSites {
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://gelbooru.com/index.php?page=post&s=list&tags=all&pid={page:0:42}"));
-        categories.add(new Category(2, "1boy", "http://gelbooru.com/index.php?page=post&s=list&tags=1boy&pid={page:0:42}"));
-        categories.add(new Category(3, "1girl", "http://gelbooru.com/index.php?page=post&s=list&tags=1girl&pid={page:0:42}"));
-        categories.add(new Category(4, "ass", "http://gelbooru.com/index.php?page=post&s=list&tags=ass&pid={page:0:42}"));
-        categories.add(new Category(5, "bare shoulders", "http://gelbooru.com/index.php?page=post&s=list&tags=bare_shoulders&pid={page:0:42}"));
-        categories.add(new Category(6, "blush", "http://gelbooru.com/index.php?page=post&s=list&tags=blush&pid={page:0:42}"));
-        categories.add(new Category(7, "breasts", "http://gelbooru.com/index.php?page=post&s=list&tags=breasts&pid={page:0:42}"));
-        categories.add(new Category(8, "brown eyes", "http://gelbooru.com/index.php?page=post&s=list&tags=brown_eyes&pid={page:0:42}"));
-        categories.add(new Category(9, "brown hair", "http://gelbooru.com/index.php?page=post&s=list&tags=brown_hair&pid={page:0:42}"));
-        categories.add(new Category(10, "eyes closed", "http://gelbooru.com/index.php?page=post&s=list&tags=eyes_closed&pid={page:0:42}"));
-        categories.add(new Category(11, "fingerless gloves", "http://gelbooru.com/index.php?page=post&s=list&tags=fingerless_gloves&pid={page:0:42}"));
-        categories.add(new Category(12, "from behind", "http://gelbooru.com/index.php?page=post&s=list&tags=from_behind&pid={page:0:42}"));
-        categories.add(new Category(13, "hand on", "http://gelbooru.com/index.php?page=post&s=list&tags=hand_on&pid={page:0:42}"));
-        categories.add(new Category(14, "hat", "http://gelbooru.com/index.php?page=post&s=list&tags=hat&pid={page:0:42}"));
-        categories.add(new Category(15, "headband", "http://gelbooru.com/index.php?page=post&s=list&tags=headband&pid={page:0:42}"));
-        categories.add(new Category(16, "hifumi", "http://gelbooru.com/index.php?page=post&s=list&tags=hifumi&pid={page:0:42}"));
-        categories.add(new Category(17, "king of fighters", "http://gelbooru.com/index.php?page=post&s=list&tags=king_of_fighters&pid={page:0:42}"));
-        categories.add(new Category(17, "large breasts", "http://gelbooru.com/index.php?page=post&s=list&tags=large_breasts&pid={page:0:42}"));
-        categories.add(new Category(18, "leaning", "http://gelbooru.com/index.php?page=post&s=list&tags=leaning&pid={page:0:42}"));
-        categories.add(new Category(19, "leaning forward", "http://gelbooru.com/index.php?page=post&s=list&tags=leaning_forward&pid={page:0:42}"));
-        categories.add(new Category(20, "looking at viewer", "http://gelbooru.com/index.php?page=post&s=list&tags=looking_at_viewer&pid={page:0:42}"));
-        categories.add(new Category(21, "male focus", "http://gelbooru.com/index.php?page=post&s=list&tags=male_focus&pid={page:0:42}"));
-        categories.add(new Category(22, "monkey d luffy", "http://gelbooru.com/index.php?page=post&s=list&tags=monkey_d_luffy&pid={page:0:42}"));
-        categories.add(new Category(23, "monochrome", "http://gelbooru.com/index.php?page=post&s=list&tags=monochrome&pid={page:0:42}"));
-        categories.add(new Category(24, "one piece", "http://gelbooru.com/index.php?page=post&s=list&tags=one_piece&pid={page:0:42}"));
-        categories.add(new Category(25, "open clothes", "http://gelbooru.com/index.php?page=post&s=list&tags=open_clothes&pid={page:0:42}"));
-        categories.add(new Category(26, "open shirt", "http://gelbooru.com/index.php?page=post&s=list&tags=open_shirt&pid={page:0:42}"));
-        categories.add(new Category(27, "pantylines", "http://gelbooru.com/index.php?page=post&s=list&tags=pantylines&pid={page:0:42}"));
-        categories.add(new Category(28, "scar", "http://gelbooru.com/index.php?page=post&s=list&tags=scar&pid={page:0:42}"));
-        categories.add(new Category(29, "shiny", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny&pid={page:0:42}"));
-        categories.add(new Category(30, "shiny clothes", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_clothes&pid={page:0:42}"));
-        categories.add(new Category(31, "shiny hair", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_hair&pid={page:0:42}"));
-        categories.add(new Category(32, "shiny skin", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_skin&pid={page:0:42}"));
-        categories.add(new Category(33, "short hair", "http://gelbooru.com/index.php?page=post&s=list&tags=short_hair&pid={page:0:42}"));
-        categories.add(new Category(34, "sideboob", "http://gelbooru.com/index.php?page=post&s=list&tags=sideboob&pid={page:0:42}"));
-        categories.add(new Category(35, "simple background", "http://gelbooru.com/index.php?page=post&s=list&tags=simple_background&pid={page:0:42}"));
-        categories.add(new Category(36, "skin tight", "http://gelbooru.com/index.php?page=post&s=list&tags=skin_tight&pid={page:0:42}"));
-        categories.add(new Category(37, "smile", "http://gelbooru.com/index.php?page=post&s=list&tags=smile&pid={page:0:42}"));
-        categories.add(new Category(38, "solo", "http://gelbooru.com/index.php?page=post&s=list&tags=solo&pid={page:0:42}"));
-        categories.add(new Category(39, "spandex", "http://gelbooru.com/index.php?page=post&s=list&tags=spandex&pid={page:0:42}"));
-        categories.add(new Category(40, "straw hat", "http://gelbooru.com/index.php?page=post&s=list&tags=straw_hat&pid={page:0:42}"));
-        categories.add(new Category(41, "teeth", "http://gelbooru.com/index.php?page=post&s=list&tags=teeth&pid={page:0:42}"));
-        categories.add(new Category(42, "the king of fighters", "http://gelbooru.com/index.php?page=post&s=list&tags=the_king_of_fighters&pid={page:0:42}"));
-        categories.add(new Category(43, "tongue", "http://gelbooru.com/index.php?page=post&s=list&tags=tongue&pid={page:0:42}"));
-        categories.add(new Category(44, "tongue out", "http://gelbooru.com/index.php?page=post&s=list&tags=tongue_out&pid={page:0:42}"));
-        categories.add(new Category(45, "yuri sakazaki", "http://gelbooru.com/index.php?page=post&s=list&tags=yuri_sakazaki&pid={page:0:42}"));
+        categories.add(new Category(3, "评级：安全", "http://gelbooru.com/index.php?page=post&s=list&tags=rating%3Asafe&pid={page:0:42}"));
+        categories.add(new Category(4, "评级：存疑", "http://gelbooru.com/index.php?page=post&s=list&tags=rating%3Aquestionable&pid={page:0:42}"));
+        categories.add(new Category(5, "评级：露骨", "http://gelbooru.com/index.php?page=post&s=list&tags=rating%3Aexplicit&pid={page:0:42}"));
+        categories.add(new Category(6, "1boy", "http://gelbooru.com/index.php?page=post&s=list&tags=1boy&pid={page:0:42}"));
+        categories.add(new Category(7, "1girl", "http://gelbooru.com/index.php?page=post&s=list&tags=1girl&pid={page:0:42}"));
+        categories.add(new Category(8, "ass", "http://gelbooru.com/index.php?page=post&s=list&tags=ass&pid={page:0:42}"));
+        categories.add(new Category(9, "bare shoulders", "http://gelbooru.com/index.php?page=post&s=list&tags=bare_shoulders&pid={page:0:42}"));
+        categories.add(new Category(10, "blush", "http://gelbooru.com/index.php?page=post&s=list&tags=blush&pid={page:0:42}"));
+        categories.add(new Category(11, "breasts", "http://gelbooru.com/index.php?page=post&s=list&tags=breasts&pid={page:0:42}"));
+        categories.add(new Category(12, "brown eyes", "http://gelbooru.com/index.php?page=post&s=list&tags=brown_eyes&pid={page:0:42}"));
+        categories.add(new Category(13, "brown hair", "http://gelbooru.com/index.php?page=post&s=list&tags=brown_hair&pid={page:0:42}"));
+        categories.add(new Category(14, "eyes closed", "http://gelbooru.com/index.php?page=post&s=list&tags=eyes_closed&pid={page:0:42}"));
+        categories.add(new Category(15, "fingerless gloves", "http://gelbooru.com/index.php?page=post&s=list&tags=fingerless_gloves&pid={page:0:42}"));
+        categories.add(new Category(16, "from behind", "http://gelbooru.com/index.php?page=post&s=list&tags=from_behind&pid={page:0:42}"));
+        categories.add(new Category(17, "hand on", "http://gelbooru.com/index.php?page=post&s=list&tags=hand_on&pid={page:0:42}"));
+        categories.add(new Category(18, "hat", "http://gelbooru.com/index.php?page=post&s=list&tags=hat&pid={page:0:42}"));
+        categories.add(new Category(19, "headband", "http://gelbooru.com/index.php?page=post&s=list&tags=headband&pid={page:0:42}"));
+        categories.add(new Category(20, "hifumi", "http://gelbooru.com/index.php?page=post&s=list&tags=hifumi&pid={page:0:42}"));
+        categories.add(new Category(21, "king of fighters", "http://gelbooru.com/index.php?page=post&s=list&tags=king_of_fighters&pid={page:0:42}"));
+        categories.add(new Category(22, "large breasts", "http://gelbooru.com/index.php?page=post&s=list&tags=large_breasts&pid={page:0:42}"));
+        categories.add(new Category(23, "leaning", "http://gelbooru.com/index.php?page=post&s=list&tags=leaning&pid={page:0:42}"));
+        categories.add(new Category(24, "leaning forward", "http://gelbooru.com/index.php?page=post&s=list&tags=leaning_forward&pid={page:0:42}"));
+        categories.add(new Category(25, "looking at viewer", "http://gelbooru.com/index.php?page=post&s=list&tags=looking_at_viewer&pid={page:0:42}"));
+        categories.add(new Category(26, "male focus", "http://gelbooru.com/index.php?page=post&s=list&tags=male_focus&pid={page:0:42}"));
+        categories.add(new Category(27, "monkey d luffy", "http://gelbooru.com/index.php?page=post&s=list&tags=monkey_d_luffy&pid={page:0:42}"));
+        categories.add(new Category(28, "monochrome", "http://gelbooru.com/index.php?page=post&s=list&tags=monochrome&pid={page:0:42}"));
+        categories.add(new Category(29, "one piece", "http://gelbooru.com/index.php?page=post&s=list&tags=one_piece&pid={page:0:42}"));
+        categories.add(new Category(30, "open clothes", "http://gelbooru.com/index.php?page=post&s=list&tags=open_clothes&pid={page:0:42}"));
+        categories.add(new Category(31, "open shirt", "http://gelbooru.com/index.php?page=post&s=list&tags=open_shirt&pid={page:0:42}"));
+        categories.add(new Category(32, "pantylines", "http://gelbooru.com/index.php?page=post&s=list&tags=pantylines&pid={page:0:42}"));
+        categories.add(new Category(33, "scar", "http://gelbooru.com/index.php?page=post&s=list&tags=scar&pid={page:0:42}"));
+        categories.add(new Category(34, "shiny", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny&pid={page:0:42}"));
+        categories.add(new Category(35, "shiny clothes", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_clothes&pid={page:0:42}"));
+        categories.add(new Category(36, "shiny hair", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_hair&pid={page:0:42}"));
+        categories.add(new Category(37, "shiny skin", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_skin&pid={page:0:42}"));
+        categories.add(new Category(38, "short hair", "http://gelbooru.com/index.php?page=post&s=list&tags=short_hair&pid={page:0:42}"));
+        categories.add(new Category(39, "sideboob", "http://gelbooru.com/index.php?page=post&s=list&tags=sideboob&pid={page:0:42}"));
+        categories.add(new Category(40, "simple background", "http://gelbooru.com/index.php?page=post&s=list&tags=simple_background&pid={page:0:42}"));
+        categories.add(new Category(41, "skin tight", "http://gelbooru.com/index.php?page=post&s=list&tags=skin_tight&pid={page:0:42}"));
+        categories.add(new Category(42, "smile", "http://gelbooru.com/index.php?page=post&s=list&tags=smile&pid={page:0:42}"));
+        categories.add(new Category(43, "solo", "http://gelbooru.com/index.php?page=post&s=list&tags=solo&pid={page:0:42}"));
+        categories.add(new Category(44, "spandex", "http://gelbooru.com/index.php?page=post&s=list&tags=spandex&pid={page:0:42}"));
+        categories.add(new Category(45, "straw hat", "http://gelbooru.com/index.php?page=post&s=list&tags=straw_hat&pid={page:0:42}"));
+        categories.add(new Category(46, "teeth", "http://gelbooru.com/index.php?page=post&s=list&tags=teeth&pid={page:0:42}"));
+        categories.add(new Category(47, "the king of fighters", "http://gelbooru.com/index.php?page=post&s=list&tags=the_king_of_fighters&pid={page:0:42}"));
+        categories.add(new Category(48, "tongue", "http://gelbooru.com/index.php?page=post&s=list&tags=tongue&pid={page:0:42}"));
+        categories.add(new Category(49, "tongue out", "http://gelbooru.com/index.php?page=post&s=list&tags=tongue_out&pid={page:0:42}"));
+        categories.add(new Category(50, "yuri sakazaki", "http://gelbooru.com/index.php?page=post&s=list&tags=yuri_sakazaki&pid={page:0:42}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         // gelbooru Pool
@@ -697,6 +712,13 @@ public class ExampleSites {
                 "http://xbooru.com/index.php?page=account&s=login&code=00",
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_TITLE));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页", "http://xbooru.com/index.php?page=post&s=list&pid={page:0:42}"));
+        categories.add(new Category(2, "评级：安全", "http://xbooru.com/index.php?page=post&s=list&tags=rating%3Asafe&pid={page:0:42}"));
+        categories.add(new Category(3, "评级：存疑", "http://xbooru.com/index.php?page=post&s=list&tags=rating%3Aquestionable&pid={page:0:42}"));
+        categories.add(new Category(4, "评级：露骨", "http://xbooru.com/index.php?page=post&s=list&tags=rating%3Aexplicit&pid={page:0:42}"));
+        sites.get(sites.size() - 1).setCategories(categories);
 
         // xbooru Pool
         indexRule = new Rule();
@@ -848,7 +870,8 @@ public class ExampleSites {
         categories.add(new Category(10, "Loli", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E3%83%AD%E3%83%AA&p={page:1}"));
         categories.add(new Category(11, "東方", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E6%9D%B1%E6%96%B9&p={page:1}"));
         categories.add(new Category(12, "艦これ", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E8%89%A6%E3%81%93%E3%82%8C&p={page:1}"));
-        categories.add(new Category(13, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
+        categories.add(new Category(13, "LoveLive", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=LoveLive&p={page:1}"));
+        categories.add(new Category(14, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
         sites.get(sites.size() - 1).cookie = "p_ab_id=4; _gat=1; PHPSESSID=19726569_cf8243e85368f6e8965c6e19068b4da5; device_token=0074d3631c53eff71393c60ac338f0ef; a_type=0; __utmt=1; __utma=235335808.1998756366.1474474879.1474475016.1474475016.1; __utmb=235335808.1.10.1474475016; __utmc=235335808; __utmz=235335808.1474475016.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmv=235335808.|2=login%20ever=yes=1^3=plan=normal=1^5=gender=male=1^6=user_id=19726569=1; _ga=GA1.2.1998756366.1474474879; _gat_UA-74360115-3=1";
 
