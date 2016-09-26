@@ -28,6 +28,7 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
@@ -170,17 +171,17 @@ public class ModifySiteActivity extends AnimationActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final String filePath = DownloadManager.getDownloadPath() + "/temp";
+                        FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath());
                         final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
                                 BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher),
-                                filePath);
+                                FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath()));
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 if (success) {
                                     switchBetweenShareAndDetail(viewShareSiteQrCode);
-                                    ivQrCode.setImageBitmap(BitmapFactory.decodeFile(filePath));
+                                    ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath())));
                                 } else {
                                     onFailure(null);
                                 }

@@ -188,6 +188,7 @@ public class MainActivity extends AnimationActivity {
 
         // 测试新站点用
 //        List<Site> sites = ExampleSites.get();
+//        siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
 //        siteGroups.get(0).second.addAll(sites);
 //        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 

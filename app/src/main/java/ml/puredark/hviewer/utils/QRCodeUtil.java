@@ -12,6 +12,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,12 +27,12 @@ public class QRCodeUtil {
      * @param widthPix  图片宽度
      * @param heightPix 图片高度
      * @param logoBm    二维码中心的Logo图标（可以为null）
-     * @param filePath  用于存储二维码图片的文件路径
+     * @param fos  用于存储二维码图片的文件输出流
      * @return 生成二维码及保存文件是否成功
      */
-    public static boolean createQRImage(String content, int widthPix, int heightPix, Bitmap logoBm, String filePath) {
+    public static boolean createQRImage(String content, int widthPix, int heightPix, Bitmap logoBm, OutputStream fos) {
         try {
-            if (content == null || "".equals(content)) {
+            if (content == null || "".equals(content) || fos == null) {
                 return false;
             }
 
@@ -67,8 +68,8 @@ public class QRCodeUtil {
             }
 
             //必须使用compress方法将bitmap保存到文件中再进行读取。直接返回的bitmap是没有任何压缩的，内存消耗巨大！
-            return bitmap != null && bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(filePath));
-        } catch (WriterException | IOException e) {
+            return bitmap != null && bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        } catch (WriterException e) {
             e.printStackTrace();
         }
 

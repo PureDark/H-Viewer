@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -270,18 +271,23 @@ public class PictureViewerActivity extends AnimationActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         pictureToBeSaved = picture;
+                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                .initialDirectory(lastPath)
+                                                .newDirectoryName("download")
+                                                .allowNewDirectoryNameModification(true)
+                                                .build();
+                                        mDialog = DirectoryChooserFragment.newInstance(config);
+                                        mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                                             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                                             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                                            activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                                            try {
+                                                activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                                            }catch(ActivityNotFoundException e){
+                                                e.printStackTrace();
+                                                mDialog.show(activity.getFragmentManager(), null);
+                                            }
                                         } else {
-                                            final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                                    .initialDirectory(lastPath)
-                                                    .newDirectoryName("download")
-                                                    .allowNewDirectoryNameModification(true)
-                                                    .build();
-                                            mDialog = DirectoryChooserFragment.newInstance(config);
-                                            mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
                                             mDialog.show(activity.getFragmentManager(), null);
                                         }
                                     }

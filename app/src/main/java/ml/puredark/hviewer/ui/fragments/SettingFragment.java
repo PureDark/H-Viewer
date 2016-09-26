@@ -3,6 +3,7 @@ package ml.puredark.hviewer.ui.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -125,7 +126,12 @@ public class SettingFragment extends PreferenceFragment
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                try {
+                    startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                }catch(ActivityNotFoundException e){
+                    e.printStackTrace();
+                    mDialog.show(getFragmentManager(), null);
+                }
             } else {
                 mDialog.show(getFragmentManager(), null);
             }

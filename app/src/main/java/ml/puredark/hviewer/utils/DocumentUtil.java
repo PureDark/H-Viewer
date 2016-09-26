@@ -6,11 +6,13 @@ import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import ml.puredark.hviewer.HViewerApplication;
 
 import static android.R.attr.data;
+import static java.lang.System.out;
 
 /**
  * Created by PureDark on 2016/9/24.
@@ -173,6 +175,88 @@ public class DocumentUtil {
                 return null;
         }
         return parent;
+    }
+
+    public static OutputStream getFileOutputSteam(Context context, String fileName, String rootPath, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootPath, subDirs);
+        if(parent==null)
+            return null;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return getFileOutputSteam(context, file.getUri());
+    }
+
+    public static OutputStream getFileOutputSteam(Context context, String fileName, Uri rootUri, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootUri, subDirs);
+        if(parent==null)
+            return null;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return getFileOutputSteam(context, file.getUri());
+    }
+
+    public static OutputStream getFileOutputSteam(Context context, String fileName, DocumentFile root, String... subDirs) {
+        DocumentFile parent = getDirDocument(root, subDirs);
+        if(parent==null)
+            return null;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return getFileOutputSteam(context, file.getUri());
+    }
+
+    public static OutputStream getFileOutputSteam(Context context, DocumentFile file) {
+        return getFileOutputSteam(context, file.getUri());
+    }
+
+    public static OutputStream getFileOutputSteam(Context context, Uri fileUri) {
+        try {
+            OutputStream out = context.getContentResolver().openOutputStream(fileUri);
+            return out;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static InputStream getFileInputSteam(Context context, String fileName, String rootPath, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootPath, subDirs);
+        if(parent==null)
+            return null;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return getFileInputSteam(context, file.getUri());
+    }
+
+    public static InputStream getFileInputSteam(Context context, String fileName, Uri rootUri, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootUri, subDirs);
+        if(parent==null)
+            return null;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return getFileInputSteam(context, file.getUri());
+    }
+
+    public static InputStream getFileInputSteam(Context context, String fileName, DocumentFile root, String... subDirs) {
+        DocumentFile parent = getDirDocument(root, subDirs);
+        if(parent==null)
+            return null;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return getFileInputSteam(context, file.getUri());
+    }
+
+    public static InputStream getFileInputSteam(Context context, DocumentFile file) {
+        return getFileInputSteam(context, file.getUri());
+    }
+
+    public static InputStream getFileInputSteam(Context context, Uri fileUri) {
+        try {
+            InputStream in = context.getContentResolver().openInputStream(fileUri);
+            return in;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
