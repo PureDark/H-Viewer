@@ -162,7 +162,7 @@ public class DownloadTaskActivity extends AnimationActivity {
         pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                picturePagerAdapter = new PictureViewerActivity.PicturePagerAdapter(task.collection.site, task.collection.pictures);
+                picturePagerAdapter = new PictureViewerActivity.PicturePagerAdapter(task.collection.site, task.collection, task.collection.pictures);
                 HViewerApplication.temp = picturePagerAdapter;
                 Intent intent = new Intent(DownloadTaskActivity.this, PictureViewerActivity.class);
                 intent.putExtra("position", position);

@@ -32,6 +32,7 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
+import static ml.puredark.hviewer.download.DownloadManager.getDownloadPath;
 
 /**
  * Created by PureDark on 2016/8/16.
@@ -108,6 +109,12 @@ public class DownloadService extends Service {
                 task.status = STATUS_COMPLETED;
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);
+
+                // 记录信息，以求恢复删除了的下载记录
+                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                FileHelper.createFileIfNotExist("detail.txt", getDownloadPath(), dirName);
+                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dirName);
             }
             return;
         }
@@ -266,7 +273,7 @@ public class DownloadService extends Service {
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                 String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
                 documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
-                if (!FileHelper.writeBytes(documentFile, bytes)) {
+                if (!FileHelper.writeBytes(bytes, documentFile)) {
                     throw new IOException();
                 }
             } else

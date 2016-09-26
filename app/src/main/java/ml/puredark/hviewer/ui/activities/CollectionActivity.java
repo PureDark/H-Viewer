@@ -218,7 +218,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                picturePagerAdapter = new PicturePagerAdapter(site, pictureAdapter.getDataProvider().getItems());
+                picturePagerAdapter = new PicturePagerAdapter(site, collection, pictureAdapter.getDataProvider().getItems());
                 HViewerApplication.temp = picturePagerAdapter;
                 Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
                 intent.putExtra("position", position);

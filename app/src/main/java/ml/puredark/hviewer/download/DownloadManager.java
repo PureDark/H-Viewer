@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import java.io.File;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
@@ -25,7 +26,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
  */
 
 public class DownloadManager {
-    private final static String DEFAULT_PATH = Uri.encode("/sdcard/H-Viewer/download");
+    private final static String DEFAULT_PATH = Uri.encode("/sdcard/Pictures/H-Viewer/download");
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -81,7 +82,6 @@ public class DownloadManager {
             dirName = collection.title + " ("+(i++)+")";
         }
         path = getDownloadPath() + "/" + Uri.encode(dirName);
-        FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
         task.path = path;
         holder.updateDownloadTasks(task);
         if (!isDownloading())

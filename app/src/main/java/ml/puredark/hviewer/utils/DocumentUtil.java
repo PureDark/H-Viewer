@@ -32,15 +32,7 @@ public class DocumentUtil {
     }
 
     public static boolean isFileExist(String fileName, DocumentFile root, String... subDirs){
-        DocumentFile parent = root;
-        for(int i = 0; i < subDirs.length; i++){
-            String subDirName = Uri.decode(subDirs[i]);
-            DocumentFile subDir = parent.findFile(subDirName);
-            if(subDir != null)
-                parent = subDir;
-            else
-                return false;
-        }
+        DocumentFile parent = getDirDocument(root, subDirs);
         DocumentFile file = parent.findFile(fileName);
         if(file!=null&&file.exists())
             return true;
@@ -109,29 +101,46 @@ public class DocumentUtil {
     }
 
     public static boolean deleteFile(String fileName, DocumentFile root, String... subDirs){
-        DocumentFile parent = root;
-        for(int i = 0; i < subDirs.length; i++){
-            String subDirName = Uri.decode(subDirs[i]);
-            DocumentFile subDir = parent.findFile(subDirName);
-            if(subDir != null)
-                parent = subDir;
-            else
-                return false;
-        }
+        DocumentFile parent = getDirDocument(root, subDirs);
+        if(parent==null)
+            return false;
         fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return file != null && file.exists() && file.delete();
     }
 
-    public static boolean writeBytes(Context context, String filePath, byte[] data) {
-        return writeBytes(context, Uri.parse(filePath), data);
+    public static boolean writeBytes(Context context, byte[] data, String fileName, String rootPath, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootPath, subDirs);
+        if(parent==null)
+            return false;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return writeBytes(context, data, file.getUri());
     }
 
-    public static boolean writeBytes(Context context, DocumentFile file, byte[] data) {
-        return writeBytes(context, file.getUri(), data);
+    public static boolean writeBytes(Context context, byte[] data, String fileName, Uri rootUri, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootUri, subDirs);
+        if(parent==null)
+            return false;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return writeBytes(context, data, file.getUri());
     }
 
-    public static boolean writeBytes(Context context, Uri fileUri, byte[] data) {
+    public static boolean writeBytes(Context context, byte[] data, String fileName, DocumentFile root, String... subDirs) {
+        DocumentFile parent = getDirDocument(root, subDirs);
+        if(parent==null)
+            return false;
+        fileName = Uri.decode(fileName);
+        DocumentFile file = parent.findFile(fileName);
+        return writeBytes(context, data, file.getUri());
+    }
+
+    public static boolean writeBytes(Context context, byte[] data, DocumentFile file) {
+        return writeBytes(context, data, file.getUri());
+    }
+
+    public static boolean writeBytes(Context context, byte[] data, Uri fileUri) {
         try {
             OutputStream out = context.getContentResolver().openOutputStream(fileUri);
             out.write(data);
@@ -141,6 +150,29 @@ public class DocumentUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static DocumentFile getDirDocument(Context context, String rootPath, String... subDirs){
+        DocumentFile root = DocumentFile.fromTreeUri(context, Uri.parse(rootPath));
+        return getDirDocument(root, subDirs);
+    }
+
+    public static DocumentFile getDirDocument(Context context, Uri rootUri, String... subDirs){
+        DocumentFile root = DocumentFile.fromTreeUri(context, rootUri);
+        return getDirDocument(root, subDirs);
+    }
+
+    public static DocumentFile getDirDocument(DocumentFile root, String... subDirs){
+        DocumentFile parent = root;
+        for(int i = 0; i < subDirs.length; i++){
+            String subDirName = Uri.decode(subDirs[i]);
+            DocumentFile subDir = parent.findFile(subDirName);
+            if(subDir != null)
+                parent = subDir;
+            else
+                return null;
+        }
+        return parent;
     }
 
 }

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.utils.EmailUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -234,7 +233,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         String time = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(new Date(System.currentTimeMillis()));
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String path = Uri.decode(DownloadManager.getDownloadPath());
+            String path = mContext.getCacheDir().getAbsolutePath();
             String name = "crash-" + time + ".log";
             String filePath = path + File.separator + name;
             SimpleFileUtil.createIfNotExist(filePath);

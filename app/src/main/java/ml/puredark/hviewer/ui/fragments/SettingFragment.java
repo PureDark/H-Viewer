@@ -122,6 +122,7 @@ public class SettingFragment extends PreferenceFragment
         } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_PATH)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                 startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
             } else {
                 mDialog.show(getFragmentManager(), null);

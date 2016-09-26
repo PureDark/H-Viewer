@@ -44,6 +44,7 @@ import butterknife.ButterKnife;
 import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
@@ -58,6 +59,8 @@ import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class PictureViewerActivity extends AnimationActivity {
@@ -138,6 +141,10 @@ public class PictureViewerActivity extends AnimationActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_CHOOSE_DIRECTORY) {
                 Uri uriTree = data.getData();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    getContentResolver().takePersistableUriPermission(
+                            uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
                 if (picturePagerAdapter != null)
                     picturePagerAdapter.onSelectDirectory(uriTree);
             }
@@ -149,6 +156,7 @@ public class PictureViewerActivity extends AnimationActivity {
         private AnimationActivity activity;
 
         private Site site;
+        private Collection collection;
 
         public List<Picture> pictures;
         private List<PictureViewHolder> viewHolders = new ArrayList<>();
@@ -157,8 +165,9 @@ public class PictureViewerActivity extends AnimationActivity {
         private String lastPath = DownloadManager.getDownloadPath();
         private Picture pictureToBeSaved;
 
-        public PicturePagerAdapter(Site site, List<Picture> pictures) {
+        public PicturePagerAdapter(Site site, Collection collection, List<Picture> pictures) {
             this.site = site;
+            this.collection = collection;
             this.pictures = pictures;
             for (int i = 0; i < pictures.size(); i++)
                 viewHolders.add(null);
@@ -259,6 +268,7 @@ public class PictureViewerActivity extends AnimationActivity {
                                         pictureToBeSaved = picture;
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                                             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                                             activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
                                         } else {
                                             final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
@@ -296,10 +306,6 @@ public class PictureViewerActivity extends AnimationActivity {
         }
 
         public void onSelectDirectory(Uri rootUri) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                activity.getContentResolver().takePersistableUriPermission(
-                        rootUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }
             String path = rootUri.toString();
             if (pictureToBeSaved == null)
                 return;
@@ -346,11 +352,11 @@ public class PictureViewerActivity extends AnimationActivity {
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 String fileName;
                 int i = 1;
-                do {
-                    fileName = (i++) + "." + postfix;
-                } while (FileHelper.isFileExist(fileName, path));
+                do{
+                    fileName = Uri.encode(site.title+"_"+collection.idCode.replaceAll("/", "_")+"_"+(i++)+"."+postfix);
+                }while (FileHelper.isFileExist(fileName, path));
                 DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
-                if (FileHelper.writeBytes(documentFile, bytes)) {
+                if (FileHelper.writeBytes(bytes, documentFile)) {
                     activity.showSnackBar("保存成功");
                 } else {
                     activity.showSnackBar("保存失败，请检查剩余空间");

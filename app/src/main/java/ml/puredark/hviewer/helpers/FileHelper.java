@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.utils.DocumentUtil;
 
+import static android.R.attr.data;
+
 
 /**
  * Created by PureDark on 2016/9/24.
@@ -45,10 +47,18 @@ public class FileHelper {
         return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
-    public static boolean writeBytes(DocumentFile file, byte[] data) {
+    public static boolean writeString(String string, String fileName, String rootPath, String... subDirs){
+        return DocumentUtil.writeBytes(HViewerApplication.mContext, string.getBytes(), fileName, rootPath, subDirs);
+    }
+
+    public static boolean writeBytes(byte[] data, String fileName, String rootPath, String... subDirs){
+        return DocumentUtil.writeBytes(HViewerApplication.mContext, data, fileName, rootPath, subDirs);
+    }
+
+    public static boolean writeBytes(byte[] data, DocumentFile file) {
         if (file == null)
             return false;
-        return DocumentUtil.writeBytes(HViewerApplication.mContext, file, data);
+        return DocumentUtil.writeBytes(HViewerApplication.mContext, data, file);
     }
 
     public static void saveBitmapToFile(Bitmap bitmap, DocumentFile file) throws IOException {
