@@ -142,8 +142,12 @@ public class PictureViewerActivity extends AnimationActivity {
             if (requestCode == RESULT_CHOOSE_DIRECTORY) {
                 Uri uriTree = data.getData();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    getContentResolver().takePersistableUriPermission(
-                            uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    try {
+                        getContentResolver().takePersistableUriPermission(
+                                uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
                 }
                 if (picturePagerAdapter != null)
                     picturePagerAdapter.onSelectDirectory(uriTree);

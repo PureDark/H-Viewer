@@ -28,6 +28,8 @@ import ml.puredark.hviewer.ui.activities.AnimationActivity;
 import ml.puredark.hviewer.ui.activities.LicenseActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static com.sun.activation.registries.LogSupport.log;
+
 /**
  * Created by PureDark on 2016/9/25.
  */
@@ -143,8 +145,12 @@ public class SettingFragment extends PreferenceFragment
             if (requestCode == RESULT_CHOOSE_DIRECTORY) {
                 Uri uriTree = data.getData();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    getActivity().getContentResolver().takePersistableUriPermission(
-                            uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    try {
+                        getActivity().getContentResolver().takePersistableUriPermission(
+                                uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
                 }
                 String path = uriTree.toString();
                 String displayPath = Uri.decode(path);
