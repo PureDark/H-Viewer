@@ -270,26 +270,40 @@ public class PictureViewerActivity extends AnimationActivity {
                                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        pictureToBeSaved = picture;
-                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                                .initialDirectory(lastPath)
-                                                .newDirectoryName("download")
-                                                .allowNewDirectoryNameModification(true)
-                                                .build();
-                                        mDialog = DirectoryChooserFragment.newInstance(config);
-                                        mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                                            try {
-                                                activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
-                                            }catch(ActivityNotFoundException e){
-                                                e.printStackTrace();
-                                                mDialog.show(activity.getFragmentManager(), null);
-                                            }
-                                        } else {
-                                            mDialog.show(activity.getFragmentManager(), null);
-                                        }
+                                        new AlertDialog.Builder(activity).setTitle("是否直接保存到下载目录？")
+                                                .setMessage("否则另存到其他目录")
+                                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        pictureToBeSaved = picture;
+                                                        onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath()));
+                                                    }
+                                                })
+                                                .setNegativeButton("否", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        pictureToBeSaved = picture;
+                                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                                .initialDirectory(lastPath)
+                                                                .newDirectoryName("download")
+                                                                .allowNewDirectoryNameModification(true)
+                                                                .build();
+                                                        mDialog = DirectoryChooserFragment.newInstance(config);
+                                                        mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
+                                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                                                            try {
+                                                                activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                                                            }catch(ActivityNotFoundException e){
+                                                                e.printStackTrace();
+                                                                mDialog.show(activity.getFragmentManager(), null);
+                                                            }
+                                                        } else {
+                                                            mDialog.show(activity.getFragmentManager(), null);
+                                                        }
+                                                    }
+                                                }).show();
                                     }
                                 }).setNegativeButton("否", null).show();
                     }

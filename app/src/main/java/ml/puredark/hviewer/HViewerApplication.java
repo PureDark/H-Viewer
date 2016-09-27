@@ -9,9 +9,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.Environment;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.facebook.cache.disk.DiskCacheConfig;
+import com.facebook.cache.disk.DiskStorageCache;
+import com.facebook.common.internal.Supplier;
+import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.cache.MemoryCacheParams;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -19,8 +25,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sina.util.dnscache.DNSCache;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import ml.puredark.hviewer.configs.ImagePipelineConfigBuilder;
+import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.http.MyOkHttpNetworkFetcher;
 import ml.puredark.hviewer.core.CrashHandler;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -45,6 +54,11 @@ public class HViewerApplication extends Application {
     public static SearchHistoryHolder searchHistoryHolder;
     public static SearchSuggestionHolder searchSuggestionHolder;
     public static Gson gson;
+
+    // Fresco 最大内存缓存大小
+    private static int MAX_MEM = 30* ByteConstants.MB;
+    // Fresco 最大磁盘缓存大小
+    private static int MAX_DISK = 500* ByteConstants.MB;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -85,7 +99,7 @@ public class HViewerApplication extends Application {
     }
 
     public static void checkUpdate(final Context context) {
-        String url = context.getString(R.string.update_site_url);
+        String url = UrlConfig.updateUrl;
         HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
@@ -120,17 +134,7 @@ public class HViewerApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .dns(new HttpDns())
-                .build();
-        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
-                .setNetworkFetcher(new MyOkHttpNetworkFetcher(okHttpClient))
-                .setDownsampleEnabled(true)
-                .build();
-        Fresco.initialize(this, config);
+        Fresco.initialize(this, ImagePipelineConfigBuilder.getDefaultImagePipelineConfig(this));
 
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);

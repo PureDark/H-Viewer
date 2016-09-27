@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
 
     <application
         android:name=".HViewerApplication"
@@ -20,7 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
-
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait">
@@ -35,8 +33,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.PictureViewerActivity"
-            android:screenOrientation="user"
-            android:configChanges="orientation|screenSize|keyboardHidden"/>
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="user" />
         <activity
             android:name=".ui.activities.SettingActivity"
             android:screenOrientation="portrait" />
@@ -76,8 +74,10 @@
         <activity
             android:name=".ui.activities.LicenseActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activities.LoginActivity"
-            android:windowSoftInputMode="adjustPan" ></activity>
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".ui.activities.MarketActivity"></activity>
     </application>
 
 </manifest>

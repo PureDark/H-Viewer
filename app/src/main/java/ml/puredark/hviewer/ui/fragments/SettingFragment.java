@@ -22,6 +22,7 @@ import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -168,7 +169,7 @@ public class SettingFragment extends PreferenceFragment
 
     public void checkUpdate() {
         checking = true;
-        String url = getString(R.string.update_site_url);
+        String url = UrlConfig.updateUrl;
         HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {

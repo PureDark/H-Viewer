@@ -27,6 +27,7 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.configs.PasteEEConfig;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -134,18 +135,16 @@ public class ModifySiteActivity extends AnimationActivity {
         newSite.cookie = null;
         final String jsonStr = new Gson().toJson(newSite);
 
-        String key = getString(R.string.json_site_key);
         RequestBody requestBody = new FormBody.Builder()
-                .add("key", key)
+                .add("key", PasteEEConfig.appkey)
                 .add("description", "")
                 .add("paste", jsonStr)
                 .add("format", "json")
                 .build();
-        final String jsonSiteUrl = getString(R.string.json_site_url);
 
         showSnackBar("正在生成二维码，请稍候");
         isPosting = true;
-        HViewerHttpClient.post(jsonSiteUrl, requestBody, null, new HViewerHttpClient.OnResponseListener() {
+        HViewerHttpClient.post(PasteEEConfig.url, requestBody, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
                 isPosting = false;
