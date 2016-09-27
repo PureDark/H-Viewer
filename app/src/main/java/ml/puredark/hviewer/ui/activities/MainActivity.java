@@ -27,11 +27,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
-import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,22 +43,20 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.ExampleSites;
-import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
-import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
-import ml.puredark.hviewer.ui.adapters.SiteAdapter;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
+import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
+import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
+import ml.puredark.hviewer.ui.adapters.SiteAdapter;
 import ml.puredark.hviewer.ui.customs.AppBarStateChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
-import ml.puredark.hviewer.dataholders.SiteHolder;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -124,6 +122,9 @@ public class MainActivity extends AnimationActivity {
         // User interface
         setSupportActionBar(toolbar);
         setContainer(coordinatorLayout);
+
+        // 关闭默认统计，手动进行Fragment统计
+        setAnalyze(false);
 
         siteHolder = new SiteHolder(this);
 
@@ -371,7 +372,7 @@ public class MainActivity extends AnimationActivity {
         siteAdapter.setOnItemMoveListener(new SiteAdapter.OnItemMoveListener() {
             @Override
             public void onGroupMove(int fromGroupPosition, int toGroupPosition) {
-                int groupCount = siteAdapter.getGroupCount()-1;
+                int groupCount = siteAdapter.getGroupCount() - 1;
                 for (int m = 0; m < groupCount; m++) {
                     SiteGroup group = siteAdapter.getDataProvider().getGroupItem(m);
                     group.index = m + 1;
@@ -392,7 +393,7 @@ public class MainActivity extends AnimationActivity {
             }
 
             private void updateGroupItemIndex(int groupPosition) {
-                int childCount = siteAdapter.getChildCount(groupPosition)-1;
+                int childCount = siteAdapter.getChildCount(groupPosition) - 1;
                 for (int i = 0; i < childCount; i++) {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, i);
                     site.index = i + 1;
@@ -614,9 +615,9 @@ public class MainActivity extends AnimationActivity {
             searchView.closeSearch();
         } else {
             backCount++;
-            if(backCount==1)
+            if (backCount == 1)
                 showSnackBar("再按一次退出应用！");
-            else if(backCount>=2)
+            else if (backCount >= 2)
                 super.onBackPressed();
             new Handler().postDelayed(new Runnable() {
                 public void run() {
@@ -627,9 +628,16 @@ public class MainActivity extends AnimationActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
     public void onPause() {
-        mRecyclerViewDragDropManager.cancelDrag();
         super.onPause();
+        MobclickAgent.onPause(this);
+        mRecyclerViewDragDropManager.cancelDrag();
     }
 
     @Override

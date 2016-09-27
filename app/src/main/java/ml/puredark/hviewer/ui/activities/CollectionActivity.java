@@ -19,6 +19,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
@@ -381,12 +382,16 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         Uri content_url = Uri.parse(url);
         intent.setData(content_url);
         startActivity(intent);
+        // 统计打开浏览器访问次数
+        MobclickAgent.onEvent(HViewerApplication.mContext, "SwitchToBrowser");
     }
 
     @OnClick(R.id.fab_favor)
     void favor() {
         favouriteHolder.addFavourite((LocalCollection) myCollection);
         showSnackBar("收藏成功！");
+        // 统计收藏次数
+        MobclickAgent.onEvent(HViewerApplication.mContext, "FavorCollection");
     }
 
     @OnClick(R.id.fab_download)

@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sina.util.dnscache.DNSCache;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -140,6 +141,10 @@ public class HViewerApplication extends Application {
         searchSuggestionHolder = new SearchSuggestionHolder(this);
 
         startService(new Intent(this, DownloadService.class));
+
+        MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+        MobclickAgent.openActivityDurationTrack(false);
+        MobclickAgent.setCatchUncaughtExceptions(false);
 
         DNSCache.Init(this);
 

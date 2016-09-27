@@ -91,7 +91,6 @@ public class DownloadTaskActivity extends AnimationActivity {
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
         setAppBar(appBar);
-        setFabMenu(fabMenu);
         fabMenu.setVisibility(View.GONE);
 
         //获取传递过来的Collection实例

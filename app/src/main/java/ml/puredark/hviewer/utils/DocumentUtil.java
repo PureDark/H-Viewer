@@ -21,7 +21,7 @@ import static java.lang.System.out;
 public class DocumentUtil {
 
     public static boolean isFileExist(Context context, String fileName, String rootPath, String... subDirs){
-        return isFileExist(context, fileName, Uri.parse(rootPath), subDirs);
+        return isFileExist(context, fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
     }
 
     public static boolean isFileExist(Context context, String fileName, Uri rootUri, String... subDirs){
@@ -42,7 +42,7 @@ public class DocumentUtil {
     }
 
     public static DocumentFile createDirIfNotExist(Context context, String rootPath, String... subDirs){
-        return createDirIfNotExist(context, Uri.parse(rootPath), subDirs);
+        return createDirIfNotExist(context, Uri.parse(Uri.decode(rootPath)), subDirs);
     }
 
     public static DocumentFile createDirIfNotExist(Context context, Uri rootUri, String... subDirs){
@@ -68,7 +68,7 @@ public class DocumentUtil {
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String fileName, String rootPath, String... subDirs){
-        return createFileIfNotExist(context, "", fileName, Uri.parse(rootPath), subDirs);
+        return createFileIfNotExist(context, "", fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String fileName, Uri rootUri, String... subDirs){
@@ -76,7 +76,7 @@ public class DocumentUtil {
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String mimeType, String fileName, String rootPath, String... subDirs){
-        return createFileIfNotExist(context, mimeType, fileName, Uri.parse(rootPath), subDirs);
+        return createFileIfNotExist(context, mimeType, fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String mimeType, String fileName, Uri rootUri, String... subDirs){
@@ -89,7 +89,7 @@ public class DocumentUtil {
     }
 
     public static boolean deleteFile(Context context, String fileName, String rootPath, String... subDirs){
-        return deleteFile(context, fileName, Uri.parse(rootPath), subDirs);
+        return deleteFile(context, fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
     }
 
     public static boolean deleteFile(Context context, String fileName, Uri rootUri, String... subDirs){
@@ -150,7 +150,7 @@ public class DocumentUtil {
     }
 
     public static DocumentFile getDirDocument(Context context, String rootPath, String... subDirs){
-        return getDirDocument(context, Uri.parse(rootPath), subDirs);
+        return getDirDocument(context, Uri.parse(Uri.decode(rootPath)), subDirs);
     }
 
     public static DocumentFile getDirDocument(Context context, Uri rootUri, String... subDirs){

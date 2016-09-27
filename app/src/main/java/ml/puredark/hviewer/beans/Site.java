@@ -26,6 +26,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
     public Rule indexRule, galleryRule, searchRule, extraRule;
+    public int versionCode;
 
     @Deprecated
     public Selector picUrlSelector;

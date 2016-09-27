@@ -33,6 +33,7 @@ import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+import com.umeng.analytics.MobclickAgent;
 
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
@@ -382,6 +383,8 @@ public class PictureViewerActivity extends AnimationActivity {
                 DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
                 if (FileHelper.writeBytes(bytes, documentFile)) {
                     activity.showSnackBar("保存成功");
+                    // 统计保存单图次数
+                    MobclickAgent.onEvent(HViewerApplication.mContext, "SaveSinglePicture");
                 } else {
                     activity.showSnackBar("保存失败，请检查剩余空间");
                 }

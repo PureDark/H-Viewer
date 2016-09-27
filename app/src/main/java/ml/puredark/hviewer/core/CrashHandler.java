@@ -10,6 +10,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -112,6 +114,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 } catch (InterruptedException e) {
                 }
                 if (!HViewerApplication.DEBUG) {
+                    MobclickAgent.onKillProcess(mContext);
                     android.os.Process.killProcess(android.os.Process.myPid());
                     System.exit(10);
                 } else
@@ -155,6 +158,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if (HViewerApplication.DEBUG)
             ex.printStackTrace();
         Logger.d("CrashHandler", "catched");
+        MobclickAgent.reportError(mContext, ex);
         return true;
     }
 

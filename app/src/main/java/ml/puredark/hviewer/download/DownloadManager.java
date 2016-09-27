@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.io.File;
 import java.util.List;
 
@@ -84,6 +86,8 @@ public class DownloadManager {
         path = getDownloadPath() + "/" + Uri.encode(dirName);
         task.path = path;
         holder.updateDownloadTasks(task);
+        // 统计添加下载次数
+        MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCreated");
         if (!isDownloading())
             startDownload(task);
         return true;

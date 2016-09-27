@@ -53,6 +53,8 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
     public static final String KEY_PREF_ABOUT_H_VIEWER = "pref_about_h_viewer";
 
+    public static final String KEY_PREF_MODE_R18_ENABLED = "pref_mode_r18_enabled";
+
     private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
     private AnimationActivity activity;

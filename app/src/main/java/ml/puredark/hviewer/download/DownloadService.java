@@ -12,6 +12,7 @@ import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.IOException;
 
@@ -109,6 +110,8 @@ public class DownloadService extends Service {
                 task.status = STATUS_COMPLETED;
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);
+                // 统计下载完成次数
+                MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCompleted");
 
                 // 记录信息，以求恢复删除了的下载记录
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));

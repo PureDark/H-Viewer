@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.io.UnsupportedEncodingException;
@@ -201,6 +202,16 @@ public class CollectionFragment extends MyFragment {
     public void onResume() {
         super.onResume();
         adapter.notifyDataSetChanged();
+        if(site!=null)
+            MobclickAgent.onPageStart(site.title);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        adapter.notifyDataSetChanged();
+        if(site!=null)
+            MobclickAgent.onPageEnd(site.title);
     }
 
     @Override

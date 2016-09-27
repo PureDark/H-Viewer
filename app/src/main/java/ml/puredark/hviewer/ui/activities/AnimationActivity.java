@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.nineoldandroids.animation.Animator;
+import com.umeng.analytics.MobclickAgent;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.Logger;
@@ -46,6 +47,9 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
 
     //是否动画中
     private boolean animating = false;
+
+    //是否开始页面统计
+    private boolean analyze = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +90,10 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
 
     protected void setDownloadReceiver(DownloadReceiver receiver) {
         this.receiver = receiver;
+    }
+
+    protected void setAnalyze(boolean analyze) {
+        this.analyze = analyze;
     }
 
     public void showSnackBar(String content){
@@ -139,6 +147,10 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     public void onResume() {
         super.onResume();
+        if(analyze) {
+            MobclickAgent.onPageStart(this.getClass().getSimpleName());
+            MobclickAgent.onResume(this);
+        }
         IntentFilter downloadIntentFilter = new IntentFilter();
         downloadIntentFilter.addAction(DownloadService.ON_START);
         downloadIntentFilter.addAction(DownloadService.ON_PAUSE);
@@ -153,6 +165,10 @@ public class AnimationActivity extends AppCompatActivity implements AppBarLayout
     @Override
     public void onPause() {
         super.onPause();
+        if(analyze) {
+            MobclickAgent.onPageEnd(this.getClass().getSimpleName());
+            MobclickAgent.onPause(this);
+        }
         unregisterReceiver(receiver);
         if (appBar != null)
             appBar.removeOnOffsetChangedListener(this);
