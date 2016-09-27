@@ -26,8 +26,13 @@ public class HttpDns implements Dns {
             DomainInfo domainModel = infoList[0];
             String ip = Tools.getHostName(domainModel.url);
             if(Tools.isIPV4(ip)) {
-                List<InetAddress> inetAddresses = Arrays.asList(InetAddress.getAllByName(ip));
-                return inetAddresses;
+                List<InetAddress> inetAddresses;
+                try {
+                    inetAddresses = Arrays.asList(InetAddress.getAllByName(ip));
+                    return inetAddresses;
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return Dns.SYSTEM.lookup(hostname);

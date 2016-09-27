@@ -57,7 +57,7 @@ public class DocumentUtil {
     public static DocumentFile createDirIfNotExist(DocumentFile root, String... subDirs){
         DocumentFile parent = root;
         for(int i = 0; i < subDirs.length; i++){
-            String subDirName = Uri.decode(subDirs[i]);
+            String subDirName = subDirs[i];
             DocumentFile subDir = parent.findFile(subDirName);
             if(subDir == null){
                 subDir = parent.createDirectory(subDirName);
@@ -81,7 +81,6 @@ public class DocumentUtil {
 
     public static DocumentFile createFileIfNotExist(Context context, String mimeType, String fileName, Uri rootUri, String... subDirs){
         DocumentFile parent = createDirIfNotExist(context, rootUri, subDirs);
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         if(file == null){
             file = parent.createFile(mimeType, fileName);
@@ -106,7 +105,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if(parent==null)
             return false;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return file != null && file.exists() && file.delete();
     }
@@ -115,7 +113,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootPath, subDirs);
         if(parent==null)
             return false;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
@@ -124,7 +121,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootUri, subDirs);
         if(parent==null)
             return false;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
@@ -133,7 +129,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if(parent==null)
             return false;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
@@ -155,12 +150,15 @@ public class DocumentUtil {
     }
 
     public static DocumentFile getDirDocument(Context context, String rootPath, String... subDirs){
-        DocumentFile root = DocumentFile.fromTreeUri(context, Uri.parse(rootPath));
-        return getDirDocument(root, subDirs);
+        return getDirDocument(context, Uri.parse(rootPath), subDirs);
     }
 
     public static DocumentFile getDirDocument(Context context, Uri rootUri, String... subDirs){
-        DocumentFile root = DocumentFile.fromTreeUri(context, rootUri);
+        DocumentFile root;
+        if("content".equals(rootUri.getScheme()))
+            root = DocumentFile.fromTreeUri(context, rootUri);
+        else
+            root = DocumentFile.fromFile(new File(rootUri.getPath()));
         return getDirDocument(root, subDirs);
     }
 
@@ -181,7 +179,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootPath, subDirs);
         if(parent==null)
             return null;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return getFileOutputSteam(context, file.getUri());
     }
@@ -190,7 +187,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootUri, subDirs);
         if(parent==null)
             return null;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return getFileOutputSteam(context, file.getUri());
     }
@@ -199,7 +195,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if(parent==null)
             return null;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return getFileOutputSteam(context, file.getUri());
     }
@@ -222,7 +217,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootPath, subDirs);
         if(parent==null)
             return null;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return getFileInputSteam(context, file.getUri());
     }
@@ -240,7 +234,6 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if(parent==null)
             return null;
-        fileName = Uri.decode(fileName);
         DocumentFile file = parent.findFile(fileName);
         return getFileInputSteam(context, file.getUri());
     }

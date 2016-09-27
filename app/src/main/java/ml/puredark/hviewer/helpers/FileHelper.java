@@ -15,6 +15,7 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.utils.DocumentUtil;
 
 import static android.R.attr.data;
+import static android.R.attr.path;
 import static java.lang.System.out;
 
 
@@ -32,28 +33,32 @@ public class FileHelper {
         Logger.d("FileHelper", "fileName:" + fileName);
         Logger.d("FileHelper", "path:" + path);
         Logger.d("FileHelper", TextUtils.join("/", subDirs));
-        if (!path.startsWith("content://") && path.startsWith("/")) {
+        if (path.startsWith("/"))
             path = "file://" + path;
-        }
         return DocumentUtil.createFileIfNotExist(HViewerApplication.mContext, fileName, path, subDirs);
     }
 
     public static DocumentFile createDirIfNotExist(String path, String... subDirs) {
-        if (!path.startsWith("content://") && path.startsWith("/")) {
+        if (path.startsWith("/"))
             path = "file://" + path;
-        }
         return DocumentUtil.createDirIfNotExist(HViewerApplication.mContext, path, subDirs);
     }
 
     public static boolean deleteFile(String fileName, String rootPath, String... subDirs){
+        if (rootPath.startsWith("/"))
+            rootPath = "file://" + rootPath;
         return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
     public static boolean writeString(String string, String fileName, String rootPath, String... subDirs){
+        if (rootPath.startsWith("/"))
+            rootPath = "file://" + rootPath;
         return DocumentUtil.writeBytes(HViewerApplication.mContext, string.getBytes(), fileName, rootPath, subDirs);
     }
 
     public static boolean writeBytes(byte[] data, String fileName, String rootPath, String... subDirs){
+        if (rootPath.startsWith("/"))
+            rootPath = "file://" + rootPath;
         return DocumentUtil.writeBytes(HViewerApplication.mContext, data, fileName, rootPath, subDirs);
     }
 
@@ -75,10 +80,14 @@ public class FileHelper {
     }
 
     public static OutputStream getFileOutputSteam(String fileName, String rootPath, String... subDirs){
+        if (rootPath.startsWith("/"))
+            rootPath = "file://" + rootPath;
         return DocumentUtil.getFileOutputSteam(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
     public static InputStream getFileInputSteam(String fileName, String rootPath, String... subDirs){
+        if (rootPath.startsWith("/"))
+            rootPath = "file://" + rootPath;
         return DocumentUtil.getFileInputSteam(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 

@@ -113,7 +113,7 @@ public class DownloadService extends Service {
                 // 记录信息，以求恢复删除了的下载记录
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                 String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
-                FileHelper.createFileIfNotExist("detail.txt", getDownloadPath(), dirName);
+                FileHelper.createFileIfNotExist("detail.txt", rootPath, dirName);
                 FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dirName);
             }
             return;
