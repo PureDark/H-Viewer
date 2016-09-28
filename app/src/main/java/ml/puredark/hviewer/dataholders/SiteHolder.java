@@ -13,9 +13,6 @@ import java.util.List;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 
-import static android.R.attr.id;
-import static u.aly.cv.j;
-
 /**
  * Created by PureDark on 2016/8/12.
  */
@@ -28,6 +25,7 @@ public class SiteHolder {
     public SiteHolder(Context context) {
         dbHelper = new DBHelper();
         dbHelper.open(context);
+        checkNoGroupSites();
     }
 
     public int addSiteGroup(SiteGroup item) {
@@ -136,12 +134,20 @@ public class SiteHolder {
             }
         }
 
-
         return siteGroups;
     }
 
-    public SiteGroup getGroupByTitle(String title){
-        Cursor cursor = dbHelper.query("SELECT * FROM " + groupDbName + " WHERE `title` = '"+title+"' ORDER BY `index` ASC LIMIT 1");
+    public void checkNoGroupSites() {
+        // 检测是否有gid为0，无法显示的站点，如有则全部添加到新建的“未分类”组别中
+        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `gid` = 0");
+        if (cursor.moveToNext()) {
+            int gid = addSiteGroup(new SiteGroup(0, "未分类"));
+            dbHelper.nonQuery("UPDATE " + dbName + " SET `gid` = " + gid + " WHERE `gid` = 0");
+        }
+    }
+
+    public SiteGroup getGroupByTitle(String title) {
+        Cursor cursor = dbHelper.query("SELECT * FROM " + groupDbName + " WHERE `title` = '" + title + "' ORDER BY `index` ASC LIMIT 1");
         if (cursor.moveToNext()) {
             int gid = cursor.getInt(0);
             SiteGroup group = new SiteGroup(gid, title);
@@ -150,8 +156,8 @@ public class SiteHolder {
         return null;
     }
 
-    public Site getSiteByTitle(String title){
-        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `title` = '"+title+"' ORDER BY `index` ASC LIMIT 1");
+    public Site getSiteByTitle(String title) {
+        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `title` = '" + title + "' ORDER BY `index` ASC LIMIT 1");
         if (cursor.moveToNext()) {
             int j = cursor.getColumnIndex("json");
             int id = cursor.getInt(0);
