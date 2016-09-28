@@ -386,7 +386,7 @@ public class PictureViewerActivity extends AnimationActivity {
                     // 统计保存单图次数
                     MobclickAgent.onEvent(HViewerApplication.mContext, "SaveSinglePicture");
                 } else {
-                    activity.showSnackBar("保存失败，请检查剩余空间");
+                    activity.showSnackBar("保存失败，可能是无访问权限，请重新设置下载目录");
                 }
             } catch (OutOfMemoryError error) {
                 activity.showSnackBar("保存失败，内存不足");

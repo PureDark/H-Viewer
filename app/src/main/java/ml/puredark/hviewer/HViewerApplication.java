@@ -47,7 +47,7 @@ public class HViewerApplication extends Application {
      * 是否开启日志输出,在Debug状态下开启,
      * 在Release状态下关闭以提示程序性能
      */
-    public final static boolean DEBUG = false;
+    public final static boolean DEBUG = true;
 
     // 全局变量，用于跨Activity传递复杂对象的引用
     public static Object temp, temp2;
@@ -55,11 +55,6 @@ public class HViewerApplication extends Application {
     public static SearchHistoryHolder searchHistoryHolder;
     public static SearchSuggestionHolder searchSuggestionHolder;
     public static Gson gson;
-
-    // Fresco 最大内存缓存大小
-    private static int MAX_MEM = 30* ByteConstants.MB;
-    // Fresco 最大磁盘缓存大小
-    private static int MAX_DISK = 500* ByteConstants.MB;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
