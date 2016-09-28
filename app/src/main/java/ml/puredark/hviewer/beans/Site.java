@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.beans;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -114,5 +115,19 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public String getGalleryUrl(String idCode, int page){
         return galleryUrl.replaceAll("\\{idCode:\\}", idCode)
                 .replaceAll("\\{page:\\d+?\\}", "" + page);
+    }
+
+    public void replace(Site site){
+        Field[] fs = Site.class.getDeclaredFields();
+        try {
+            for (Field f : fs) {
+                if ("sid".equals(f.getName())|| "gid".equals(f.getName()))
+                    continue;
+                f.setAccessible(true);
+                f.set(this, f.get(site));
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }

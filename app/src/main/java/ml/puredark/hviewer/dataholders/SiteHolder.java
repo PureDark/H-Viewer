@@ -13,6 +13,9 @@ import java.util.List;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 
+import static android.R.attr.id;
+import static u.aly.cv.j;
+
 /**
  * Created by PureDark on 2016/8/12.
  */
@@ -27,12 +30,12 @@ public class SiteHolder {
         dbHelper.open(context);
     }
 
-    public void addSiteGroup(SiteGroup item) {
-        if (item == null) return;
+    public int addSiteGroup(SiteGroup item) {
+        if (item == null) return 0;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`index`", item.index);
-        dbHelper.insert(groupDbName, contentValues);
+        return (int) dbHelper.insert(groupDbName, contentValues);
     }
 
     public int addSite(Site item) {
@@ -135,6 +138,31 @@ public class SiteHolder {
 
 
         return siteGroups;
+    }
+
+    public SiteGroup getGroupByTitle(String title){
+        Cursor cursor = dbHelper.query("SELECT * FROM " + groupDbName + " WHERE `title` = '"+title+"' ORDER BY `index` ASC LIMIT 1");
+        if (cursor.moveToNext()) {
+            int gid = cursor.getInt(0);
+            SiteGroup group = new SiteGroup(gid, title);
+            return group;
+        }
+        return null;
+    }
+
+    public Site getSiteByTitle(String title){
+        Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `title` = '"+title+"' ORDER BY `index` ASC LIMIT 1");
+        if (cursor.moveToNext()) {
+            int j = cursor.getColumnIndex("json");
+            int id = cursor.getInt(0);
+            if (j >= 0) {
+                String json = cursor.getString(j);
+                Site site = new Gson().fromJson(json, Site.class);
+                site.sid = id;
+                return site;
+            }
+        }
+        return null;
     }
 
     public void onDestroy() {

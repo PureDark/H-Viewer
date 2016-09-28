@@ -176,7 +176,6 @@
 
 
     <color name="button_pressed">@color/white_20</color>
-    <color name="nav_color">#dd6030</color>
 
     <color name="colorPrimary">#1abc9c</color>
     <color name="colorPrimaryLight">#76ffe5</color>
@@ -186,6 +185,8 @@
     <color name="colorAccentDark">#16a085</color>
 
     <color name="statusBar">#30000000</color>
+
+    <color name="update">#1abc9c</color>
 
 
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/uni_padding"
+    android:paddingRight="@dimen/uni_padding"
+    android:paddingTop="@dimen/uni_padding"
+    android:paddingBottom="@dimen/uni_padding"
+    app:mrl_rippleOverlay="true"
+    app:mrl_rippleColor="@color/black"
+    app:mrl_rippleAlpha="0.1"
+    app:mrl_rippleDimension="10dp"
+    app:mrl_rippleDuration="250"
+    app:mrl_rippleFadeDuration="75"
+    app:mrl_rippleHover="true"
+    app:mrl_rippleDelayClick="false">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/iv_favicon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/half_margin"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/half_margin"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                tools:text="E-hentai" />
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                tools:text="E-hentai是一个大家都懂的站点" />
+        </LinearLayout>
+        <com.gc.materialdesign.views.ButtonFlat
+            android:id="@+id/btn_add"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorAccent"
+            android:text="添加"/>
+    </LinearLayout>
+
+</LinearLayout>

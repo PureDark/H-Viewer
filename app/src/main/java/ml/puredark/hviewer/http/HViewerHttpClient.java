@@ -187,8 +187,9 @@ public class HViewerHttpClient {
     // Pre-define error code
     public static class HttpError {
         // Error code constants
-        public static final int ERROR_UNKNOWN = 1000;  //未知错误
-        public static final int ERROR_NETWORK = 1009;  //网络错误
+        public static final int ERROR_UNKNOWN   = 1000;  //未知错误
+        public static final int ERROR_JSON      = 1001;  //JSON解析错误
+        public static final int ERROR_NETWORK   = 1009;  //网络错误
         public static final int ERROR_WRONG_URL = 1011;  //URL格式错误
 
         private int errorCode;
@@ -199,6 +200,9 @@ public class HViewerHttpClient {
             switch (errorCode) {
                 case ERROR_UNKNOWN:
                     errorString = "未知错误";
+                    break;
+                case ERROR_JSON:
+                    errorString = "JSON解析错误";
                     break;
                 case ERROR_NETWORK:
                     errorString = "网络错误，请重试";

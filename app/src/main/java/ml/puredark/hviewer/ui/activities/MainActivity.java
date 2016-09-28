@@ -10,6 +10,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,6 +19,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,14 +27,20 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,6 +56,8 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.helpers.ExampleSites;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -57,6 +67,8 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
+import ml.puredark.hviewer.utils.DocumentUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -65,6 +77,7 @@ public class MainActivity extends AnimationActivity {
     private static int RESULT_ADD_SITE = 1;
     private static int RESULT_MODIFY_SITE = 2;
     private static int RESULT_LOGIN = 3;
+    private static int RESULT_SITE_MARKET = 4;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
@@ -81,8 +94,6 @@ public class MainActivity extends AnimationActivity {
     @BindView(R.id.fab_search)
     FloatingActionButton fabSearch;
 
-    @BindView(R.id.nav_header_view)
-    LinearLayout navHeaderView;
     @BindView(R.id.rv_site)
     RecyclerView rvSite;
 
@@ -315,8 +326,8 @@ public class MainActivity extends AnimationActivity {
                     fragment.setArguments(bundle);
                     selectSite(fragment, site);
                     notifyChildItemChanged(groupPosition, childPosition);
+                    drawer.closeDrawer(GravityCompat.START);
                 }
-                drawer.closeDrawer(GravityCompat.START);
             }
 
             @Override
@@ -329,12 +340,22 @@ public class MainActivity extends AnimationActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (i == 0) {
                                     temp = site;
-                                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                    startActivityForResult(intent, RESULT_LOGIN);
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                            startActivityForResult(intent, RESULT_LOGIN);
+                                        }
+                                    }, 300);
                                 } else if (i == 1) {
-                                    temp = site;
-                                    Intent intent = new Intent(MainActivity.this, ModifySiteActivity.class);
-                                    startActivityForResult(intent, RESULT_MODIFY_SITE);
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            temp = site;
+                                            Intent intent = new Intent(MainActivity.this, ModifySiteActivity.class);
+                                            startActivityForResult(intent, RESULT_MODIFY_SITE);
+                                        }
+                                    }, 300);
                                 } else if (i == 2) {
                                     new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
                                             .setMessage("删除后将无法恢复")
@@ -603,6 +624,9 @@ public class MainActivity extends AnimationActivity {
                     };
                     handler.post(r);
                 }
+            } else if (requestCode == RESULT_SITE_MARKET){
+                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                siteAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -666,11 +690,28 @@ public class MainActivity extends AnimationActivity {
         super.onDestroy();
     }
 
+    @OnClick(R.id.btn_site_market)
+    void openMarket() {
+        drawer.closeDrawer(GravityCompat.START);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, MarketActivity.class);
+                startActivityForResult(intent, RESULT_SITE_MARKET);
+            }
+        }, 300);
+    }
+
     @OnClick(R.id.btn_setting)
     void openSetting() {
         drawer.closeDrawer(GravityCompat.START);
-        Intent intent = new Intent(this, SettingActivity.class);
-        startActivity(intent);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(intent);
+            }
+        }, 300);
     }
 
     @OnClick(R.id.btn_exit)

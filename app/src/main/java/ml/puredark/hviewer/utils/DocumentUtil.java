@@ -8,6 +8,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.HViewerApplication;
 
@@ -57,7 +58,7 @@ public class DocumentUtil {
     public static DocumentFile createDirIfNotExist(DocumentFile root, String... subDirs){
         DocumentFile parent = root;
         for(int i = 0; i < subDirs.length; i++){
-            String subDirName = subDirs[i];
+            String subDirName = filenameFilter(Uri.decode(subDirs[i]));
             DocumentFile subDir = parent.findFile(subDirName);
             if(subDir == null){
                 subDir = parent.createDirectory(subDirName);
@@ -81,6 +82,7 @@ public class DocumentUtil {
 
     public static DocumentFile createFileIfNotExist(Context context, String mimeType, String fileName, Uri rootUri, String... subDirs){
         DocumentFile parent = createDirIfNotExist(context, rootUri, subDirs);
+        fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
         if(file == null){
             file = parent.createFile(mimeType, fileName);
@@ -105,6 +107,7 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if(parent==null)
             return false;
+        fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
         return file != null && file.exists() && file.delete();
     }
@@ -121,6 +124,7 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootUri, subDirs);
         if(parent==null)
             return false;
+        fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
@@ -129,6 +133,7 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if(parent==null)
             return false;
+        fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
@@ -225,7 +230,7 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(context, rootUri, subDirs);
         if(parent==null)
             return null;
-        fileName = Uri.decode(fileName);
+        fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
         return getFileInputSteam(context, file.getUri());
     }
@@ -250,6 +255,11 @@ public class DocumentUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static Pattern FilePattern = Pattern.compile("[\\\\/:*?\"<>|]");
+    public static String filenameFilter(String str) {
+        return str==null?null:FilePattern.matcher(str).replaceAll("_");
     }
 
 }

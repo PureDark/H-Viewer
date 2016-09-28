@@ -3,6 +3,7 @@ package ml.puredark.hviewer.http;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.facebook.common.executors.CallerThreadExecutor;

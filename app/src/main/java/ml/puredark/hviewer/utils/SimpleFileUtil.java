@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static android.R.attr.data;
+
 /**
  * 文件读写工具类
  *
@@ -44,8 +46,20 @@ public class SimpleFileUtil {
      * @return true表示写入成功  false表示写入失败
      */
     public static boolean writeBytes(String filePath, byte[] data) {
+        return writeBytes(filePath, data, false);
+    }
+
+    /**
+     * 向文件中写入数据
+     *
+     * @param filePath 目标文件全路径
+     * @param data     要写入的数据
+     * @param append   是否写入文件末尾
+     * @return true表示写入成功  false表示写入失败
+     */
+    public static boolean writeBytes(String filePath, byte[] data, boolean append) {
         try {
-            FileOutputStream fos = new FileOutputStream(filePath);
+            FileOutputStream fos = new FileOutputStream(filePath, append);
             fos.write(data);
             fos.close();
             return true;

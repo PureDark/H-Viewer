@@ -36,7 +36,7 @@ public class DBHelper {
     }
 
     public synchronized int update(String table, ContentValues values,
-                                   String whereClause, String[] whereArgs) {
+                                   String whereClause, String... whereArgs) {
         if (mSqliteHelper == null) {
             return -1;
         }
@@ -61,7 +61,7 @@ public class DBHelper {
         return mSqliteHelper.getReadableDatabase().rawQuery(sql, null);
     }
 
-    public synchronized Cursor query(String sql, String[] args) {
+    public synchronized Cursor query(String sql, String... args) {
         if (mSqliteHelper == null) {
             return null;
         }
@@ -75,7 +75,7 @@ public class DBHelper {
         mSqliteHelper.getReadableDatabase().execSQL(sql);
     }
 
-    public synchronized void nonQuery(String sql, String[] args) {
+    public synchronized void nonQuery(String sql, String... args) {
         if (mSqliteHelper == null) {
             return;
         }

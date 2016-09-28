@@ -6,4 +6,5 @@ package ml.puredark.hviewer.configs;
 
 public class UrlConfig {
     public final static String updateUrl = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
+    public final static String siteSourceUrl = "https://raw.githubusercontent.com/H-Viewer-Sites/Index/master/source.json";
 }
