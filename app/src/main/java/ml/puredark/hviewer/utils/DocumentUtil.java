@@ -43,7 +43,12 @@ public class DocumentUtil {
     }
 
     public static DocumentFile createDirIfNotExist(Context context, String rootPath, String... subDirs){
-        return createDirIfNotExist(context, Uri.parse(Uri.decode(rootPath)), subDirs);
+        Uri rootUri;
+        if(rootPath.startsWith("content"))
+            rootUri = Uri.parse(rootPath);
+        else
+            rootUri = Uri.parse(Uri.decode(rootPath));
+        return createDirIfNotExist(context, rootUri, subDirs);
     }
 
     public static DocumentFile createDirIfNotExist(Context context, Uri rootUri, String... subDirs){
@@ -69,7 +74,12 @@ public class DocumentUtil {
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String fileName, String rootPath, String... subDirs){
-        return createFileIfNotExist(context, "", fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
+        Uri rootUri;
+        if(rootPath.startsWith("content"))
+            rootUri = Uri.parse(rootPath);
+        else
+            rootUri = Uri.parse(Uri.decode(rootPath));
+        return createFileIfNotExist(context, "", fileName, rootUri, subDirs);
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String fileName, Uri rootUri, String... subDirs){
@@ -77,7 +87,12 @@ public class DocumentUtil {
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String mimeType, String fileName, String rootPath, String... subDirs){
-        return createFileIfNotExist(context, mimeType, fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
+        Uri rootUri;
+        if(rootPath.startsWith("content"))
+            rootUri = Uri.parse(rootPath);
+        else
+            rootUri = Uri.parse(Uri.decode(rootPath));
+        return createFileIfNotExist(context, mimeType, fileName, rootUri, subDirs);
     }
 
     public static DocumentFile createFileIfNotExist(Context context, String mimeType, String fileName, Uri rootUri, String... subDirs){
@@ -155,7 +170,12 @@ public class DocumentUtil {
     }
 
     public static DocumentFile getDirDocument(Context context, String rootPath, String... subDirs){
-        return getDirDocument(context, Uri.parse(Uri.decode(rootPath)), subDirs);
+        Uri rootUri;
+        if(rootPath.startsWith("content"))
+            rootUri = Uri.parse(rootPath);
+        else
+            rootUri = Uri.parse(Uri.decode(rootPath));
+        return getDirDocument(context, rootUri, subDirs);
     }
 
     public static DocumentFile getDirDocument(Context context, Uri rootUri, String... subDirs){

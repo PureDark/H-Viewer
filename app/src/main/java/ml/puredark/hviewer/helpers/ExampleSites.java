@@ -842,7 +842,7 @@ public class ExampleSites {
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
         galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(png|jpg|bmp|gif)))\"", null);
+        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(png|jpg|bmp|gif))\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 
         extraRule = new Rule();
@@ -865,7 +865,7 @@ public class ExampleSites {
         categories.add(new Category(4, "综合本月排行榜", "http://www.pixiv.net/ranking.php?mode=monthly&p={page:1}"));
         categories.add(new Category(5, "R18今日排行榜", "http://www.pixiv.net/ranking.php?mode=daily_r18&p={page:1}"));
         categories.add(new Category(6, "R18本周排行榜", "http://www.pixiv.net/ranking.php?mode=weekly_r18&p={page:1}"));
-        categories.add(new Category(7, "R18本月排行榜", "http://www.pixiv.net/ranking.php?mode=monthly_r18&p={page:1}"));
+        categories.add(new Category(7, "R18G本周排行榜", "http://www.pixiv.net/ranking.php?mode=r18g&p={page:1}"));
         categories.add(new Category(8, "10000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=10000users%E5%85%A5%E3%82%8A&p={page:1}"));
         categories.add(new Category(9, "5000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=5000users%E5%85%A5%E3%82%8A&p={page:1}"));
         categories.add(new Category(10, "3000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=3000users%E5%85%A5%E3%82%8A&p={page:1}"));

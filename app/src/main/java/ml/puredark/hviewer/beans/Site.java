@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.beans;
 
+import android.text.TextUtils;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import okhttp3.Cookie;
 
@@ -54,11 +56,11 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
         this.flag = flag;
     }
 
-    public void setCategories(List<Category> categories){
+    public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
 
-    public void setGroupId(int gid){
+    public void setGroupId(int gid) {
         this.gid = gid;
     }
 
@@ -75,11 +77,11 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
 
     public List<Cookie> getCookies() {
         List<Cookie> cookies = new ArrayList<>();
-        if(cookie==null||"".equals(cookie))
+        if (cookie == null || "".equals(cookie))
             return cookies;
         Pattern pattern = Pattern.compile("(.*?)=([^;]*)", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(cookie);
-        while(matcher.find()){
+        while (matcher.find()) {
             cookies.add(new Cookie.Builder()
                     .name(matcher.group(1).trim())
                     .value(matcher.group(2).trim())
@@ -90,14 +92,14 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
         return cookies;
     }
 
-    public boolean hasFlag(String flag){
-        if(this.flag==null)
+    public boolean hasFlag(String flag) {
+        if (this.flag == null)
             return false;
         else
             return this.flag.contains(flag);
     }
 
-    public String getListUrl(String url, int page, String keyword){
+    public String getListUrl(String url, int page, String keyword) {
         Map<String, String> matchResult = RuleParser.parseUrl(url);
         String pageStr = matchResult.get("page");
         int startPage;
@@ -112,19 +114,38 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
         return url;
     }
 
-    public String getGalleryUrl(String idCode, int page){
+    public String getGalleryUrl(String idCode, int page) {
         return galleryUrl.replaceAll("\\{idCode:\\}", idCode)
                 .replaceAll("\\{page:\\d+?\\}", "" + page);
     }
 
-    public void replace(Site site){
+    public void replace(Site site) {
         Field[] fs = Site.class.getDeclaredFields();
         try {
             for (Field f : fs) {
-                if ("sid".equals(f.getName())|| "gid".equals(f.getName()))
+                if ("sid".equals(f.getName()) || "gid".equals(f.getName()) || "index".equals(f.getName()))
                     continue;
                 f.setAccessible(true);
-                f.set(this, f.get(site));
+                if (f.getType() == String.class) {
+                    String value = (String) f.get(site);
+                    if (!TextUtils.isEmpty(value))
+                        f.set(this, value);
+                } else if (f.getType() == Integer.class) {
+                    int value = (int) f.get(site);
+                    if (value != 0)
+                        f.set(this, value);
+                } else if("categories".equals(f.getName())){
+                    List<Category> categories = (List<Category>) f.get(site);
+                    if(categories!=null){
+                        for(Category category : this.categories){
+                            if(!this.categories.contains(category))
+                                categories.add(category);
+                        }
+                    }
+                    f.set(this, categories);
+                } else {
+                    f.set(this, f.get(site));
+                }
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();

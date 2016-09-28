@@ -8,7 +8,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -354,9 +353,12 @@ public class MarketActivity extends AnimationActivity {
             showSnackBar("正在更新站点，请等待更新完毕后再返回");
             return;
         }
-        Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
-        finish();
+        if(updated) {
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            finish();
+        }else
+            super.onBackPressed();
     }
 
     @Override
