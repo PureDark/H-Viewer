@@ -83,6 +83,7 @@ public class MarketActivity extends AnimationActivity {
 
         siteHolder = new SiteHolder(this);
 
+        tabLayout.setVisibility(View.GONE);
         getAllSites(new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
@@ -99,6 +100,7 @@ public class MarketActivity extends AnimationActivity {
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
+                progressBar.setVisibility(View.GONE);
                 showSnackBar(error.getErrorString());
             }
         });
@@ -107,6 +109,7 @@ public class MarketActivity extends AnimationActivity {
 
     private void initTabAndViewPager(List<MarketSiteCategory> siteCategories) {
         //初始化Tab和ViewPager
+        tabLayout.setVisibility(View.VISIBLE);
         List<View> views = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         siteAdapters = new ArrayList<>();
