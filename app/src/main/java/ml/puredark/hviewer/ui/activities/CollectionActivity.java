@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.activities.PictureViewerActivity.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter;
 import ml.puredark.hviewer.ui.adapters.TagAdapter;
@@ -280,6 +282,7 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
             return;
         }
         final String url = site.getGalleryUrl(myCollection.idCode, page);
+        Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {

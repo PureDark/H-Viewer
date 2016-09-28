@@ -3,6 +3,7 @@ package ml.puredark.hviewer.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
+import android.util.Log;
 
 import java.io.File;
 import java.io.InputStream;
@@ -16,7 +17,12 @@ import java.util.regex.Pattern;
 public class DocumentUtil {
 
     public static boolean isFileExist(Context context, String fileName, String rootPath, String... subDirs) {
-        return isFileExist(context, fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
+        Uri rootUri;
+        if (rootPath.startsWith("content"))
+            rootUri = Uri.parse(rootPath);
+        else
+            rootUri = Uri.parse(Uri.decode(rootPath));
+        return isFileExist(context, fileName, rootUri, subDirs);
     }
 
     public static boolean isFileExist(Context context, String fileName, Uri rootUri, String... subDirs) {
@@ -32,6 +38,7 @@ public class DocumentUtil {
         DocumentFile parent = getDirDocument(root, subDirs);
         if (parent == null)
             return false;
+        fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
         if (file != null && file.exists())
             return true;
@@ -104,7 +111,12 @@ public class DocumentUtil {
     }
 
     public static boolean deleteFile(Context context, String fileName, String rootPath, String... subDirs) {
-        return deleteFile(context, fileName, Uri.parse(Uri.decode(rootPath)), subDirs);
+        Uri rootUri;
+        if (rootPath.startsWith("content"))
+            rootUri = Uri.parse(rootPath);
+        else
+            rootUri = Uri.parse(Uri.decode(rootPath));
+        return deleteFile(context, fileName, rootUri, subDirs);
     }
 
     public static boolean deleteFile(Context context, String fileName, Uri rootUri, String... subDirs) {

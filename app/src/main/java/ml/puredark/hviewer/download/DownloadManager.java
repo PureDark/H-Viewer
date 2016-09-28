@@ -20,6 +20,7 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -49,7 +50,11 @@ public class DownloadManager {
     }
 
     private void checkNoMediaFile() {
-        FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
+        String path = Uri.decode(getDownloadPath());
+        if(path.startsWith("/"))
+            SimpleFileUtil.createIfNotExist(path+"/.nomedia");
+        else
+            FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
     }
 
     public static String getDownloadPath() {

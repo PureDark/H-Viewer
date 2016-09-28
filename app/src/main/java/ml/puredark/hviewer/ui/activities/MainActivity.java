@@ -199,10 +199,11 @@ public class MainActivity extends AnimationActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-//        List<Site> sites = ExampleSites.get();
-//        siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
+        List<Site> sites = ExampleSites.get();
+        siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
 //        siteGroups.get(0).second.addAll(sites);
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+        siteGroups.get(0).second.add(sites.get(sites.size()-1));
+        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
 

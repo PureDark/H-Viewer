@@ -2,6 +2,8 @@ package ml.puredark.hviewer.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Rule;
@@ -842,7 +844,7 @@ public class ExampleSites {
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
         galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(png|jpg|bmp|gif))\"", null);
+        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
 
         extraRule = new Rule();
@@ -877,6 +879,82 @@ public class ExampleSites {
         categories.add(new Category(16, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
         sites.get(sites.size() - 1).cookie = "p_ab_id=4; _gat=1; PHPSESSID=19726569_cf8243e85368f6e8965c6e19068b4da5; device_token=0074d3631c53eff71393c60ac338f0ef; a_type=0; __utmt=1; __utma=235335808.1998756366.1474474879.1474475016.1474475016.1; __utmb=235335808.1.10.1474475016; __utmc=235335808; __utmz=235335808.1474475016.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmv=235335808.|2=login%20ever=yes=1^3=plan=normal=1^5=gender=male=1^6=user_id=19726569=1; _ga=GA1.2.1998756366.1474474879; _gat_UA-74360115-3=1";
+
+
+
+        // 妹子图
+        indexRule = new Rule();
+        indexRule.item = new Selector("div.postlist > ul > li", null, null, null, null);
+        indexRule.idCode = new Selector("span > a", "attr", "href", "http://www\\.mzitu\\.com/(\\d+)", null);
+        indexRule.title = new Selector("span > a", "html", null, null, null);
+        indexRule.cover = new Selector("a img", "attr", "data-original", null, null);
+        indexRule.uploader = new Selector("span.view", "html", null, null, null);
+        indexRule.datetime = new Selector("span.time", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.category = new Selector("div.main-meta > span > a", "html", null, null, null);
+        galleryRule.tags = new Selector("div.main-tags > a[rel='tag']", "html", null, null, null);
+        galleryRule.item = new Selector("div.main-image", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("p > a > img", "attr", "src", null, null);
+        galleryRule.pictureThumbnail = new Selector("p > a > img", "attr", "src", "(.*)", "http://www.rosiyy.com/usr/themes/mm/timthumb.php?src=$1&h=210&w=150&zc=1&q=100");
+
+        sites.add(new Site(54, "妹子图",
+                "http://www.mzitu.com/page/{page:1}",
+                "http://www.mzitu.com/{idCode:}/{page:1}",
+                "http://www.mzitu.com/search/{keyword:}/page/{page:1}",
+                null,
+                indexRule, galleryRule, null, null, Site.FLAG_NO_TAG));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "最新", "http://www.mzitu.com/page/{page:1}"));
+        categories.add(new Category(2, "最热", "http://www.mzitu.com/hot/page/{page:1}"));
+        categories.add(new Category(3, "推荐", "http://www.mzitu.com/best/page/{page:1}"));
+        categories.add(new Category(4, "性感妹子", "http://www.mzitu.com/xinggan/page/{page:1}"));
+        categories.add(new Category(5, "日本妹子", "http://www.mzitu.com/japan/page/{page:1}"));
+        categories.add(new Category(6, "台湾妹子", "http://www.mzitu.com/taiwan/page/{page:1}"));
+        categories.add(new Category(7, "清纯妹子", "http://www.mzitu.com/mm/page/{page:1}"));
+        categories.add(new Category(8, "妹子自拍", "http://www.mzitu.com/share/page/{page:1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+
+        // Dribbble
+        indexRule = new Rule();
+        indexRule.item = new Selector("ol.dribbbles > li", null, null, null, null);
+        indexRule.idCode = new Selector("div.dribbble-img > a.dribbble-link", "attr", "href", "shots/(.*)", null);
+        indexRule.title = new Selector("div.dribbble-img > a.dribbble-link img", "attr", "alt", null, null);
+        indexRule.cover = new Selector("div.dribbble-img > a.dribbble-link img", "attr", "src", null, null);
+        indexRule.uploader = new Selector("span.attribution-user", "html", null, "<a class=\"url hoverable\".*?>([^<>\"]+)</a>", null);
+        indexRule.datetime = new Selector("div.dribbble-shot > ul.tools", "html", null, "<li class=\"fav\">.*?>([0-9, ]+).*?<li class=\"cmnt\">.*?>([0-9, ]+).*?<li class=\"views\">.*?>([0-9, ]+).*?</li>", "✦$3    ✎$2    ❤$1");
+
+        galleryRule = new Rule();
+        galleryRule.tags = new Selector("ol#tags > li.tag > a > strong", "html", null, null, null);
+        galleryRule.item = new Selector("div.single-img,ul.thumbs>li", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("this", "html", null, "href=\"(.*?)\"|src=\"([^\"]*?(?<!_1x)\\.(?:jpg|jpeg|png|gif|bmp))\"", "$1$2");
+//        galleryRule.pictureUrl = new Selector("this", "html", null, "(?:href|src)=\"(.*?)\"", null);
+        galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
+
+        extraRule = new Rule();
+        extraRule.pictureUrl = new Selector("div#viewer-img > img", "attr", "src", null, null);
+
+        sites.add(new Site(55, "Dribbble",
+                "https://dribbble.com/?page={page:1}&per_page=12",
+                "https://dribbble.com/shots/{idCode:}",
+                "https://dribbble.com/search?q={keyword:}&page={page:1}&per_page=12",
+                "https://dribbble.com/session/new",
+                indexRule, galleryRule, null, extraRule, Site.FLAG_NO_RATING+"|"+Site.FLAG_SINGLE_PAGE_BIG_PICTURE));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "Popular", "https://dribbble.com/shots?page={page:1}&per_page=12"));
+        categories.add(new Category(2, "Recent", "https://dribbble.com/shots?page={page:1}&per_page=12&sort=recent"));
+        categories.add(new Category(3, "Most Viewed", "https://dribbble.com/shots?page={page:1}&per_page=12&sort=views"));
+        categories.add(new Category(4, "Most Commented", "https://dribbble.com/shots?page={page:1}&per_page=12&sort=comments"));
+        categories.add(new Category(5, "Debuts", "https://dribbble.com/shots?page={page:1}&per_page=12&list=debuts"));
+        categories.add(new Category(6, "Team Shots", "https://dribbble.com/shots?page={page:1}&per_page=12&list=teams"));
+        categories.add(new Category(7, "Playoffs", "https://dribbble.com/shots?page={page:1}&per_page=12&list=playoffs"));
+        categories.add(new Category(8, "Rebounds", "https://dribbble.com/shots?page={page:1}&per_page=12&list=rebounds"));
+        categories.add(new Category(9, "Animated GIFs", "https://dribbble.com/shots?page={page:1}&per_page=12&list=animated"));
+        categories.add(new Category(10, "Shots with Attachments", "https://dribbble.com/shots?page={page:1}&per_page=12&list=attachments"));
+        sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;
     }

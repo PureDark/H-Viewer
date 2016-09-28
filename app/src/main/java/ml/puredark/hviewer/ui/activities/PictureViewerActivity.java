@@ -59,6 +59,7 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
+import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -378,7 +379,7 @@ public class PictureViewerActivity extends AnimationActivity {
                 String fileName;
                 int i = 1;
                 do{
-                    fileName = Uri.encode(site.title+"_"+collection.idCode.replaceAll("/", "_")+"_"+(i++)+"."+postfix);
+                    fileName = Uri.encode(site.title+"_"+ FileHelper.filenameFilter(collection.idCode)+"_"+(i++)+"."+postfix);
                 }while (FileHelper.isFileExist(fileName, path));
                 DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
                 if (FileHelper.writeBytes(bytes, documentFile)) {
@@ -386,7 +387,7 @@ public class PictureViewerActivity extends AnimationActivity {
                     // 统计保存单图次数
                     MobclickAgent.onEvent(HViewerApplication.mContext, "SaveSinglePicture");
                 } else {
-                    activity.showSnackBar("保存失败，可能是无访问权限，请重新设置下载目录");
+                    activity.showSnackBar("保存失败，请重新设置下载目录");
                 }
             } catch (OutOfMemoryError error) {
                 activity.showSnackBar("保存失败，内存不足");

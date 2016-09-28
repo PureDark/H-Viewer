@@ -11,6 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.helpers.SiteFlagHandler;
@@ -41,6 +42,7 @@ public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Picture picture = (Picture) mProvider.getItem(position);
         PictureViewHolder holder = (PictureViewHolder) viewHolder;
+        Logger.d("PictureAdapter", "picture.thumbnail:" + picture.thumbnail);
         if (!repeatedThumbnail)
             ImageLoader.loadThumbFromUrl(context, holder.ivPicture, 100, 140, picture.thumbnail, cookie, picture.referer);
         else {

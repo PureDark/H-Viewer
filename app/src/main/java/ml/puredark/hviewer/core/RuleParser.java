@@ -25,6 +25,7 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
+import static u.aly.cv.i;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -213,8 +214,10 @@ public class RuleParser {
                     if (matcher.find() && matcher.groupCount() >= 1) {
                         if (selector.replacement != null) {
                             prop = selector.replacement;
-                            for (int i = 1; i <= matcher.groupCount(); i++)
-                                prop = prop.replaceAll("\\$" + i, matcher.group(i));
+                            for (int i = 1; i <= matcher.groupCount(); i++) {
+                                String replace = matcher.group(i);
+                                prop = prop.replaceAll("\\$" + i, (replace!=null)?replace:"");
+                            }
                         } else {
                             prop = matcher.group(1);
                         }

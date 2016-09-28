@@ -302,7 +302,7 @@ public class DownloadService extends Service {
             task.status = STATUS_PAUSED;
             picture.status = Picture.STATUS_WAITING;
             Intent intent = new Intent(ON_FAILURE);
-            intent.putExtra("message", "保存失败，可能是无访问权限，请重新设置下载目录");
+            intent.putExtra("message", "保存失败，请重新设置下载目录");
             sendBroadcast(intent);
         } catch (OutOfMemoryError error) {
             // 这里就算OOM了，就当作下载失败，不影响程序继续运行

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.helpers.SiteFlagHandler;
@@ -65,6 +67,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
+            Logger.d("CollectionAdapter", "collection.cover:" + collection.cover);
             ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
