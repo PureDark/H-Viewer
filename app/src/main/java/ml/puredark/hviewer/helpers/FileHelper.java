@@ -17,6 +17,7 @@ import ml.puredark.hviewer.utils.DocumentUtil;
 import static android.R.attr.data;
 import static android.R.attr.path;
 import static java.lang.System.out;
+import static ml.puredark.hviewer.utils.SimpleFileUtil.readBytes;
 
 
 /**
@@ -27,6 +28,10 @@ public class FileHelper {
 
     public static boolean isFileExist(String fileName, String rootPath, String... subDirs){
         return DocumentUtil.isFileExist(HViewerApplication.mContext, fileName, rootPath, subDirs);
+    }
+
+    public static DocumentFile getDirDocument(String rootPath, String...subDirs){
+        return DocumentUtil.getDirDocument(HViewerApplication.mContext, rootPath, subDirs);
     }
 
     public static DocumentFile createFileIfNotExist(String fileName, String path, String... subDirs) {
@@ -54,6 +59,28 @@ public class FileHelper {
         if (rootPath.startsWith("/"))
             rootPath = "file://" + rootPath;
         return DocumentUtil.writeBytes(HViewerApplication.mContext, string.getBytes(), fileName, rootPath, subDirs);
+    }
+
+    public static String readString(String fileName, String rootPath, String... subDirs) {
+        byte[] data = DocumentUtil.readBytes(HViewerApplication.mContext, fileName, rootPath, subDirs);
+        String string = null;
+        try {
+            string = new String(data, "utf-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
+    }
+
+    public static String readString(DocumentFile file) {
+        byte[] data = DocumentUtil.readBytes(HViewerApplication.mContext, file);
+        String string = null;
+        try {
+            string = new String(data, "utf-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
     }
 
     public static boolean writeBytes(byte[] data, String fileName, String rootPath, String... subDirs){

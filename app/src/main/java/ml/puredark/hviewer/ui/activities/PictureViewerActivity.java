@@ -268,7 +268,7 @@ public class PictureViewerActivity extends AnimationActivity {
                     if (activity != null) {
                         new AlertDialog.Builder(activity).setTitle("保存图片？")
                                 .setMessage("是否保存当前图片")
-                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         new AlertDialog.Builder(activity).setTitle("是否直接保存到下载目录？")
@@ -306,7 +306,7 @@ public class PictureViewerActivity extends AnimationActivity {
                                                     }
                                                 }).show();
                                     }
-                                }).setNegativeButton("否", null).show();
+                                }).setNegativeButton("取消", null).show();
                     }
                     return true;
                 }

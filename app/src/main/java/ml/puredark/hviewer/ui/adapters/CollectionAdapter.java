@@ -85,6 +85,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if(site!=null) {
                 checkSiteFlags(holder, site, collection);
             }else if (collection instanceof LocalCollection) {
+                holder.layoutCover.setVisibility(View.VISIBLE);
+                holder.tvTitle.setVisibility(View.VISIBLE);
+                holder.rbRating.setVisibility(View.VISIBLE);
+                holder.rvTags.setVisibility(View.VISIBLE);
+                checkSiteFlags(holder, ((LocalCollection) collection).site);
                 checkSiteFlags(holder, ((LocalCollection) collection).site, collection);
             }
         } else if (viewHolder instanceof CollectionGridViewHolder) {

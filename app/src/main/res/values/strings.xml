@@ -20,15 +20,23 @@
 
     <string name="settings_view">浏览设置</string>
     <string name="settings_view_high_res">优先浏览原图</string>
-    <string name="settings_view_high_res_summary">是否在浏览时加载高清原图，可能会降低加载速度</string>
+    <string name="settings_view_high_res_summary">在浏览时加载高清原图，可能会降低加载速度</string>
     <string name="settings_view_preload_pages">预加载页数</string>
     <string name="settings_view_preload_pages_summary"> 3 页</string>
 
     <string name="settings_download">下载设置</string>
     <string name="settings_download_high_res">优先下载原图</string>
-    <string name="settings_download_high_res_summary">是否在下载时下载高清原图</string>
+    <string name="settings_download_high_res_summary">在下载时优先下载高清原图</string>
     <string name="settings_download_path">更改保存位置</string>
     <string name="settings_download_path_summary">/sdcard/H-Viewer/download</string>
+    <string name="settings_download_import">导入已下载图册</string>
+    <string name="settings_download_import_summary">将下载目录中已下载但未在下载管理中的图册导入</string>
+
+    <string name="settings_favourite">收藏管理</string>
+    <string name="settings_favourite_export">导出收藏夹</string>
+    <string name="settings_favourite_export_summary">将收藏夹数据导出至下载目录进行备份</string>
+    <string name="settings_favourite_import">导入收藏夹</string>
+    <string name="settings_favourite_import_summary">导入下载目录中的收藏夹备份，相同图册会覆盖</string>
 
     <string name="settings_about">关于</string>
     <string name="settings_about_upgrade">检查更新</string>

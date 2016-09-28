@@ -3,6 +3,7 @@ package ml.puredark.hviewer.dataholders;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.provider.DocumentFile;
 
 import com.google.gson.Gson;
 
@@ -11,6 +12,10 @@ import java.util.List;
 
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.utils.DocumentUtil;
+
+import static ml.puredark.hviewer.helpers.FileHelper.getDirDocument;
 
 /**
  * Created by PureDark on 2016/8/12.
@@ -91,6 +96,32 @@ public class DownloadTaskHolder {
         }
 
         return downloadTasks;
+    }
+
+    public int scanPathForDownloadTask(String rootPath, String... subDirs){
+        try {
+            DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
+            DocumentFile[] dirs = root.listFiles();
+            int count = 0;
+            for (DocumentFile dir : dirs) {
+                if (dir.isDirectory()) {
+                    DocumentFile file = dir.findFile("detail.txt");
+                    if (file != null && file.isFile() && file.canRead()) {
+                        String detail = FileHelper.readString(file);
+                        DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
+                        task.status = DownloadTask.STATUS_COMPLETED;
+                        if(!isInList(task)){
+                            count++;
+                            addDownloadTask(task);
+                        }
+                    }
+                }
+            }
+            return count;
+        } catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     public boolean isInList(DownloadTask item) {

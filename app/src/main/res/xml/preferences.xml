@@ -40,6 +40,33 @@
             android:title="@string/settings_download_path"
             android:summary="@string/settings_download_path_summary"/>
 
+        <Preference
+            android:defaultValue=""
+            android:key="pref_download_import"
+            android:singleLine="true"
+            android:title="@string/settings_download_import"
+            android:summary="@string/settings_download_import_summary"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_favourite_settings"
+        android:title="@string/settings_favourite">
+
+        <Preference
+            android:defaultValue=""
+            android:key="pref_favourite_export"
+            android:singleLine="true"
+            android:title="@string/settings_favourite_export"
+            android:summary="@string/settings_favourite_export_summary"/>
+
+        <Preference
+            android:defaultValue=""
+            android:key="pref_favourite_import"
+            android:singleLine="true"
+            android:title="@string/settings_favourite_import"
+            android:summary="@string/settings_favourite_import_summary"/>
+
     </PreferenceCategory>
 
 

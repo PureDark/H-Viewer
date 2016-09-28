@@ -167,6 +167,51 @@ public class DocumentUtil {
         return false;
     }
 
+
+    public static byte[] readBytes(Context context, String fileName, String rootPath, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootPath, subDirs);
+        if (parent == null)
+            return null;
+        DocumentFile file = parent.findFile(fileName);
+        return readBytes(context, file.getUri());
+    }
+
+    public static byte[] readBytes(Context context, String fileName, Uri rootUri, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootUri, subDirs);
+        if (parent == null)
+            return null;
+        fileName = filenameFilter(Uri.decode(fileName));
+        DocumentFile file = parent.findFile(fileName);
+        return readBytes(context, file.getUri());
+    }
+
+    public static byte[] readBytes(Context context, String fileName, DocumentFile root, String... subDirs) {
+        DocumentFile parent = getDirDocument(root, subDirs);
+        if (parent == null)
+            return null;
+        fileName = filenameFilter(Uri.decode(fileName));
+        DocumentFile file = parent.findFile(fileName);
+        return readBytes(context, file.getUri());
+    }
+
+    public static byte[] readBytes(Context context, DocumentFile file) {
+        return readBytes(context, file.getUri());
+    }
+
+    public static byte[] readBytes(Context context, Uri fileUri) {
+        try {
+            InputStream fis = context.getContentResolver().openInputStream(fileUri);
+            int len = fis.available();
+            byte[] buffer = new byte[len];
+            fis.read(buffer);
+            fis.close();
+            return buffer;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static DocumentFile getDirDocument(Context context, String rootPath, String... subDirs) {
         Uri rootUri;
         if (rootPath.startsWith("content"))

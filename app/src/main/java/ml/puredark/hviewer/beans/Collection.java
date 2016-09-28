@@ -21,7 +21,7 @@ public class Collection extends AbstractDataProvider.Data {
     }
 
     public Collection(int cid, String idCode, String title, String uploader, String cover, String category,
-                      String datetime, String description, float rating, String referer, List<Tag> tags, List<Picture> pictures) {
+                      String datetime, String description, float rating, String referer, List<Tag> tags, List<Picture> pictures, boolean preloaded) {
         this.cid = cid;
         this.idCode = idCode;
         this.title = title;
@@ -34,6 +34,7 @@ public class Collection extends AbstractDataProvider.Data {
         this.referer = referer;
         this.tags = tags;
         this.pictures = pictures;
+        this.preloaded = preloaded;
     }
 
 

@@ -217,14 +217,14 @@ public class DownloadActivity extends AnimationActivity {
                                     public void run() {
                                         new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
                                                 .setMessage("是否删除内存卡中对应图片？")
-                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                                                         String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
                                                         FileHelper.deleteFile(dirName, rootPath);
                                                     }
-                                                }).setNegativeButton("取消", null).show();
+                                                }).setNegativeButton("否", null).show();
                                     }
                                 }, 250);
                             }
