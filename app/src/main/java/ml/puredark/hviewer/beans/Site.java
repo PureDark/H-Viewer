@@ -136,9 +136,9 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
                         f.set(this, value);
                 } else if("categories".equals(f.getName())){
                     List<Category> categories = (List<Category>) f.get(site);
-                    if(categories==null)
-                        categories = new ArrayList<>();
                     if(this.categories!=null){
+                        if(categories==null)
+                            categories = new ArrayList<>();
                         for(Category category : this.categories){
                             if(!this.categories.contains(category))
                                 categories.add(category);
