@@ -30,14 +30,14 @@ public class LoginActivity extends BaseActivity {
     ImageView btnReturn;
     @BindView(R.id.tv_title)
     TextView tvTitle;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.web_view)
     WebView webView;
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
-    @BindView(R.id.app_bar)
-    AppBarLayout appBar;
 
     private Site site;
 
@@ -50,14 +50,14 @@ public class LoginActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             toolbar.setFitsSystemWindows(true);
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) appBar.getLayoutParams();
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) appbar.getLayoutParams();
             lp.height = (int) (MDStatusBarCompat.getStatusBarHeight(this) +
                     getResources().getDimension(R.dimen.tool_bar_height));
-            appBar.setLayoutParams(lp);
+            appbar.setLayoutParams(lp);
         }
 
         setContainer(coordinatorLayout);

@@ -40,10 +40,10 @@ public class DownloadActivity extends BaseActivity {
     ImageView btnReturn;
     @BindView(R.id.tv_title)
     TextView tvTitle;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.app_bar)
-    AppBarLayout appBar;
     @BindView(R.id.tab_layout)
     ExTabLayout tabLayout;
     @BindView(R.id.view_pager)
@@ -71,7 +71,7 @@ public class DownloadActivity extends BaseActivity {
         setContainer(coordinatorLayout);
         setReturnButton(btnReturn);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        MDStatusBarCompat.setToolbarTabLayout(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         receiver = new MyDownloadReceiver();
         setDownloadReceiver(receiver);
@@ -115,7 +115,7 @@ public class DownloadActivity extends BaseActivity {
         views.add(viewDownloaded);
         List<String> titles = new ArrayList<>();
         titles.add("当前任务");
-        titles.add("已完成");
+        titles.add("已完成　");
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
         viewPager.setAdapter(viewPagerAdapter);

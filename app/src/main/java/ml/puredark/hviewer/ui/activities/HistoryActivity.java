@@ -3,6 +3,7 @@ package ml.puredark.hviewer.ui.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,8 @@ public class HistoryActivity extends BaseActivity {
     ImageView btnReturn;
     @BindView(R.id.tv_title)
     TextView tvTitle;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_collection)
@@ -51,7 +54,7 @@ public class HistoryActivity extends BaseActivity {
         setContainer(coordinatorLayout);
         setReturnButton(btnReturn);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         tvTitle.setText("历史记录");
 

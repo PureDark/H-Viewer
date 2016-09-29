@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -19,6 +20,8 @@ public class LicenseActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.btn_return)
@@ -33,7 +36,7 @@ public class LicenseActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
         ButterKnife.bind(this);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

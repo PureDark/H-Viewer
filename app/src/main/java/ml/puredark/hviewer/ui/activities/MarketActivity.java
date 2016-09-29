@@ -49,7 +49,7 @@ public class MarketActivity extends BaseActivity {
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.app_bar)
-    AppBarLayout appBar;
+    AppBarLayout appbar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.btn_return)
@@ -80,7 +80,7 @@ public class MarketActivity extends BaseActivity {
         setContainer(coordinatorLayout);
         setReturnButton(btnReturn);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        MDStatusBarCompat.setToolbarTabLayout(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         siteHolder = new SiteHolder(this);
 

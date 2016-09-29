@@ -38,6 +38,20 @@ public class MDStatusBarCompat {
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }
+    /**
+     * 简单型状态栏(ToolBar)
+     *
+     * @param activity
+     */
+    public static void setSwipeBackToolBar(Activity activity, CoordinatorLayout coordinatorLayout,
+                                           AppBarLayout appBarLayout, Toolbar toolbar) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            coordinatorLayout.setFitsSystemWindows(true);
+            appBarLayout.setFitsSystemWindows(false);
+            toolbar.setFitsSystemWindows(false);
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
+        }
+    }
 
     /**
      * 图片全屏透明状态栏（图片位于状态栏下面）

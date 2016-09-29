@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -17,6 +18,8 @@ public class SettingActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.btn_return)
@@ -30,7 +33,7 @@ public class SettingActivity extends BaseActivity {
         setContentView(R.layout.activity_preference);
         getFragmentManager().beginTransaction().replace(R.id.setting_content, new SettingFragment(this)).commit();
         ButterKnife.bind(this);
-        MDStatusBarCompat.setToolbarTabLayout(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

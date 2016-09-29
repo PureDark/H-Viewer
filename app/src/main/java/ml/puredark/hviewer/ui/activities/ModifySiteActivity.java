@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +46,10 @@ public class ModifySiteActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.edittext_container)
     RelativeLayout edittextContainer;
     @BindView(R.id.view_share_site_qr_code)
@@ -55,8 +60,6 @@ public class ModifySiteActivity extends BaseActivity {
     View viewSiteDetails;
     @BindView(R.id.btn_return)
     ImageView btnReturn;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     @BindView(R.id.input_site)
     MaterialEditText inputSite;
@@ -77,7 +80,7 @@ public class ModifySiteActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_site);
         ButterKnife.bind(this);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         setSupportActionBar(toolbar);
         setContainer(coordinatorLayout);

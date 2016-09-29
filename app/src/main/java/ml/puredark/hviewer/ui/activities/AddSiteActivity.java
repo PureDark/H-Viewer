@@ -2,6 +2,7 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +37,10 @@ public class AddSiteActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.app_bar)
+    AppBarLayout appbar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.edittext_container)
     RelativeLayout edittextContainer;
     @BindView(R.id.view_add_site_json)
@@ -44,8 +49,6 @@ public class AddSiteActivity extends BaseActivity {
     View viewSiteDetails;
     @BindView(R.id.btn_return)
     ImageView btnReturn;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     @BindView(R.id.input_site)
     MaterialEditText inputSite;
@@ -68,7 +71,7 @@ public class AddSiteActivity extends BaseActivity {
         setContentView(R.layout.activity_add_site);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        MDStatusBarCompat.setToolbarTabLayout(this);
+        MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
         setContainer(coordinatorLayout);
 
