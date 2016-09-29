@@ -830,7 +830,7 @@ public class ExampleSites {
         indexRule = new Rule();
         indexRule.item = new Selector("ul._image-items>li.image-item, section.ranking-item", null, null, null, null);
         indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(\\d+)", null);
-        indexRule.cover = new Selector("a.work img._thumbnail", null, null, "\"(http://[^\"]*?\\.jpg)\"", null);
+        indexRule.cover = new Selector("a.work img._thumbnail,div._layout-thumbnail>img", null, null, "\"(http://[^\"]*?\\.(?:jpg|jpeg|png|gif|bmp))\"", null);
         indexRule.title = new Selector("a>h1.title, h2>a.title", "html", null, null, null);
         indexRule.uploader = new Selector("a.user, a.user-container>span", "html", null, null, null);
         indexRule.category = new Selector("div.rank>h1>a", "html", null, null, null);
@@ -842,15 +842,15 @@ public class ExampleSites {
         galleryRule.datetime = new Selector("ul.meta > li:eq(0)", "html", null, null, null);
         galleryRule.description = new Selector("div.ui-expander-target > p.caption", "html", null, null, null);
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
-        galleryRule.rating = new Selector("section.score", "html", null, "rated-count\">(\\d+).*score-count\">(\\d+)", "$2/$1/2");
+        galleryRule.rating = new Selector("section.score", null, null, "rated-count\">(\\d+).*?score-count\">(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
-        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
-        galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
+        galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(?:jpg|jpeg|png|gif|bmp))\"", null);
+        galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.(?:jpg|jpeg|png|gif|bmp))", "$1/150x150/$2");
 
         extraRule = new Rule();
         extraRule.item = new Selector("div.item-container", null, null, null, null);
         extraRule.pictureUrl = new Selector("img", "attr", "data-src", null, null);
-        extraRule.pictureThumbnail = new Selector("img", "attr", "data-src", "(http://.*?c)/\\d+x\\d+/(.*?\\.jpg)", "$1/150x150/$2");
+        extraRule.pictureThumbnail = new Selector("img", "attr", "data-src", "(http://.*?c)/\\d+x\\d+/(.*?\\.(?:jpg|jpeg|png|gif|bmp))", "$1/150x150/$2");
 
         sites.add(new Site(53, "Pixiv",
                 "http://www.pixiv.net/new_illust.php?p={page:1}",
@@ -858,25 +858,26 @@ public class ExampleSites {
                 "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",
                 "https://accounts.pixiv.net/login",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_SECOND_LEVEL_GALLERY+"|"+Site.FLAG_PRELOAD_GALLERY));
+                Site.FLAG_SECOND_LEVEL_GALLERY+"|"+Site.FLAG_PRELOAD_GALLERY+"|"+Site.FLAG_NO_TAG));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://www.pixiv.net/new_illust.php?p={page:1}"));
-        categories.add(new Category(5, "R18", "http://www.pixiv.net/new_illust_r18.php?p={page:1}"));
-        categories.add(new Category(2, "综合今日排行榜", "http://www.pixiv.net/ranking.php?mode=daily&p={page:1}"));
-        categories.add(new Category(3, "综合本周排行榜", "http://www.pixiv.net/ranking.php?mode=weekly&p={page:1}"));
-        categories.add(new Category(4, "综合本月排行榜", "http://www.pixiv.net/ranking.php?mode=monthly&p={page:1}"));
-        categories.add(new Category(5, "R18今日排行榜", "http://www.pixiv.net/ranking.php?mode=daily_r18&p={page:1}"));
-        categories.add(new Category(6, "R18本周排行榜", "http://www.pixiv.net/ranking.php?mode=weekly_r18&p={page:1}"));
-        categories.add(new Category(7, "R18G本周排行榜", "http://www.pixiv.net/ranking.php?mode=r18g&p={page:1}"));
-        categories.add(new Category(8, "10000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=10000users%E5%85%A5%E3%82%8A&p={page:1}"));
-        categories.add(new Category(9, "5000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=5000users%E5%85%A5%E3%82%8A&p={page:1}"));
-        categories.add(new Category(10, "3000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=3000users%E5%85%A5%E3%82%8A&p={page:1}"));
-        categories.add(new Category(11, "1000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=1000users%E5%85%A5%E3%82%8A&p={page:1}"));
-        categories.add(new Category(12, "Loli", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E3%83%AD%E3%83%AA&p={page:1}"));
-        categories.add(new Category(13, "東方", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E6%9D%B1%E6%96%B9&p={page:1}"));
-        categories.add(new Category(14, "艦これ", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E8%89%A6%E3%81%93%E3%82%8C&p={page:1}"));
-        categories.add(new Category(15, "LoveLive", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=LoveLive&p={page:1}"));
-        categories.add(new Category(16, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
+        categories.add(new Category(2, "收藏夹", "http://www.pixiv.net/bookmark.php?p={page:1}"));
+        categories.add(new Category(3, "R18", "http://www.pixiv.net/new_illust_r18.php?p={page:1}"));
+        categories.add(new Category(4, "综合今日排行榜", "http://www.pixiv.net/ranking.php?mode=daily&p={page:1}"));
+        categories.add(new Category(5, "综合本周排行榜", "http://www.pixiv.net/ranking.php?mode=weekly&p={page:1}"));
+        categories.add(new Category(6, "综合本月排行榜", "http://www.pixiv.net/ranking.php?mode=monthly&p={page:1}"));
+        categories.add(new Category(7, "R18今日排行榜", "http://www.pixiv.net/ranking.php?mode=daily_r18&p={page:1}"));
+        categories.add(new Category(8, "R18本周排行榜", "http://www.pixiv.net/ranking.php?mode=weekly_r18&p={page:1}"));
+        categories.add(new Category(9, "R18G本周排行榜", "http://www.pixiv.net/ranking.php?mode=r18g&p={page:1}"));
+        categories.add(new Category(10, "10000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=10000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(11, "5000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=5000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(12, "3000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=3000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(13, "1000users入り", "http://www.pixiv.net/search.php?s_mode=s_tag&word=1000users%E5%85%A5%E3%82%8A&p={page:1}"));
+        categories.add(new Category(14, "Loli", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E3%83%AD%E3%83%AA&p={page:1}"));
+        categories.add(new Category(15, "東方", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E6%9D%B1%E6%96%B9&p={page:1}"));
+        categories.add(new Category(16, "艦これ", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=%E8%89%A6%E3%81%93%E3%82%8C&p={page:1}"));
+        categories.add(new Category(17, "LoveLive", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=LoveLive&p={page:1}"));
+        categories.add(new Category(18, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
         sites.get(sites.size() - 1).cookie = "p_ab_id=4; _gat=1; PHPSESSID=19726569_cf8243e85368f6e8965c6e19068b4da5; device_token=0074d3631c53eff71393c60ac338f0ef; a_type=0; __utmt=1; __utma=235335808.1998756366.1474474879.1474475016.1474475016.1; __utmb=235335808.1.10.1474475016; __utmc=235335808; __utmz=235335808.1474475016.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmv=235335808.|2=login%20ever=yes=1^3=plan=normal=1^5=gender=male=1^6=user_id=19726569=1; _ga=GA1.2.1998756366.1474474879; _gat_UA-74360115-3=1";
 

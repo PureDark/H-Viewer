@@ -3,7 +3,6 @@ package ml.puredark.hviewer.configs;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.util.Log;
 
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.disk.NoOpDiskTrimmableRegistry;
@@ -18,16 +17,19 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 
 import java.util.concurrent.TimeUnit;
 
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HttpDns;
 import ml.puredark.hviewer.http.MyOkHttpNetworkFetcher;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import okhttp3.OkHttpClient;
 
 /**
  * Created by PureDark on 2016/9/27.
  */
 
-public class ImagePipelineConfigBuilder{
+public class ImagePipelineConfigBuilder {
 
     //分配的可用内存
     private static final int MAX_HEAP_SIZE = (int) Runtime.getRuntime().maxMemory();
@@ -42,13 +44,13 @@ public class ImagePipelineConfigBuilder{
     private static final int MAX_SMALL_DISK_LOW_CACHE_SIZE = 100 * ByteConstants.MB;
 
     //默认图极低磁盘空间缓存的最大值
-    private static final int MAX_DISK_CACHE_VERYLOW_SIZE = 100 * ByteConstants.MB;
+    private static int MAX_DISK_CACHE_VERYLOW_SIZE = 60 * ByteConstants.MB;
 
     //默认图低磁盘空间缓存的最大值
-    private static final int MAX_DISK_CACHE_LOW_SIZE = 300 * ByteConstants.MB;
+    private static int MAX_DISK_CACHE_LOW_SIZE = 180 * ByteConstants.MB;
 
     //默认图磁盘缓存的最大值
-    private static final int MAX_DISK_CACHE_SIZE = 500 * ByteConstants.MB;
+    private static int MAX_DISK_CACHE_SIZE = 300 * ByteConstants.MB;
 
     //小图所放路径的文件夹名
     private static final String IMAGE_PIPELINE_SMALL_CACHE_DIR = "ImagePipelineCacheSmall";
@@ -57,6 +59,11 @@ public class ImagePipelineConfigBuilder{
     private static final String IMAGE_PIPELINE_CACHE_DIR = "ImagePipelineCacheDefault";
 
     public static ImagePipelineConfig getDefaultImagePipelineConfig(Context context) {
+        final int cacheSize = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+                SettingFragment.KEY_PREF_VIEW_PRELOAD_PAGES, 300);
+        MAX_DISK_CACHE_VERYLOW_SIZE = cacheSize / 5;
+        MAX_DISK_CACHE_LOW_SIZE = cacheSize * 3/5;
+        MAX_DISK_CACHE_SIZE = cacheSize;
 
         //内存配置
         final MemoryCacheParams bitmapCacheParams = new MemoryCacheParams(
@@ -85,7 +92,7 @@ public class ImagePipelineConfigBuilder{
 
         //默认图片的磁盘配置
         DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context).setBaseDirectoryPath(Environment.getExternalStorageDirectory().getAbsoluteFile())//缓存图片基路径
-            .setBaseDirectoryName(IMAGE_PIPELINE_CACHE_DIR)                             //文件夹名
+                .setBaseDirectoryName(IMAGE_PIPELINE_CACHE_DIR)                             //文件夹名
                 .setMaxCacheSize(MAX_DISK_CACHE_SIZE)                                   //默认缓存的最大大小。
                 .setMaxCacheSizeOnLowDiskSpace(MAX_DISK_CACHE_LOW_SIZE)                 //缓存的最大大小,使用设备时低磁盘空间。
                 .setMaxCacheSizeOnVeryLowDiskSpace(MAX_DISK_CACHE_VERYLOW_SIZE)         //缓存的最大大小,当设备极低磁盘空间

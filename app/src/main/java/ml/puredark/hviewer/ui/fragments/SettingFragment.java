@@ -15,6 +15,8 @@ import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipeline;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -61,6 +63,9 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_FAVOURITE_EXPORT = "pref_favourite_export";
     public static final String KEY_PREF_FAVOURITE_IMPORT = "pref_favourite_import";
+
+    public static final String KEY_PREF_CACHE_SIZE = "pref_cache_size";
+    public static final String KEY_PREF_CACHE_CLEAN = "pref_cache_clean";
 
     public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
     public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
@@ -202,11 +207,24 @@ public class SettingFragment extends PreferenceFragment
                                         holder.addFavourite(collection);
                                     }
                                     holder.onDestroy();
+                                    activity.showSnackBar("导入收藏夹成功");
                                 } catch (Exception e){
                                     e.printStackTrace();
-                                    activity.showSnackBar("导入收藏夹备份失败");
+                                    activity.showSnackBar("导入收藏夹失败");
                                 }
                             }
+                        }
+                    })
+                    .setNegativeButton("取消", null).show();
+        } else if (preference.getKey().equals(KEY_PREF_CACHE_CLEAN)) {
+            new AlertDialog.Builder(activity).setTitle("确定要清空图片缓存？")
+                    .setMessage("近期加载过的图片将会需要重新下载")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ImagePipeline imagePipeline = Fresco.getImagePipeline();
+                            imagePipeline.clearDiskCaches();
+                            activity.showSnackBar("缓存清理成功");
                         }
                     })
                     .setNegativeButton("取消", null).show();

@@ -8,8 +8,8 @@ android {
         applicationId "ml.puredark.hviewer"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 39
-        versionName "0.6.2"
+        versionCode 40
+        versionName "0.6.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

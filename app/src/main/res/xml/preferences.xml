@@ -71,6 +71,27 @@
 
 
     <PreferenceCategory
+        android:key="pref_cache_settings"
+        android:title="@string/settings_cache">
+
+        <de.leonardarnold.numberpickerpreference.NumberPickerPreference
+            android:defaultValue="300"
+            android:key="pref_cache_size"
+            app:MaxValue="600"
+            app:MinValue="100"
+            android:title="@string/settings_cache_size"
+            android:summary=" %s MB"/>
+
+        <Preference
+            android:key="pref_cache_clean"
+            android:singleLine="true"
+            android:title="@string/settings_cache_clean"
+            android:summary="@string/settings_cache_clean_summary"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
         android:key="pref_proxy"
         android:title="@string/settings_proxy">
 

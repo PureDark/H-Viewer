@@ -219,8 +219,8 @@ public class MainActivity extends BaseActivity {
 
         // drag & drop manager
         mRecyclerViewDragDropManager = new RecyclerViewDragDropManager();
-        mRecyclerViewDragDropManager.setInitiateOnMove(false);
-        mRecyclerViewDragDropManager.setInitiateOnTouch(true);
+        mRecyclerViewDragDropManager.setInitiateOnMove(true);
+        mRecyclerViewDragDropManager.setInitiateOnTouch(false);
 
         siteAdapter = new SiteAdapter(dataProvider);
 

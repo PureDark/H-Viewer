@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -266,6 +267,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         }
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(myCollection.rating);
+        Log.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
         if(myCollection.description!=null)
             holder.tvDescription.setText(Html.fromHtml(myCollection.description, new Html.ImageGetter() {

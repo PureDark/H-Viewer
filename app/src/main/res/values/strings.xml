@@ -38,6 +38,11 @@
     <string name="settings_favourite_import">导入收藏夹</string>
     <string name="settings_favourite_import_summary">导入下载目录中的收藏夹备份，相同图册会覆盖</string>
 
+    <string name="settings_cache">缓存管理</string>
+    <string name="settings_cache_size">图片缓存大小</string>
+    <string name="settings_cache_clean">清理图片缓存</string>
+    <string name="settings_cache_clean_summary">清理图片缓存文件，释放空间</string>
+
     <string name="settings_about">关于</string>
     <string name="settings_about_upgrade">检查更新</string>
     <string name="settings_about_license">开源协议</string>
