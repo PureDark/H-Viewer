@@ -986,11 +986,7 @@ public class ExampleSites {
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页推荐", "http://www.ui.cn/?p={page:1}#project"));
         categories.add(new Category(2, "佳作推荐", "http://www.ui.cn/?t=share&p={page:1}#project"));
-        categories.add(new Category(3, "最新", "http://www.ui.cn/list.html?p={page:1}&tag=0&r=all&subcatid=0&catid=0"));
-        categories.add(new Category(4, "最热", "http://www.ui.cn/list.html?p={page:1}&tag=1&r=all&subcatid=0&catid=0"));
-        categories.add(new Category(5, "评论", "http://www.ui.cn/list.html?p={page:1}&tag=2&r=all&subcatid=0&catid=0"));
-        categories.add(new Category(6, "点赞", "http://www.ui.cn/list.html?p={page:1}&tag=3&r=all&subcatid=0&catid=0"));
-        categories.add(new Category(7, "收藏", "http://www.ui.cn/list.html?p={page:1}&tag=4&r=all&subcatid=0&catid=0"));
+        categories.add(new Category(3, "最新作品", "http://www.ui.cn/?t=new&p={page:1}#project"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;

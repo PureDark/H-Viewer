@@ -68,7 +68,7 @@ public class AddSiteActivity extends BaseActivity {
         setContentView(R.layout.activity_add_site);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
+        MDStatusBarCompat.setToolbarTabLayout(this);
 
         setContainer(coordinatorLayout);
 

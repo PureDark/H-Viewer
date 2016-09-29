@@ -47,15 +47,22 @@
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-
-    <LinearLayout
-        android:id="@+id/setting_content"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:orientation="vertical">
-
-    </LinearLayout>
+        android:layout_height="match_parent">
+        <View
+            android:id="@+id/shadowDown"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow_bottom" />
+        <LinearLayout
+            android:id="@+id/setting_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:orientation="vertical">
+        </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

@@ -90,7 +90,7 @@
             app:tabIcon1="@drawable/selector_gallery"
             app:tabIcon2="@drawable/selector_description"
             app:tabIndicatorColor="@color/colorPrimary"
-            app:tabIndicatorHeight="2dp"
+            app:tabIndicatorHeight="3dp"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/colorPrimaryDark"
             app:tabTextColor="@color/colorPrimaryDark"

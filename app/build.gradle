@@ -75,7 +75,7 @@ dependencies {
     }
 
     // SwipeBack
-    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
+//    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
 
     //butter knife
     compile 'com.jakewharton:butterknife:8.2.1'

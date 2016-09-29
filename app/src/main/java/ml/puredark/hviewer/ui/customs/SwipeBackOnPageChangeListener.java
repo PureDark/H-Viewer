@@ -2,8 +2,7 @@ package ml.puredark.hviewer.ui.customs;
 
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
-import me.majiajie.swipeback.SwipeBackActivity;
-
+import ml.puredark.hviewer.libraries.swipeback.dispatchactivity.SwipeBackActivity;
 
 /**
  * Created by PureDark on 2016/9/29.

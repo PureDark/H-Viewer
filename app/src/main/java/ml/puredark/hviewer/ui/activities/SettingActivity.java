@@ -30,7 +30,7 @@ public class SettingActivity extends BaseActivity {
         setContentView(R.layout.activity_preference);
         getFragmentManager().beginTransaction().replace(R.id.setting_content, new SettingFragment(this)).commit();
         ButterKnife.bind(this);
-        MDStatusBarCompat.setOrdinaryToolBar(this);
+        MDStatusBarCompat.setToolbarTabLayout(this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

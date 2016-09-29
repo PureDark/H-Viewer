@@ -2,7 +2,6 @@ package ml.puredark.hviewer;
 
 
 import android.annotation.TargetApi;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -19,7 +18,6 @@ import com.google.gson.JsonParser;
 import com.sina.util.dnscache.DNSCache;
 import com.umeng.analytics.MobclickAgent;
 
-import me.majiajie.swipeback.utils.ActivityStack;
 import ml.puredark.hviewer.configs.ImagePipelineConfigBuilder;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.core.CrashHandler;
@@ -28,8 +26,9 @@ import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.dataholders.SearchHistoryHolder;
 import ml.puredark.hviewer.dataholders.SearchSuggestionHolder;
 import ml.puredark.hviewer.download.DownloadService;
+import ml.puredark.hviewer.libraries.swipeback.common.SwipeBackApplication;
 
-public class HViewerApplication extends Application {
+public class HViewerApplication extends SwipeBackApplication {
     public static Context mContext;
     /**
      * 是否开启日志输出,在Debug状态下开启,
@@ -119,8 +118,6 @@ public class HViewerApplication extends Application {
         super.onCreate();
         mContext = this;
         Fresco.initialize(this, ImagePipelineConfigBuilder.getDefaultImagePipelineConfig(this));
-
-        registerActivityLifecycleCallbacks(ActivityStack.getInstance());
 
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);
