@@ -10,10 +10,8 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,6 +20,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.nineoldandroids.animation.Animator;
 import com.umeng.analytics.MobclickAgent;
 
+import me.majiajie.swipeback.SwipeBackActivity;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.customs.AnimationOnActivity;
@@ -33,7 +32,7 @@ import ml.puredark.hviewer.download.DownloadService;
  * Created by PureDark on 2016/8/13.
  */
 
-public class AnimationActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOffsetChangedListener {
 
     private DrawerArrowDrawable btnReturnIcon;
 

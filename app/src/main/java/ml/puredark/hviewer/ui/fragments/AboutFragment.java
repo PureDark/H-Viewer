@@ -10,7 +10,7 @@ import android.preference.PreferenceScreen;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.ui.activities.AnimationActivity;
+import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_MODE_R18_ENABLED;
@@ -27,13 +27,13 @@ public class AboutFragment extends PreferenceFragment {
 
     private int pressCount = 0;
 
-    private AnimationActivity activity;
+    private BaseActivity activity;
 
     public AboutFragment() {
     }
 
     @SuppressLint("ValidFragment")
-    public AboutFragment(AnimationActivity activity) {
+    public AboutFragment(BaseActivity activity) {
         this.activity = activity;
     }
 

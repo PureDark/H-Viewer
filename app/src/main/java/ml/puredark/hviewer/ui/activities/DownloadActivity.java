@@ -34,7 +34,7 @@ import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.download.DownloadService;
 
-public class DownloadActivity extends AnimationActivity {
+public class DownloadActivity extends BaseActivity {
 
     @BindView(R.id.btn_return)
     ImageView btnReturn;

@@ -32,7 +32,7 @@ import ml.puredark.hviewer.helpers.SitePropViewHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 
 
-public class AddSiteActivity extends AnimationActivity {
+public class AddSiteActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;

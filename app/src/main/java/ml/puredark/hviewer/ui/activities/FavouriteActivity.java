@@ -25,7 +25,7 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 
-public class FavouriteActivity extends AnimationActivity {
+public class FavouriteActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;

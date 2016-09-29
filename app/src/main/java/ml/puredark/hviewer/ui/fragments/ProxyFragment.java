@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.ui.activities.AnimationActivity;
+import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_PROXY_SERVER;
@@ -16,13 +16,13 @@ import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_PROXY_SE
 public class ProxyFragment extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener{
 
-    private AnimationActivity activity;
+    private BaseActivity activity;
 
     public ProxyFragment() {
     }
 
     @SuppressLint("ValidFragment")
-    public ProxyFragment(AnimationActivity activity) {
+    public ProxyFragment(BaseActivity activity) {
         this.activity = activity;
     }
 

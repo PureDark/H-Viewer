@@ -24,7 +24,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
-public class LoginActivity extends AnimationActivity {
+public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.btn_return)
     ImageView btnReturn;

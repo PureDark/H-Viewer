@@ -2,12 +2,15 @@ package ml.puredark.hviewer.ui.customs;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import ml.puredark.hviewer.R;
 
@@ -31,7 +34,7 @@ public class ExTabLayout extends TabLayout {
     @Override
     public void setupWithViewPager(ViewPager viewPager) {
         super.setupWithViewPager(viewPager);
-        setIcons(typedArray);
+        setIconsAndTextColor(typedArray);
     }
 
     private void preview(Context context, TypedArray a) {
@@ -65,7 +68,7 @@ public class ExTabLayout extends TabLayout {
             return new String[0];
     }
 
-    private void setIcons(TypedArray a) {
+    private void setIconsAndTextColor(TypedArray a) {
         int length = this.getTabCount();
         for (int i = 0; i < length; i++) {
             TabLayout.Tab tab = getTabAt(i);
@@ -89,6 +92,12 @@ public class ExTabLayout extends TabLayout {
                     break;
             }
             tab.setIcon(icon);
+
+            int color = a.getColor(R.styleable.TabLayout_tabTextColor, Color.rgb(255,255,255));
+            View view = tab.getCustomView();
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            textView.setTextColor(color);
+            tab.setCustomView(view);
         }
     }
 }

@@ -15,7 +15,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
-public class LicenseActivity extends AnimationActivity {
+public class LicenseActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;

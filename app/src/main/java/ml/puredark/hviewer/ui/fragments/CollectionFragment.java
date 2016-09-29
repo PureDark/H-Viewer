@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,7 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.ui.activities.AnimationActivity;
+import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.CollectionActivity;
 import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Category;
@@ -179,7 +178,7 @@ public class CollectionFragment extends MyFragment {
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                AnimationActivity activity = (AnimationActivity) getActivity();
+                BaseActivity activity = (BaseActivity) getActivity();
                 if (activity != null)
                     activity.showSnackBar(error.getErrorString());
                 rvCollection.setPullLoadMoreCompleted();
@@ -227,7 +226,7 @@ public class CollectionFragment extends MyFragment {
     @Override
     public void onSearch(String keyword) {
         if (site == null || site.searchUrl == null || "".equals(site.searchUrl)) {
-            AnimationActivity activity = (AnimationActivity) getActivity();
+            BaseActivity activity = (BaseActivity) getActivity();
             if (activity != null)
                 activity.showSnackBar("该站点不支持搜索");
             return;

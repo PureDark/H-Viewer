@@ -16,7 +16,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,14 +58,11 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
-import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.app.Activity.RESULT_OK;
 
-
-public class PictureViewerActivity extends AnimationActivity {
+public class PictureViewerActivity extends BaseActivity {
 
     @BindView(R.id.container)
     LinearLayout container;
@@ -86,6 +82,9 @@ public class PictureViewerActivity extends AnimationActivity {
         ButterKnife.bind(this);
         MDStatusBarCompat.setImageTransparent(this);
         setContainer(container);
+
+        // 关闭边缘滑动返回
+        setSwipeBackEnable(false);
 
         if (HViewerApplication.temp instanceof PicturePagerAdapter)
             picturePagerAdapter = (PicturePagerAdapter) HViewerApplication.temp;
@@ -160,7 +159,7 @@ public class PictureViewerActivity extends AnimationActivity {
 
     public static class PicturePagerAdapter extends PagerAdapter implements DirectoryChooserFragment.OnFragmentInteractionListener {
 
-        private AnimationActivity activity;
+        private BaseActivity activity;
 
         private Site site;
         private Collection collection;
@@ -200,7 +199,7 @@ public class PictureViewerActivity extends AnimationActivity {
             notifyDataSetChanged();
         }
 
-        public void setActivity(AnimationActivity activity) {
+        public void setActivity(BaseActivity activity) {
             this.activity = activity;
         }
 

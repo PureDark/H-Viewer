@@ -1,6 +1,8 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -45,6 +46,7 @@ import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
+import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -56,7 +58,7 @@ import ml.puredark.hviewer.dataholders.HistoryHolder;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 
-public class CollectionActivity extends AnimationActivity implements AppBarLayout.OnOffsetChangedListener {
+public class CollectionActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
@@ -203,6 +205,8 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        viewPager.addOnPageChangeListener(new SwipeBackOnPageChangeListener(this));
+
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
         List<Picture> pictures = new ArrayList<>();
@@ -264,7 +268,12 @@ public class CollectionActivity extends AnimationActivity implements AppBarLayou
         holder.rbRating.setRating(myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
         if(myCollection.description!=null)
-            holder.tvDescription.setText(Html.fromHtml(myCollection.description));
+            holder.tvDescription.setText(Html.fromHtml(myCollection.description, new Html.ImageGetter() {
+                @Override
+                public Drawable getDrawable(String source) {
+                    return new BitmapDrawable();
+                }
+            }, null));
         collection.title = myCollection.title;
         collection.uploader = myCollection.uploader;
         collection.category = myCollection.category;

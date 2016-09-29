@@ -25,7 +25,7 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.dataholders.HistoryHolder;
 
-public class HistoryActivity extends AnimationActivity {
+public class HistoryActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;

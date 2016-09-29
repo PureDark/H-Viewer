@@ -29,7 +29,6 @@ import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
@@ -38,7 +37,7 @@ import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.ui.activities.AnimationActivity;
+import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.LicenseActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -71,7 +70,7 @@ public class SettingFragment extends PreferenceFragment
 
     private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
-    private AnimationActivity activity;
+    private BaseActivity activity;
     private DirectoryChooserFragment mDialog;
 
     private boolean checking = false;
@@ -80,7 +79,7 @@ public class SettingFragment extends PreferenceFragment
     }
 
     @SuppressLint("ValidFragment")
-    public SettingFragment(AnimationActivity activity) {
+    public SettingFragment(BaseActivity activity) {
         this.activity = activity;
     }
 

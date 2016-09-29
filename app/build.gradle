@@ -73,7 +73,10 @@ dependencies {
     compile("com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9") {
         exclude group: 'com.android.support'
     }
-    
+
+    // SwipeBack
+    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
+
     //butter knife
     compile 'com.jakewharton:butterknife:8.2.1'
     
@@ -107,5 +110,4 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

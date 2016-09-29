@@ -9,16 +9,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
-import android.os.Environment;
 import android.support.v7.app.AppCompatDelegate;
 
-import com.facebook.cache.disk.DiskCacheConfig;
-import com.facebook.cache.disk.DiskStorageCache;
-import com.facebook.common.internal.Supplier;
-import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.cache.MemoryCacheParams;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -26,20 +19,15 @@ import com.google.gson.JsonParser;
 import com.sina.util.dnscache.DNSCache;
 import com.umeng.analytics.MobclickAgent;
 
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
+import me.majiajie.swipeback.utils.ActivityStack;
 import ml.puredark.hviewer.configs.ImagePipelineConfigBuilder;
 import ml.puredark.hviewer.configs.UrlConfig;
-import ml.puredark.hviewer.http.MyOkHttpNetworkFetcher;
 import ml.puredark.hviewer.core.CrashHandler;
 import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.http.HttpDns;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.dataholders.SearchHistoryHolder;
 import ml.puredark.hviewer.dataholders.SearchSuggestionHolder;
 import ml.puredark.hviewer.download.DownloadService;
-import okhttp3.OkHttpClient;
 
 public class HViewerApplication extends Application {
     public static Context mContext;
@@ -131,6 +119,8 @@ public class HViewerApplication extends Application {
         super.onCreate();
         mContext = this;
         Fresco.initialize(this, ImagePipelineConfigBuilder.getDefaultImagePipelineConfig(this));
+
+        registerActivityLifecycleCallbacks(ActivityStack.getInstance());
 
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);

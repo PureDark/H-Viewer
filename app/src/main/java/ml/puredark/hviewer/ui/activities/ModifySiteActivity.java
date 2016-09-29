@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,12 +35,13 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
-import ml.puredark.hviewer.utils.ImageScaleUtil;
 import ml.puredark.hviewer.utils.QRCodeUtil;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 
-public class ModifySiteActivity extends AnimationActivity {
+import static android.content.Context.CLIPBOARD_SERVICE;
+
+public class ModifySiteActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
@@ -207,10 +209,13 @@ public class ModifySiteActivity extends AnimationActivity {
 
     @OnClick(R.id.btn_save_qr_code)
     void saveQrCode() {
-        String filePath = DownloadManager.getDownloadPath() + "/QrCodes/" + site.title + ".jpg";
         Bitmap bitmap = ((BitmapDrawable) ivQrCode.getDrawable()).getBitmap();
         try {
-            ImageScaleUtil.saveToFile(this, bitmap, filePath);
+            String rootPath = DownloadManager.getDownloadPath();
+            String fileName = FileHelper.filenameFilter(site.title) + ".jpg";
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, "QrCodes");
+            FileHelper.saveBitmapToFile(bitmap, documentFile);
+            showSnackBar("二维码已成功保存到下载目录中");
         } catch (IOException e) {
             e.printStackTrace();
             showSnackBar("二维码保存失败");

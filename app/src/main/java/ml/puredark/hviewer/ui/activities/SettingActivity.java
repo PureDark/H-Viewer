@@ -1,9 +1,7 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +13,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 
-public class SettingActivity extends AnimationActivity {
+public class SettingActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;

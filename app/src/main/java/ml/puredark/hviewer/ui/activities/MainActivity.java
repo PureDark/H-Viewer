@@ -10,7 +10,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,15 +18,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 import com.google.gson.Gson;
@@ -37,10 +33,6 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.umeng.analytics.MobclickAgent;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,7 +49,6 @@ import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.helpers.ExampleSites;
-import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -67,13 +58,12 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
-import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 
-public class MainActivity extends AnimationActivity {
+public class MainActivity extends BaseActivity {
     private static int RESULT_ADD_SITE = 1;
     private static int RESULT_MODIFY_SITE = 2;
     private static int RESULT_LOGIN = 3;
@@ -136,6 +126,9 @@ public class MainActivity extends AnimationActivity {
 
         // 关闭默认统计，手动进行Fragment统计
         setAnalyze(false);
+
+        // 关闭边缘滑动返回
+        setSwipeBackEnable(false);
 
         siteHolder = new SiteHolder(this);
 
@@ -201,8 +194,8 @@ public class MainActivity extends AnimationActivity {
         // 测试新站点用
         List<Site> sites = ExampleSites.get();
         siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
-//        siteGroups.get(0).second.addAll(sites);
-        siteGroups.get(0).second.add(sites.get(sites.size()-1));
+        siteGroups.get(0).second.addAll(sites);
+//        siteGroups.get(0).second.add(sites.get(sites.size()-1));
         SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);

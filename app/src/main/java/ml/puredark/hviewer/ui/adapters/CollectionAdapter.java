@@ -120,6 +120,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (holder.rvTags != null) {
                 holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.HORIZONTAL));
             }
+        }else{
+            if (holder.rvTags != null) {
+                holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.HORIZONTAL));
+            }
         }
         if (site.hasFlag(Site.FLAG_NO_RATING)) {
             holder.rbRating.setVisibility(View.GONE);

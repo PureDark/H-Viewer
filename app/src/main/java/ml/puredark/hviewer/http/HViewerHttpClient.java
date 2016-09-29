@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.http;
 
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -35,16 +37,41 @@ public class HViewerHttpClient {
                                                 .dns(new HttpDns())
                                                 .build();
 
-    public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {
-        String[] paramStrings = paramsString.split("&");
-        FormBody.Builder formBody = new FormBody.Builder();
-        for (String paramString : paramStrings) {
-            String[] pram = paramString.split("=");
-            if (pram.length != 2) continue;
-            formBody.add(pram[0], pram[1]);
+    public static Object get(String url, List<Cookie> cookies){
+        if (url == null || !url.startsWith("http")) {
+            Logger.d("HViewerHttpClient", "url = "+url);
+            return null;
         }
-        RequestBody requestBody = formBody.build();
-        post(url, requestBody, cookies, callback);
+        if (HViewerApplication.isNetworkAvailable()) {
+            HRequestBuilder builder = new HRequestBuilder();
+            if (cookies != null) {
+                String cookieString = "";
+                for (Cookie cookie : cookies) {
+                    cookieString += cookie.name() + "=" + cookie.value() + "; ";
+                }
+                builder.addHeader("cookie", cookieString);
+            }
+            Request request = builder
+                    .url(url)
+                    .build();
+            try {
+                Response response = mClient.newCall(request).execute();
+                String contentType = response.header("Content-Type");
+                Object body;
+                if (contentType != null && contentType.contains("image")) {
+                    body = BitmapDrawable.createFromStream(response.body().byteStream(), null);
+                } else {
+                    byte[] b = response.body().bytes();
+                    String charset = getCharset(new String(b));
+                    body = new String(b, charset);
+                }
+                response.close();
+                return body;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
@@ -79,6 +106,18 @@ public class HViewerHttpClient {
         } else {
             callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
         }
+    }
+
+    public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {
+        String[] paramStrings = paramsString.split("&");
+        FormBody.Builder formBody = new FormBody.Builder();
+        for (String paramString : paramStrings) {
+            String[] pram = paramString.split("=");
+            if (pram.length != 2) continue;
+            formBody.add(pram[0], pram[1]);
+        }
+        RequestBody requestBody = formBody.build();
+        post(url, requestBody, cookies, callback);
     }
 
     public static void post(String url, RequestBody body, List<Cookie> cookies, final OnResponseListener callback) {

@@ -68,13 +68,13 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:background="@color/white"
+            android:background="@color/colorPrimary"
             app:tabBackground="@color/transparent"
-            app:tabIndicatorColor="@color/colorPrimary"
+            app:tabIndicatorColor="@color/white"
             app:tabIndicatorHeight="2dp"
             app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/colorPrimaryDark"
-            app:tabTextColor="@color/colorPrimaryDark"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextColor="@color/white"
             app:tabTitleArray="ACG图站,Booru图站,绅士漫画站,真人图站" />
 
         <ml.puredark.hviewer.ui.customs.ExViewPager

@@ -10,6 +10,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/ActivityTransition</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

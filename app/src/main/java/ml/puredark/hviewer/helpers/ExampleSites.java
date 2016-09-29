@@ -941,7 +941,8 @@ public class ExampleSites {
                 "https://dribbble.com/shots/{idCode:}",
                 "https://dribbble.com/search?q={keyword:}&page={page:1}&per_page=12",
                 "https://dribbble.com/session/new",
-                indexRule, galleryRule, null, extraRule, Site.FLAG_NO_RATING+"|"+Site.FLAG_SINGLE_PAGE_BIG_PICTURE));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_NO_RATING+"|"+Site.FLAG_SINGLE_PAGE_BIG_PICTURE+"|"+Site.FLAG_PRELOAD_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "Popular", "https://dribbble.com/shots?page={page:1}&per_page=12"));
@@ -954,6 +955,42 @@ public class ExampleSites {
         categories.add(new Category(8, "Rebounds", "https://dribbble.com/shots?page={page:1}&per_page=12&list=rebounds"));
         categories.add(new Category(9, "Animated GIFs", "https://dribbble.com/shots?page={page:1}&per_page=12&list=animated"));
         categories.add(new Category(10, "Shots with Attachments", "https://dribbble.com/shots?page={page:1}&per_page=12&list=attachments"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+
+        // UI中国
+        indexRule = new Rule();
+        indexRule.item = new Selector("ul.post > li", null, null, null, null);
+        indexRule.idCode = new Selector("div.cover > a", "attr", "href", "detail/(\\d+).html", null);
+        indexRule.title = new Selector("div.cover > a", "attr", "title", null, null);
+        indexRule.cover = new Selector("div.cover > a > img", "attr", "data-original", null, null);
+        indexRule.uploader = new Selector("div.info > p.user strong.name > em", "html", null, null, null);
+        indexRule.category = new Selector("div.info > div.msg > span.classify", "html", null, null, null);
+        indexRule.datetime = new Selector("div.info > div.msg", "html", null, "<em>([0-9 ]*)</em>.*?<em>([0-9 ]*)</em>.*?<em>([0-9 ]*)</em>", "✦$1    ✎$2    ❤$3");
+
+        galleryRule = new Rule();
+        galleryRule.tags = new Selector("ol#tags > li.tag > a > strong", "html", null, null, null);
+        galleryRule.description = new Selector("div.works-cont", "html", null, "(<p.*/p>)", null);
+        galleryRule.item = new Selector("div.works-cont>a:has(img),div.works-cont>p:has(img)", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("this", "html", null, "(?:href|src)=\"([^\"]*?)\"", null);
+        galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
+
+        sites.add(new Site(56, "UI中国",
+                "http://www.ui.cn/?p={page:1}#project",
+                "http://www.ui.cn/detail/{idCode:}.html",
+                "http://s.ui.cn/index.html?keywords={keyword:}&page={page:1}&type=project",
+                "http://ui.cn/login.html",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "首页推荐", "http://www.ui.cn/?p={page:1}#project"));
+        categories.add(new Category(2, "佳作推荐", "http://www.ui.cn/?t=share&p={page:1}#project"));
+        categories.add(new Category(3, "最新", "http://www.ui.cn/list.html?p={page:1}&tag=0&r=all&subcatid=0&catid=0"));
+        categories.add(new Category(4, "最热", "http://www.ui.cn/list.html?p={page:1}&tag=1&r=all&subcatid=0&catid=0"));
+        categories.add(new Category(5, "评论", "http://www.ui.cn/list.html?p={page:1}&tag=2&r=all&subcatid=0&catid=0"));
+        categories.add(new Category(6, "点赞", "http://www.ui.cn/list.html?p={page:1}&tag=3&r=all&subcatid=0&catid=0"));
+        categories.add(new Category(7, "收藏", "http://www.ui.cn/list.html?p={page:1}&tag=4&r=all&subcatid=0&catid=0"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;
