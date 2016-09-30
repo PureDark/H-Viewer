@@ -10,14 +10,13 @@ import android.text.TextUtils;
 
 import com.umeng.analytics.MobclickAgent;
 
-import java.io.File;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
@@ -51,8 +50,8 @@ public class DownloadManager {
 
     private void checkNoMediaFile() {
         String path = Uri.decode(getDownloadPath());
-        if(path.startsWith("/"))
-            SimpleFileUtil.createIfNotExist(path+"/.nomedia");
+        if (path.startsWith("/"))
+            SimpleFileUtil.createIfNotExist(path + "/.nomedia");
         else
             FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
     }
@@ -74,19 +73,19 @@ public class DownloadManager {
     }
 
     public boolean createDownloadTask(LocalCollection collection) {
-        String dirName = collection.title;
+        String dirName = FileHelper.filenameFilter(collection.site.title + "_" + collection.idCode + "_" + collection.title);
         String path = getDownloadPath() + "/" + Uri.encode(dirName);
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (holder.isInList(task) || binder == null)
             return false;
         int did = holder.addDownloadTask(task);
         task.did = did;
-        if (TextUtils.isEmpty(collection.title)) {
-            dirName = collection.site.title + "_" + did;
-        }
         int i = 2;
         while (FileHelper.isFileExist(dirName, getDownloadPath())) {
-            dirName = collection.title + " ("+(i++)+")";
+            if (TextUtils.isEmpty(collection.title))
+                dirName = FileHelper.filenameFilter(collection.site.title + "_" + collection.idCode + "_" + (i++));
+            else
+                dirName = FileHelper.filenameFilter(collection.site.title + "_" + collection.idCode + "_" + collection.title + "_" + (i++));
         }
         path = getDownloadPath() + "/" + Uri.encode(dirName);
         task.path = path;

@@ -830,7 +830,7 @@ public class ExampleSites {
         indexRule = new Rule();
         indexRule.item = new Selector("ul._image-items>li.image-item, section.ranking-item", null, null, null, null);
         indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(\\d+)", null);
-        indexRule.cover = new Selector("a.work img._thumbnail,div._layout-thumbnail>img", null, null, "\"(http://[^\"]*?\\.(?:jpg|jpeg|png|gif|bmp))\"", null);
+        indexRule.cover = new Selector("div._layout-thumbnail>img", null, null, "\"(http://[^\"]*?\\.(?:jpg|jpeg|png))\"", null);
         indexRule.title = new Selector("a>h1.title, h2>a.title", "html", null, null, null);
         indexRule.uploader = new Selector("a.user, a.user-container>span", "html", null, null, null);
         indexRule.category = new Selector("div.rank>h1>a", "html", null, null, null);
@@ -842,7 +842,7 @@ public class ExampleSites {
         galleryRule.datetime = new Selector("ul.meta > li:eq(0)", "html", null, null, null);
         galleryRule.description = new Selector("div.ui-expander-target > p.caption", "html", null, null, null);
         galleryRule.tags = new Selector("ul.tags > li.tag > a.text", "html", null, null, null);
-        galleryRule.rating = new Selector("section.score", null, null, "rated-count\">(\\d+).*?score-count\">(\\d+)", "$2/$1/2");
+        galleryRule.rating = new Selector("div.ui-expander-target > div.user-reaction", "html", null, "rated-count\".*?(\\d+).*?score-count\".*?(\\d+)", "$2/$1/2");
         galleryRule.item = new Selector("body", null, null, null, null);
         galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(?:jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.(?:jpg|jpeg|png|gif|bmp))", "$1/150x150/$2");

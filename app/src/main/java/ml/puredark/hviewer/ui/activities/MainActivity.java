@@ -26,7 +26,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
-import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -58,7 +57,6 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -192,9 +190,9 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-//        List<Site> sites = ExampleSites.get();
-//        siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
-//        siteGroups.get(0).second.addAll(sites);
+        List<Site> sites = ExampleSites.get();
+        siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
+        siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-1));
 //        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 

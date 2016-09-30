@@ -25,7 +25,6 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
-import static u.aly.cv.i;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -120,7 +119,7 @@ public class RuleParser {
         } else {
             String result = MathUtil.computeString(ratingStr);
             try {
-                rating = Float.parseFloat(result);
+                rating = result.contains("NaN") ? 0 : Float.parseFloat(result);
             } catch (NumberFormatException e) {
                 rating = Math.min(ratingStr.replace(" ", "").length(), 5);
             }
@@ -216,7 +215,7 @@ public class RuleParser {
                             prop = selector.replacement;
                             for (int i = 1; i <= matcher.groupCount(); i++) {
                                 String replace = matcher.group(i);
-                                prop = prop.replaceAll("\\$" + i, (replace!=null)?replace:"");
+                                prop = prop.replaceAll("\\$" + i, (replace != null) ? replace : "");
                             }
                         } else {
                             prop = matcher.group(1);

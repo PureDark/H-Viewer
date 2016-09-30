@@ -267,7 +267,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         }
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(myCollection.rating);
-        Log.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
+        Logger.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
         if(myCollection.description!=null)
             holder.tvDescription.setText(Html.fromHtml(myCollection.description, new Html.ImageGetter() {

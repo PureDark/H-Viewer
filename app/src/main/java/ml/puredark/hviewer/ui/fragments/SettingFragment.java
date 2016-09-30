@@ -56,6 +56,7 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_VIEW_HIGH_RES = "pref_view_high_res";
     public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
+    public static final String KEY_PREF_VIEW_VOLUME_FLICK = "pref_view_volume_flick";
 
     public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
     public static final String KEY_PREF_DOWNLOAD_PATH = "pref_download_path";

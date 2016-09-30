@@ -16,6 +16,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +74,8 @@ public class PictureViewerActivity extends BaseActivity {
 
     private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
+    private boolean volumeKeyEnabled = false;
+
     private PicturePagerAdapter picturePagerAdapter;
 
     @Override
@@ -95,6 +98,8 @@ public class PictureViewerActivity extends BaseActivity {
             return;
         }
         HViewerApplication.temp = null;
+
+        volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, false);
 
         picturePagerAdapter.setActivity(this);
 
@@ -137,6 +142,21 @@ public class PictureViewerActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    // 监听音量键，实现翻页
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (volumeKeyEnabled)
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                    nextPage();
+                    return true;
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    prevPage();
+                    return true;
+            }
+        return super.onKeyDown(keyCode, event);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -155,6 +175,18 @@ public class PictureViewerActivity extends BaseActivity {
                     picturePagerAdapter.onSelectDirectory(uriTree);
             }
         }
+    }
+
+    private void prevPage() {
+        int currItem = viewPager.getCurrentItem();
+        if (currItem > 0)
+            viewPager.setCurrentItem(currItem - 1, true);
+    }
+
+    private void nextPage() {
+        int currItem = viewPager.getCurrentItem();
+        if (currItem + 1 < viewPager.getChildCount())
+            viewPager.setCurrentItem(currItem + 1, true);
     }
 
     public static class PicturePagerAdapter extends PagerAdapter implements DirectoryChooserFragment.OnFragmentInteractionListener {
@@ -296,7 +328,7 @@ public class PictureViewerActivity extends BaseActivity {
                                                             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                                                             try {
                                                                 activity.startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
-                                                            }catch(ActivityNotFoundException e){
+                                                            } catch (ActivityNotFoundException e) {
                                                                 e.printStackTrace();
                                                                 mDialog.show(activity.getFragmentManager(), null);
                                                             }
@@ -377,9 +409,9 @@ public class PictureViewerActivity extends BaseActivity {
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 String fileName;
                 int i = 1;
-                do{
-                    fileName = Uri.encode(site.title+"_"+ FileHelper.filenameFilter(collection.idCode)+"_"+(i++)+"."+postfix);
-                }while (FileHelper.isFileExist(fileName, path));
+                do {
+                    fileName = Uri.encode(site.title + "_" + FileHelper.filenameFilter(collection.idCode) + "_" + (i++) + "." + postfix);
+                } while (FileHelper.isFileExist(fileName, path));
                 DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
                 if (FileHelper.writeBytes(bytes, documentFile)) {
                     activity.showSnackBar("保存成功");

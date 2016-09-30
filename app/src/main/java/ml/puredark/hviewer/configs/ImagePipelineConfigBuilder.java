@@ -60,7 +60,7 @@ public class ImagePipelineConfigBuilder {
 
     public static ImagePipelineConfig getDefaultImagePipelineConfig(Context context) {
         final int cacheSize = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
-                SettingFragment.KEY_PREF_VIEW_PRELOAD_PAGES, 300);
+                SettingFragment.KEY_PREF_CACHE_SIZE, 300);
         MAX_DISK_CACHE_VERYLOW_SIZE = cacheSize / 5;
         MAX_DISK_CACHE_LOW_SIZE = cacheSize * 3/5;
         MAX_DISK_CACHE_SIZE = cacheSize;
