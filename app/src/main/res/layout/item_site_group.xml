@@ -39,6 +39,8 @@
             android:layout_marginTop="@dimen/half_padding"
             android:layout_marginBottom="@dimen/half_padding"
             android:layout_marginLeft="@dimen/half_margin"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/black"
             android:textSize="18sp"
             tools:text="未分类" />

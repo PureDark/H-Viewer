@@ -33,29 +33,31 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.ui.activities.PictureViewerActivity.PicturePagerAdapter;
-import ml.puredark.hviewer.ui.adapters.PictureAdapter;
-import ml.puredark.hviewer.ui.adapters.TagAdapter;
-import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.dataholders.FavouriteHolder;
+import ml.puredark.hviewer.dataholders.HistoryHolder;
+import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.Logger;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.activities.PictureViewerActivity.PicturePagerAdapter;
+import ml.puredark.hviewer.ui.adapters.CommentAdapter;
+import ml.puredark.hviewer.ui.adapters.PictureAdapter;
+import ml.puredark.hviewer.ui.adapters.TagAdapter;
+import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
 import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.download.DownloadManager;
-import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
-import ml.puredark.hviewer.core.RuleParser;
-import ml.puredark.hviewer.dataholders.FavouriteHolder;
-import ml.puredark.hviewer.dataholders.HistoryHolder;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 
@@ -84,8 +86,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private Collection myCollection;
 
     private PullLoadMoreRecyclerView rvIndex;
+    private RecyclerView rvComment;
 
     private PictureAdapter pictureAdapter;
+    private CommentAdapter commentAdapter;
 
     private PicturePagerAdapter picturePagerAdapter;
 
@@ -164,13 +168,13 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 onePage = true;
                 startPage = 0;
                 pageStep = 1;
-            }else {
+            } else {
                 onePage = false;
                 String[] pageStrs = pageStr.split(":");
-                if(pageStrs.length>1){
+                if (pageStrs.length > 1) {
                     pageStep = Integer.parseInt(pageStrs[1]);
                     startPage = Integer.parseInt(pageStrs[0]);
-                }else{
+                } else {
                     pageStep = 1;
                     startPage = Integer.parseInt(pageStr);
                 }
@@ -192,15 +196,22 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private void initTabAndViewPager() {
         //初始化Tab和ViewPager
         List<View> views = new ArrayList<>();
-        View viewIndex = getLayoutInflater().inflate(R.layout.view_collection_index, null);
-        View viewDescription = getLayoutInflater().inflate(R.layout.view_collection_desciption, null);
-        holder = new CollectionViewHolder(viewDescription);
-
-        views.add(viewIndex);
-        views.add(viewDescription);
         List<String> titles = new ArrayList<>();
         titles.add("目录");
-        titles.add("相关");
+        View viewIndex = getLayoutInflater().inflate(R.layout.view_collection_index, null);
+        views.add(viewIndex);
+        titles.add("详情");
+        View viewDescription = getLayoutInflater().inflate(R.layout.view_collection_desciption, null);
+        views.add(viewDescription);
+        View viewComment = null;
+        if (commentEnabled()) {
+            titles.add("评论");
+            viewComment = getLayoutInflater().inflate(R.layout.view_collection_comment, null);
+            views.add(viewComment);
+        }
+
+
+        holder = new CollectionViewHolder(viewDescription);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
         viewPager.setAdapter(viewPagerAdapter);
@@ -253,6 +264,25 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             }
         });
 
+        if (viewComment != null) {
+            //初始化评论列表
+            rvComment = (RecyclerView) viewComment.findViewById(R.id.rv_comment);
+            List<Comment> comments = new ArrayList<>();
+            commentAdapter = new CommentAdapter(this, new ListDataProvider(comments));
+            commentAdapter.setCookie(site.cookie);
+            rvComment.setAdapter(commentAdapter);
+
+            //禁用下拉刷新和加载更多（暂时）
+//            rvComment.setPullRefreshEnable(false);
+//            rvComment.setPushRefreshEnable(false);
+        }
+
+    }
+
+    private boolean commentEnabled() {
+        return site.galleryRule.commentItem != null &&
+                site.galleryRule.commentAuthor != null &&
+                site.galleryRule.commentContent != null;
     }
 
     private void refreshDescription() {
@@ -269,7 +299,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         holder.rbRating.setRating(myCollection.rating);
         Logger.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
-        if(myCollection.description!=null)
+        if (myCollection.description != null)
             holder.tvDescription.setText(Html.fromHtml(myCollection.description, new Html.ImageGetter() {
                 @Override
                 public Drawable getDrawable(String source) {
@@ -286,7 +316,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     private void getCollectionDetail(final int page) {
-        if(onePage && page > startPage) {
+        if (onePage && page > startPage) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
             rvIndex.setPullLoadMoreCompleted();
             isIndexComplete = true;
@@ -307,8 +337,17 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     for (Tag tag : myCollection.tags) {
                         HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
                     }
+                    HViewerApplication.searchSuggestionHolder.removeDuplicate();
                 }
-                HViewerApplication.searchSuggestionHolder.removeDuplicate();
+
+                if (rvComment != null && commentAdapter != null && myCollection.comments != null && myCollection.comments.size() > 0) {
+                    // 当前页获取到的第一个评论
+                    final Comment firstComment = myCollection.comments.get(0);
+                    if (!commentAdapter.getDataProvider().getItems().contains(firstComment)) {
+                        commentAdapter.getDataProvider().addAll(myCollection.comments);
+                        commentAdapter.notifyDataSetChanged();
+                    }
+                }
 
                 // 如果当前页获取到的图片数量不为0，则进行后续判断是否添加进图片目录中
                 if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
@@ -347,7 +386,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                                 picturePagerAdapter.notifyDataSetChanged();
                             currPage = page;
                             getCollectionDetail(currPage + pageStep);
-                        } else if (!pictureAdapter.getDataProvider().getItems().contains(myCollection.pictures.get(0))) {
+                        } else if (!pictureAdapter.getDataProvider().getItems().contains(picture)) {
                             // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
                             int currPid = pictureAdapter.getItemCount() + 1;
                             for (int i = 0; i < myCollection.pictures.size(); i++) {
@@ -363,6 +402,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                             // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
                             isIndexComplete = true;
                             myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                            if(commentAdapter!=null)
+                                myCollection.comments = commentAdapter.getDataProvider().getItems();
                             rvIndex.setPullLoadMoreCompleted();
                         }
                     }
@@ -370,6 +411,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     // 获取到的图片数量为0，则直接判定已达到末尾
                     isIndexComplete = true;
                     myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                    if(commentAdapter!=null)
+                        myCollection.comments = commentAdapter.getDataProvider().getItems();
                     rvIndex.setPullLoadMoreCompleted();
                 }
             }

@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/collection_app_bar_height"
         android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:elevation="0dp">
 
         <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -86,15 +87,16 @@
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:background="@color/white"
+            app:elevation="4dp"
             app:tabBackground="@color/transparent"
             app:tabIcon1="@drawable/selector_gallery"
             app:tabIcon2="@drawable/selector_description"
+            app:tabIcon3="@drawable/selector_comment"
             app:tabIndicatorColor="@color/colorPrimary"
             app:tabIndicatorHeight="3dp"
             app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/colorPrimaryDark"
-            app:tabTextColor="@color/colorPrimaryDark"
-            app:tabTitleArray="目录,相关信息" />
+            app:tabMyTextColor="@color/colorPrimaryDark"
+            app:tabTitleArray="目录,详情,评论" />
 
         <ml.puredark.hviewer.ui.customs.ExViewPager
             android:id="@+id/view_pager"
@@ -103,7 +105,8 @@
             android:layout_below="@id/tab_layout"
             app:pagerCurrItem="0"
             app:pagerLayout1="@layout/view_collection_index"
-            app:pagerLayout2="@layout/view_collection_desciption" />
+            app:pagerLayout2="@layout/view_collection_desciption"
+            app:pagerLayout3="@layout/view_collection_comment"/>
 
         <View
             android:id="@+id/shadowDown"

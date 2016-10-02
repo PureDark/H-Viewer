@@ -93,7 +93,7 @@ public class ExTabLayout extends TabLayout {
             }
             tab.setIcon(icon);
 
-            int color = a.getColor(R.styleable.TabLayout_tabTextColor, Color.rgb(255,255,255));
+            int color = a.getColor(R.styleable.ExTabLayout_tabMyTextColor, Color.rgb(0,0,0));
             View view = tab.getCustomView();
             TextView textView = (TextView) view.findViewById(android.R.id.text1);
             textView.setTextColor(color);

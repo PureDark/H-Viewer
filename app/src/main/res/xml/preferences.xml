@@ -22,7 +22,7 @@
             android:title="@string/settings_view_preload_pages" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="pref_view_volume_flick"
             android:title="@string/settings_view_volume_flick"
             android:summary="@string/settings_view_volume_flick_summary"/>

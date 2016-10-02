@@ -99,7 +99,7 @@ public class PictureViewerActivity extends BaseActivity {
         }
         HViewerApplication.temp = null;
 
-        volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, false);
+        volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, true);
 
         picturePagerAdapter.setActivity(this);
 
@@ -185,7 +185,7 @@ public class PictureViewerActivity extends BaseActivity {
 
     private void nextPage() {
         int currItem = viewPager.getCurrentItem();
-        if (currItem + 1 < viewPager.getChildCount())
+        if (currItem + 1 < viewPager.getAdapter().getCount())
             viewPager.setCurrentItem(currItem + 1, true);
     }
 

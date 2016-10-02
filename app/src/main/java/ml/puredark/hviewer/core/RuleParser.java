@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.beans.Collection;
+import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
@@ -92,7 +93,6 @@ public class RuleParser {
     }
 
     public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) throws Exception {
-        Elements temp;
 
         String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false);
 
@@ -125,6 +125,7 @@ public class RuleParser {
             }
         }
 
+        Elements temp;
 
         List<Tag> tags = new ArrayList<>();
         if (rule.tags != null) {
@@ -169,28 +170,42 @@ public class RuleParser {
             }
         }
 
-        if (idCode != null && !idCode.equals(""))
+        List<Comment> comments = new ArrayList<>();
+        if (rule.commentItem != null && rule.commentContent != null) {
+            temp = element.select(rule.commentItem.selector);
+            for (Element commentElement : temp) {
+                String commentAvatar = parseSingleProperty(commentElement, rule.commentAvatar, sourceUrl, false);
+                String commentAuthor = parseSingleProperty(commentElement, rule.commentAuthor, sourceUrl, false);
+                String commentDatetime = parseSingleProperty(commentElement, rule.commentDatetime, sourceUrl, false);
+                String commentContent = parseSingleProperty(commentElement, rule.commentContent, sourceUrl, false);
+                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
+            }
+        }
+
+        if (!TextUtils.isEmpty(idCode))
             collection.idCode = idCode;
-        if (title != null && !title.equals(""))
+        if (!TextUtils.isEmpty(title))
             collection.title = title;
-        if (uploader != null && !uploader.equals(""))
+        if (!TextUtils.isEmpty(uploader))
             collection.uploader = uploader;
-        if (cover != null && !cover.equals(""))
+        if (!TextUtils.isEmpty(cover))
             collection.cover = cover;
-        if (category != null && !category.equals(""))
+        if (!TextUtils.isEmpty(category))
             collection.category = category;
-        if (datetime != null && !datetime.equals(""))
+        if (!TextUtils.isEmpty(datetime))
             collection.datetime = datetime;
-        if (description != null && !description.equals(""))
+        if (!TextUtils.isEmpty(description))
             collection.description = description;
         if (rating > 0)
             collection.rating = rating;
-        if (sourceUrl != null && !sourceUrl.equals(""))
+        if (!TextUtils.isEmpty(sourceUrl))
             collection.referer = sourceUrl;
         if (tags != null && tags.size() > 0)
             collection.tags = tags;
         if (pictures != null && pictures.size() > 0)
             collection.pictures = pictures;
+        if (comments != null && comments.size() > 0)
+            collection.comments = comments;
         return collection;
     }
 

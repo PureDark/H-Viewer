@@ -75,8 +75,7 @@
             app:tabIndicatorColor="@color/white"
             app:tabIndicatorHeight="3dp"
             app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/white"
+            app:tabMyTextColor="@color/white"
             app:tabTitleArray="ACG图站,Booru图站,绅士漫画站,真人图站" />
 
         <ml.puredark.hviewer.ui.customs.ExViewPager

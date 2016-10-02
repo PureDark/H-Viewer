@@ -8,6 +8,7 @@
         <attr name="tabIcon3" format="reference" />
         <attr name="tabIcon4" format="reference" />
         <attr name="tabIcon5" format="reference" />
+        <attr name="tabMyTextColor" format="reference" />
 
     </declare-styleable>
 
