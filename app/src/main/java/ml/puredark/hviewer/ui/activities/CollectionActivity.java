@@ -26,7 +26,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.gson.Gson;
 import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -64,10 +63,8 @@ import ml.puredark.hviewer.ui.customs.ExViewPager;
 import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
-import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 
 public class CollectionActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -348,12 +345,12 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //Load HTML
-                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + page + ");");
+                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
                     Logger.d("CollectionActivity", "onPageFinished");
                 }
             });
             webView.loadUrl(url);
-            new Handler().postDelayed(()->webView.stopLoading(),10000);
+            new Handler().postDelayed(() -> webView.stopLoading(), 10000);
             Logger.d("CollectionActivity", "WebView");
         } else
             HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
@@ -363,7 +360,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                         return;
                     Logger.d("CollectionActivity", "HViewerHttpClient");
                     String html = (String) result;
-                    onResultGot(html, page);
+                    onResultGot(html, url, page);
                 }
 
                 @Override
@@ -375,7 +372,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     @JavascriptInterface
-    public void onResultGot(String html, int page) {
+    public void onResultGot(String html, String url, int page) {
         refreshing = false;
         myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
 

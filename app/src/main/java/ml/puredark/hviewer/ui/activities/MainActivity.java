@@ -193,7 +193,7 @@ public class MainActivity extends BaseActivity {
 
         // 测试新站点用
         List<Site> sites = ExampleSites.get();
-        siteGroups.add(0, new Pair<SiteGroup, List<Site>>(new SiteGroup(1, "TEST"), new ArrayList<Site>()));
+        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
         siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-1));
         SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");

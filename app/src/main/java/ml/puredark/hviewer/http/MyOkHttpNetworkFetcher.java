@@ -3,6 +3,7 @@ package ml.puredark.hviewer.http;
 import android.net.Uri;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.imagepipeline.image.EncodedImage;
@@ -87,6 +88,8 @@ public class MyOkHttpNetworkFetcher extends
                     String header = entry.getKey();
                     String value = entry.getValue().getAsString();
                     builder.addHeader(header, value);
+
+                    Log.d("MyOkHttpNetworkFetcher", "header:" + header + " value:" + value);
                 }
             }
         }catch (Exception e){
@@ -123,6 +126,7 @@ public class MyOkHttpNetworkFetcher extends
                         final ResponseBody body = response.body();
                         try {
                             if (!response.isSuccessful()) {
+                                Log.d("MyOkHttpNetworkFetcher", "request.headers():" + request.headers());
                                 handleException(
                                         call,
                                         new IOException("Unexpected HTTP code " + response),
