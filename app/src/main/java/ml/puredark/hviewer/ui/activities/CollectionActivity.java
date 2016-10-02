@@ -325,7 +325,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private void getCollectionDetail(final int page) {
         if (onePage && page > startPage) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
-            runOnUiThread(() -> rvIndex.setPullLoadMoreCompleted());
+            rvIndex.setPullLoadMoreCompleted();
             isIndexComplete = true;
             return;
         }
@@ -453,17 +453,15 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 commentAdapter.getDataProvider().addAll(myCollection.comments);
             }
         }
-        runOnUiThread(() -> {
-            if (!refreshing)
-                rvIndex.setPullLoadMoreCompleted();
-            refreshDescription();
-            if (pictureAdapter != null)
-                pictureAdapter.notifyDataSetChanged();
-            if (picturePagerAdapter != null)
-                picturePagerAdapter.notifyDataSetChanged();
-            if (commentAdapter != null)
-                commentAdapter.notifyDataSetChanged();
-        });
+        if (!refreshing)
+            rvIndex.setPullLoadMoreCompleted();
+        refreshDescription();
+        if (pictureAdapter != null)
+            pictureAdapter.notifyDataSetChanged();
+        if (picturePagerAdapter != null)
+            picturePagerAdapter.notifyDataSetChanged();
+        if (commentAdapter != null)
+            commentAdapter.notifyDataSetChanged();
     }
 
     @OnClick(R.id.btn_return)

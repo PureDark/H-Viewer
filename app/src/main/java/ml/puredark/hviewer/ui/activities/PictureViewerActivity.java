@@ -477,10 +477,8 @@ public class PictureViewerActivity extends BaseActivity {
                         if (contentType.contains("image")) {
                             picture.pic = picture.url;
                             if (result instanceof Bitmap) {
-                                activity.runOnUiThread(()->{
-                                    viewHolder.ivPicture.setImageBitmap((Bitmap) result);
-                                    viewHolder.progressBar.setVisibility(View.GONE);
-                                });
+                                viewHolder.ivPicture.setImageBitmap((Bitmap) result);
+                                viewHolder.progressBar.setVisibility(View.GONE);
                             } else {
                                 loadImage(context, picture, viewHolder);
                             }
@@ -494,7 +492,7 @@ public class PictureViewerActivity extends BaseActivity {
                                 picture.referer = picture.url;
                                 loadImage(context, picture, viewHolder);
                             } else {
-                                activity.runOnUiThread(()->onFailure(null));
+                                onFailure(null);
                             }
                         }
                     }
@@ -506,10 +504,8 @@ public class PictureViewerActivity extends BaseActivity {
                             getPictureUrl(context, viewHolder, picture, site, selector, highResSelector);
                         } else {
                             picture.retries = 0;
-                            activity.runOnUiThread(()->{
-                                viewHolder.progressBar.setVisibility(View.GONE);
-                                viewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                            });
+                            viewHolder.progressBar.setVisibility(View.GONE);
+                            viewHolder.btnRefresh.setVisibility(View.VISIBLE);
                         }
                     }
                 });

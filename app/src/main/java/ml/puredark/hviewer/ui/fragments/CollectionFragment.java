@@ -178,27 +178,23 @@ public class CollectionFragment extends MyFragment {
                     currPage = page;
                     addSearchSuggestions(collections);
                 }
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(() -> {
-                        adapter.notifyDataSetChanged();
-                        rvCollection.setPullLoadMoreCompleted();
-                    });
+                adapter.notifyDataSetChanged();
+                rvCollection.setPullLoadMoreCompleted();
             }
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                if (getActivity() != null) {
-                    BaseActivity activity = (BaseActivity) getActivity();
-                    if (activity != null)
-                        activity.showSnackBar(error.getErrorString());
-                    rvCollection.setPullLoadMoreCompleted();
-                }
+                BaseActivity activity = (BaseActivity) getActivity();
+                if (activity != null)
+                    activity.showSnackBar(error.getErrorString());
+                rvCollection.setPullLoadMoreCompleted();
             }
         });
     }
 
     private void addSearchSuggestions(List<Collection> collections) {
-        for (Collection collection : collections) {
+        for (int i = 0; i < collections.size(); i++) {
+            Collection collection = collections.get(i);
             if (collection.tags != null) {
                 for (Tag tag : collection.tags) {
                     HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);

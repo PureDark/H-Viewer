@@ -91,13 +91,11 @@ public class MarketActivity extends BaseActivity {
                 try {
                     siteCategories = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
                     }.getType());
-                    runOnUiThread(() -> {
-                        initTabAndViewPager(siteCategories);
-                        progressBar.setVisibility(View.GONE);
-                    });
+                    initTabAndViewPager(siteCategories);
+                    progressBar.setVisibility(View.GONE);
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
-                    runOnUiThread(() -> onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON)));
+                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
                 }
             }
 
@@ -209,10 +207,10 @@ public class MarketActivity extends BaseActivity {
                     }
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
-                    runOnUiThread(() -> onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON)));
+                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    runOnUiThread(() -> onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK)));
+                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK));
                 }
             }
 
@@ -288,37 +286,33 @@ public class MarketActivity extends BaseActivity {
                         siteHolder.addSite(newSite);
                         updated = true;
                         if (!silent) {
-                            runOnUiThread(() -> {
-                                showSnackBar("站点添加成功！");
-                                for (MarketSiteAdapter adapter : siteAdapters) {
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
+                            showSnackBar("站点添加成功！");
+                            for (MarketSiteAdapter adapter : siteAdapters) {
+                                adapter.notifyDataSetChanged();
+                            }
                         }else
                             updateSite(flatPos+1);
                     } else if (!silent) {
-                        runOnUiThread(() -> showReplaceDialog(currSite, newSite, versionCode));
+                        showReplaceDialog(currSite, newSite, versionCode);
                     } else {
                         currSite.replace(newSite);
                         currSite.versionCode = versionCode;
                         siteHolder.updateSite(currSite);
                         updated = true;
                         if (!silent) {
-                            runOnUiThread(() -> {
-                                showSnackBar("站点更新成功！");
-                                for (MarketSiteAdapter adapter : siteAdapters) {
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
+                            showSnackBar("站点更新成功！");
+                            for (MarketSiteAdapter adapter : siteAdapters) {
+                                adapter.notifyDataSetChanged();
+                            }
                         }else
                             updateSite(flatPos+1);
                     }
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
-                    runOnUiThread(() -> onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON)));
+                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    runOnUiThread(() -> onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK)));
+                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK));
                 }
             }
 

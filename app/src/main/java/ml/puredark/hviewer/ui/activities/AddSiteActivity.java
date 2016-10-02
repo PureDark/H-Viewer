@@ -168,7 +168,7 @@ public class AddSiteActivity extends BaseActivity {
                     final Site newSite = parseSite((String) result);
                     if (newSite == null)
                         return;
-                    runOnUiThread(() -> holder.fillSitePropEditText(newSite));
+                    holder.fillSitePropEditText(newSite);
                 }
 
                 @Override
