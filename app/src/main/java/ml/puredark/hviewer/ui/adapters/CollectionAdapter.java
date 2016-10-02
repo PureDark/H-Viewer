@@ -107,7 +107,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void checkSiteFlags(CollectionViewHolder holder, Site site, Collection collection) {
         if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY) && !collection.preloaded) {
-            SiteFlagHandler.preloadGallery(holder, site, collection);
+            SiteFlagHandler.preloadGallery(context, holder, site, collection);
         }
     }
 

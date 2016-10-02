@@ -23,6 +23,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_REPEATED_THUMBNAIL = "repeatedThumbnail";
     public final static String FLAG_SINGLE_PAGE_BIG_PICTURE = "singlePageBigPicture";
     public final static String FLAG_PRELOAD_GALLERY = "preloadGallery";
+    public final static String FLAG_JS_NEEDED = "jsNeeded";
 
     public int sid, gid;
     public String title = "";

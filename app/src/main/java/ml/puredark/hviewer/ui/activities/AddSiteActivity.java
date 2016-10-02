@@ -165,10 +165,10 @@ public class AddSiteActivity extends BaseActivity {
             HViewerHttpClient.get(result.getContents(), null, new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, Object result) {
-                    Site newSite = parseSite((String) result);
+                    final Site newSite = parseSite((String) result);
                     if (newSite == null)
                         return;
-                    holder.fillSitePropEditText(newSite);
+                    runOnUiThread(() -> holder.fillSitePropEditText(newSite));
                 }
 
                 @Override

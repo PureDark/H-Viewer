@@ -270,7 +270,7 @@ public class SettingFragment extends PreferenceFragment
                     JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
                     boolean prerelease = version.get("prerelease").getAsBoolean();
                     if (prerelease) {
-                        onFailure(null);
+                        getActivity().runOnUiThread(()->onFailure(null));
                         return;
                     }
                     JsonArray assets = version.get("assets").getAsJsonArray();

@@ -169,6 +169,7 @@ public class HViewerHttpClient {
         @Override
         public void onFailure(Call call, final IOException e) {
             e.printStackTrace();
+//            onFailure(e);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -190,12 +191,14 @@ public class HViewerHttpClient {
                 String charset = getCharset(new String(b));
                 body = new String(b, charset);
             }
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    onResponse(contentType, body);
-                }
-            });
+            //onResponse执行在子线程中，不直接用UI线程执行
+            onResponse(contentType, body);
+//            mHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    onResponse(contentType, body);
+//                }
+//            });
         }
     }
 

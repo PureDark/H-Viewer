@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,14 +15,18 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.gson.Gson;
 import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -59,6 +64,10 @@ import ml.puredark.hviewer.ui.customs.ExViewPager;
 import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
+
+import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 
 public class CollectionActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -101,6 +110,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private int currPage;
 
     private boolean isIndexComplete = false;
+    private boolean refreshing = true;
 
     private DownloadManager manager;
 
@@ -318,110 +328,144 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private void getCollectionDetail(final int page) {
         if (onePage && page > startPage) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
-            rvIndex.setPullLoadMoreCompleted();
+            runOnUiThread(() -> rvIndex.setPullLoadMoreCompleted());
             isIndexComplete = true;
             return;
         }
         final String url = site.getGalleryUrl(myCollection.idCode, page);
         Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
-        HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, Object result) {
-                if (result == null)
-                    return;
-                myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.galleryRule, url);
+        //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
+        if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+            WebView webView = new WebView(this);
+            WebSettings mWebSettings = webView.getSettings();
+            mWebSettings.setJavaScriptEnabled(true);
+            mWebSettings.setBlockNetworkImage(true);
+            mWebSettings.setDomStorageEnabled(true);
+            mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+            webView.addJavascriptInterface(this, "HtmlParser");
 
-                refreshDescription();
-
-                if (myCollection.tags != null) {
-                    for (Tag tag : myCollection.tags) {
-                        HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
-                    }
-                    HViewerApplication.searchSuggestionHolder.removeDuplicate();
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    //Load HTML
+                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + page + ");");
+                    Logger.d("CollectionActivity", "onPageFinished");
+                }
+            });
+            webView.loadUrl(url);
+            new Handler().postDelayed(()->webView.stopLoading(),10000);
+            Logger.d("CollectionActivity", "WebView");
+        } else
+            HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                @Override
+                public void onSuccess(String contentType, final Object result) {
+                    if (result == null)
+                        return;
+                    Logger.d("CollectionActivity", "HViewerHttpClient");
+                    String html = (String) result;
+                    onResultGot(html, page);
                 }
 
-                if (rvComment != null && commentAdapter != null && myCollection.comments != null && myCollection.comments.size() > 0) {
-                    // 当前页获取到的第一个评论
-                    final Comment firstComment = myCollection.comments.get(0);
-                    if (!commentAdapter.getDataProvider().getItems().contains(firstComment)) {
-                        commentAdapter.getDataProvider().addAll(myCollection.comments);
-                        commentAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                // 如果当前页获取到的图片数量不为0，则进行后续判断是否添加进图片目录中
-                if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
-                    // 当前页获取到的第一个图片
-                    final Picture picture = myCollection.pictures.get(0);
-                    // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
-                    if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
-                        HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
-                            @Override
-                            public void onSuccess(String contentType, Object result) {
-                                myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
-                                pictureAdapter.getDataProvider().clear();
-                                pictureAdapter.getDataProvider().addAll(myCollection.pictures);
-                                pictureAdapter.notifyDataSetChanged();
-                                if (picturePagerAdapter != null)
-                                    picturePagerAdapter.notifyDataSetChanged();
-                                isIndexComplete = true;
-                                myCollection.pictures = pictureAdapter.getDataProvider().getItems();
-                                rvIndex.setPullLoadMoreCompleted();
-                            }
-
-                            @Override
-                            public void onFailure(HViewerHttpClient.HttpError error) {
-                                showSnackBar(error.getErrorString());
-                                rvIndex.setPullLoadMoreCompleted();
-                            }
-                        });
-                    } else {
-                        // 没有flag的话
-                        if (page == startPage) {
-                            // 当前获取的是第一页，则清空原目录中所有图片，再添加当前获取到的所有图片进入目录中
-                            pictureAdapter.getDataProvider().clear();
-                            pictureAdapter.getDataProvider().addAll(myCollection.pictures);
-                            pictureAdapter.notifyDataSetChanged();
-                            if (picturePagerAdapter != null)
-                                picturePagerAdapter.notifyDataSetChanged();
-                            currPage = page;
-                            getCollectionDetail(currPage + pageStep);
-                        } else if (!pictureAdapter.getDataProvider().getItems().contains(picture)) {
-                            // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
-                            int currPid = pictureAdapter.getItemCount() + 1;
-                            for (int i = 0; i < myCollection.pictures.size(); i++) {
-                                myCollection.pictures.get(i).pid = currPid + i;
-                            }
-                            pictureAdapter.getDataProvider().addAll(myCollection.pictures);
-                            pictureAdapter.notifyDataSetChanged();
-                            if (picturePagerAdapter != null)
-                                picturePagerAdapter.notifyDataSetChanged();
-                            currPage = page;
-                            getCollectionDetail(currPage + pageStep);
-                        } else {
-                            // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
-                            isIndexComplete = true;
-                            myCollection.pictures = pictureAdapter.getDataProvider().getItems();
-                            if(commentAdapter!=null)
-                                myCollection.comments = commentAdapter.getDataProvider().getItems();
-                            rvIndex.setPullLoadMoreCompleted();
-                        }
-                    }
-                } else {
-                    // 获取到的图片数量为0，则直接判定已达到末尾
-                    isIndexComplete = true;
-                    myCollection.pictures = pictureAdapter.getDataProvider().getItems();
-                    if(commentAdapter!=null)
-                        myCollection.comments = commentAdapter.getDataProvider().getItems();
+                @Override
+                public void onFailure(HViewerHttpClient.HttpError error) {
+                    showSnackBar(error.getErrorString());
                     rvIndex.setPullLoadMoreCompleted();
                 }
-            }
+            });
+    }
 
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-                showSnackBar(error.getErrorString());
-                rvIndex.setPullLoadMoreCompleted();
+    @JavascriptInterface
+    public void onResultGot(String html, int page) {
+        refreshing = false;
+        myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
+
+        if (myCollection.tags != null) {
+            for (Tag tag : myCollection.tags) {
+                HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
             }
+            HViewerApplication.searchSuggestionHolder.removeDuplicate();
+        }
+
+        /************
+         * 图片处理
+         ************/
+        // 如果当前页获取到的图片数量不为0，则进行后续判断是否添加进图片目录中
+        if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
+            // 当前页获取到的第一个图片
+            final Picture picture = myCollection.pictures.get(0);
+            // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
+            if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
+                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                    @Override
+                    public void onSuccess(String contentType, Object result) {
+                        myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
+                        pictureAdapter.getDataProvider().clear();
+                        pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                        isIndexComplete = true;
+                        myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                    }
+
+                    @Override
+                    public void onFailure(HViewerHttpClient.HttpError error) {
+                        showSnackBar(error.getErrorString());
+                        rvIndex.setPullLoadMoreCompleted();
+                    }
+                });
+            } else {
+                // 没有flag的话
+                if (page == startPage) {
+                    // 当前获取的是第一页，则清空原目录中所有图片，再添加当前获取到的所有图片进入目录中
+                    pictureAdapter.getDataProvider().clear();
+                    pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                    currPage = page;
+                    getCollectionDetail(currPage + pageStep);
+                } else if (!pictureAdapter.getDataProvider().getItems().contains(picture)) {
+                    // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
+                    int currPid = pictureAdapter.getItemCount() + 1;
+                    for (int i = 0; i < myCollection.pictures.size(); i++) {
+                        myCollection.pictures.get(i).pid = currPid + i;
+                    }
+                    pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                    currPage = page;
+                    refreshing = true;
+                    getCollectionDetail(currPage + pageStep);
+                } else {
+                    // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
+                    isIndexComplete = true;
+                    myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                    if (commentAdapter != null)
+                        myCollection.comments = commentAdapter.getDataProvider().getItems();
+                }
+            }
+        } else {
+            // 获取到的图片数量为0，则直接判定已达到末尾
+            isIndexComplete = true;
+            myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+            if (commentAdapter != null)
+                myCollection.comments = commentAdapter.getDataProvider().getItems();
+        }
+
+        /************
+         * 评论处理
+         ************/
+
+        if (rvComment != null && commentAdapter != null && myCollection.comments != null && myCollection.comments.size() > 0) {
+            // 当前页获取到的第一个评论
+            final Comment firstComment = myCollection.comments.get(0);
+            if (!commentAdapter.getDataProvider().getItems().contains(firstComment)) {
+                commentAdapter.getDataProvider().addAll(myCollection.comments);
+            }
+        }
+        runOnUiThread(() -> {
+            if (!refreshing)
+                rvIndex.setPullLoadMoreCompleted();
+            refreshDescription();
+            if (pictureAdapter != null)
+                pictureAdapter.notifyDataSetChanged();
+            if (picturePagerAdapter != null)
+                picturePagerAdapter.notifyDataSetChanged();
+            if (commentAdapter != null)
+                commentAdapter.notifyDataSetChanged();
         });
     }
 

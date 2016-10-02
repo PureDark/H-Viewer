@@ -22,19 +22,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.ui.activities.BaseActivity;
-import ml.puredark.hviewer.ui.activities.CollectionActivity;
-import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.helpers.Logger;
+import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.ui.activities.BaseActivity;
+import ml.puredark.hviewer.ui.activities.CollectionActivity;
+import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 public class CollectionFragment extends MyFragment {
@@ -139,9 +139,14 @@ public class CollectionFragment extends MyFragment {
     }
 
     private void getCollections(String keyword, final int page) {
-        if(onePage && page > startPage) {
+        if (onePage && page > startPage) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
-            rvCollection.setPullLoadMoreCompleted();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    rvCollection.setPullLoadMoreCompleted();
+                }
+            });
             return;
         }
         this.keyword = keyword;
@@ -158,30 +163,36 @@ public class CollectionFragment extends MyFragment {
         Logger.d("CollectionFragment", url);
         HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
             @Override
-            public void onSuccess(String contentType, Object result) {
+            public void onSuccess(String contentType, final Object result) {
                 if (!(result instanceof String))
                     return;
                 if (page == startPage) {
                     adapter.getDataProvider().clear();
                 }
+                String html = (String) result;
                 List<Collection> collections = adapter.getDataProvider().getItems();
                 int oldSize = collections.size();
-                collections = RuleParser.getCollections(collections, (String) result, rule, url);
+                collections = RuleParser.getCollections(collections, html, rule, url);
                 int newSize = collections.size();
-                adapter.notifyDataSetChanged();
                 if (newSize > oldSize) {
                     currPage = page;
                     addSearchSuggestions(collections);
                 }
-                rvCollection.setPullLoadMoreCompleted();
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(() -> {
+                        adapter.notifyDataSetChanged();
+                        rvCollection.setPullLoadMoreCompleted();
+                    });
             }
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
-                BaseActivity activity = (BaseActivity) getActivity();
-                if (activity != null)
-                    activity.showSnackBar(error.getErrorString());
-                rvCollection.setPullLoadMoreCompleted();
+                if (getActivity() != null) {
+                    BaseActivity activity = (BaseActivity) getActivity();
+                    if (activity != null)
+                        activity.showSnackBar(error.getErrorString());
+                    rvCollection.setPullLoadMoreCompleted();
+                }
             }
         });
     }
@@ -201,7 +212,7 @@ public class CollectionFragment extends MyFragment {
     public void onResume() {
         super.onResume();
         adapter.notifyDataSetChanged();
-        if(site!=null)
+        if (site != null)
             MobclickAgent.onPageStart(site.title);
     }
 
@@ -209,7 +220,7 @@ public class CollectionFragment extends MyFragment {
     public void onPause() {
         super.onPause();
         adapter.notifyDataSetChanged();
-        if(site!=null)
+        if (site != null)
             MobclickAgent.onPageEnd(site.title);
     }
 
@@ -249,13 +260,13 @@ public class CollectionFragment extends MyFragment {
                 onePage = true;
                 startPage = 0;
                 pageStep = 1;
-            }else {
+            } else {
                 onePage = false;
                 String[] pageStrs = pageStr.split(":");
-                if(pageStrs.length>1){
+                if (pageStrs.length > 1) {
                     pageStep = Integer.parseInt(pageStrs[1]);
                     startPage = Integer.parseInt(pageStrs[0]);
-                }else{
+                } else {
                     pageStep = 1;
                     startPage = Integer.parseInt(pageStr);
                 }

@@ -40,51 +40,45 @@ public class SiteFlagHandler {
             public void onNewResultImpl(@Nullable final Bitmap resource) {
                 if (resource == null)
                     return;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int count = 0;
-                        for (Picture pic : pictures) {
-                            if (picture.thumbnail.equals(pic.thumbnail))
-                                count++;
-                        }
-                        final Bitmap bitmap;
-                        if (resource.getWidth() >= resource.getHeight()) {
-                            int width = resource.getWidth() / count;
-                            int height = resource.getHeight();
-                            int startX = width * (position % count);
-                            int startY = 0;
-                            if (width * 2 > height) {
-                                if (startX + width > resource.getWidth())
-                                    width = resource.getWidth() - startX;
-                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
-                            } else {
-                                bitmap = resource;
-                            }
-                        } else {
-                            int width = resource.getWidth();
-                            int height = resource.getHeight() / count;
-                            int startX = 0;
-                            int startY = height * (position % count);
-                            if (height * 2 > width) {
-                                if (startY + height > resource.getHeight())
-                                    height = resource.getHeight() - startY;
-                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
-                            } else {
-                                bitmap = resource;
-                            }
-                        }
-
-                        new Handler(context.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(("pid=" + picture.pid).equals(holder.ivPicture.getTag())) {
-                                    holder.ivPicture.setImageBitmap(bitmap);
-                                    holder.ivPicture.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                                }
-                            }
-                        });
+                new Thread(() -> {
+                    int count = 0;
+                    for (Picture pic : pictures) {
+                        if (picture.thumbnail.equals(pic.thumbnail))
+                            count++;
                     }
+                    final Bitmap bitmap;
+                    if (resource.getWidth() >= resource.getHeight()) {
+                        int width = resource.getWidth() / count;
+                        int height = resource.getHeight();
+                        int startX = width * (position % count);
+                        int startY = 0;
+                        if (width * 2 > height) {
+                            if (startX + width > resource.getWidth())
+                                width = resource.getWidth() - startX;
+                            bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                        } else {
+                            bitmap = resource;
+                        }
+                    } else {
+                        int width = resource.getWidth();
+                        int height = resource.getHeight() / count;
+                        int startX = 0;
+                        int startY = height * (position % count);
+                        if (height * 2 > width) {
+                            if (startY + height > resource.getHeight())
+                                height = resource.getHeight() - startY;
+                            bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                        } else {
+                            bitmap = resource;
+                        }
+                    }
+
+                    new Handler(context.getMainLooper()).post(() -> {
+                        if(("pid=" + picture.pid).equals(holder.ivPicture.getTag())) {
+                            holder.ivPicture.setImageBitmap(bitmap);
+                            holder.ivPicture.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        }
+                    });
                 }).start();
             }
 
@@ -94,7 +88,7 @@ public class SiteFlagHandler {
         });
     }
 
-    public static void preloadGallery(final CollectionAdapter.CollectionViewHolder holder, final Site site, final Collection collection){
+    public static void preloadGallery(final Context context, final CollectionAdapter.CollectionViewHolder holder, final Site site, final Collection collection){
         //解析URL模板
         String pageStr = RuleParser.parseUrl(site.galleryUrl).get("page");
         int startPage;
@@ -122,31 +116,34 @@ public class SiteFlagHandler {
 
                 collection.preloaded = true;
 
-                ImageLoader.loadImageFromUrl(holder.itemView.getContext(), holder.ivCover, collection.cover, site.cookie, collection.referer);
-                holder.tvTitle.setText(collection.title);
-                holder.tvUploader.setText(collection.uploader);
-                holder.tvCategory.setText(collection.category);
-                if (collection.tags == null) {
-                    holder.tvTitle.setMaxLines(2);
-                    holder.rvTags.setVisibility(View.GONE);
-                    holder.rvTags.setAdapter(
-                            new TagAdapter(new ListDataProvider<>(new ArrayList()))
-                    );
-                } else {
-                    holder.tvTitle.setMaxLines(1);
-                    holder.rvTags.setVisibility(View.VISIBLE);
-                    holder.rvTags.setAdapter(
-                            new TagAdapter(new ListDataProvider<>(collection.tags))
-                    );
-                }
-                holder.rbRating.setRating(collection.rating);
-                holder.tvSubmittime.setText(collection.datetime);
                 if (collection.tags != null) {
                     for (Tag tag : collection.tags) {
                         HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
                     }
                 }
                 HViewerApplication.searchSuggestionHolder.removeDuplicate();
+
+                new Handler(context.getMainLooper()).post(()->{
+                    ImageLoader.loadImageFromUrl(holder.itemView.getContext(), holder.ivCover, collection.cover, site.cookie, collection.referer);
+                    holder.tvTitle.setText(collection.title);
+                    holder.tvUploader.setText(collection.uploader);
+                    holder.tvCategory.setText(collection.category);
+                    if (collection.tags == null) {
+                        holder.tvTitle.setMaxLines(2);
+                        holder.rvTags.setVisibility(View.GONE);
+                        holder.rvTags.setAdapter(
+                                new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                        );
+                    } else {
+                        holder.tvTitle.setMaxLines(1);
+                        holder.rvTags.setVisibility(View.VISIBLE);
+                        holder.rvTags.setAdapter(
+                                new TagAdapter(new ListDataProvider<>(collection.tags))
+                        );
+                    }
+                    holder.rbRating.setRating(collection.rating);
+                    holder.tvSubmittime.setText(collection.datetime);
+                });
             }
 
             @Override

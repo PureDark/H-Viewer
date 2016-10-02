@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -97,8 +98,10 @@ public class HViewerApplication extends SwipeBackApplication {
                         String newVersion = version.get("tag_name").getAsString().substring(1);
                         String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
                         String detail = version.get("body").getAsString();
-                        new UpdateManager(context, url, newVersion + "版本更新", detail)
-                                .checkUpdateInfo(oldVersion, newVersion);
+                        UpdateManager updateManager = new UpdateManager(context, url, newVersion + "版本更新", detail);
+                        new Handler(context.getMainLooper()).post(() ->
+                            updateManager.checkUpdateInfo(oldVersion, newVersion)
+                        );
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

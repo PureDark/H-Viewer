@@ -157,11 +157,10 @@ public class DownloadService extends Service {
                         onFailure(null);
                     else if (contentType.contains("image")) {
                         picture.pic = picture.url;
-                        if (result instanceof Bitmap) {
+                        if (result instanceof Bitmap)
                             loadPicture(picture, task, (Bitmap) result, false);
-                        } else {
+                        else
                             loadPicture(picture, task, null, false);
-                        }
                     } else {
                         picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
                         picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);

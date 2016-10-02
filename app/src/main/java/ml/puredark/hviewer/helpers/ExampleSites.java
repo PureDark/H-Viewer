@@ -1004,7 +1004,7 @@ public class ExampleSites {
                 "https://dribbble.com/search?q={keyword:}&page={page:1}&per_page=12",
                 "https://dribbble.com/session/new",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_NO_RATING+"|"+Site.FLAG_SINGLE_PAGE_BIG_PICTURE+"|"+Site.FLAG_PRELOAD_GALLERY));
+                Site.FLAG_NO_RATING+"|"+Site.FLAG_SINGLE_PAGE_BIG_PICTURE+"|"+Site.FLAG_PRELOAD_GALLERY+"|"+Site.FLAG_JS_NEEDED));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "Popular", "https://dribbble.com/shots?page={page:1}&per_page=12"));
