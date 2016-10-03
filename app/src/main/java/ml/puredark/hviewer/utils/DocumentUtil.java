@@ -3,6 +3,7 @@ package ml.puredark.hviewer.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
+import android.util.Log;
 
 import java.io.File;
 import java.io.InputStream;
@@ -67,6 +68,12 @@ public class DocumentUtil {
         for (int i = 0; i < subDirs.length; i++) {
             String subDirName = filenameFilter(Uri.decode(subDirs[i]));
             DocumentFile subDir = parent.findFile(subDirName);
+            Log.d("DocumentUtil", "subDirName:"+subDirName);
+            Log.d("DocumentUtil", "subDir:"+subDir);
+            DocumentFile[] files = parent.listFiles();
+            for(DocumentFile file : files){
+                Log.d("DocumentUtil", "fileName:"+file.getName());
+            }
             if (subDir == null) {
                 subDir = parent.createDirectory(subDirName);
             }

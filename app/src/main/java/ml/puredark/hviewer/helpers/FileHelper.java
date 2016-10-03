@@ -30,7 +30,7 @@ public class FileHelper {
     public static DocumentFile createFileIfNotExist(String fileName, String path, String... subDirs) {
         Logger.d("FileHelper", "fileName:" + fileName);
         Logger.d("FileHelper", "path:" + path);
-        Logger.d("FileHelper", TextUtils.join("/", subDirs));
+        Logger.d("FileHelper", Uri.decode(TextUtils.join("/", subDirs)));
         if (!path.startsWith("content://"))
             path = "file://" + Uri.decode(path);
         return DocumentUtil.createFileIfNotExist(HViewerApplication.mContext, fileName, path, subDirs);
