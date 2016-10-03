@@ -748,7 +748,7 @@ public class SitePropViewHolder {
 
         if (lastSite.indexUrl == null || lastSite.galleryUrl == null ||
                 lastSite.indexRule.item == null || lastSite.indexRule.idCode == null ||
-                lastSite.galleryRule.item == null || lastSite.galleryRule.pictureUrl == null)
+                lastSite.galleryRule.pictureUrl == null)
             return null;
         else
             return lastSite;

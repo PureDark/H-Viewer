@@ -170,26 +170,20 @@ public class ModifySiteActivity extends BaseActivity {
                 if (url == null)
                     return;
                 //二维码图片较大时，生成图片的时间可能较长，因此放在新线程中
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath());
-                        final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
-                                BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher),
-                                FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath()));
+                new Thread(() -> {
+                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath());
+                    final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
+                            BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher),
+                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath()));
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (success) {
-                                    switchBetweenShareAndDetail(viewShareSiteQrCode);
-                                    ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath())));
-                                } else {
-                                    onFailure(null);
-                                }
-                            }
-                        });
-                    }
+                    runOnUiThread(() -> {
+                        if (success) {
+                            switchBetweenShareAndDetail(viewShareSiteQrCode);
+                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath())));
+                        } else {
+                            onFailure(null);
+                        }
+                    });
                 }).start();
             }
 

@@ -184,7 +184,7 @@ public class AddSiteActivity extends BaseActivity {
             Site site = new Gson().fromJson(json, Site.class);
             if (site == null || site.indexUrl == null || site.galleryUrl == null ||
                     site.indexRule.item == null || site.indexRule.idCode == null ||
-                    site.galleryRule.item == null || site.galleryRule.pictureUrl == null)
+                    site.galleryRule.pictureUrl == null)
                 showSnackBar("输入的规则缺少信息");
             return site;
         } catch (JsonSyntaxException e) {
