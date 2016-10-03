@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;

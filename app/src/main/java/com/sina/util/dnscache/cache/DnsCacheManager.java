@@ -3,17 +3,17 @@
  */
 package com.sina.util.dnscache.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.sina.util.dnscache.model.DomainModel;
 import com.sina.util.dnscache.model.HttpDnsPack;
 import com.sina.util.dnscache.model.IpModel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *

@@ -1,10 +1,10 @@
 package com.sina.util.dnscache.score;
 
-import java.util.ArrayList;
-
 import com.sina.util.dnscache.Tools;
 import com.sina.util.dnscache.model.DomainModel;
 import com.sina.util.dnscache.model.IpModel;
+
+import java.util.ArrayList;
 
 /**
  *

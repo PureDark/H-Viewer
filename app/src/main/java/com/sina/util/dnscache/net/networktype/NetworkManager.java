@@ -1,11 +1,5 @@
 package com.sina.util.dnscache.net.networktype;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -15,6 +9,12 @@ import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
 import com.sina.util.dnscache.Tools;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 @SuppressLint("NewApi")

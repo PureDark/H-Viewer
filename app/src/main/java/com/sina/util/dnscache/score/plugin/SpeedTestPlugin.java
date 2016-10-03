@@ -1,12 +1,10 @@
 package com.sina.util.dnscache.score.plugin;
 
-import java.util.ArrayList;
-
 import com.sina.util.dnscache.model.IpModel;
 import com.sina.util.dnscache.score.IPlugIn;
 import com.sina.util.dnscache.score.PlugInManager;
 
-import static ml.puredark.hviewer.HViewerApplication.temp;
+import java.util.ArrayList;
 
 public class SpeedTestPlugin implements IPlugIn {
 

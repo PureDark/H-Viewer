@@ -9,8 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import static android.R.attr.data;
-
 /**
  * 文件读写工具类
  *

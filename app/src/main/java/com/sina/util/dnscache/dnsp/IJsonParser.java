@@ -3,10 +3,10 @@
  */
 package com.sina.util.dnscache.dnsp;
 
+import com.sina.util.dnscache.model.HttpDnsPack;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.sina.util.dnscache.model.HttpDnsPack;
 
 /**
  *

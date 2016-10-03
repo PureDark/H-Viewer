@@ -21,12 +21,12 @@ import com.nineoldandroids.animation.Animator;
 import com.umeng.analytics.MobclickAgent;
 
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.libraries.swipeback.dispatchactivity.SwipeBackActivity;
-import ml.puredark.hviewer.ui.customs.AnimationOnActivity;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.download.DownloadService;
+import ml.puredark.hviewer.helpers.Logger;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.libraries.swipeback.dispatchactivity.SwipeBackActivity;
+import ml.puredark.hviewer.ui.customs.AnimationOnActivity;
 
 /**
  * Created by PureDark on 2016/8/13.

@@ -30,17 +30,15 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.configs.PasteEEConfig;
+import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
-import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.utils.QRCodeUtil;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
-
-import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class ModifySiteActivity extends BaseActivity {
 

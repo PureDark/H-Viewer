@@ -1,10 +1,10 @@
 package com.sina.util.dnscache.score.plugin;
 
-import java.util.ArrayList;
-
 import com.sina.util.dnscache.model.IpModel;
 import com.sina.util.dnscache.score.IPlugIn;
 import com.sina.util.dnscache.score.PlugInManager;
+
+import java.util.ArrayList;
 
 public class PriorityPlugin implements IPlugIn {
 

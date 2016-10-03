@@ -1,11 +1,9 @@
 package ml.puredark.hviewer.helpers;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,11 +11,6 @@ import java.io.OutputStream;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.utils.DocumentUtil;
-
-import static android.R.attr.data;
-import static android.R.attr.path;
-import static java.lang.System.out;
-import static ml.puredark.hviewer.utils.SimpleFileUtil.readBytes;
 
 
 /**
@@ -53,6 +46,10 @@ public class FileHelper {
         if (!rootPath.startsWith("content://"))
             rootPath = "file://" + Uri.decode(rootPath);
         return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, rootPath, subDirs);
+    }
+
+    public static boolean writeString(String string, DocumentFile file){
+        return DocumentUtil.writeBytes(HViewerApplication.mContext, string.getBytes(), file);
     }
 
     public static boolean writeString(String string, String fileName, String rootPath, String... subDirs){

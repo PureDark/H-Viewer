@@ -12,9 +12,9 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.helpers.SiteFlagHandler;
+import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class PictureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;

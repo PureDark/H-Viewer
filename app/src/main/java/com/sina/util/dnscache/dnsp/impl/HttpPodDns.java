@@ -1,8 +1,5 @@
 package com.sina.util.dnscache.dnsp.impl;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
 import com.sina.util.dnscache.DNSCacheConfig;
 import com.sina.util.dnscache.Tools;
 import com.sina.util.dnscache.dnsp.DnsConfig;
@@ -10,6 +7,9 @@ import com.sina.util.dnscache.dnsp.IDnsProvider;
 import com.sina.util.dnscache.model.HttpDnsPack;
 import com.sina.util.dnscache.net.ApacheHttpClientNetworkRequests;
 import com.sina.util.dnscache.net.networktype.NetworkManager;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 public class HttpPodDns implements IDnsProvider {
 

@@ -1,5 +1,11 @@
 package com.sina.util.dnscache.dnsp.impl;
 
+import com.sina.util.dnscache.dnsp.DnsConfig;
+import com.sina.util.dnscache.dnsp.IDnsProvider;
+import com.sina.util.dnscache.dnsp.impl.UdpDns.UdnDnsClient.UdpDnsInfo;
+import com.sina.util.dnscache.model.HttpDnsPack;
+import com.sina.util.dnscache.net.networktype.NetworkManager;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -9,12 +15,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-
-import com.sina.util.dnscache.dnsp.DnsConfig;
-import com.sina.util.dnscache.dnsp.IDnsProvider;
-import com.sina.util.dnscache.dnsp.impl.UdpDns.UdnDnsClient.UdpDnsInfo;
-import com.sina.util.dnscache.model.HttpDnsPack;
-import com.sina.util.dnscache.net.networktype.NetworkManager;
 
 public class UdpDns implements IDnsProvider {
 

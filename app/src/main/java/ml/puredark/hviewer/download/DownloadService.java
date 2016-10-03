@@ -17,15 +17,15 @@ import com.umeng.analytics.MobclickAgent;
 import java.io.IOException;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -33,7 +33,6 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
-import static ml.puredark.hviewer.download.DownloadManager.getDownloadPath;
 
 /**
  * Created by PureDark on 2016/8/16.

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +12,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -160,59 +160,53 @@ public class SettingFragment extends PreferenceFragment
         } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_IMPORT)) {
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-                            int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
-                            holder.onDestroy();
-                            if (count > 0)
-                                activity.showSnackBar("成功导入" + count + "个已下载图册");
-                            else if (count == 0)
-                                activity.showSnackBar("未发现不在下载管理中的已下载图册");
-                            else
-                                activity.showSnackBar("导入失败");
-                        }
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        DownloadTaskHolder holder = new DownloadTaskHolder(activity);
+                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
+                        holder.onDestroy();
+                        if (count > 0)
+                            activity.showSnackBar("成功导入" + count + "个已下载图册");
+                        else if (count == 0)
+                            activity.showSnackBar("未发现不在下载管理中的已下载图册");
+                        else
+                            activity.showSnackBar("导入失败");
                     })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath());
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath());
+                        if (file != null) {
                             FavouriteHolder holder = new FavouriteHolder(activity);
                             String json = new Gson().toJson(holder.getFavourites());
-                            FileHelper.writeString(json, "favourites.json", DownloadManager.getDownloadPath());
+                            FileHelper.writeString(json, file);
                             holder.onDestroy();
                             activity.showSnackBar("导出收藏夹成功");
-                        }
+                        } else
+                            activity.showSnackBar("创建文件失败，请检查下载目录");
                     })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_IMPORT)) {
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String json = FileHelper.readString("favourites.json", DownloadManager.getDownloadPath());
-                            if (json == null) {
-                                activity.showSnackBar("未在下载目录中找到收藏夹备份");
-                            } else {
-                                try{
-                                    List<LocalCollection> favourites = new Gson().fromJson(json,  new TypeToken<ArrayList<LocalCollection>>() {
-                                    }.getType());
-                                    FavouriteHolder holder = new FavouriteHolder(activity);
-                                    for(LocalCollection collection : favourites){
-                                        holder.addFavourite(collection);
-                                    }
-                                    holder.onDestroy();
-                                    activity.showSnackBar("导入收藏夹成功");
-                                } catch (Exception e){
-                                    e.printStackTrace();
-                                    activity.showSnackBar("导入收藏夹失败");
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        String json = FileHelper.readString("favourites.json", DownloadManager.getDownloadPath());
+                        if (json == null) {
+                            activity.showSnackBar("未在下载目录中找到收藏夹备份");
+                        } else {
+                            try {
+                                List<LocalCollection> favourites = new Gson().fromJson(json, new TypeToken<ArrayList<LocalCollection>>() {
+                                }.getType());
+                                FavouriteHolder holder = new FavouriteHolder(activity);
+                                for (LocalCollection collection : favourites) {
+                                    holder.addFavourite(collection);
                                 }
+                                holder.onDestroy();
+                                activity.showSnackBar("导入收藏夹成功");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                activity.showSnackBar("导入收藏夹失败");
                             }
                         }
                     })
@@ -220,13 +214,10 @@ public class SettingFragment extends PreferenceFragment
         } else if (preference.getKey().equals(KEY_PREF_CACHE_CLEAN)) {
             new AlertDialog.Builder(activity).setTitle("确定要清空图片缓存？")
                     .setMessage("近期加载过的图片将会需要重新下载")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ImagePipeline imagePipeline = Fresco.getImagePipeline();
-                            imagePipeline.clearDiskCaches();
-                            activity.showSnackBar("缓存清理成功");
-                        }
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+                        imagePipeline.clearDiskCaches();
+                        activity.showSnackBar("缓存清理成功");
                     })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_PROXY_DETAIL)) {

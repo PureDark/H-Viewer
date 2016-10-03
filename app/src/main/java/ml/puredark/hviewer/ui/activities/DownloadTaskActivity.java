@@ -28,20 +28,20 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.ui.adapters.PictureAdapter;
-import ml.puredark.hviewer.ui.adapters.TagAdapter;
-import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.adapters.PictureAdapter;
+import ml.puredark.hviewer.ui.adapters.TagAdapter;
+import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
 import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 public class DownloadTaskActivity extends BaseActivity {

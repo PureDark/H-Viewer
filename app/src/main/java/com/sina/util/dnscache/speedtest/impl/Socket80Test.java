@@ -1,11 +1,11 @@
 package com.sina.util.dnscache.speedtest.impl;
 
+import com.sina.util.dnscache.speedtest.BaseSpeedTest;
+import com.sina.util.dnscache.speedtest.SpeedtestManager;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-
-import com.sina.util.dnscache.speedtest.BaseSpeedTest;
-import com.sina.util.dnscache.speedtest.SpeedtestManager;
 
 public class Socket80Test extends BaseSpeedTest {
 

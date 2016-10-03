@@ -1,8 +1,8 @@
 package com.sina.util.dnscache.dnsp;
 
-import java.util.ArrayList;
-
 import com.sina.util.dnscache.model.HttpDnsPack;
+
+import java.util.ArrayList;
 
 public interface IDns {
 

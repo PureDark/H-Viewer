@@ -1,12 +1,5 @@
 package com.sina.util.dnscache;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONStringer;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -18,6 +11,13 @@ import com.sina.util.dnscache.net.INetworkRequests;
 import com.sina.util.dnscache.score.PlugInManager;
 import com.sina.util.dnscache.score.ScoreManager;
 import com.sina.util.dnscache.speedtest.SpeedtestManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import java.util.ArrayList;
 
 /**
  *

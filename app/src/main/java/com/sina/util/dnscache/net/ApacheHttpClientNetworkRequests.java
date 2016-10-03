@@ -3,6 +3,8 @@
  */
 package com.sina.util.dnscache.net;
 
+import com.sina.util.dnscache.Tools;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,9 +17,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-
-
-import com.sina.util.dnscache.Tools;
 
 import ml.puredark.hviewer.http.HttpDns;
 import okhttp3.OkHttpClient;

@@ -1,7 +1,5 @@
 package ml.puredark.hviewer.http;
 
-import android.util.Log;
-
 import com.sina.util.dnscache.DNSCache;
 import com.sina.util.dnscache.DomainInfo;
 import com.sina.util.dnscache.Tools;

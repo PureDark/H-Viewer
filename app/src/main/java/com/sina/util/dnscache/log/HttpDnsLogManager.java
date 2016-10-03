@@ -1,16 +1,16 @@
 package com.sina.util.dnscache.log;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.json.JSONException;
-import org.json.JSONStringer;
-
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
 import com.sina.util.dnscache.AppConfigUtil;
+
+import org.json.JSONException;
+import org.json.JSONStringer;
+
+import java.io.File;
+import java.io.IOException;
 
 public class HttpDnsLogManager implements IDnsLog {
 

@@ -3,9 +3,6 @@
  */
 package com.sina.util.dnscache.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,6 +11,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.sina.util.dnscache.model.DomainModel;
 import com.sina.util.dnscache.model.IpModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

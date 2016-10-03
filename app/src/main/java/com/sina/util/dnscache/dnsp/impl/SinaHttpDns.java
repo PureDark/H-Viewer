@@ -1,7 +1,5 @@
 package com.sina.util.dnscache.dnsp.impl;
 
-import java.util.ArrayList;
-
 import android.text.TextUtils;
 
 import com.sina.util.dnscache.dnsp.DnsConfig;
@@ -10,6 +8,8 @@ import com.sina.util.dnscache.dnsp.IJsonParser;
 import com.sina.util.dnscache.dnsp.IJsonParser.JavaJSON_SINAHTTPDNS;
 import com.sina.util.dnscache.model.HttpDnsPack;
 import com.sina.util.dnscache.net.ApacheHttpClientNetworkRequests;
+
+import java.util.ArrayList;
 
 public class SinaHttpDns implements IDnsProvider{
 

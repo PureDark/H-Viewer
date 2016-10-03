@@ -1,11 +1,5 @@
 package com.sina.util.dnscache;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.NetworkInfo;
@@ -30,6 +24,12 @@ import com.sina.util.dnscache.score.ScoreManager;
 import com.sina.util.dnscache.speedtest.ISpeedtest;
 import com.sina.util.dnscache.speedtest.SpeedtestManager;
 import com.sina.util.dnscache.thread.RealTimeThreadPool;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *

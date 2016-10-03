@@ -1,7 +1,5 @@
 package com.sina.util.dnscache;
 
-import java.io.File;
-
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -9,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+
+import java.io.File;
 
 public class AppConfigUtil {
 

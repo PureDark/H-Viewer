@@ -1,13 +1,13 @@
 package com.sina.util.dnscache.speedtest.impl;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import android.text.TextUtils;
 
 import com.sina.util.dnscache.speedtest.BaseSpeedTest;
 import com.sina.util.dnscache.speedtest.SpeedtestManager;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class PingTest extends BaseSpeedTest{
 

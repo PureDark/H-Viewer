@@ -21,11 +21,11 @@ import com.umeng.analytics.MobclickAgent;
 import ml.puredark.hviewer.configs.ImagePipelineConfigBuilder;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.core.CrashHandler;
-import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.dataholders.SearchHistoryHolder;
 import ml.puredark.hviewer.dataholders.SearchSuggestionHolder;
 import ml.puredark.hviewer.download.DownloadService;
+import ml.puredark.hviewer.helpers.UpdateManager;
+import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.libraries.swipeback.common.SwipeBackApplication;
 
 public class HViewerApplication extends SwipeBackApplication {

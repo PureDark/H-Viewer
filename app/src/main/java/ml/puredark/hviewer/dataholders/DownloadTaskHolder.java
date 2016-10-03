@@ -13,9 +13,6 @@ import java.util.List;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.utils.DocumentUtil;
-
-import static ml.puredark.hviewer.helpers.FileHelper.getDirDocument;
 
 /**
  * Created by PureDark on 2016/8/12.

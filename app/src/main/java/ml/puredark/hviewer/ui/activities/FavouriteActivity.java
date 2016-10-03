@@ -19,12 +19,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
-import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
+import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class FavouriteActivity extends BaseActivity {
 

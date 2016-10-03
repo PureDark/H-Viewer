@@ -27,10 +27,10 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
-import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
-import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.http.HViewerHttpClient;
 
 
 public class AddSiteActivity extends BaseActivity {

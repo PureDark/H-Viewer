@@ -1,12 +1,12 @@
 package com.sina.util.dnscache.query;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-
 import com.sina.util.dnscache.cache.IDnsCache;
 import com.sina.util.dnscache.model.DomainModel;
 import com.sina.util.dnscache.model.IpModel;
 import com.sina.util.dnscache.speedtest.SpeedtestManager;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
 
 /**
 *

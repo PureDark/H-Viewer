@@ -24,8 +24,8 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapter.DownloadTaskViewHolder> {
     private final static int VIEW_TYPE_DOWNLOADING = 1;
@@ -197,38 +197,18 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             super(view);
             ButterKnife.bind(this, view);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
-                }
+            view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+                    &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
+            rippleLayout.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            rippleLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
-            });
-            rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
-                }
-            });
+            rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+                    &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
         }
 
     }
@@ -244,32 +224,18 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
                             )
                     )
             );
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    return mItemClickListener != null && mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                }
+            view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+                    &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
+            rippleLayout.setOnClickListener(v -> {
+                if (mItemClickListener != null  && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            rippleLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
-            });
-            rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    return mItemClickListener != null && mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                }
-            });
+            rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+                    && mItemClickListener.onItemLongClick(v, getAdapterPosition()));
         }
 
     }

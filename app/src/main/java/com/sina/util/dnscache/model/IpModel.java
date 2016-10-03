@@ -3,10 +3,10 @@
  */
 package com.sina.util.dnscache.model;
 
+import com.sina.util.dnscache.Tools;
+
 import org.json.JSONException;
 import org.json.JSONStringer;
-
-import com.sina.util.dnscache.Tools;
 
 
 /**

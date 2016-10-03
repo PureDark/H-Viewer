@@ -14,17 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
-import ml.puredark.hviewer.ui.adapters.PictureAdapter.PictureViewHolder;
-import ml.puredark.hviewer.ui.adapters.TagAdapter;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.RuleParser;
-import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
+import ml.puredark.hviewer.ui.adapters.PictureAdapter.PictureViewHolder;
+import ml.puredark.hviewer.ui.adapters.TagAdapter;
+import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 /**
  * Created by PureDark on 2016/9/5.

@@ -3,14 +3,12 @@
  */
 package com.sina.util.dnscache.model;
 
-import java.util.ArrayList;
+import com.sina.util.dnscache.Tools;
 
 import org.json.JSONException;
 import org.json.JSONStringer;
 
-import com.sina.util.dnscache.AppConfigUtil;
-import com.sina.util.dnscache.DNSCacheConfig;
-import com.sina.util.dnscache.Tools;
+import java.util.ArrayList;
 
 /**
  *
@@ -100,7 +98,8 @@ public class DomainModel {
             StringBuilder ipmodelStr = new StringBuilder();
             ipmodelStr.append("[");
             if (null != ipModelArr) {
-                for (IpModel ipModel : ipModelArr) {
+                for (int i = 0; i < ipModelArr.size(); i++) {
+                    IpModel ipModel = ipModelArr.get(i);
                     ipmodelStr.append(ipModel.toJson() + ",");
                 }
             }

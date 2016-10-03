@@ -2,15 +2,11 @@ package ml.puredark.hviewer.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
-
-import static ml.puredark.hviewer.R.color.brown;
 
 /**
  * Created by PureDark on 2016/9/21.

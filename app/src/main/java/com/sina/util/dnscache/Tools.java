@@ -1,5 +1,13 @@
 package com.sina.util.dnscache;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
+import com.sina.util.dnscache.model.IpModel;
+
+import org.json.JSONException;
+import org.json.JSONStringer;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,14 +18,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.json.JSONException;
-import org.json.JSONStringer;
-
-import android.annotation.SuppressLint;
-import android.util.Log;
-
-import com.sina.util.dnscache.model.IpModel;
 
 /**
 *

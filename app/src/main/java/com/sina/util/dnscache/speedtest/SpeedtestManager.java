@@ -1,12 +1,12 @@
 package com.sina.util.dnscache.speedtest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 import com.sina.util.dnscache.Tools;
 import com.sina.util.dnscache.speedtest.impl.PingTest;
 import com.sina.util.dnscache.speedtest.impl.Socket80Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * 测速类

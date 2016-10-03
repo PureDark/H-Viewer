@@ -1,10 +1,10 @@
 package com.sina.util.dnscache.dnsp.impl;
 
-import java.net.InetAddress;
-
 import com.sina.util.dnscache.dnsp.IDnsProvider;
 import com.sina.util.dnscache.model.HttpDnsPack;
 import com.sina.util.dnscache.net.networktype.NetworkManager;
+
+import java.net.InetAddress;
 
 public class LocalDns implements IDnsProvider {
 

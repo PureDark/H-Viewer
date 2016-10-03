@@ -21,6 +21,10 @@
             android:title="@string/setting_about_version"
             android:summary="@string/setting_about_version_summary"/>
         <Preference
+            android:key="pref_about_qq_group"
+            android:title="@string/setting_about_qq_group"
+            android:summary="@string/setting_about_qq_group_summary"/>
+        <Preference
             android:key="pref_about_donate"
             android:title="@string/setting_about_donate"
             android:summary="@string/setting_about_donate_summary"/>

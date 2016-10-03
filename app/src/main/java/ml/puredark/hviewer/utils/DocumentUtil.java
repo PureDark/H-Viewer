@@ -3,7 +3,6 @@ package ml.puredark.hviewer.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
-import android.util.Log;
 
 import java.io.File;
 import java.io.InputStream;

@@ -1,5 +1,8 @@
 package com.sina.util.dnscache.log;
 
+import android.os.Environment;
+import android.os.StatFs;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,9 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.os.Environment;
-import android.os.StatFs;
 
 /**
  * 文件操作工具类
