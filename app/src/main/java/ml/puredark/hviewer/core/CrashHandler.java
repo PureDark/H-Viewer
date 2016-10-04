@@ -109,7 +109,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         } else {  //如果自己处理了异常，则不会弹出错误对话框，则需要手动退出app
             if (!(ex instanceof OutOfMemoryError)) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(30000);
                 } catch (InterruptedException e) {
                 }
                 if (!HViewerApplication.DEBUG) {

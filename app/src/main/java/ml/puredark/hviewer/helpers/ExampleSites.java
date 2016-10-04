@@ -791,8 +791,6 @@ public class ExampleSites {
                 indexRule, galleryRule, null, extraRule,
                 Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
 
-        /*******非和谐站*******/
-
         // 绝对领域
         indexRule = new Rule();
         indexRule.item = new Selector("div#postlist > div.pin", null, null, null, null);
@@ -1050,6 +1048,37 @@ public class ExampleSites {
         categories.add(new Category(1, "首页推荐", "http://www.ui.cn/?p={page:1}#project"));
         categories.add(new Category(2, "佳作推荐", "http://www.ui.cn/?t=share&p={page:1}#project"));
         categories.add(new Category(3, "最新作品", "http://www.ui.cn/?t=new&p={page:1}#project"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+
+        // AVMOO
+        indexRule = new Rule();
+        indexRule.item = new Selector("#waterfall > div.item", null, null, null, null);
+        indexRule.idCode = new Selector("a.movie-box", "attr", "href", "movie/(.*)", null);
+        indexRule.title = new Selector("div.photo-frame > img", "attr", "title", null, null);
+        indexRule.cover = new Selector("div.photo-frame > img", "attr", "src", null, null);
+        indexRule.category = new Selector("div.photo-info > span > date:nth-of-type(1)", "html", null, null, null);
+        indexRule.datetime = new Selector("div.photo-info > span > date:nth-of-type(2)", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.tags = new Selector("div.info > p > span.genre > a", "html", null, null, null);
+        galleryRule.description = new Selector("div.info", "html", null, null, null);
+        galleryRule.item = new Selector("div#sample-waterfall > .sample-box", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
+
+        sites.add(new Site(60, "AVMOO",
+                "https://avmo.pw/cn/page/{page:1}",
+                "https://avmo.pw/cn/movie/{idCode:}",
+                "https://avmo.pw/cn/search/{keyword:}/page/{page:1}",
+                null,
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING+"|"+Site.FLAG_PRELOAD_GALLERY));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "全部", "https://avmo.pw/cn/page/{page:1}"));
+        categories.add(new Category(2, "已发布", "https://avmo.pw/cn/released/page/{page:1}"));
+        categories.add(new Category(3, "热门", "https://avmo.pw/cn/popular/page/{page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;

@@ -34,6 +34,7 @@ import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter;
+import ml.puredark.hviewer.ui.adapters.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.TagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
@@ -69,7 +70,7 @@ public class DownloadTaskActivity extends BaseActivity {
 
     private PictureAdapter pictureAdapter;
 
-    private PictureViewerActivity.PicturePagerAdapter picturePagerAdapter;
+    private PicturePagerAdapter picturePagerAdapter;
 
     private CollectionViewHolder holder;
 
@@ -160,15 +161,12 @@ public class DownloadTaskActivity extends BaseActivity {
                 DensityUtil.dp2px(this, 8),
                 DensityUtil.dp2px(this, 16));
 
-        pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                picturePagerAdapter = new PictureViewerActivity.PicturePagerAdapter(task.collection.site, task.collection, task.collection.pictures);
-                HViewerApplication.temp = picturePagerAdapter;
-                Intent intent = new Intent(DownloadTaskActivity.this, PictureViewerActivity.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
-            }
+        pictureAdapter.setOnItemClickListener((v, position) -> {
+            picturePagerAdapter = new PicturePagerAdapter(DownloadTaskActivity.this, task.collection.site, task.collection, task.collection.pictures);
+            HViewerApplication.temp = picturePagerAdapter;
+            Intent intent = new Intent(DownloadTaskActivity.this, PictureViewerActivity.class);
+            intent.putExtra("position", position);
+            startActivity(intent);
         });
 
         //根据item宽度自动设置spanCount

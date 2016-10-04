@@ -25,6 +25,20 @@
     <string name="settings_view_preload_pages_summary"> 3 页</string>
     <string name="settings_view_volume_flick">音量键翻页</string>
     <string name="settings_view_volume_flick_summary">是否开启音量键翻页</string>
+    <string name="settings_view_direction">浏览方式</string>
+    <string name="settings_view_direction_summary">从左到右</string>
+    <string name="settings_view_direction_dialog_title">选择您喜欢的浏览方式</string>
+
+    <string-array name="settings_view_direction_option">
+        <item>从左到右</item>
+        <item>从右到左</item>
+        <item>从上到下</item>
+    </string-array>
+    <string-array name="settings_view_direction_values">
+        <item>left_to_right</item>
+        <item>right_to_left</item>
+        <item>top_to_bottom</item>
+    </string-array>
 
     <string name="settings_download">下载设置</string>
     <string name="settings_download_high_res">优先下载原图</string>

@@ -21,6 +21,15 @@
             android:summary=" %s 页"
             android:title="@string/settings_view_preload_pages" />
 
+        <ListPreference
+            android:key="pref_view_direction"
+            android:title="@string/settings_view_direction"
+            android:summary="@string/settings_view_direction_summary"
+            android:entries="@array/settings_view_direction_option"
+            android:entryValues="@array/settings_view_direction_values"
+            android:dialogTitle="@string/settings_view_direction_dialog_title"
+            android:defaultValue="0"/>
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_view_volume_flick"

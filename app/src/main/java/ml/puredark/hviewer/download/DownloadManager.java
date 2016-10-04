@@ -54,10 +54,11 @@ public class DownloadManager {
 
     private void checkNoMediaFile() {
         String path = Uri.decode(getDownloadPath());
-        if (path.startsWith("/"))
-            SimpleFileUtil.createIfNotExist(path + "/.nomedia");
-        else
+        try {
             FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
+        }catch (Exception e){
+            SimpleFileUtil.createIfNotExist(path + "/.nomedia");
+        }
     }
 
     public static String getDownloadPath() {

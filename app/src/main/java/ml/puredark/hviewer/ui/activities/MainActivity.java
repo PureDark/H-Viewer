@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
+import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -47,6 +48,7 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.helpers.ExampleSites;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -56,6 +58,7 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -191,28 +194,21 @@ public class MainActivity extends BaseActivity {
         // 测试新站点用
 //        List<Site> sites = ExampleSites.get();
 //        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
-//        siteGroups.get(0).second.addAll(sites);
+////        siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-1));
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
 
         final Parcelable eimSavedState = (savedInstanceState != null) ? savedInstanceState.getParcelable(SAVED_STATE_EXPANDABLE_ITEM_MANAGER) : null;
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(eimSavedState);
-        mRecyclerViewExpandableItemManager.setOnGroupExpandListener(new RecyclerViewExpandableItemManager.OnGroupExpandListener() {
-            @Override
-            public void onGroupExpand(int groupPosition, boolean fromUser) {
-                if (fromUser) {
-                    int childItemHeight = getResources().getDimensionPixelSize(R.dimen.item_site_height);
-                    mRecyclerViewExpandableItemManager.scrollToGroup(groupPosition, childItemHeight, 0, 0);
-                }
+        mRecyclerViewExpandableItemManager.setOnGroupExpandListener((groupPosition, fromUser) -> {
+            if (fromUser) {
+                int childItemHeight = getResources().getDimensionPixelSize(R.dimen.item_site_height);
+                mRecyclerViewExpandableItemManager.scrollToGroup(groupPosition, childItemHeight, 0, 0);
             }
         });
-        mRecyclerViewExpandableItemManager.setOnGroupCollapseListener(new RecyclerViewExpandableItemManager.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int groupPosition, boolean fromUser) {
-            }
-        });
+        mRecyclerViewExpandableItemManager.setOnGroupCollapseListener((groupPosition, fromUser) -> {});
 
         // drag & drop manager
         mRecyclerViewDragDropManager = new RecyclerViewDragDropManager();

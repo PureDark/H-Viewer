@@ -191,6 +191,8 @@ public class DocumentUtil {
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
+        if(file==null)
+            return null;
         return readBytes(context, file.getUri());
     }
 
@@ -200,6 +202,8 @@ public class DocumentUtil {
             return null;
         fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
+        if(file==null)
+            return null;
         return readBytes(context, file.getUri());
     }
 
@@ -209,10 +213,14 @@ public class DocumentUtil {
             return null;
         fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
+        if(file==null)
+            return null;
         return readBytes(context, file.getUri());
     }
 
     public static byte[] readBytes(Context context, DocumentFile file) {
+        if(file==null)
+            return null;
         return readBytes(context, file.getUri());
     }
 

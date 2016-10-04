@@ -22,4 +22,6 @@
     <dimen name="text_margin_third">48dp</dimen>
     <dimen name="loading_size">56dp</dimen>
     <dimen name="collection_app_bar_height">240dp</dimen>
+
+    <dimen name="item_picture_viewer_height">300dp</dimen>
 </resources>

@@ -51,7 +51,6 @@ import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.ui.activities.PictureViewerActivity.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.CommentAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter;
 import ml.puredark.hviewer.ui.adapters.TagAdapter;
@@ -97,7 +96,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private PictureAdapter pictureAdapter;
     private CommentAdapter commentAdapter;
 
-    private PicturePagerAdapter picturePagerAdapter;
+    private PictureViewerActivity pictureViewerActivity;
 
     private CollectionViewHolder holder;
 
@@ -241,15 +240,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 DensityUtil.dp2px(this, 8),
                 DensityUtil.dp2px(this, 16));
 
-        pictureAdapter.setOnItemClickListener(new PictureAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                picturePagerAdapter = new PicturePagerAdapter(site, collection, pictureAdapter.getDataProvider().getItems());
-                HViewerApplication.temp = picturePagerAdapter;
-                Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
-            }
+        pictureAdapter.setOnItemClickListener((v, position) -> {
+            HViewerApplication.temp = CollectionActivity.this;
+            HViewerApplication.temp2 = site;
+            HViewerApplication.temp3 = collection;
+            HViewerApplication.temp4 = pictureAdapter.getDataProvider().getItems();
+            Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
+            intent.putExtra("position", position);
+            startActivity(intent);
         });
 
         //根据item宽度自动设置spanCount
@@ -284,6 +282,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 //            rvComment.setPushRefreshEnable(false);
         }
 
+    }
+
+    public void setPictureViewerActivity(PictureViewerActivity activity){
+        pictureViewerActivity = activity;
     }
 
     private boolean commentEnabled() {
@@ -458,8 +460,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         refreshDescription();
         if (pictureAdapter != null)
             pictureAdapter.notifyDataSetChanged();
-        if (picturePagerAdapter != null)
-            picturePagerAdapter.notifyDataSetChanged();
+        if (pictureViewerActivity != null)
+            pictureViewerActivity.notifyDataSetChanged();
         if (commentAdapter != null)
             commentAdapter.notifyDataSetChanged();
     }
@@ -505,9 +507,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     @Override
     public void onResume() {
         super.onResume();
-        if (picturePagerAdapter != null)
-            picturePagerAdapter.clearItems();
-        picturePagerAdapter = null;
+        pictureViewerActivity = null;
     }
 
     @Override

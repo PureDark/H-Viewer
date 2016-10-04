@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
@@ -56,7 +58,15 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_VIEW_HIGH_RES = "pref_view_high_res";
     public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
+    public static final String KEY_PREF_VIEW_DIRECTION = "pref_view_direction";
     public static final String KEY_PREF_VIEW_VOLUME_FLICK = "pref_view_volume_flick";
+
+    public static final String DIREACTION_LEFT_TO_RIGHT =
+            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];
+    public static final String DIREACTION_RIGHT_TO_LEFT =
+            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[1];
+    public static final String DIREACTION_TOP_TO_BOTTOM =
+            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
 
     public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
     public static final String KEY_PREF_DOWNLOAD_PATH = "pref_download_path";
@@ -100,6 +110,12 @@ public class SettingFragment extends PreferenceFragment
             String displayPath = Uri.decode(downloadPath);
             getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);
         }
+        ListPreference directionPreference = (ListPreference) getPreferenceManager().findPreference(KEY_PREF_VIEW_DIRECTION);
+        CharSequence[] entries = directionPreference.getEntries();
+        int i = directionPreference.findIndexOfValue(directionPreference.getValue());
+        directionPreference.setSummary(entries[i]);
+        directionPreference.setOnPreferenceChangeListener(this);
+
         getPreferenceScreen().setOnPreferenceChangeListener(this);
         final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
                 .initialDirectory((downloadPath.startsWith("/")) ? downloadPath : "/")
@@ -125,7 +141,12 @@ public class SettingFragment extends PreferenceFragment
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference.getKey().equals(KEY_PREF_PROXY_SERVER)) {
-            getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setSummary((String) newValue);
+            preference.setSummary((String) newValue);
+        } else if (preference.getKey().equals(KEY_PREF_VIEW_DIRECTION)) {
+            ListPreference directionPreference = (ListPreference) preference;
+            CharSequence[] entries = directionPreference.getEntries();
+            int i = directionPreference.findIndexOfValue((String) newValue);
+            directionPreference.setSummary(entries[i]);
         }
         return true;
     }

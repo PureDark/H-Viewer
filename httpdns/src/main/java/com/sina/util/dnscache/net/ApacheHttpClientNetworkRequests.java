@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import ml.puredark.hviewer.http.HttpDns;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -51,7 +50,6 @@ public class ApacheHttpClientNetworkRequests implements INetworkRequests {
         OkHttpClient mClient = new OkHttpClient.Builder()
                 .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(SOCKET_OPERATION_TIMEOUT, TimeUnit.MILLISECONDS)
-                .dns(new HttpDns())
                 .build();
 
         return mClient;

@@ -124,10 +124,11 @@ public class RuleParser {
         }
 
         List<Tag> tags = new ArrayList<>();
-        if(rule.tags!=null) {
+        if (rule.tags != null) {
             List<String> tagStrs = parseSinglePropertyMatchAll(element, rule.tags, sourceUrl, false);
             for (String tagStr : tagStrs) {
-                tags.add(new Tag(tags.size() + 1, tagStr));
+                if (!TextUtils.isEmpty(tagStr))
+                    tags.add(new Tag(tags.size() + 1, tagStr));
             }
         }
 
@@ -206,7 +207,7 @@ public class RuleParser {
             String prop;
             Elements temp = ("this".equals(selector.selector)) ? new Elements(element) : element.select(selector.selector);
             if (temp != null) {
-                for(Element elem : temp) {
+                for (Element elem : temp) {
                     if ("attr".equals(selector.fun)) {
                         prop = elem.attr(selector.param);
                     } else if ("html".equals(selector.fun)) {
