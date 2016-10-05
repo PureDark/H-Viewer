@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.common.references.CloseableReference;
@@ -177,6 +178,7 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
         public PictureViewerViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            ivPicture.setOrientation(LinearLayout.VERTICAL);
         }
     }
 

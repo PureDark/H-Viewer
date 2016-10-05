@@ -70,8 +70,6 @@ public class DownloadTaskActivity extends BaseActivity {
 
     private PictureAdapter pictureAdapter;
 
-    private PicturePagerAdapter picturePagerAdapter;
-
     private CollectionViewHolder holder;
 
     @Override
@@ -162,8 +160,10 @@ public class DownloadTaskActivity extends BaseActivity {
                 DensityUtil.dp2px(this, 16));
 
         pictureAdapter.setOnItemClickListener((v, position) -> {
-            picturePagerAdapter = new PicturePagerAdapter(DownloadTaskActivity.this, task.collection.site, task.collection, task.collection.pictures);
-            HViewerApplication.temp = picturePagerAdapter;
+            HViewerApplication.temp = DownloadTaskActivity.this;
+            HViewerApplication.temp2 = task.collection.site;
+            HViewerApplication.temp3 = task.collection;
+            HViewerApplication.temp4 = task.collection.pictures;
             Intent intent = new Intent(DownloadTaskActivity.this, PictureViewerActivity.class);
             intent.putExtra("position", position);
             startActivity(intent);
@@ -202,7 +202,6 @@ public class DownloadTaskActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        picturePagerAdapter = null;
     }
 
     @Override

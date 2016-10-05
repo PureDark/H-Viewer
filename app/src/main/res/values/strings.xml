@@ -43,6 +43,8 @@
     <string name="settings_download">下载设置</string>
     <string name="settings_download_high_res">优先下载原图</string>
     <string name="settings_download_high_res_summary">在下载时优先下载高清原图</string>
+    <string name="settings_download_nomedia">相册中隐藏已下载图册</string>
+    <string name="settings_download_nomedia_summary">在指定的下载目录中生成.nomedia文件</string>
     <string name="settings_download_path">更改保存位置</string>
     <string name="settings_download_path_summary">/sdcard/H-Viewer/download</string>
     <string name="settings_download_import">导入已下载图册</string>

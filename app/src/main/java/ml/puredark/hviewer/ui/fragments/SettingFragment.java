@@ -15,7 +15,6 @@ import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
@@ -69,6 +68,7 @@ public class SettingFragment extends PreferenceFragment
             HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
 
     public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
+    public static final String KEY_PREF_DOWNLOAD_NOMEDIA = "pref_download_nomedia";
     public static final String KEY_PREF_DOWNLOAD_PATH = "pref_download_path";
     public static final String KEY_PREF_DOWNLOAD_IMPORT = "pref_download_import";
 
@@ -113,6 +113,7 @@ public class SettingFragment extends PreferenceFragment
         ListPreference directionPreference = (ListPreference) getPreferenceManager().findPreference(KEY_PREF_VIEW_DIRECTION);
         CharSequence[] entries = directionPreference.getEntries();
         int i = directionPreference.findIndexOfValue(directionPreference.getValue());
+        i = (i <= 0) ? 0 : i;
         directionPreference.setSummary(entries[i]);
         directionPreference.setOnPreferenceChangeListener(this);
 
@@ -146,6 +147,7 @@ public class SettingFragment extends PreferenceFragment
             ListPreference directionPreference = (ListPreference) preference;
             CharSequence[] entries = directionPreference.getEntries();
             int i = directionPreference.findIndexOfValue((String) newValue);
+            i = (i <= 0) ? 0 : i;
             directionPreference.setSummary(entries[i]);
         }
         return true;

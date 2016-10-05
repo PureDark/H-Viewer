@@ -496,7 +496,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     void download() {
         if (isIndexComplete) {
             if (!manager.createDownloadTask((LocalCollection) myCollection))
-                showSnackBar("下载任务已在列表中！");
+                showSnackBar("下载任务创建失败，请重新选择下载目录");
             else
                 showSnackBar("下载任务已添加");
         } else {

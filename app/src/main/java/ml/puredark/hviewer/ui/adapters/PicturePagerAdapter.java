@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.common.references.CloseableReference;
@@ -100,6 +101,7 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         public PictureViewHolder(View view) {
             ButterKnife.bind(this, view);
             this.view = view;
+            ivPicture.setOrientation(LinearLayout.HORIZONTAL);
         }
     }
 

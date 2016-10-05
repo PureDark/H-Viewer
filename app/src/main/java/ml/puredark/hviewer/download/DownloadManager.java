@@ -5,13 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.provider.DocumentFile;
-import android.text.TextUtils;
+import android.support.v7.widget.OrientationHelper;
 import android.util.Log;
 
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.File;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
@@ -19,20 +21,18 @@ import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static ml.puredark.hviewer.helpers.FileHelper.createDirIfNotExist;
 
 /**
  * Created by PureDark on 2016/8/15.
  */
 
 public class DownloadManager {
-    private final static String DEFAULT_PATH = Uri.encode("/sdcard/Pictures/H-Viewer/download");
+    private final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir("H-Viewer").getAbsolutePath());
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -53,14 +53,28 @@ public class DownloadManager {
     }
 
     private void checkNoMediaFile() {
+        boolean nomedia = (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_NOMEDIA, true);
         String path = Uri.decode(getDownloadPath());
-        try {
-            FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
-        }catch (Exception e){
-            SimpleFileUtil.createIfNotExist(path + "/.nomedia");
+        if (nomedia) {
+            try {
+                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
+            } catch (Exception e) {
+                SimpleFileUtil.createIfNotExist(path + "/.nomedia");
+            }
+        } else {
+            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath());
+            Log.d("DownloadManager", "file:" + file + " file.getName:" + ((file!=null)?file.getName():"null"));
+            Log.d("DownloadManager", "file.exists():" + file.exists());
+            if (file == null || !file.exists())
+                SimpleFileUtil.createDirIfNotExist(getDownloadPath());
         }
     }
-
+    public static File getAlbumStorageDir(String albumName) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), albumName);
+        file.mkdirs();
+        return file;
+    }
     public static String getDownloadPath() {
         String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
         if (downloadPath != null)
@@ -81,7 +95,8 @@ public class DownloadManager {
         String dirName = generateDirName(collection, 0);
         String path = getDownloadPath() + "/" + Uri.encode(dirName);
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
-        if (holder.isInList(task) || binder == null)
+        if (binder == null)
+                //||holder.isInList(task))
             return false;
         int did = holder.addDownloadTask(task);
         task.did = did;
@@ -90,6 +105,10 @@ public class DownloadManager {
             dirName = generateDirName(collection, i);
         }
         DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
+        if(dir==null){
+            holder.deleteDownloadTask(task);
+            return false;
+        }
         dirName = dir.getName();
         path = getDownloadPath() + "/" + Uri.encode(dirName);
         task.path = path;
@@ -106,9 +125,9 @@ public class DownloadManager {
         String posfix = (i == 0) ? "" : "_" + i;
         String dirName = FileHelper.filenameFilter(collection.title + "_" + collection.site.title + "_" + collection.idCode + posfix);
         if (dirName.length() > limit) {
-            dirName = FileHelper.filenameFilter(collection.title+posfix);
-            if(dirName.length()>limit)
-                dirName = dirName.substring(0,limit-3-posfix.length())+"..."+posfix;
+            dirName = FileHelper.filenameFilter(collection.title + posfix);
+            if (dirName.length() > limit)
+                dirName = dirName.substring(0, limit - 3 - posfix.length()) + "..." + posfix;
         }
         return dirName;
     }

@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.regex.Pattern;
 
+import ml.puredark.hviewer.helpers.Logger;
+
 /**
  * Created by PureDark on 2016/9/24.
  */
@@ -68,12 +70,6 @@ public class DocumentUtil {
         for (int i = 0; i < subDirs.length; i++) {
             String subDirName = filenameFilter(Uri.decode(subDirs[i]));
             DocumentFile subDir = parent.findFile(subDirName);
-            Log.d("DocumentUtil", "subDirName:"+subDirName);
-            Log.d("DocumentUtil", "subDir:"+subDir);
-            DocumentFile[] files = parent.listFiles();
-            for(DocumentFile file : files){
-                Log.d("DocumentUtil", "fileName:"+file.getName());
-            }
             if (subDir == null) {
                 subDir = parent.createDirectory(subDirName);
             }

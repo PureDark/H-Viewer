@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,6 +33,20 @@ public class SimpleFileUtil {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
+        }
+        return path;
+    }
+    /**
+     * 如果文件夹不存在，就创建文件夹
+     *
+     * @param path 文件路径
+     * @return
+     */
+    public static String createDirIfNotExist(String path) {
+        File file = new File(path);
+        if(!file.exists()) {
+            boolean success = file.mkdirs();
+            Log.d("SimpleFileUtil", "success:" + success);
         }
         return path;
     }

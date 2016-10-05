@@ -30,7 +30,6 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.R.transition.move;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_TOP_TO_BOTTOM;
@@ -80,7 +79,7 @@ public class PictureViewerActivity extends BaseActivity {
         if (HViewerApplication.temp4 instanceof List)
             pictures = (List<Picture>) HViewerApplication.temp4;
 
-        if (collectionActivity == null || site == null || collection == null || pictures == null) {
+        if (site == null || collection == null || pictures == null) {
             Toast.makeText(this, "数据错误，请刷新后重试", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -89,10 +88,15 @@ public class PictureViewerActivity extends BaseActivity {
         HViewerApplication.temp2 = null;
         HViewerApplication.temp3 = null;
         HViewerApplication.temp4 = null;
-        collectionActivity.setPictureViewerActivity(this);
+        if (collectionActivity != null)
+            collectionActivity.setPictureViewerActivity(this);
 
         volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, true);
         viewDirection = (String) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_DIRECTION, DIREACTION_LEFT_TO_RIGHT);
+        if(!DIREACTION_LEFT_TO_RIGHT.equals(viewDirection)
+                && !DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)
+                && !DIREACTION_TOP_TO_BOTTOM.equals(viewDirection))
+            viewDirection = DIREACTION_LEFT_TO_RIGHT;
 
         int position = getIntent().getIntExtra("position", 0);
 
@@ -243,7 +247,6 @@ public class PictureViewerActivity extends BaseActivity {
         } else if (DIREACTION_TOP_TO_BOTTOM.equals(viewDirection) && pictureViewerAdapter != null) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
             int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
-            int lastItemPosition = layoutManager.findLastVisibleItemPosition();
             if (firstItemPosition > 0) {
                 moveToPosition(rvPicture, firstItemPosition - 1);
             }
@@ -262,7 +265,6 @@ public class PictureViewerActivity extends BaseActivity {
         } else if (DIREACTION_TOP_TO_BOTTOM.equals(viewDirection) && pictureViewerAdapter != null) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
             int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
-            int lastItemPosition = layoutManager.findLastVisibleItemPosition();
             if (firstItemPosition + 1 < pictureViewerAdapter.getItemCount()) {
                 moveToPosition(rvPicture, firstItemPosition + 1);
             }

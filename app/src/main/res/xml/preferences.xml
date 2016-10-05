@@ -48,6 +48,12 @@
             android:title="@string/settings_download_high_res"
             android:summary="@string/settings_download_high_res_summary"/>
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_download_nomedia"
+            android:title="@string/settings_download_nomedia"
+            android:summary="@string/settings_download_nomedia_summary"/>
+
         <Preference
             android:defaultValue=""
             android:key="pref_download_path"
