@@ -247,6 +247,36 @@ public class SitePropViewHolder {
     MaterialEditText inputGalleryRulePictureHighResRegex;
     @BindView(R.id.input_galleryRule_pictureHighRes_replacement)
     MaterialEditText inputGalleryRulePictureHighResReplacement;
+    @BindView(R.id.input_galleryRule_commentItem_selector)
+    MaterialEditText inputGalleryRuleCommentItemSelector;
+    @BindView(R.id.input_galleryRule_commentItem_regex)
+    MaterialEditText inputGalleryRuleCommentItemRegex;
+    @BindView(R.id.input_galleryRule_commentItem_replacement)
+    MaterialEditText inputGalleryRuleCommentItemReplacement;
+    @BindView(R.id.input_galleryRule_commentAvatar_selector)
+    MaterialEditText inputGalleryRuleCommentAvatarSelector;
+    @BindView(R.id.input_galleryRule_commentAvatar_regex)
+    MaterialEditText inputGalleryRuleCommentAvatarRegex;
+    @BindView(R.id.input_galleryRule_commentAvatar_replacement)
+    MaterialEditText inputGalleryRuleCommentAvatarReplacement;
+    @BindView(R.id.input_galleryRule_commentAuthor_selector)
+    MaterialEditText inputGalleryRuleCommentAuthorSelector;
+    @BindView(R.id.input_galleryRule_commentAuthor_regex)
+    MaterialEditText inputGalleryRuleCommentAuthorRegex;
+    @BindView(R.id.input_galleryRule_commentAuthor_replacement)
+    MaterialEditText inputGalleryRuleCommentAuthorReplacement;
+    @BindView(R.id.input_galleryRule_commentDatetime_selector)
+    MaterialEditText inputGalleryRuleCommentDatetimeSelector;
+    @BindView(R.id.input_galleryRule_commentDatetime_regex)
+    MaterialEditText inputGalleryRuleCommentDatetimeRegex;
+    @BindView(R.id.input_galleryRule_commentDatetime_replacement)
+    MaterialEditText inputGalleryRuleCommentDatetimeReplacement;
+    @BindView(R.id.input_galleryRule_commentContent_selector)
+    MaterialEditText inputGalleryRuleCommentContentSelector;
+    @BindView(R.id.input_galleryRule_commentContent_regex)
+    MaterialEditText inputGalleryRuleCommentContentRegex;
+    @BindView(R.id.input_galleryRule_commentContent_replacement)
+    MaterialEditText inputGalleryRuleCommentContentReplacement;
 
 
     @BindView(R.id.btn_extraRule)
@@ -325,70 +355,85 @@ public class SitePropViewHolder {
     MaterialEditText inputExtraRulePictureHighResRegex;
     @BindView(R.id.input_extraRule_pictureHighRes_replacement)
     MaterialEditText inputExtraRulePictureHighResReplacement;
+    @BindView(R.id.input_extraRule_commentItem_selector)
+    MaterialEditText inputExtraRuleCommentItemSelector;
+    @BindView(R.id.input_extraRule_commentItem_regex)
+    MaterialEditText inputExtraRuleCommentItemRegex;
+    @BindView(R.id.input_extraRule_commentItem_replacement)
+    MaterialEditText inputExtraRuleCommentItemReplacement;
+    @BindView(R.id.input_extraRule_commentAvatar_selector)
+    MaterialEditText inputExtraRuleCommentAvatarSelector;
+    @BindView(R.id.input_extraRule_commentAvatar_regex)
+    MaterialEditText inputExtraRuleCommentAvatarRegex;
+    @BindView(R.id.input_extraRule_commentAvatar_replacement)
+    MaterialEditText inputExtraRuleCommentAvatarReplacement;
+    @BindView(R.id.input_extraRule_commentAuthor_selector)
+    MaterialEditText inputExtraRuleCommentAuthorSelector;
+    @BindView(R.id.input_extraRule_commentAuthor_regex)
+    MaterialEditText inputExtraRuleCommentAuthorRegex;
+    @BindView(R.id.input_extraRule_commentAuthor_replacement)
+    MaterialEditText inputExtraRuleCommentAuthorReplacement;
+    @BindView(R.id.input_extraRule_commentDatetime_selector)
+    MaterialEditText inputExtraRuleCommentDatetimeSelector;
+    @BindView(R.id.input_extraRule_commentDatetime_regex)
+    MaterialEditText inputExtraRuleCommentDatetimeRegex;
+    @BindView(R.id.input_extraRule_commentDatetime_replacement)
+    MaterialEditText inputExtraRuleCommentDatetimeReplacement;
+    @BindView(R.id.input_extraRule_commentContent_selector)
+    MaterialEditText inputExtraRuleCommentContentSelector;
+    @BindView(R.id.input_extraRule_commentContent_regex)
+    MaterialEditText inputExtraRuleCommentContentRegex;
+    @BindView(R.id.input_extraRule_commentContent_replacement)
+    MaterialEditText inputExtraRuleCommentContentReplacement;
 
     private CategoryInputAdapter categoryInputAdapter;
     private Site lastSite;
 
     public SitePropViewHolder(View view) {
         ButterKnife.bind(this, view);
-        btnCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (rvCategory.getVisibility() == View.GONE) {
-                    rvCategory.setVisibility(View.VISIBLE);
-                    btnCategory.setText("-" + btnCategory.getText().toString().substring(1));
-                } else {
-                    rvCategory.setVisibility(View.GONE);
-                    btnCategory.setText("+" + btnCategory.getText().toString().substring(1));
-                }
+        btnCategory.setOnClickListener(view12 -> {
+            if (rvCategory.getVisibility() == View.GONE) {
+                rvCategory.setVisibility(View.VISIBLE);
+                btnCategory.setText("-" + btnCategory.getText().toString().substring(1));
+            } else {
+                rvCategory.setVisibility(View.GONE);
+                btnCategory.setText("+" + btnCategory.getText().toString().substring(1));
             }
         });
-        btnIndexRule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (layoutIndexRule.getVisibility() == View.GONE) {
-                    layoutIndexRule.setVisibility(View.VISIBLE);
-                    btnIndexRule.setText("-" + btnIndexRule.getText().toString().substring(1));
-                } else {
-                    layoutIndexRule.setVisibility(View.GONE);
-                    btnIndexRule.setText("+" + btnIndexRule.getText().toString().substring(1));
-                }
+        btnIndexRule.setOnClickListener(view1 -> {
+            if (layoutIndexRule.getVisibility() == View.GONE) {
+                layoutIndexRule.setVisibility(View.VISIBLE);
+                btnIndexRule.setText("-" + btnIndexRule.getText().toString().substring(1));
+            } else {
+                layoutIndexRule.setVisibility(View.GONE);
+                btnIndexRule.setText("+" + btnIndexRule.getText().toString().substring(1));
             }
         });
-        btnSearchRule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (layoutSearchRule.getVisibility() == View.GONE) {
-                    layoutSearchRule.setVisibility(View.VISIBLE);
-                    btnSearchRule.setText("-" + btnSearchRule.getText().toString().substring(1));
-                } else {
-                    layoutSearchRule.setVisibility(View.GONE);
-                    btnSearchRule.setText("+" + btnSearchRule.getText().toString().substring(1));
-                }
+        btnSearchRule.setOnClickListener(view13 -> {
+            if (layoutSearchRule.getVisibility() == View.GONE) {
+                layoutSearchRule.setVisibility(View.VISIBLE);
+                btnSearchRule.setText("-" + btnSearchRule.getText().toString().substring(1));
+            } else {
+                layoutSearchRule.setVisibility(View.GONE);
+                btnSearchRule.setText("+" + btnSearchRule.getText().toString().substring(1));
             }
         });
-        btnGalleryRule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (layoutGalleryRule.getVisibility() == View.GONE) {
-                    layoutGalleryRule.setVisibility(View.VISIBLE);
-                    btnGalleryRule.setText("-" + btnGalleryRule.getText().toString().substring(1));
-                } else {
-                    layoutGalleryRule.setVisibility(View.GONE);
-                    btnGalleryRule.setText("+" + btnGalleryRule.getText().toString().substring(1));
-                }
+        btnGalleryRule.setOnClickListener(view14 -> {
+            if (layoutGalleryRule.getVisibility() == View.GONE) {
+                layoutGalleryRule.setVisibility(View.VISIBLE);
+                btnGalleryRule.setText("-" + btnGalleryRule.getText().toString().substring(1));
+            } else {
+                layoutGalleryRule.setVisibility(View.GONE);
+                btnGalleryRule.setText("+" + btnGalleryRule.getText().toString().substring(1));
             }
         });
-        btnExtraRule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (layoutExtraRule.getVisibility() == View.GONE) {
-                    layoutExtraRule.setVisibility(View.VISIBLE);
-                    btnExtraRule.setText("-" + btnExtraRule.getText().toString().substring(1));
-                } else {
-                    layoutExtraRule.setVisibility(View.GONE);
-                    btnExtraRule.setText("+" + btnExtraRule.getText().toString().substring(1));
-                }
+        btnExtraRule.setOnClickListener(view15 -> {
+            if (layoutExtraRule.getVisibility() == View.GONE) {
+                layoutExtraRule.setVisibility(View.VISIBLE);
+                btnExtraRule.setText("-" + btnExtraRule.getText().toString().substring(1));
+            } else {
+                layoutExtraRule.setVisibility(View.GONE);
+                btnExtraRule.setText("+" + btnExtraRule.getText().toString().substring(1));
             }
         });
 
@@ -592,6 +637,31 @@ public class SitePropViewHolder {
                 inputGalleryRulePictureHighResRegex.setText(site.galleryRule.pictureHighRes.regex);
                 inputGalleryRulePictureHighResReplacement.setText(site.galleryRule.pictureHighRes.replacement);
             }
+            if (site.galleryRule.commentItem != null) {
+                inputGalleryRuleCommentItemSelector.setText(joinSelector(site.galleryRule.commentItem));
+                inputGalleryRuleCommentItemRegex.setText(site.galleryRule.commentItem.regex);
+                inputGalleryRuleCommentItemReplacement.setText(site.galleryRule.commentItem.replacement);
+            }
+            if (site.galleryRule.commentAvatar != null) {
+                inputGalleryRuleCommentAvatarSelector.setText(joinSelector(site.galleryRule.commentAvatar));
+                inputGalleryRuleCommentAvatarRegex.setText(site.galleryRule.commentAvatar.regex);
+                inputGalleryRuleCommentAvatarReplacement.setText(site.galleryRule.commentAvatar.replacement);
+            }
+            if (site.galleryRule.commentAuthor != null) {
+                inputGalleryRuleCommentAuthorSelector.setText(joinSelector(site.galleryRule.commentAuthor));
+                inputGalleryRuleCommentAuthorRegex.setText(site.galleryRule.commentAuthor.regex);
+                inputGalleryRuleCommentAuthorReplacement.setText(site.galleryRule.commentAuthor.replacement);
+            }
+            if (site.galleryRule.commentDatetime != null) {
+                inputGalleryRuleCommentDatetimeSelector.setText(joinSelector(site.galleryRule.commentDatetime));
+                inputGalleryRuleCommentDatetimeRegex.setText(site.galleryRule.commentDatetime.regex);
+                inputGalleryRuleCommentDatetimeReplacement.setText(site.galleryRule.commentDatetime.replacement);
+            }
+            if (site.galleryRule.commentContent != null) {
+                inputGalleryRuleCommentContentSelector.setText(joinSelector(site.galleryRule.commentContent));
+                inputGalleryRuleCommentContentRegex.setText(site.galleryRule.commentContent.regex);
+                inputGalleryRuleCommentContentReplacement.setText(site.galleryRule.commentContent.replacement);
+            }
 
             if (site.extraRule != null) {
                 if (site.extraRule.item != null) {
@@ -653,6 +723,31 @@ public class SitePropViewHolder {
                     inputExtraRulePictureHighResSelector.setText(joinSelector(site.extraRule.pictureHighRes));
                     inputExtraRulePictureHighResRegex.setText(site.extraRule.pictureHighRes.regex);
                     inputExtraRulePictureHighResReplacement.setText(site.extraRule.pictureHighRes.replacement);
+                }
+                if (site.extraRule.commentItem != null) {
+                    inputExtraRuleCommentItemSelector.setText(joinSelector(site.extraRule.commentItem));
+                    inputExtraRuleCommentItemRegex.setText(site.extraRule.commentItem.regex);
+                    inputExtraRuleCommentItemReplacement.setText(site.extraRule.commentItem.replacement);
+                }
+                if (site.extraRule.commentAvatar != null) {
+                    inputExtraRuleCommentAvatarSelector.setText(joinSelector(site.extraRule.commentAvatar));
+                    inputExtraRuleCommentAvatarRegex.setText(site.extraRule.commentAvatar.regex);
+                    inputExtraRuleCommentAvatarReplacement.setText(site.extraRule.commentAvatar.replacement);
+                }
+                if (site.extraRule.commentAuthor != null) {
+                    inputExtraRuleCommentAuthorSelector.setText(joinSelector(site.extraRule.commentAuthor));
+                    inputExtraRuleCommentAuthorRegex.setText(site.extraRule.commentAuthor.regex);
+                    inputExtraRuleCommentAuthorReplacement.setText(site.extraRule.commentAuthor.replacement);
+                }
+                if (site.extraRule.commentDatetime != null) {
+                    inputExtraRuleCommentDatetimeSelector.setText(joinSelector(site.extraRule.commentDatetime));
+                    inputExtraRuleCommentDatetimeRegex.setText(site.extraRule.commentDatetime.regex);
+                    inputExtraRuleCommentDatetimeReplacement.setText(site.extraRule.commentDatetime.replacement);
+                }
+                if (site.extraRule.commentContent != null) {
+                    inputExtraRuleCommentContentSelector.setText(joinSelector(site.extraRule.commentContent));
+                    inputExtraRuleCommentContentRegex.setText(site.extraRule.commentContent.regex);
+                    inputExtraRuleCommentContentReplacement.setText(site.extraRule.commentContent.replacement);
                 }
             }
         }
@@ -729,7 +824,11 @@ public class SitePropViewHolder {
         lastSite.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
         lastSite.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         lastSite.galleryRule.pictureHighRes = loadSelector(inputGalleryRulePictureHighResSelector, inputGalleryRulePictureHighResRegex, inputGalleryRulePictureHighResReplacement);
-
+        lastSite.galleryRule.commentItem = loadSelector(inputGalleryRuleCommentItemSelector, inputGalleryRuleCommentItemRegex, inputGalleryRuleCommentItemReplacement);
+        lastSite.galleryRule.commentAvatar = loadSelector(inputGalleryRuleCommentAvatarSelector, inputGalleryRuleCommentAvatarRegex, inputGalleryRuleCommentAvatarReplacement);
+        lastSite.galleryRule.commentAuthor = loadSelector(inputGalleryRuleCommentAuthorSelector, inputGalleryRuleCommentAuthorRegex, inputGalleryRuleCommentAuthorReplacement);
+        lastSite.galleryRule.commentDatetime = loadSelector(inputGalleryRuleCommentDatetimeSelector, inputGalleryRuleCommentDatetimeRegex, inputGalleryRuleCommentDatetimeReplacement);
+        lastSite.galleryRule.commentContent = loadSelector(inputGalleryRuleCommentContentSelector, inputGalleryRuleCommentContentRegex, inputGalleryRuleCommentContentReplacement);
 
         //extra rule
         lastSite.extraRule = new Rule();
@@ -745,6 +844,23 @@ public class SitePropViewHolder {
         lastSite.extraRule.pictureThumbnail = loadSelector(inputExtraRulePictureThumbnailSelector, inputExtraRulePictureThumbnailRegex, inputExtraRulePictureThumbnailReplacement);
         lastSite.extraRule.pictureUrl = loadSelector(inputExtraRulePictureUrlSelector, inputExtraRulePictureUrlRegex, inputExtraRulePictureUrlReplacement);
         lastSite.extraRule.pictureHighRes = loadSelector(inputExtraRulePictureHighResSelector, inputExtraRulePictureHighResRegex, inputExtraRulePictureHighResReplacement);
+        lastSite.extraRule.commentItem = loadSelector(inputExtraRuleCommentItemSelector, inputExtraRuleCommentItemRegex, inputExtraRuleCommentItemReplacement);
+        lastSite.extraRule.commentAvatar = loadSelector(inputExtraRuleCommentAvatarSelector, inputExtraRuleCommentAvatarRegex, inputExtraRuleCommentAvatarReplacement);
+        lastSite.extraRule.commentAuthor = loadSelector(inputExtraRuleCommentAuthorSelector, inputExtraRuleCommentAuthorRegex, inputExtraRuleCommentAuthorReplacement);
+        lastSite.extraRule.commentDatetime = loadSelector(inputExtraRuleCommentDatetimeSelector, inputExtraRuleCommentDatetimeRegex, inputExtraRuleCommentDatetimeReplacement);
+        lastSite.extraRule.commentContent = loadSelector(inputExtraRuleCommentContentSelector, inputExtraRuleCommentContentRegex, inputExtraRuleCommentContentReplacement);
+
+
+        if (lastSite.extraRule.item == null && lastSite.extraRule.idCode == null
+                && lastSite.extraRule.title == null && lastSite.extraRule.uploader == null
+                && lastSite.extraRule.cover == null && lastSite.extraRule.category == null
+                && lastSite.extraRule.datetime == null && lastSite.extraRule.rating == null
+                && lastSite.extraRule.tags == null && lastSite.extraRule.pictureUrl == null
+                && lastSite.extraRule.pictureThumbnail == null && lastSite.extraRule.pictureHighRes == null
+                && lastSite.extraRule.commentItem == null && lastSite.extraRule.commentAvatar == null
+                && lastSite.extraRule.commentAuthor == null && lastSite.extraRule.commentDatetime == null
+                && lastSite.extraRule.commentContent == null)
+            lastSite.searchRule = null;
 
         if (lastSite.indexUrl == null || lastSite.galleryUrl == null ||
                 lastSite.indexRule.item == null || lastSite.indexRule.idCode == null ||
