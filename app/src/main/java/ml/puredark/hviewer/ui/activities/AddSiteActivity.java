@@ -6,6 +6,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -188,6 +189,8 @@ public class AddSiteActivity extends BaseActivity {
                 showSnackBar("输入的规则缺少信息");
             return site;
         } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            Log.d("AddSiteActivity", json);
             showSnackBar("输入规则格式错误");
             return null;
         }

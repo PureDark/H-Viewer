@@ -802,12 +802,7 @@ public class SitePropViewHolder {
         lastSite.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
         lastSite.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
 
-        if (lastSite.searchRule.item == null && lastSite.searchRule.idCode == null
-                && lastSite.searchRule.title == null && lastSite.searchRule.uploader == null
-                && lastSite.searchRule.cover == null && lastSite.searchRule.category == null
-                && lastSite.searchRule.datetime == null && lastSite.searchRule.rating == null
-                && lastSite.searchRule.tags == null && lastSite.searchRule.pictureUrl == null
-                && lastSite.searchRule.pictureThumbnail == null)
+        if (lastSite.searchRule.isEmpty())
             lastSite.searchRule = null;
 
         //gallery rule
@@ -851,16 +846,8 @@ public class SitePropViewHolder {
         lastSite.extraRule.commentContent = loadSelector(inputExtraRuleCommentContentSelector, inputExtraRuleCommentContentRegex, inputExtraRuleCommentContentReplacement);
 
 
-        if (lastSite.extraRule.item == null && lastSite.extraRule.idCode == null
-                && lastSite.extraRule.title == null && lastSite.extraRule.uploader == null
-                && lastSite.extraRule.cover == null && lastSite.extraRule.category == null
-                && lastSite.extraRule.datetime == null && lastSite.extraRule.rating == null
-                && lastSite.extraRule.tags == null && lastSite.extraRule.pictureUrl == null
-                && lastSite.extraRule.pictureThumbnail == null && lastSite.extraRule.pictureHighRes == null
-                && lastSite.extraRule.commentItem == null && lastSite.extraRule.commentAvatar == null
-                && lastSite.extraRule.commentAuthor == null && lastSite.extraRule.commentDatetime == null
-                && lastSite.extraRule.commentContent == null)
-            lastSite.searchRule = null;
+        if (lastSite.extraRule.isEmpty())
+            lastSite.extraRule = null;
 
         if (lastSite.indexUrl == null || lastSite.galleryUrl == null ||
                 lastSite.indexRule.item == null || lastSite.indexRule.idCode == null ||

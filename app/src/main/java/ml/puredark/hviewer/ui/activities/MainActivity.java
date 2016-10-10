@@ -322,39 +322,27 @@ public class MainActivity extends BaseActivity {
                 final Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("操作")
-                        .setItems(new String[]{"登录", "编辑", "删除"}, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                if (i == 0) {
+                        .setItems(new String[]{"登录", "编辑", "删除"}, (dialogInterface, i) -> {
+                            if (i == 0) {
+                                temp = site;
+                                new Handler().postDelayed(() -> {
+                                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                    startActivityForResult(intent, RESULT_LOGIN);
+                                }, 300);
+                            } else if (i == 1) {
+                                new Handler().postDelayed(() -> {
                                     temp = site;
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                            startActivityForResult(intent, RESULT_LOGIN);
-                                        }
-                                    }, 300);
-                                } else if (i == 1) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            temp = site;
-                                            Intent intent = new Intent(MainActivity.this, ModifySiteActivity.class);
-                                            startActivityForResult(intent, RESULT_MODIFY_SITE);
-                                        }
-                                    }, 300);
-                                } else if (i == 2) {
-                                    new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
-                                            .setMessage("删除后将无法恢复")
-                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    siteHolder.deleteSite(site);
-                                                    siteAdapter.getDataProvider().removeChildItem(groupPosition, childPosition);
-                                                    siteAdapter.notifyDataSetChanged();
-                                                }
-                                            }).setNegativeButton("取消", null).show();
-                                }
+                                    Intent intent = new Intent(MainActivity.this, ModifySiteActivity.class);
+                                    startActivityForResult(intent, RESULT_MODIFY_SITE);
+                                }, 300);
+                            } else if (i == 2) {
+                                new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
+                                        .setMessage("删除后将无法恢复")
+                                        .setPositiveButton("确定", (dialog, which) -> {
+                                            siteHolder.deleteSite(site);
+                                            siteAdapter.getDataProvider().removeChildItem(groupPosition, childPosition);
+                                            siteAdapter.notifyDataSetChanged();
+                                        }).setNegativeButton("取消", null).show();
                             }
                         })
                         .setNegativeButton("取消", null)

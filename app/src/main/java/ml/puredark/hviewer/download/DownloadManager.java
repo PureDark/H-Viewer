@@ -32,7 +32,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
  */
 
 public class DownloadManager {
-    private final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir("H-Viewer").getAbsolutePath());
+    public final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir("H-Viewer").getAbsolutePath());
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 

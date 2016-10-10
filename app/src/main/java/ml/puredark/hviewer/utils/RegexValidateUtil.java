@@ -44,6 +44,18 @@ public class RegexValidateUtil {
         return flag;
     }
 
+    public static boolean urlHasProtocol(String url){
+        if(url==null)
+            return false;
+        if(url.startsWith("magnet:?"))
+            return true;
+        Pattern p = Pattern.compile("\\w+://", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = p.matcher(url);
+        if (matcher.find())
+            return true;
+        return false;
+    }
+
     public static String getHostFromUrl(String url) {
         Pattern p = Pattern.compile("https?://[^/]*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = p.matcher(url);
@@ -72,7 +84,7 @@ public class RegexValidateUtil {
     }
 
     public static String getAbsoluteUrlFromRelative(String url, String host) {
-        if(url.startsWith("http://")||url.startsWith("https://"))
+        if(urlHasProtocol(url))
             return url;
         if (url.startsWith("/"))
             return getHostFromUrl(host) + url;

@@ -54,7 +54,7 @@
             android:title="@string/settings_download_nomedia"
             android:summary="@string/settings_download_nomedia_summary"/>
 
-        <Preference
+        <ml.puredark.hviewer.ui.customs.LongClickPreference
             android:defaultValue=""
             android:key="pref_download_path"
             android:singleLine="true"

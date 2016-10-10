@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -15,6 +17,7 @@ import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
@@ -42,7 +45,14 @@ import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.LicenseActivity;
+import ml.puredark.hviewer.ui.activities.LoginActivity;
+import ml.puredark.hviewer.ui.activities.MainActivity;
+import ml.puredark.hviewer.ui.activities.ModifySiteActivity;
+import ml.puredark.hviewer.ui.customs.LongClickPreference;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+
+import static android.R.attr.path;
+import static ml.puredark.hviewer.HViewerApplication.temp;
 
 /**
  * Created by PureDark on 2016/9/25.
@@ -91,6 +101,9 @@ public class SettingFragment extends PreferenceFragment
 
     private boolean checking = false;
 
+    //是否已打开路径选择器
+    private boolean opened = false;
+
     public SettingFragment() {
     }
 
@@ -119,12 +132,52 @@ public class SettingFragment extends PreferenceFragment
 
         getPreferenceScreen().setOnPreferenceChangeListener(this);
         final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                .initialDirectory((downloadPath.startsWith("/")) ? downloadPath : "/")
+                .initialDirectory((downloadPath.startsWith("/")) ? downloadPath : DownloadManager.DEFAULT_PATH)
                 .newDirectoryName("download")
                 .allowNewDirectoryNameModification(true)
                 .build();
         mDialog = DirectoryChooserFragment.newInstance(config);
         mDialog.setTargetFragment(this, 0);
+
+        LongClickPreference prefDownloadPath = (LongClickPreference) getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH);
+        prefDownloadPath.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(activity)
+                    .setTitle("选择路径方式")
+                    .setItems(new String[]{"系统文档（新）", "路径选择框（旧）"}, (dialogInterface, pos) -> {
+                        if (pos == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                            try {
+                                startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                            } catch (ActivityNotFoundException e) {
+                                e.printStackTrace();
+                                mDialog.show(getFragmentManager(), null);
+                            }
+                            new Handler().postDelayed(() -> {
+                                if(!opened)
+                                    activity.showSnackBar("如无法开启系统文档，长按使用旧工具");
+                            }, 1000);
+                        } else if (pos == 1) {
+                            mDialog.show(getFragmentManager(), null);
+                        } else
+                            activity.showSnackBar("当前系统版本不支持");
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+            return true;
+        });
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        opened = true;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        opened = false;
     }
 
     @Override
@@ -177,6 +230,10 @@ public class SettingFragment extends PreferenceFragment
                     e.printStackTrace();
                     mDialog.show(getFragmentManager(), null);
                 }
+                new Handler().postDelayed(() -> {
+                    if(!opened)
+                        activity.showSnackBar("如无法开启系统文档，长按使用旧工具");
+                }, 1000);
             } else {
                 mDialog.show(getFragmentManager(), null);
             }

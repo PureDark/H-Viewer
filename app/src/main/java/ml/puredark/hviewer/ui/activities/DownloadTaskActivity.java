@@ -1,6 +1,8 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -11,13 +13,17 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import java.util.ArrayList;
@@ -28,13 +34,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.adapters.CommentAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter;
-import ml.puredark.hviewer.ui.adapters.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.TagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
@@ -44,6 +52,8 @@ import ml.puredark.hviewer.ui.customs.ExViewPager;
 import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
+
+import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 public class DownloadTaskActivity extends BaseActivity {
 
@@ -63,14 +73,24 @@ public class DownloadTaskActivity extends BaseActivity {
     AppBarLayout appBar;
     @BindView(R.id.fab_menu)
     FloatingActionMenu fabMenu;
+    @BindView(R.id.fab_browser)
+    FloatingActionButton fabBorwser;
+    @BindView(R.id.fab_favor)
+    FloatingActionButton fabFavor;
+    @BindView(R.id.fab_download)
+    FloatingActionButton fabDownload;
 
     private DownloadTask task;
 
     private PullLoadMoreRecyclerView rvIndex;
+    private RecyclerView rvComment;
 
     private PictureAdapter pictureAdapter;
+    private CommentAdapter commentAdapter;
 
     private CollectionViewHolder holder;
+
+    private int startPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +111,7 @@ public class DownloadTaskActivity extends BaseActivity {
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
         setAppBar(appBar);
-        fabMenu.setVisibility(View.GONE);
+        setFabMenu(fabMenu);
 
         //获取传递过来的Collection实例
         if (HViewerApplication.temp instanceof DownloadTask)
@@ -103,6 +123,9 @@ public class DownloadTaskActivity extends BaseActivity {
             return;
         }
 
+        //解析URL模板
+        parseUrl(task.collection.site.galleryUrl);
+
         toolbar.setTitle(task.collection.title);
         setSupportActionBar(toolbar);
 
@@ -111,6 +134,26 @@ public class DownloadTaskActivity extends BaseActivity {
         initCover(task.collection.cover);
         initTabAndViewPager();
         refreshDescription();
+        fabFavor.setVisibility(View.GONE);
+        fabDownload.setVisibility(View.GONE);
+    }
+
+    private void parseUrl(String url) {
+        String pageStr = RuleParser.parseUrl(url).get("page");
+        try {
+            if (pageStr == null) {
+                startPage = 0;
+            } else {
+                String[] pageStrs = pageStr.split(":");
+                if (pageStrs.length > 1) {
+                    startPage = Integer.parseInt(pageStrs[0]);
+                } else {
+                    startPage = Integer.parseInt(pageStr);
+                }
+            }
+        } catch (NumberFormatException e) {
+            startPage = 0;
+        }
     }
 
     private void initCover(String cover) {
@@ -131,15 +174,21 @@ public class DownloadTaskActivity extends BaseActivity {
     private void initTabAndViewPager() {
         //初始化Tab和ViewPager
         List<View> views = new ArrayList<>();
-        View viewIndex = getLayoutInflater().inflate(R.layout.view_collection_index, null);
-        View viewDescription = getLayoutInflater().inflate(R.layout.view_collection_desciption, null);
-        holder = new CollectionViewHolder(viewDescription);
-
-        views.add(viewIndex);
-        views.add(viewDescription);
         List<String> titles = new ArrayList<>();
         titles.add("目录");
-        titles.add("相关");
+        View viewIndex = getLayoutInflater().inflate(R.layout.view_collection_index, null);
+        views.add(viewIndex);
+        titles.add("详情");
+        View viewDescription = getLayoutInflater().inflate(R.layout.view_collection_desciption, null);
+        views.add(viewDescription);
+        View viewComment = null;
+        if (commentEnabled()) {
+            titles.add("评论");
+            viewComment = getLayoutInflater().inflate(R.layout.view_collection_comment, null);
+            views.add(viewComment);
+        }
+
+        holder = new CollectionViewHolder(viewDescription);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
         viewPager.setAdapter(viewPagerAdapter);
@@ -151,6 +200,18 @@ public class DownloadTaskActivity extends BaseActivity {
         pictureAdapter = new PictureAdapter(this, new ListDataProvider(task.collection.pictures));
         pictureAdapter.setCookie(task.collection.site.cookie);
         rvIndex.setAdapter(pictureAdapter);
+
+        rvIndex.getRecyclerView().addOnScrollListener(new PictureAdapter.ScrollDetector(){
+            @Override
+            public void onScrollUp() {
+                fabMenu.hideMenu(true);
+            }
+
+            @Override
+            public void onScrollDown() {
+                fabMenu.showMenu(true);
+            }
+        });
 
         rvIndex.getRecyclerView().setClipToPadding(false);
         rvIndex.getRecyclerView().setPadding(
@@ -175,6 +236,24 @@ public class DownloadTaskActivity extends BaseActivity {
         rvIndex.setPullRefreshEnable(false);
         rvIndex.setPushRefreshEnable(false);
 
+        if (viewComment != null) {
+            //初始化评论列表
+            rvComment = (RecyclerView) viewComment.findViewById(R.id.rv_comment);
+            List<Comment> comments = new ArrayList<>();
+            commentAdapter = new CommentAdapter(this, new ListDataProvider(comments));
+            commentAdapter.setCookie(task.collection.site.cookie);
+            rvComment.setAdapter(commentAdapter);
+
+            //禁用下拉刷新和加载更多（暂时）
+//            rvComment.setPullRefreshEnable(false);
+//            rvComment.setPushRefreshEnable(false);
+        }
+    }
+
+    private boolean commentEnabled() {
+        return task.collection.site.galleryRule.commentItem != null &&
+                task.collection.site.galleryRule.commentAuthor != null &&
+                task.collection.site.galleryRule.commentContent != null;
     }
 
     private void refreshDescription() {
@@ -191,12 +270,24 @@ public class DownloadTaskActivity extends BaseActivity {
         holder.rbRating.setRating(task.collection.rating);
         holder.tvSubmittime.setText(task.collection.datetime);
         if(task.collection.description!=null)
-            holder.tvDescription.setText(Html.fromHtml(task.collection.description));
+            holder.tvDescription.setText(RuleParser.getClickableHtml(this, task.collection.description, url, source -> new BitmapDrawable()));
     }
 
     @OnClick(R.id.btn_return)
     void back() {
         onBackPressed();
+    }
+
+    @OnClick(R.id.fab_browser)
+    void fab_browser() {
+        final String url = task.collection.site.getGalleryUrl(task.collection.idCode, startPage);
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.VIEW");
+        Uri content_url = Uri.parse(url);
+        intent.setData(content_url);
+        startActivity(intent);
+        // 统计打开浏览器访问次数
+        MobclickAgent.onEvent(HViewerApplication.mContext, "SwitchToBrowser");
     }
 
     @Override
@@ -237,6 +328,8 @@ public class DownloadTaskActivity extends BaseActivity {
             StaggeredGridLayoutManager layoutManager =
                     new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
             rvTags.setLayoutManager(layoutManager);
+            tvDescription.setAutoLinkMask(Linkify.EMAIL_ADDRESSES|Linkify.WEB_URLS);
+            tvDescription.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
 }

@@ -37,7 +37,7 @@ public class ProxyFragment extends PreferenceFragment
         if (proxyServer != null)
             getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setSummary(proxyServer);
 
-        getPreferenceScreen().setOnPreferenceChangeListener(this);
+        getPreferenceManager().findPreference(KEY_PREF_PROXY_SERVER).setOnPreferenceChangeListener(this);
 
     }
 

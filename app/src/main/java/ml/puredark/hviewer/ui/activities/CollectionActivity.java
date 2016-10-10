@@ -15,6 +15,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -157,7 +159,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
         initCover(myCollection.cover);
         initTabAndViewPager();
-        refreshDescription();
+        refreshDescription(site.galleryUrl);
         rvIndex.setRefreshing(true);
         getCollectionDetail(startPage);
 
@@ -233,6 +235,18 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         pictureAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
         rvIndex.setAdapter(pictureAdapter);
 
+        rvIndex.getRecyclerView().addOnScrollListener(new PictureAdapter.ScrollDetector(){
+            @Override
+            public void onScrollUp() {
+                fabMenu.showMenu(true);
+            }
+
+            @Override
+            public void onScrollDown() {
+                fabMenu.hideMenu(true);
+            }
+        });
+
         rvIndex.getRecyclerView().setClipToPadding(false);
         rvIndex.getRecyclerView().setPadding(
                 DensityUtil.dp2px(this, 8),
@@ -294,7 +308,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 site.galleryRule.commentContent != null;
     }
 
-    private void refreshDescription() {
+    private void refreshDescription(String url) {
         getSupportActionBar().setTitle(myCollection.title);
         holder.tvTitle.setText(myCollection.title);
         holder.tvUploader.setText(myCollection.uploader);
@@ -309,12 +323,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         Logger.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
         if (myCollection.description != null)
-            holder.tvDescription.setText(Html.fromHtml(myCollection.description, new Html.ImageGetter() {
-                @Override
-                public Drawable getDrawable(String source) {
-                    return new BitmapDrawable();
-                }
-            }, null));
+            holder.tvDescription.setText(RuleParser.getClickableHtml(this, myCollection.description, url, source -> new BitmapDrawable()));
         collection.title = myCollection.title;
         collection.uploader = myCollection.uploader;
         collection.category = myCollection.category;
@@ -457,7 +466,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         }
         if (!refreshing)
             rvIndex.setPullLoadMoreCompleted();
-        refreshDescription();
+        refreshDescription(url);
         if (pictureAdapter != null)
             pictureAdapter.notifyDataSetChanged();
         if (pictureViewerActivity != null)
@@ -473,8 +482,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @OnClick(R.id.fab_browser)
     void fab_browser() {
-        final String url = site.galleryUrl.replaceAll("\\{idCode:\\}", myCollection.idCode)
-                .replaceAll("\\{page:" + startPage + "\\}", "" + startPage);
+        final String url = site.getGalleryUrl(myCollection.idCode, startPage);
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);
@@ -549,6 +557,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             StaggeredGridLayoutManager layoutManager =
                     new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
             rvTags.setLayoutManager(layoutManager);
+            tvDescription.setAutoLinkMask(Linkify.EMAIL_ADDRESSES|Linkify.WEB_URLS);
+            tvDescription.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
     }

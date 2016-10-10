@@ -24,7 +24,7 @@ public class TagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_tag, parent, false);
+                .inflate(R.layout.item_collection_tag, parent, false);
         // 在这里对View的参数进行设置
         TagViewHolder vh = new TagViewHolder(v);
         return vh;

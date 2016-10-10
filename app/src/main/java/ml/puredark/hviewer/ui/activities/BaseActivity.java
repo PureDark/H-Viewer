@@ -75,7 +75,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         this.appBar = appBar;
     }
 
-    protected void setToolbar(Toolbar toolbar){
+    protected void setToolbar(Toolbar toolbar) {
         if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)) {
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) toolbar.getLayoutParams();
             lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
@@ -95,8 +95,8 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         this.analyze = analyze;
     }
 
-    public void showSnackBar(String content){
-        if(container==null)return;
+    public void showSnackBar(String content) {
+        if (container == null) return;
         Snackbar snackbar = Snackbar.make(
                 container,
                 content,
@@ -109,7 +109,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     public void onBackPressed() {
         if (animating)
             return;
-        else if(btnReturnIcon!=null)
+        else if (btnReturnIcon != null)
             AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -146,7 +146,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     @Override
     public void onResume() {
         super.onResume();
-        if(analyze) {
+        if (analyze) {
             MobclickAgent.onPageStart(this.getClass().getSimpleName());
             MobclickAgent.onResume(this);
         }
@@ -164,7 +164,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     @Override
     public void onPause() {
         super.onPause();
-        if(analyze) {
+        if (analyze) {
             MobclickAgent.onPageEnd(this.getClass().getSimpleName());
             MobclickAgent.onPause(this);
         }
@@ -181,33 +181,33 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
             appBar.removeOnOffsetChangedListener(this);
     }
 
+    private int lastOffset;
+
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        if (verticalOffset != 0) {
+        if (verticalOffset < lastOffset) {
             if (fabMenu != null)
                 fabMenu.hideMenu(true);
-        } else {
+        } else if (verticalOffset > lastOffset) {
             if (fabMenu != null)
                 fabMenu.showMenu(true);
         }
+        lastOffset = verticalOffset;
     }
 
 
     public class DownloadReceiver extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent){
-            if (intent.getAction().equals(DownloadService.ON_START)||
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(DownloadService.ON_START) ||
                     intent.getAction().equals(DownloadService.ON_PROGRESS)) {
-            }
-            else if(intent.getAction().equals(DownloadService.ON_PAUSE)) {
-            }
-            else if(intent.getAction().equals(DownloadService.ON_FAILURE)){
+            } else if (intent.getAction().equals(DownloadService.ON_PAUSE)) {
+            } else if (intent.getAction().equals(DownloadService.ON_FAILURE)) {
                 String message = intent.getStringExtra("message");
-                message = ("".equals(message))?"当前任务下载失败，请重试":message;
+                message = ("".equals(message)) ? "当前任务下载失败，请重试" : message;
                 showSnackBar(message);
-            }
-            else if(intent.getAction().equals(DownloadService.ON_COMPLETE)){
+            } else if (intent.getAction().equals(DownloadService.ON_COMPLETE)) {
                 showSnackBar("一个任务下载成功");
             }
             Logger.d("DownloadReceiver", intent.getAction());
