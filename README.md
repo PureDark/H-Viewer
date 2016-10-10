@@ -13,7 +13,7 @@ An android feed reader application which fetch data with selector and regular ex
 
 该应用仍处于测试阶段，Bugs 和崩溃都是不可避免的常有，如果你遇到了，请在本 Repo 的 issues 版块提交一则报告，方便我复现并修复
 
-Note that this app is still in alpha stage, and so bugs and creashes you may often run into. If that happens, please post an issue to address it, so I can fix it.
+Note that this app is still in alpha stage, and so bugs and crashes you may often run into. If that happens, please post an issue to address it, so I can fix it.
 
 ### [【查看所有站点】](https://github.com/H-Viewer-Sites/Index)
 
