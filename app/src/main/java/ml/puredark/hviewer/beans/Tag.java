@@ -5,6 +5,7 @@ import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 public class Tag extends AbstractDataProvider.Data {
     public int tid;
     public String title = "";
+    public String url;
 
     public Tag(int tid, String title) {
         this.tid = tid;

@@ -231,6 +231,8 @@ public class PictureViewerActivity extends BaseActivity {
                 }
                 if (picturePagerAdapter != null)
                     picturePagerAdapter.onSelectDirectory(uriTree);
+                else if (pictureViewerAdapter != null)
+                    pictureViewerAdapter.onSelectDirectory(uriTree);
             }
         }
     }

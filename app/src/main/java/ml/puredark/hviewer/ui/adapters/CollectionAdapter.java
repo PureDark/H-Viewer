@@ -85,14 +85,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.rbRating.setRating(collection.rating);
             holder.tvSubmittime.setText(collection.datetime);
             if(site!=null) {
-                checkSiteFlags(holder, site, collection);
+                checkSiteFlags(position, site, collection);
             }else if (collection instanceof LocalCollection) {
                 holder.layoutCover.setVisibility(View.VISIBLE);
                 holder.tvTitle.setVisibility(View.VISIBLE);
                 holder.rbRating.setVisibility(View.VISIBLE);
                 holder.rvTags.setVisibility(View.VISIBLE);
                 checkSiteFlags(holder, ((LocalCollection) collection).site);
-                checkSiteFlags(holder, ((LocalCollection) collection).site, collection);
+                checkSiteFlags(position, ((LocalCollection) collection).site, collection);
             }
         } else if (viewHolder instanceof CollectionGridViewHolder) {
             CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
@@ -104,9 +104,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private void checkSiteFlags(CollectionViewHolder holder, Site site, Collection collection) {
+    private void checkSiteFlags(int position, Site site, Collection collection) {
         if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY) && !collection.preloaded) {
-            SiteFlagHandler.preloadGallery(holder, site, collection);
+            SiteFlagHandler.preloadGallery(context, this, position, site, collection);
         }
     }
 

@@ -30,6 +30,8 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
     public Rule indexRule, galleryRule, searchRule, extraRule;
+    public List<String> tagSource;
+    public TagRule tagRule;
     public int versionCode;
 
     @Deprecated
