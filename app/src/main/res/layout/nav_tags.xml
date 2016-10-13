@@ -1,31 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minWidth="300dp"
     android:background="@color/white"
     android:orientation="vertical">
 
-    <ml.puredark.hviewer.ui.customs.ExTabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/tool_bar_height"
-        android:background="@color/colorPrimaryDark"
-        app:tabBackground="@color/transparent"
-        app:tabIndicatorColor="@color/white"
-        app:tabIndicatorHeight="3dp"
-        app:tabMode="fixed"
-        app:tabMyTextColor="@color/white"
-        app:tabTitleArray="站点TAG,收藏,历史" />
-
     <ml.puredark.hviewer.ui.customs.ExViewPager
-        android:id="@+id/view_pager"
+        android:id="@+id/bottom_sheet_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tab_layout"
-        android:background="@color/bgcolor"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:pagerCurrItem="0"
         app:pagerLayout1="@layout/view_tag_list" />
-</LinearLayout>
+    <ml.puredark.hviewer.ui.customs.ExPagerBottomTabLayout
+        android:id="@+id/pager_bottom_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:bottomTab1="@drawable/ic_add_black"
+        app:bottomTab2="@drawable/ic_favorite_border_white"
+        app:bottomTab3="@drawable/ic_history_white"
+        app:bottomTabTitleArray="站点TAG,收藏,历史"/>
+</android.support.v7.widget.LinearLayoutCompat>

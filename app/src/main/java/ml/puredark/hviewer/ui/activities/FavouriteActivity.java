@@ -85,13 +85,10 @@ public class FavouriteActivity extends BaseActivity {
                 final Collection collection = (Collection) adapter.getDataProvider().getItem(position);
                 new AlertDialog.Builder(FavouriteActivity.this).setTitle("是否删除？")
                         .setMessage("删除后将无法恢复")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                favouriteHolder.deleteFavourite(collection);
-                                adapter.getDataProvider().setDataSet(favouriteHolder.getFavourites());
-                                adapter.notifyDataSetChanged();
-                            }
+                        .setPositiveButton("确定", (dialog, which) -> {
+                            favouriteHolder.deleteFavourite(collection);
+                            adapter.getDataProvider().setDataSet(favouriteHolder.getFavourites());
+                            adapter.notifyDataSetChanged();
                         }).setNegativeButton("取消", null).show();
                 return true;
             }
@@ -107,13 +104,10 @@ public class FavouriteActivity extends BaseActivity {
     void clear() {
         new AlertDialog.Builder(FavouriteActivity.this).setTitle("是否清空收藏夹？")
                 .setMessage("清空后将无法恢复")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        favouriteHolder.clear();
-                        adapter.getDataProvider().setDataSet(favouriteHolder.getFavourites());
-                        adapter.notifyDataSetChanged();
-                    }
+                .setPositiveButton("确定", (dialog, which) -> {
+                    favouriteHolder.clear();
+                    adapter.getDataProvider().setDataSet(favouriteHolder.getFavourites());
+                    adapter.notifyDataSetChanged();
                 }).setNegativeButton("取消", null).show();
     }
 

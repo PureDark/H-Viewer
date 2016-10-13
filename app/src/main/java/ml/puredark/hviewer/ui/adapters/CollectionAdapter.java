@@ -74,12 +74,12 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection.tags == null) {
                 holder.tvTitle.setMaxLines(2);
                 holder.rvTags.setAdapter(
-                        new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                        new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()))
                 );
             } else {
                 holder.tvTitle.setMaxLines(1);
                 holder.rvTags.setAdapter(
-                        new TagAdapter(new ListDataProvider<>(collection.tags))
+                        new CollectionTagAdapter(new ListDataProvider<>(collection.tags))
                 );
             }
             holder.rbRating.setRating(collection.rating);
@@ -131,7 +131,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.tvTitle.setMaxLines(2);
             holder.rvTags.setVisibility(View.GONE);
             holder.rvTags.setAdapter(
-                    new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                    new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()))
             );
         }
     }

@@ -27,6 +27,7 @@ public class SearchSuggestionHolder {
         }.getType());
         if(searchSuggestions==null)
             searchSuggestions = new ArrayList<>();
+        trimSearchSuggestion();
     }
 
     public void removeDuplicate(){
@@ -41,6 +42,7 @@ public class SearchSuggestionHolder {
     public void addSearchSuggestion(String item) {
         if (item == null) return;
         searchSuggestions.add(0, item.trim());
+        trimSearchSuggestion();
     }
 
     public void deleteSearchSuggestion(String item) {
@@ -51,6 +53,11 @@ public class SearchSuggestionHolder {
                 i--;
             }
         }
+    }
+
+    public void trimSearchSuggestion() {
+        while (searchSuggestions.size() > 500)
+            searchSuggestions.remove(500);
     }
 
     public List<String> getSearchSuggestion() {

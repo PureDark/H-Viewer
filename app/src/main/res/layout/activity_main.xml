@@ -14,19 +14,10 @@
         android:layout_height="match_parent"
         android:layout_gravity="start" />
 
-    <RelativeLayout
+    <include
+        layout="@layout/nav_categories"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="end" >
-        <include
-            layout="@layout/nav_categories"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
-        <include
-            layout="@layout/nav_tags"
-            android:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
-    </RelativeLayout>
+        android:layout_gravity="end" />
 
 </android.support.v4.widget.DrawerLayout>

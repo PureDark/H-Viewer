@@ -5,28 +5,28 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
-import com.google.gson.Gson;
+import com.gc.materialdesign.views.ButtonFlat;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -41,25 +41,36 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.majiajie.pagerbottomtabstrip.Controller;
+import me.majiajie.pagerbottomtabstrip.PagerBottomTabLayout;
+import me.majiajie.pagerbottomtabstrip.TabItemBuilder;
+import me.majiajie.pagerbottomtabstrip.TabStripBuild;
+import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectListener;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.dataholders.AbstractTagHolder;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
+import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
-import ml.puredark.hviewer.helpers.ExampleSites;
+import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteAdapter;
+import ml.puredark.hviewer.ui.adapters.SiteTagAdapter;
+import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AppBarStateChangeListener;
+import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
+import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 
@@ -83,20 +94,25 @@ public class MainActivity extends BaseActivity {
     Toolbar toolbar;
     @BindView(R.id.fab_search)
     FloatingActionButton fabSearch;
-
     @BindView(R.id.rv_site)
     RecyclerView rvSite;
-
     @BindView(R.id.rv_category)
     RecyclerView rvCategory;
-
     @BindView(R.id.search_view)
     MaterialSearchView searchView;
+    @BindView(R.id.bottom_sheet)
+    View bottomSheet;
+    @BindView(R.id.bottom_sheet_view_pager)
+    ViewPager bottomSheetViewPager;
+    @BindView(R.id.pager_bottom_tab_layout)
+    PagerBottomTabLayout pagerBottomTabLayout;
 
     private SiteAdapter siteAdapter;
     private CategoryAdapter categoryAdapter;
+    private SiteTagAdapter siteTagAdapter;
+    private SiteTagAdapter favorTagAdapter;
+    private SiteTagAdapter historyTagAdapter;
 
-    private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
     private RecyclerView.Adapter mWrappedAdapter;
     private RecyclerViewExpandableItemManager mRecyclerViewExpandableItemManager;
     private RecyclerViewDragDropManager mRecyclerViewDragDropManager;
@@ -109,6 +125,8 @@ public class MainActivity extends BaseActivity {
     private boolean isSuggestionEmpty = true;
 
     private SiteHolder siteHolder;
+    private SiteTagHolder siteTagHolder;
+    private FavorTagHolder favorTagHolder;
 
     //按下返回键次数
     private int backCount = 0;
@@ -131,6 +149,8 @@ public class MainActivity extends BaseActivity {
         setSwipeBackEnable(false);
 
         siteHolder = new SiteHolder(this);
+        siteTagHolder = new SiteTagHolder(this);
+        favorTagHolder = new FavorTagHolder(this);
 
         if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)) {
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchView.getLayoutParams();
@@ -144,50 +164,20 @@ public class MainActivity extends BaseActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        //appbar折叠时显示搜索按钮和搜索框，否则隐藏
-        appBar.addOnOffsetChangedListener(new AppBarStateChangeListener() {
-
-            @Override
-            public void onStateChanged(AppBarLayout appBarLayout, State state) {
-                int size = toolbar.getMenu().size();
-                if (state == State.COLLAPSED) {
-                    if (size > 1)
-                        toolbar.getMenu().getItem(size - 1).setVisible(true);
-                    searchView.animate().alpha(1f).setDuration(300);
-                } else {
-                    if (size > 1)
-                        toolbar.getMenu().getItem(size - 1).setVisible(false);
-                    searchView.animate().alpha(0f).setDuration(300);
-                }
-            }
-        });
-
         initSearchSuggestions();
 
-        searchView.setSubmitOnClick(true);
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String keyword) {
-                currQuery = keyword;
-                HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
-                if (!"".equals(keyword) && currFragment != null)
-                    currFragment.onSearch(keyword);
-                searchView.setSuggestions(new String[0]);
-                isSuggestionEmpty = true;
-                searchView.clearFocus();
-                searchView.hideKeyboard(coordinatorLayout);
-                searchView.dismissSuggestions();
-                return true;
-            }
+        initSearchView();
 
-            @Override
-            public boolean onQueryTextChange(final String newText) {
-                if (isSuggestionEmpty)
-                    initSearchSuggestions();
-                currQuery = newText;
-                return false;
-            }
-        });
+        initNavCategories();
+
+        initNavSites();
+
+        initBottomSheet();
+
+        HViewerApplication.checkUpdate(this);
+    }
+
+    private void initNavSites() {
 
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
@@ -199,16 +189,15 @@ public class MainActivity extends BaseActivity {
 //        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
-
-        final Parcelable eimSavedState = (savedInstanceState != null) ? savedInstanceState.getParcelable(SAVED_STATE_EXPANDABLE_ITEM_MANAGER) : null;
-        mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(eimSavedState);
+        mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
         mRecyclerViewExpandableItemManager.setOnGroupExpandListener((groupPosition, fromUser) -> {
             if (fromUser) {
                 int childItemHeight = getResources().getDimensionPixelSize(R.dimen.item_site_height);
                 mRecyclerViewExpandableItemManager.scrollToGroup(groupPosition, childItemHeight, 0, 0);
             }
         });
-        mRecyclerViewExpandableItemManager.setOnGroupCollapseListener((groupPosition, fromUser) -> {});
+        mRecyclerViewExpandableItemManager.setOnGroupCollapseListener((groupPosition, fromUser) -> {
+        });
 
         // drag & drop manager
         mRecyclerViewDragDropManager = new RecyclerViewDragDropManager();
@@ -230,26 +219,33 @@ public class MainActivity extends BaseActivity {
         mRecyclerViewDragDropManager.attachRecyclerView(rvSite);
         mRecyclerViewExpandableItemManager.attachRecyclerView(rvSite);
 
+        // 默认展开第一个分类并选中第一个站点
+        if (siteGroups.size() > 0 && siteGroups.get(0).second.size() > 0) {
+            mRecyclerViewExpandableItemManager.expandGroup(0);
+            Site site = siteGroups.get(0).second.get(0);
+            selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
+        }
+
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
             public void onGroupClick(View v, int groupPosition) {
+                // 点击分类（如果是新建按钮则创建，否则展开）
                 if (groupPosition == siteAdapter.getGroupCount() - 1) {
                     final EditText inputGroupTitle = new EditText(MainActivity.this);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setTitle("新建组名").setView(inputGroupTitle)
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("新建组名")
+                            .setView(inputGroupTitle)
                             .setNegativeButton("取消", null)
-                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String title = inputGroupTitle.getText().toString();
-                                    SiteGroup group = new SiteGroup(0, title);
-                                    siteHolder.addSiteGroup(group);
-                                    int gid = siteHolder.getMaxGroupId();
-                                    group.gid = gid;
-                                    group.index = gid;
-                                    siteHolder.updateSiteGroupIndex(group);
-                                    siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
-                                    siteAdapter.notifyDataSetChanged();
-                                }
+                            .setPositiveButton("确定", (dialog, which) -> {
+                                String title = inputGroupTitle.getText().toString();
+                                SiteGroup group = new SiteGroup(0, title);
+                                siteHolder.addSiteGroup(group);
+                                int gid = siteHolder.getMaxGroupId();
+                                group.gid = gid;
+                                group.index = gid;
+                                siteHolder.updateSiteGroupIndex(group);
+                                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                                siteAdapter.notifyDataSetChanged();
                             }).show();
                 } else {
                     notifyGroupItemChanged(groupPosition);
@@ -258,6 +254,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public boolean onGroupLongClick(View v, final int groupPosition) {
+                // 分类上长按，选择操作
                 final SiteGroup group = siteAdapter.getDataProvider().getGroupItem(groupPosition);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("操作")
@@ -300,6 +297,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onItemClick(View v, int groupPosition, int childPosition, boolean isGrid) {
+                // 点击站点
                 if (childPosition == siteAdapter.getChildCount(groupPosition) - 1) {
                     Pair<SiteGroup, List<Site>> pair = siteAdapter.getDataProvider().getItem(groupPosition);
                     Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
@@ -307,7 +305,7 @@ public class MainActivity extends BaseActivity {
                     startActivityForResult(intent, RESULT_ADD_SITE);
                 } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
-                    CollectionFragment fragment = CollectionFragment.newInstance(site);
+                    CollectionFragment fragment = CollectionFragment.newInstance(site, siteTagHolder);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("isGrid", isGrid);
                     fragment.setArguments(bundle);
@@ -319,6 +317,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public boolean onItemLongClick(View v, final int groupPosition, final int childPosition) {
+                // 长按站点，选择操作
                 final Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("操作")
@@ -407,47 +406,29 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        siteAdapter.setOnCheckedChangeListener(new MaterialAnimatedSwitch.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final boolean right) {
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        if (right)
-                            currFragment.setRecyclerViewToGrid();
-                        else
-                            currFragment.setRecyclerViewToList();
-                        new Handler().postDelayed(new Runnable() {
-                            public void run() {
-                                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                                drawer.closeDrawer(GravityCompat.START);
-                            }
-                        }, 200);
-                    }
-                }, 300);
-            }
-        });
+        siteAdapter.setOnCheckedChangeListener(right -> new Handler().postDelayed(() -> {
+            if (right)
+                currFragment.setRecyclerViewToGrid();
+            else
+                currFragment.setRecyclerViewToList();
+            new Handler().postDelayed(() -> {
+                DrawerLayout drawer1 = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer1.closeDrawer(GravityCompat.START);
+            }, 200);
+        }, 300));
+    }
 
+    private void initNavCategories() {
         ListDataProvider<Category> categoryProvider = new ListDataProvider<>(new ArrayList<Category>());
         categoryAdapter = new CategoryAdapter(categoryProvider);
-        categoryAdapter.setOnItemClickListener(new CategoryAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                Category category = (Category) categoryAdapter.getDataProvider().getItem(position);
-                categoryAdapter.selectedCid = category.cid;
-                categoryAdapter.notifyDataSetChanged();
-                currFragment.onCategorySelected(category);
-                drawer.closeDrawer(GravityCompat.END);
-            }
+        categoryAdapter.setOnItemClickListener((v, position) -> {
+            Category category = (Category) categoryAdapter.getDataProvider().getItem(position);
+            categoryAdapter.selectedCid = category.cid;
+            categoryAdapter.notifyDataSetChanged();
+            currFragment.onLoadUrl(category.url);
+            drawer.closeDrawer(GravityCompat.END);
         });
         rvCategory.setAdapter(categoryAdapter);
-
-        if (siteGroups.size() > 0 && siteGroups.get(0).second.size() > 0) {
-            mRecyclerViewExpandableItemManager.expandGroup(0);
-            Site site = siteGroups.get(0).second.get(0);
-            selectSite(CollectionFragment.newInstance(site), site);
-        }
-
-        HViewerApplication.checkUpdate(this);
     }
 
     private void initSearchSuggestions() {
@@ -462,19 +443,283 @@ public class MainActivity extends BaseActivity {
         final MySearchAdapter adapter = new MySearchAdapter(this, kwStrings);
         searchView.setAdapter(adapter);
 
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String[] keywords = currQuery.toString().split(" ");
-                String keyword = "";
-                for (int i = 0; i < keywords.length - 1; i++)
-                    keyword += keywords[i] + " ";
+        searchView.setOnItemClickListener((parent, view, position, id) -> {
+            String[] keywords = currQuery.toString().split(" ");
+            String keyword = "";
+            for (int i = 0; i < keywords.length - 1; i++)
+                keyword += keywords[i] + " ";
 
-                keyword += adapter.getItem(position);
-                searchView.setQuery(keyword, false);
-            }
+            keyword += adapter.getItem(position);
+            searchView.setQuery(keyword, false);
         });
         isSuggestionEmpty = false;
+    }
+
+    private void initSearchView() {
+        //appbar折叠时显示搜索按钮和搜索框，否则隐藏
+        appBar.addOnOffsetChangedListener(new AppBarStateChangeListener() {
+
+            @Override
+            public void onStateChanged(AppBarLayout appBarLayout, State state) {
+                int size = toolbar.getMenu().size();
+                final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+                if (state == State.COLLAPSED) {
+                    if (size > 1)
+                        toolbar.getMenu().getItem(size - 1).setVisible(true);
+                    searchView.animate().alpha(1f).setDuration(300);
+                    showBottomSheet(behavior, true);
+                } else {
+                    if (size > 1)
+                        toolbar.getMenu().getItem(size - 1).setVisible(false);
+                    searchView.animate().alpha(0f).setDuration(300);
+                    showBottomSheet(behavior, false);
+                }
+            }
+        });
+        searchView.setSubmitOnClick(true);
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String keyword) {
+                currQuery = keyword;
+                HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
+                if (!"".equals(keyword) && currFragment != null)
+                    currFragment.onSearch(keyword);
+                searchView.setSuggestions(new String[0]);
+                isSuggestionEmpty = true;
+                searchView.clearFocus();
+                searchView.hideKeyboard(coordinatorLayout);
+                searchView.dismissSuggestions();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                if (isSuggestionEmpty)
+                    initSearchSuggestions();
+                currQuery = newText;
+                return false;
+            }
+        });
+    }
+
+    private void initBottomSheet() {
+        //初始化BottomSheet
+        List<View> views = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        View view1 = getLayoutInflater().inflate(R.layout.view_tag_list, null);
+        views.add(view1);
+        titles.add("当前站点");
+        View view2 = getLayoutInflater().inflate(R.layout.view_tag_list, null);
+        views.add(view2);
+        titles.add("收藏TAG");
+        View view3 = getLayoutInflater().inflate(R.layout.view_tag_list, null);
+        views.add(view3);
+        titles.add("搜索历史");
+
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
+        bottomSheetViewPager.setAdapter(viewPagerAdapter);
+
+        siteTagAdapter = new SiteTagAdapter(new ListDataProvider(new ArrayList<>()));
+        favorTagAdapter = new SiteTagAdapter(new ListDataProvider(favorTagHolder.getTags()));
+        historyTagAdapter = new SiteTagAdapter(new ListDataProvider(searchHistoryHolder.getSearchHistoryAsTag()));
+
+        TagTabViewHolder siteTagTab = new TagTabViewHolder(view1, siteTagAdapter);
+        TagTabViewHolder favorTagTab = new TagTabViewHolder(view2, favorTagAdapter);
+        TagTabViewHolder historyTagTab = new TagTabViewHolder(view3, historyTagAdapter);
+
+        siteTagTab.setButtonText("搜索", "收藏", "刷新", "清空");
+        favorTagTab.setButtonText("搜索", "添加", "删除", "清空");
+        historyTagTab.setButtonText("搜索", "收藏", "删除", "清空");
+
+        siteTagTab.btnTag1.setOnClickListener(v -> siteTagTab.searchTags());
+        siteTagTab.btnTag2.setOnClickListener(v -> siteTagTab.favorTags());
+        siteTagTab.btnTag3.setOnClickListener(v -> siteTagTab.refreshTags(siteAdapter.selectedSid, siteTagHolder));
+        siteTagTab.btnTag4.setOnClickListener(v -> siteTagTab.clearTags(siteAdapter.selectedSid, siteTagHolder));
+
+        favorTagTab.btnTag1.setOnClickListener(v -> favorTagTab.searchTags());
+        favorTagTab.btnTag2.setOnClickListener(v -> favorTagTab.addTags(siteAdapter.selectedSid, favorTagHolder));
+        favorTagTab.btnTag3.setOnClickListener(v -> favorTagTab.deleteTags(siteAdapter.selectedSid, favorTagHolder));
+        favorTagTab.btnTag4.setOnClickListener(v -> siteTagTab.clearTags(siteAdapter.selectedSid, favorTagHolder));
+
+        historyTagTab.btnTag1.setOnClickListener(v -> historyTagTab.searchTags());
+        historyTagTab.btnTag2.setOnClickListener(v -> historyTagTab.favorTags());
+        historyTagTab.btnTag3.setOnClickListener(v -> historyTagTab.deleteTags(siteAdapter.selectedSid, searchHistoryHolder));
+        historyTagTab.btnTag4.setOnClickListener(v -> historyTagTab.clearTags(siteAdapter.selectedSid, searchHistoryHolder));
+
+        //底部TAG面板
+        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+        //默认设置为隐藏
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                showBottomSheet(behavior, true);
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                showBottomSheet(behavior, false);
+            }
+        });
+        TabItemBuilder tabItem1 = new TabItemBuilder(this).create()
+                .setDefaultColor(getResources().getColor(R.color.dimgray))
+                .setSelectedColor(getResources().getColor(R.color.colorPrimaryDark))
+                .setDefaultIcon(R.drawable.ic_add_black)
+                .setText("当前站点")
+                .setTag("currSite")
+                .build();
+        TabItemBuilder tabItem2 = new TabItemBuilder(this).create()
+                .setDefaultColor(getResources().getColor(R.color.dimgray))
+                .setSelectedColor(getResources().getColor(R.color.colorPrimaryDark))
+                .setDefaultIcon(R.drawable.ic_favorite_border_white)
+                .setText("收藏TAG")
+                .setTag("favourite")
+                .build();
+        TabItemBuilder tabItem3 = new TabItemBuilder(this).create()
+                .setDefaultColor(getResources().getColor(R.color.dimgray))
+                .setSelectedColor(getResources().getColor(R.color.colorPrimaryDark))
+                .setDefaultIcon(R.drawable.ic_history_white)
+                .setText("搜索历史")
+                .setTag("history")
+                .build();
+        TabStripBuild builder = pagerBottomTabLayout.builder();
+        Controller controller = builder.addTabItem(tabItem1)
+                .addTabItem(tabItem2)
+                .addTabItem(tabItem3)
+                .build();
+        controller.addTabItemClickListener(new OnTabItemSelectListener() {
+            @Override
+            public void onSelected(int index, Object tag) {
+                bottomSheetViewPager.setCurrentItem(index);
+            }
+
+            @Override
+            public void onRepeatClick(int index, Object tag) {
+            }
+        });
+        bottomSheetViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                controller.setSelect(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+    }
+
+    class TagTabViewHolder {
+        @BindView(R.id.rv_site_tag)
+        RecyclerView rvSiteTag;
+        @BindView(R.id.btn_tag_1)
+        ButtonFlat btnTag1;
+        @BindView(R.id.btn_tag_2)
+        ButtonFlat btnTag2;
+        @BindView(R.id.btn_tag_3)
+        ButtonFlat btnTag3;
+        @BindView(R.id.btn_tag_4)
+        ButtonFlat btnTag4;
+
+        TagTabViewHolder(View view, SiteTagAdapter siteTagAdapter) {
+            ButterKnife.bind(this, view);
+            rvSiteTag.setAdapter(siteTagAdapter);
+            rvSiteTag.setLayoutManager(new AutoFitStaggeredGridLayoutManager(MainActivity.this, OrientationHelper.HORIZONTAL));
+        }
+
+        public void setButtonText(String text1, String text2, String text3, String text4) {
+            btnTag1.setText(text1);
+            btnTag2.setText(text2);
+            btnTag3.setText(text3);
+            btnTag4.setText(text4);
+        }
+
+        private void searchTags() {
+            List<Tag> tags = siteTagAdapter.getDataProvider().getItems();
+            List<Tag> selectedTags = new ArrayList<>();
+            for (Tag tag : tags) {
+                if (tag.selected)
+                    selectedTags.add(tag);
+            }
+            if (selectedTags.size() == 1) {
+                Tag tag = selectedTags.get(0);
+                if (tag.url != null)
+                    currFragment.onLoadUrl(tag.url);
+                else
+                    currFragment.onSearch(tag.title);
+            } else if (selectedTags.size() > 1) {
+                String keyword = "";
+                for (Tag tag : selectedTags) {
+                    keyword += tag.title + "+";
+                }
+                if (keyword.endsWith("+"))
+                    keyword = keyword.substring(0, keyword.length() - 1);
+                currFragment.onSearch(keyword);
+            }
+        }
+
+        private void favorTags() {
+            List<Tag> tags = siteTagAdapter.getDataProvider().getItems();
+            for (Tag tag : tags) {
+                if (tag.selected)
+                    favorTagHolder.addTag(tag);
+            }
+            favorTagAdapter.notifyDataSetChanged();
+            showSnackBar("收藏成功");
+        }
+
+        private void addTags(int sid, AbstractTagHolder tagHolder) {
+            final EditText inputGroupTitle = new EditText(MainActivity.this);
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("TAG名")
+                    .setView(inputGroupTitle)
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        String title = inputGroupTitle.getText().toString();
+                        Tag tag = new Tag(0, title);
+                        tagHolder.addTag(sid, tag);
+                        refreshTags(sid, tagHolder);
+                    }).show();
+        }
+
+        private void deleteTags(int sid, AbstractTagHolder tagHolder) {
+            List<Tag> tags = siteTagAdapter.getDataProvider().getItems();
+            for (Tag tag : tags) {
+                if (tag.selected)
+                    tagHolder.deleteTag(sid, tag);
+            }
+            refreshTags(sid, tagHolder);
+        }
+
+        private void refreshTags(int sid, AbstractTagHolder tagHolder) {
+            siteTagAdapter.setDataProvider(new ListDataProvider(tagHolder.getTags(sid)));
+            siteTagAdapter.notifyDataSetChanged();
+        }
+
+        private void clearTags(int sid, AbstractTagHolder tagHolder) {
+            new AlertDialog.Builder(MainActivity.this).setTitle("是否清空？")
+                    .setMessage("清空后将无法恢复")
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        tagHolder.clear(sid);
+                        siteTagAdapter.setDataProvider(new ListDataProvider(new ArrayList<>()));
+                        siteTagAdapter.notifyDataSetChanged();
+                    }).setNegativeButton("取消", null).show();
+        }
+    }
+
+    private void showBottomSheet(BottomSheetBehavior behavior, boolean show) {
+        if (show) {
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            if (currFragment != null && siteAdapter.selectedSid != 0)
+                siteTagAdapter.setDataProvider(new ListDataProvider(siteTagHolder.getRandomTags(siteAdapter.selectedSid, 30)));
+        } else {
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
     }
 
     public void setTitle(String title) {
@@ -505,7 +750,7 @@ public class MainActivity extends BaseActivity {
             Category category = site.categories.get(0);
             categoryAdapter.selectedCid = category.cid;
             categoryAdapter.notifyDataSetChanged();
-            currFragment.onCategorySelected(category);
+            currFragment.onLoadUrl(category.url);
         } else {
             categoryAdapter.getDataProvider().clear();
             categoryAdapter.notifyDataSetChanged();
@@ -543,11 +788,7 @@ public class MainActivity extends BaseActivity {
                 return super.onOptionsItemSelected(item);
         }
 
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                startActivity(intent);
-            }
-        }, 500);
+        new Handler().postDelayed(() -> startActivity(intent), 500);
         return true;
     }
 
@@ -555,7 +796,6 @@ public class MainActivity extends BaseActivity {
     void search() {
         appBar.setExpanded(false);
         searchView.showSearch();
-        searchView.requestFocus();
     }
 
     @Override
@@ -567,11 +807,7 @@ public class MainActivity extends BaseActivity {
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();
-                    final Runnable r = new Runnable() {
-                        public void run() {
-                            selectSite(CollectionFragment.newInstance(site), site);
-                        }
-                    };
+                    final Runnable r = () -> selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_MODIFY_SITE) {
@@ -580,11 +816,7 @@ public class MainActivity extends BaseActivity {
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();
-                    final Runnable r = new Runnable() {
-                        public void run() {
-                            selectSite(CollectionFragment.newInstance(site), site);
-                        }
-                    };
+                    final Runnable r = () -> selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_LOGIN) {
@@ -592,14 +824,10 @@ public class MainActivity extends BaseActivity {
                     final Site site = (Site) temp;
                     siteHolder.updateSite(site);
                     Handler handler = new Handler();
-                    final Runnable r = new Runnable() {
-                        public void run() {
-                            selectSite(CollectionFragment.newInstance(site), site);
-                        }
-                    };
+                    final Runnable r = () -> selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
                     handler.post(r);
                 }
-            } else if (requestCode == RESULT_SITE_MARKET){
+            } else if (requestCode == RESULT_SITE_MARKET) {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
             }
@@ -618,11 +846,7 @@ public class MainActivity extends BaseActivity {
                 showSnackBar("再按一次退出应用！");
             else if (backCount >= 2)
                 super.onBackPressed();
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    backCount = 0;
-                }
-            }, 1000);
+            new Handler().postDelayed(() -> backCount = 0, 1000);
         }
     }
 
@@ -643,6 +867,10 @@ public class MainActivity extends BaseActivity {
     public void onDestroy() {
         if (siteHolder != null)
             siteHolder.onDestroy();
+        if (siteTagHolder != null)
+            siteTagHolder.onDestroy();
+        if (favorTagHolder != null)
+            favorTagHolder.onDestroy();
         HViewerApplication.searchHistoryHolder.saveSearchHistory();
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
         new DownloadTaskHolder(this).setAllPaused();
@@ -668,24 +896,18 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.btn_site_market)
     void openMarket() {
         drawer.closeDrawer(GravityCompat.START);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MainActivity.this, MarketActivity.class);
-                startActivityForResult(intent, RESULT_SITE_MARKET);
-            }
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(MainActivity.this, MarketActivity.class);
+            startActivityForResult(intent, RESULT_SITE_MARKET);
         }, 300);
     }
 
     @OnClick(R.id.btn_setting)
     void openSetting() {
         drawer.closeDrawer(GravityCompat.START);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                startActivity(intent);
-            }
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(intent);
         }, 300);
     }
 

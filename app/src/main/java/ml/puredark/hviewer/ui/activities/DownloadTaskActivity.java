@@ -12,7 +12,6 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -41,9 +40,9 @@ import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.adapters.CollectionTagAdapter;
 import ml.puredark.hviewer.ui.adapters.CommentAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter;
-import ml.puredark.hviewer.ui.adapters.TagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
@@ -261,7 +260,7 @@ public class DownloadTaskActivity extends BaseActivity {
         holder.tvTitle.setText(task.collection.title);
         holder.tvUploader.setText(task.collection.uploader);
         holder.tvCategory.setText(task.collection.category);
-        TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
+        CollectionTagAdapter adapter = (CollectionTagAdapter) holder.rvTags.getAdapter();
         if (task.collection.tags != null) {
             adapter.getDataProvider().clear();
             adapter.getDataProvider().addAll(task.collection.tags);
@@ -319,7 +318,7 @@ public class DownloadTaskActivity extends BaseActivity {
         public CollectionViewHolder(View view) {
             ButterKnife.bind(this, view);
             rvTags.setAdapter(
-                    new TagAdapter(
+                    new CollectionTagAdapter(
                             new ListDataProvider<>(
                                     new ArrayList<Tag>()
                             )

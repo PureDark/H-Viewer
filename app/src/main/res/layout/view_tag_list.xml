@@ -1,20 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_category"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:paddingLeft="@dimen/half_margin"
-        android:paddingRight="@dimen/half_margin"
-        android:clipToPadding="false"
-        app:layoutManager="StaggeredGridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/item_site_tag" />
-</LinearLayout>
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_site_tag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="20dp"
+            android:paddingLeft="@dimen/half_margin"
+            android:paddingRight="@dimen/half_margin"
+            android:clipToPadding="false"
+            app:layoutManager="StaggeredGridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_site_tag" />
+    </android.support.v4.widget.NestedScrollView>
+    <LinearLayout
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <com.gc.materialdesign.views.ButtonFlat
+            android:id="@+id/btn_tag_1"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorAccent"
+            android:text="搜索"/>
+        <com.gc.materialdesign.views.ButtonFlat
+            android:id="@+id/btn_tag_2"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorAccent"
+            android:text="收藏"/>
+        <com.gc.materialdesign.views.ButtonFlat
+            android:id="@+id/btn_tag_3"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorAccent"
+            android:text="清空"/>
+        <com.gc.materialdesign.views.ButtonFlat
+            android:id="@+id/btn_tag_4"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorAccent"
+            android:text="刷新"/>
+    </LinearLayout>
+</android.support.v7.widget.LinearLayoutCompat>

@@ -23,11 +23,16 @@
 
     </declare-styleable>
 
-    <declare-styleable name="PullLoadMoreRecyclerView">
+    <declare-styleable name="ExPagerBottomTabLayout">
 
-        <attr name="PLR_listitem" format="reference" />
-        <attr name="PLR_layoutManager" format="string" />
-        <attr name="PLR_spanCount" format="integer" />
+        <attr name="bottomCurrItem" format="integer" />
+        <attr name="bottomTabTitleArray" format="string" />
+        <attr name="bottomTab1" format="reference" />
+        <attr name="bottomTab2" format="reference" />
+        <attr name="bottomTab3" format="reference" />
+        <attr name="bottomTab4" format="reference" />
+        <attr name="bottomTab5" format="reference" />
+        <attr name="bottomTab6" format="reference" />
 
     </declare-styleable>
 

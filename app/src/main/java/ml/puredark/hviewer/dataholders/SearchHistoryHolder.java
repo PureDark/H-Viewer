@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
  * Created by PureDark on 2016/8/12.
  */
 
-public class SearchHistoryHolder {
+public class SearchHistoryHolder extends AbstractTagHolder {
     private static List<String> searchHistories;
     private Context mContext;
 
@@ -27,8 +28,13 @@ public class SearchHistoryHolder {
         removeDuplicate();
     }
 
-    public void removeDuplicate(){
+    public void removeDuplicate() {
         searchHistories = new ArrayList(new HashSet(searchHistories));
+    }
+
+    public void clear() {
+        searchHistories = new ArrayList();
+        saveSearchHistory();
     }
 
     public void saveSearchHistory() {
@@ -56,8 +62,8 @@ public class SearchHistoryHolder {
     }
 
     public void trimSearchHistory() {
-        while (searchHistories.size() > 100)
-            searchHistories.remove(100);
+        while (searchHistories.size() > 50)
+            searchHistories.remove(50);
     }
 
     public List<String> getSearchHistory() {
@@ -65,6 +71,18 @@ public class SearchHistoryHolder {
             return new ArrayList<>();
         else
             return searchHistories;
+    }
+
+    public List<Tag> getSearchHistoryAsTag() {
+        if (searchHistories == null)
+            return new ArrayList<>();
+        else {
+            List<Tag> tags = new ArrayList<>();
+            for (String keyword : searchHistories) {
+                tags.add(new Tag(tags.size() + 1, keyword));
+            }
+            return tags;
+        }
     }
 
     public List<String> getSearchHistory(String query) {
@@ -78,4 +96,36 @@ public class SearchHistoryHolder {
         return keywords;
     }
 
+    public boolean searchHistoryExist(String item) {
+        if (item == null) return false;
+        for (String searchHistory : searchHistories) {
+            if (searchHistory.equals(item))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void addTag(int sid, Tag item) {
+    }
+
+    @Override
+    public void clear(int sid) {
+        clear();
+    }
+
+    @Override
+    public void deleteTag(int sid, Tag item) {
+        deleteSearchHistory(item.title);
+    }
+
+    @Override
+    public List<Tag> getTags(int sid) {
+        return getSearchHistoryAsTag();
+    }
+
+    @Override
+    public boolean tagExist(int sid, Tag item) {
+        return searchHistoryExist(item.title);
+    }
 }

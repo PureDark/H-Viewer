@@ -12,10 +12,10 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
-public class TagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CollectionTagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ListDataProvider mProvider;
 
-    public TagAdapter(ListDataProvider mProvider) {
+    public CollectionTagAdapter(ListDataProvider mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }

@@ -4,6 +4,7 @@ package ml.puredark.hviewer.ui.fragments;
 import android.support.v4.app.Fragment;
 
 import ml.puredark.hviewer.beans.Category;
+import ml.puredark.hviewer.beans.Site;
 
 /**
  * Created by PureDark on 2015/12/9.
@@ -12,7 +13,7 @@ public abstract class MyFragment extends Fragment {
 
     public abstract void onSearch(String keyword);
 
-    public abstract void onCategorySelected(Category category);
+    public abstract void onLoadUrl(String url);
 
     public abstract void setRecyclerViewToList();
 

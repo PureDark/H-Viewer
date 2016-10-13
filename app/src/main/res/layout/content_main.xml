@@ -59,7 +59,6 @@
             android:layout_height="match_parent" />
 
         <View
-            android:id="@+id/shadowDown"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:background="@drawable/shadow_bottom" />
@@ -82,7 +81,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/status_bar_height"
-        android:elevation="8dp"
-        app:layout_collapseMode="pin" />
+        android:elevation="8dp"/>
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:orientation="vertical"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="320dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow_top" />
+        <include
+            layout="@layout/nav_tags"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.design.widget.CoordinatorLayout>

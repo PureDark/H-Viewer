@@ -103,7 +103,7 @@ public class DownloadTaskHolder {
             for (DocumentFile dir : dirs) {
                 if (dir.isDirectory()) {
                     DocumentFile file = dir.findFile("detail.txt");
-                    if (file != null && file.isFile() && file.canRead()) {
+                    if (file != null && file.isFile() && file.exists() && file.canRead()) {
                         String detail = FileHelper.readString(file);
                         DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
                         task.status = DownloadTask.STATUS_COMPLETED;

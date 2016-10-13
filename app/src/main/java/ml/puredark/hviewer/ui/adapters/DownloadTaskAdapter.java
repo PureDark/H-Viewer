@@ -89,7 +89,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             holder.tvTitle.setText(task.collection.title);
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);
-            TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
+            CollectionTagAdapter adapter = (CollectionTagAdapter) holder.rvTags.getAdapter();
             if(adapter!=null) {
                 adapter.getDataProvider().clear();
                 if (task.collection.tags != null)
@@ -117,7 +117,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             holder.tvTitle.setMaxLines(2);
             holder.rvTags.setVisibility(View.GONE);
             holder.rvTags.setAdapter(
-                    new TagAdapter(new ListDataProvider<>(new ArrayList()))
+                    new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()))
             );
         }
     }
@@ -218,7 +218,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
         DownloadedTaskViewHolder(View view) {
             super(view);
             rvTags.setAdapter(
-                    new TagAdapter(
+                    new CollectionTagAdapter(
                             new ListDataProvider<>(
                                     new ArrayList<Tag>()
                             )

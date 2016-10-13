@@ -6,6 +6,7 @@ public class Tag extends AbstractDataProvider.Data {
     public int tid;
     public String title = "";
     public String url;
+    public boolean selected = false;
 
     public Tag(int tid, String title) {
         this.tid = tid;

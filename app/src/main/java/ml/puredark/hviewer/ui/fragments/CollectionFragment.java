@@ -28,6 +28,7 @@ import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
@@ -36,6 +37,8 @@ import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
+
+import static android.R.attr.category;
 
 public class CollectionFragment extends MyFragment {
 
@@ -47,6 +50,7 @@ public class CollectionFragment extends MyFragment {
     private RecyclerView.LayoutManager mLinearLayoutManager, mGridLayoutManager;
 
     private Site site;
+    private SiteTagHolder siteTagHolder;
 
     private String currUrl = null;
     private String keyword = null;
@@ -59,9 +63,10 @@ public class CollectionFragment extends MyFragment {
     public CollectionFragment() {
     }
 
-    public static CollectionFragment newInstance(Site site) {
+    public static CollectionFragment newInstance(Site site, SiteTagHolder siteTagHolder) {
         CollectionFragment fragment = new CollectionFragment();
         fragment.site = site;
+        fragment.siteTagHolder = siteTagHolder;
         return fragment;
     }
 
@@ -198,6 +203,7 @@ public class CollectionFragment extends MyFragment {
             if (collection.tags != null) {
                 for (Tag tag : collection.tags) {
                     HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                    siteTagHolder.addTag(site.sid, tag);
                 }
             }
         }
@@ -276,20 +282,18 @@ public class CollectionFragment extends MyFragment {
     }
 
     @Override
-    public void onCategorySelected(Category category) {
-        currUrl = category.url;
+    public void onLoadUrl(String url) {
+        currUrl = url;
         if (rvCollection != null) {
             parseUrl(currUrl);
             rvCollection.setRefreshing(true);
             getCollections(null, startPage);
         } else {
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    if (rvCollection != null) {
-                        parseUrl(currUrl);
-                        rvCollection.setRefreshing(true);
-                        getCollections(null, startPage);
-                    }
+            new Handler().postDelayed(() -> {
+                if (rvCollection != null) {
+                    parseUrl(currUrl);
+                    rvCollection.setRefreshing(true);
+                    getCollections(null, startPage);
                 }
             }, 300);
         }

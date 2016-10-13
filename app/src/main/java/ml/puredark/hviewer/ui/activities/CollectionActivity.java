@@ -2,7 +2,6 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -48,6 +46,7 @@ import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.HistoryHolder;
+import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
@@ -55,7 +54,7 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.CommentAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter;
-import ml.puredark.hviewer.ui.adapters.TagAdapter;
+import ml.puredark.hviewer.ui.adapters.CollectionTagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
@@ -114,6 +113,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     private HistoryHolder historyHolder;
     private FavouriteHolder favouriteHolder;
+    private SiteTagHolder siteTagHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +165,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
         historyHolder = new HistoryHolder(this);
         favouriteHolder = new FavouriteHolder(this);
+        siteTagHolder = new SiteTagHolder(this);
         //加入历史记录
         historyHolder.addHistory((LocalCollection) myCollection);
     }
@@ -313,7 +314,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         holder.tvTitle.setText(myCollection.title);
         holder.tvUploader.setText(myCollection.uploader);
         holder.tvCategory.setText(myCollection.category);
-        TagAdapter adapter = (TagAdapter) holder.rvTags.getAdapter();
+        CollectionTagAdapter adapter = (CollectionTagAdapter) holder.rvTags.getAdapter();
         if (myCollection.tags != null) {
             adapter.getDataProvider().clear();
             adapter.getDataProvider().addAll(myCollection.tags);
@@ -390,6 +391,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         if (myCollection.tags != null) {
             for (Tag tag : myCollection.tags) {
                 HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                siteTagHolder.addTag(site.sid, tag);
             }
             HViewerApplication.searchSuggestionHolder.removeDuplicate();
         }
@@ -527,6 +529,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             historyHolder.onDestroy();
         if (favouriteHolder != null)
             favouriteHolder.onDestroy();
+        if (siteTagHolder != null)
+            siteTagHolder.onDestroy();
     }
 
     public class CollectionViewHolder {
@@ -548,14 +552,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         public CollectionViewHolder(View view) {
             ButterKnife.bind(this, view);
             rvTags.setAdapter(
-                    new TagAdapter(
+                    new CollectionTagAdapter(
                             new ListDataProvider<>(
                                     new ArrayList<Tag>()
                             )
                     )
             );
             StaggeredGridLayoutManager layoutManager =
-                    new AutoFitStaggeredGridLayoutManager(getApplicationContext(), OrientationHelper.HORIZONTAL);
+                    new AutoFitStaggeredGridLayoutManager(CollectionActivity.this, OrientationHelper.HORIZONTAL);
             rvTags.setLayoutManager(layoutManager);
             tvDescription.setAutoLinkMask(Linkify.EMAIL_ADDRESSES|Linkify.WEB_URLS);
             tvDescription.setMovementMethod(LinkMovementMethod.getInstance());

@@ -71,8 +71,10 @@ dependencies {
     compile 'com.android.support:cardview-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
+
     //umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
+
     //material widget
     compile 'com.github.vajro:MaterialDesignLibrary:1.6'
     compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.2.2'
@@ -85,6 +87,9 @@ dependencies {
         transitive = true
     }
     compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
+    compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
+    compile 'com.github.davidpizarro:autolabelui:1.0.1'
+
     //Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9') {
         exclude group: 'com.android.support'

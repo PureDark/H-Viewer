@@ -178,17 +178,13 @@
     <color name="button_pressed">@color/white_20</color>
 
     <color name="colorPrimary">#1abc9c</color>
-    <color name="colorPrimaryLight">#76ffe5</color>
+    <color name="colorPrimaryLight">#20e1bb</color>
     <color name="colorPrimaryDark">#16a085</color>
     <color name="colorAccent">#1abc9c</color>
-    <color name="colorAccentLight">#76ffe5</color>
+    <color name="colorAccentLight">#20e1bb</color>
     <color name="colorAccentDark">#16a085</color>
 
     <color name="statusBar">#30000000</color>
-
-    <color name="update">#1abc9c</color>
-
-
 
     <color name="bg_item_normal_state">#fff0f0f0</color>
     <color name="bg_item_dragging_state">#ffffdddd</color>
