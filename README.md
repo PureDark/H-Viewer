@@ -85,4 +85,4 @@ If anyone had created a new rule to share, please post a issue, I shall add it i
 
 [Create proxy server by PHP](https://github.com/PureDark/HProxy-PHP)
 
-使用方法不多说，任何国外的免费PHP主机 都可以用，部署上去然后引用内填地址就行了
+点击查看详细使用说明
