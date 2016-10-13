@@ -89,7 +89,7 @@
         android:layout_height="320dp"
         android:orientation="vertical"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="320dp"
+        app:behavior_peekHeight="64dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
         <View
             android:layout_width="match_parent"

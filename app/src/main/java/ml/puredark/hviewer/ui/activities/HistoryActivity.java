@@ -61,7 +61,7 @@ public class HistoryActivity extends BaseActivity {
         historyHolder = new HistoryHolder(this);
         List<Collection> collections = historyHolder.getHistories();
         ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
-        adapter = new CollectionAdapter(this, dataProvider);
+        adapter = new CollectionAdapter(this, dataProvider, null);
         rvCollection.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {

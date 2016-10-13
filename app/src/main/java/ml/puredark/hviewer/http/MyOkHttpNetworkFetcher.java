@@ -88,8 +88,6 @@ public class MyOkHttpNetworkFetcher extends
                     String header = entry.getKey();
                     String value = entry.getValue().getAsString();
                     builder.addHeader(header, value);
-
-                    Log.d("MyOkHttpNetworkFetcher", "header:" + header + " value:" + value);
                 }
             }
         }catch (Exception e){
@@ -109,11 +107,7 @@ public class MyOkHttpNetworkFetcher extends
                         if (Looper.myLooper() != Looper.getMainLooper()) {
                             call.cancel();
                         } else {
-                            mCancellationExecutor.execute(new Runnable() {
-                                @Override public void run() {
-                                    call.cancel();
-                                }
-                            });
+                            mCancellationExecutor.execute(() -> call.cancel());
                         }
                     }
                 });

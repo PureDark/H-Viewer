@@ -66,10 +66,10 @@ public class FavouriteHolder {
     public boolean isFavourite(Collection item) {
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `idCode` = ? AND `title` = ? AND `referer` = ?",
                 new String[]{item.idCode, item.title, item.referer});
-        if (cursor.moveToNext())
-            return true;
-        else
+        if (cursor == null || !cursor.moveToNext())
             return false;
+        else
+            return true;
     }
 
     public void onDestroy() {

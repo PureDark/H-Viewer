@@ -16,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
@@ -25,7 +24,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.gc.materialdesign.views.ButtonFlat;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
@@ -64,7 +65,6 @@ import ml.puredark.hviewer.ui.adapters.SiteAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteTagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AppBarStateChangeListener;
-import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
@@ -456,24 +456,39 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initSearchView() {
+        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
         //appbar折叠时显示搜索按钮和搜索框，否则隐藏
         appBar.addOnOffsetChangedListener(new AppBarStateChangeListener() {
 
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
                 int size = toolbar.getMenu().size();
-                final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
                 if (state == State.COLLAPSED) {
                     if (size > 1)
                         toolbar.getMenu().getItem(size - 1).setVisible(true);
-                    searchView.animate().alpha(1f).setDuration(300);
-                    showBottomSheet(behavior, true);
+                    if (searchView.isSearchOpen()) {
+                        searchView.animate().alpha(1f).setDuration(300);
+                        showBottomSheet(behavior, true);
+                    }
                 } else {
                     if (size > 1)
                         toolbar.getMenu().getItem(size - 1).setVisible(false);
-                    searchView.animate().alpha(0f).setDuration(300);
-                    showBottomSheet(behavior, false);
+                    if (searchView.isSearchOpen()) {
+                        searchView.animate().alpha(0f).setDuration(300);
+                        showBottomSheet(behavior, false);
+                    }
                 }
+            }
+        });
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                showBottomSheet(behavior, true);
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                showBottomSheet(behavior, false);
             }
         });
         searchView.setSubmitOnClick(true);
@@ -481,9 +496,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public boolean onQueryTextSubmit(String keyword) {
                 currQuery = keyword;
-                HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
-                if (!"".equals(keyword) && currFragment != null)
+                if (!"".equals(keyword) && currFragment != null) {
                     currFragment.onSearch(keyword);
+                    HViewerApplication.searchHistoryHolder.addSearchHistory(keyword);
+                    ListDataProvider provider = historyTagAdapter.getDataProvider();
+                    provider.addItem(new Tag(provider.getCount() + 1, keyword));
+                    historyTagAdapter.notifyDataSetChanged();
+                }
                 searchView.setSuggestions(new String[0]);
                 isSuggestionEmpty = true;
                 searchView.clearFocus();
@@ -550,18 +569,6 @@ public class MainActivity extends BaseActivity {
         final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
         //默认设置为隐藏
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                showBottomSheet(behavior, true);
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                showBottomSheet(behavior, false);
-            }
-        });
         TabItemBuilder tabItem1 = new TabItemBuilder(this).create()
                 .setDefaultColor(getResources().getColor(R.color.dimgray))
                 .setSelectedColor(getResources().getColor(R.color.colorPrimaryDark))
@@ -615,8 +622,8 @@ public class MainActivity extends BaseActivity {
     }
 
     class TagTabViewHolder {
-        @BindView(R.id.rv_site_tag)
-        RecyclerView rvSiteTag;
+        @BindView(R.id.label_view)
+        AutoLabelUI labelView;
         @BindView(R.id.btn_tag_1)
         ButtonFlat btnTag1;
         @BindView(R.id.btn_tag_2)
@@ -626,10 +633,12 @@ public class MainActivity extends BaseActivity {
         @BindView(R.id.btn_tag_4)
         ButtonFlat btnTag4;
 
+        private SiteTagAdapter mSiteTagAdapter;
+
         TagTabViewHolder(View view, SiteTagAdapter siteTagAdapter) {
             ButterKnife.bind(this, view);
-            rvSiteTag.setAdapter(siteTagAdapter);
-            rvSiteTag.setLayoutManager(new AutoFitStaggeredGridLayoutManager(MainActivity.this, OrientationHelper.HORIZONTAL));
+            siteTagAdapter.setLabelView(labelView);
+            mSiteTagAdapter = siteTagAdapter;
         }
 
         public void setButtonText(String text1, String text2, String text3, String text4) {
@@ -640,37 +649,49 @@ public class MainActivity extends BaseActivity {
         }
 
         private void searchTags() {
-            List<Tag> tags = siteTagAdapter.getDataProvider().getItems();
+            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
             List<Tag> selectedTags = new ArrayList<>();
             for (Tag tag : tags) {
                 if (tag.selected)
                     selectedTags.add(tag);
             }
+            EditText editText = (EditText) searchView.getChildAt(0).findViewById(R.id.searchTextView);
             if (selectedTags.size() == 1) {
                 Tag tag = selectedTags.get(0);
                 if (tag.url != null)
                     currFragment.onLoadUrl(tag.url);
                 else
                     currFragment.onSearch(tag.title);
+                HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
+                historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
+                historyTagAdapter.notifyDataSetChanged();
+                editText.setText(tag.title);
+                new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
             } else if (selectedTags.size() > 1) {
                 String keyword = "";
                 for (Tag tag : selectedTags) {
-                    keyword += tag.title + "+";
+                    keyword += tag.title + " ";
+                    HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
                 }
-                if (keyword.endsWith("+"))
-                    keyword = keyword.substring(0, keyword.length() - 1);
+                historyTagAdapter.notifyDataSetChanged();
+                keyword = keyword.trim();
                 currFragment.onSearch(keyword);
+                historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
+                historyTagAdapter.notifyDataSetChanged();
+                editText.setText(keyword);
+                new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
             }
         }
 
         private void favorTags() {
-            List<Tag> tags = siteTagAdapter.getDataProvider().getItems();
+            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
             for (Tag tag : tags) {
                 if (tag.selected)
                     favorTagHolder.addTag(tag);
             }
+            favorTagAdapter.setDataProvider(new ListDataProvider(favorTagHolder.getTags(0)));
             favorTagAdapter.notifyDataSetChanged();
-            showSnackBar("收藏成功");
+            Toast.makeText(MainActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
         }
 
         private void addTags(int sid, AbstractTagHolder tagHolder) {
@@ -688,7 +709,7 @@ public class MainActivity extends BaseActivity {
         }
 
         private void deleteTags(int sid, AbstractTagHolder tagHolder) {
-            List<Tag> tags = siteTagAdapter.getDataProvider().getItems();
+            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
             for (Tag tag : tags) {
                 if (tag.selected)
                     tagHolder.deleteTag(sid, tag);
@@ -697,8 +718,8 @@ public class MainActivity extends BaseActivity {
         }
 
         private void refreshTags(int sid, AbstractTagHolder tagHolder) {
-            siteTagAdapter.setDataProvider(new ListDataProvider(tagHolder.getTags(sid)));
-            siteTagAdapter.notifyDataSetChanged();
+            mSiteTagAdapter.setDataProvider(new ListDataProvider(tagHolder.getTags(sid)));
+            mSiteTagAdapter.notifyDataSetChanged();
         }
 
         private void clearTags(int sid, AbstractTagHolder tagHolder) {
@@ -706,17 +727,19 @@ public class MainActivity extends BaseActivity {
                     .setMessage("清空后将无法恢复")
                     .setPositiveButton("确定", (dialog, which) -> {
                         tagHolder.clear(sid);
-                        siteTagAdapter.setDataProvider(new ListDataProvider(new ArrayList<>()));
-                        siteTagAdapter.notifyDataSetChanged();
+                        mSiteTagAdapter.setDataProvider(new ListDataProvider(new ArrayList<>()));
+                        mSiteTagAdapter.notifyDataSetChanged();
                     }).setNegativeButton("取消", null).show();
         }
     }
 
     private void showBottomSheet(BottomSheetBehavior behavior, boolean show) {
         if (show) {
-            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            if (currFragment != null && siteAdapter.selectedSid != 0)
+            if (currFragment != null && siteAdapter.selectedSid != 0) {
                 siteTagAdapter.setDataProvider(new ListDataProvider(siteTagHolder.getRandomTags(siteAdapter.selectedSid, 30)));
+                siteTagAdapter.notifyDataSetChanged();
+            }
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
@@ -740,6 +763,7 @@ public class MainActivity extends BaseActivity {
         siteAdapter.notifyDataSetChanged();
         setTitle(site.title);
         replaceFragment(fragment, site.title);
+        searchView.closeSearch();
 
         if (site.categories != null && site.categories.size() > 0) {
             ListDataProvider<Category> dataProvider = new ListDataProvider<>(site.categories);
@@ -761,10 +785,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search, menu);
-
         MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
         //一开始隐藏搜索按钮
         item.setVisible(false);
 
@@ -784,6 +805,9 @@ public class MainActivity extends BaseActivity {
             case R.id.action_favourite:
                 intent = new Intent(MainActivity.this, FavouriteActivity.class);
                 break;
+            case R.id.action_search:
+                search();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -796,6 +820,7 @@ public class MainActivity extends BaseActivity {
     void search() {
         appBar.setExpanded(false);
         searchView.showSearch();
+        searchView.clearFocus();
     }
 
     @Override

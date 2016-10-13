@@ -22,10 +22,13 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.SiteFlagHandler;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
+
+import static android.R.attr.tag;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
@@ -35,11 +38,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private OnItemClickListener mItemClickListener;
     private Site site;
     private boolean isGrid = false;
+    private SiteTagHolder siteTagHolder;
 
-    public CollectionAdapter(Context context, ListDataProvider mProvider) {
+    public CollectionAdapter(Context context, ListDataProvider mProvider, SiteTagHolder siteTagHolder) {
         this.mProvider = mProvider;
         setHasStableIds(false);
         this.context = context;
+        this.siteTagHolder = siteTagHolder;
     }
 
     @Override
@@ -106,7 +111,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void checkSiteFlags(int position, Site site, Collection collection) {
         if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY) && !collection.preloaded) {
-            SiteFlagHandler.preloadGallery(context, this, position, site, collection);
+            SiteFlagHandler.preloadGallery(context, this, position, site, collection, siteTagHolder);
         }
     }
 

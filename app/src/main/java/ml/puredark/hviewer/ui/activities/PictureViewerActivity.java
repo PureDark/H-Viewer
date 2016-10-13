@@ -224,7 +224,7 @@ public class PictureViewerActivity extends BaseActivity {
                 case KeyEvent.KEYCODE_VOLUME_UP:
                     return true;
             }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
 

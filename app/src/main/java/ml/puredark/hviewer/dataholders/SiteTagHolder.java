@@ -14,7 +14,7 @@ import ml.puredark.hviewer.beans.Tag;
  * Created by PureDark on 2016/10/12.
  */
 
-public class SiteTagHolder extends AbstractTagHolder{
+public class SiteTagHolder extends AbstractTagHolder {
     private final static String dbName = "siteTags";
     private DBHelper dbHelper;
 
@@ -68,10 +68,10 @@ public class SiteTagHolder extends AbstractTagHolder{
     public boolean tagExist(int sid, Tag item) {
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `sid` = " + sid + " AND `title` = ?",
                 new String[]{item.title});
-        if (cursor.moveToNext())
-            return true;
-        else
+        if (cursor == null || !cursor.moveToNext())
             return false;
+        else
+            return true;
     }
 
     public void onDestroy() {

@@ -18,6 +18,7 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.PictureAdapter.PictureViewHolder;
@@ -84,7 +85,7 @@ public class SiteFlagHandler {
         });
     }
 
-    public static void preloadGallery(final Context context, final RecyclerView.Adapter adapter, final int position, final Site site, final Collection collection) {
+    public static void preloadGallery(final Context context, final RecyclerView.Adapter adapter, final int position, final Site site, final Collection collection, final SiteTagHolder siteTagHolder) {
         //解析URL模板
         String pageStr = RuleParser.parseUrl(site.galleryUrl).get("page");
         int startPage;
@@ -115,6 +116,8 @@ public class SiteFlagHandler {
                     if (collection.tags != null) {
                         for (Tag tag : collection.tags) {
                             HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                            if(siteTagHolder!=null)
+                                siteTagHolder.addTag(site.sid, tag);
                         }
                     }
                     HViewerApplication.searchSuggestionHolder.removeDuplicate();

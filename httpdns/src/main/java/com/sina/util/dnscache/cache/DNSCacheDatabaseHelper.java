@@ -137,7 +137,8 @@ public class DNSCacheDatabaseHelper extends SQLiteOpenHelper implements DBConsta
                 e.printStackTrace();
                 // 上报错误
             } finally {
-                db.endTransaction();
+                if(db.isOpen())
+                    db.endTransaction();
                 db.close();
             }
             return model;

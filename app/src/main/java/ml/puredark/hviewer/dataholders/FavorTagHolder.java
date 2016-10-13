@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +25,13 @@ public class FavorTagHolder extends AbstractTagHolder{
     }
 
     public void addTag(Tag item) {
+        Log.d("FavorTagHolder", "tagExist(item):" + tagExist(item));
         if (item == null || tagExist(item)) return;
         ContentValues contentValues = new ContentValues();
         contentValues.put("title", item.title);
         contentValues.put("url", item.url);
         dbHelper.insert(dbName, contentValues);
+        Log.d("FavorTagHolder", "inserted");
     }
 
     public void clear() {
@@ -59,10 +62,10 @@ public class FavorTagHolder extends AbstractTagHolder{
     public boolean tagExist(Tag item) {
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `title` = ?",
                 new String[]{item.title});
-        if (cursor.moveToNext())
-            return true;
-        else
+        if (cursor == null || !cursor.moveToNext())
             return false;
+        else
+            return true;
     }
 
     public void onDestroy() {

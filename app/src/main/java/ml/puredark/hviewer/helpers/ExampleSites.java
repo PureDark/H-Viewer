@@ -338,7 +338,7 @@ public class ExampleSites {
         indexRule.category = new Selector("a > span.directlink-res", "html", null, null, null);
         indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
         indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
-        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
+        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_()]+)", null);
 
         galleryRule = new Rule();
         galleryRule.item = new Selector("body", null, null, null, null);
@@ -413,7 +413,7 @@ public class ExampleSites {
         indexRule.category = new Selector("a > span.directlink-res", "html", null, null, null);
         indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
         indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
-        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
+        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_()]+)", null);
 
         galleryRule = new Rule();
         galleryRule.item = new Selector("body", null, null, null, null);
@@ -487,7 +487,7 @@ public class ExampleSites {
         indexRule.category = new Selector("a > span.directlink-res", "html", null, null, null);
         indexRule.uploader = new Selector("div > a.thumb > img", "attr", "title", "User: (\\w+)", null);
         indexRule.rating = new Selector("div > a.thumb > img", "attr", "title", "Rating:.*?(\\d+)", null);
-        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_]+)", null);
+        indexRule.tags = new Selector("div > a.thumb > img", "attr", "title", " ([a-z_()]+)", null);
 
         galleryRule = new Rule();
         galleryRule.item = new Selector("body", null, null, null, null);
@@ -559,7 +559,7 @@ public class ExampleSites {
         indexRule.cover = new Selector("a > img", "attr", "src", null, null);
         indexRule.uploader = new Selector("a > img", "attr", "title", "user:(\\w+)", null);
         indexRule.rating = new Selector("a > img", "attr", "title", "rating:.*?(\\d+)", null);
-        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_]+)", null);
+        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_()]+)", null);
 
         galleryRule = new Rule();
         galleryRule.item = new Selector("body", null, null, null, null);
@@ -628,7 +628,7 @@ public class ExampleSites {
         indexRule.cover = new Selector("a > img", "attr", "src", null, null);
         indexRule.uploader = new Selector("a > img", "attr", "title", "rating:(\\w+)", "安全等级：$1");
         indexRule.rating = new Selector("a > img", "attr", "title", "score:.*?(\\d+)", null);
-        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_]+)", null);
+        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_()]+)", null);
 
         galleryRule = new Rule();
         galleryRule.item = new Selector("body", null, null, null, null);
@@ -737,7 +737,7 @@ public class ExampleSites {
         indexRule.cover = new Selector("a > img", "attr", "src", null, null);
         indexRule.uploader = new Selector("a > img", "attr", "title", "rating:(\\w+)", "安全等级：$1");
         indexRule.rating = new Selector("a > img", "attr", "title", "score:.*?(\\d+)", null);
-        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_]+)", null);
+        indexRule.tags = new Selector("a > img", "attr", "title", " ([a-z_()]+)", null);
 
         galleryRule = new Rule();
         galleryRule.item = new Selector("body", null, null, null, null);

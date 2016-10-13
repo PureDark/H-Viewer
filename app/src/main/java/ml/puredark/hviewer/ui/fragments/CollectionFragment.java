@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,7 @@ public class CollectionFragment extends MyFragment {
 
         List<Collection> collections = new ArrayList<>();
         ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
-        adapter = new CollectionAdapter(getContext(), dataProvider);
+        adapter = new CollectionAdapter(getContext(), dataProvider, siteTagHolder);
         rvCollection.setAdapter(adapter);
 
         Bundle bundle = getArguments();
@@ -249,6 +250,7 @@ public class CollectionFragment extends MyFragment {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        Logger.d("CollectionFragment"," keyword:" + keyword);
         currUrl = site.searchUrl;
         parseUrl(currUrl);
         rvCollection.setRefreshing(true);

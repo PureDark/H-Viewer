@@ -10,10 +10,6 @@ import android.view.View;
 
 public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManager {
 
-    public AutoFitStaggeredGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     public AutoFitStaggeredGridLayoutManager(Context context, int orientation) {
         /* Initially set spanCount to 1, will be changed automatically later. */
         super(1, orientation);
@@ -25,6 +21,7 @@ public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManage
         int rvWidth = getWidth();
         int rvHeight = getHeight();
         if (rvWidth > 0 && rvHeight > 0) {
+            rvWidth -= 50;
             int childrenWidth1st = 0;
             int childrenWidth2nd = 0;
             View firstView = findViewByPosition(0);

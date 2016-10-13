@@ -10,18 +10,21 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_site_tag"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="20dp"
-            android:paddingLeft="@dimen/half_margin"
-            android:paddingRight="@dimen/half_margin"
-            android:clipToPadding="false"
-            app:layoutManager="StaggeredGridLayoutManager"
-            app:spanCount="2"
-            tools:listitem="@layout/item_site_tag" />
+            android:paddingTop="20dp">
+            <com.dpizarro.autolabel.library.AutoLabelUI
+                android:id="@+id/label_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:show_cross="false"
+                app:text_color="@android:color/white"
+                app:text_size="@dimen/label_title_size"
+                app:label_background_res="@color/dimgray"
+                app:label_padding="@dimen/half_padding"
+                app:label_clickable="true"/>
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
     <LinearLayout
         android:layout_width="50dp"

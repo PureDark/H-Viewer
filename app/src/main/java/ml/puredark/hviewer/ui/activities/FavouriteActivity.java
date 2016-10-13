@@ -62,7 +62,7 @@ public class FavouriteActivity extends BaseActivity {
 
         List<Collection> collections = favouriteHolder.getFavourites();
         ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
-        adapter = new CollectionAdapter(this, dataProvider);
+        adapter = new CollectionAdapter(this, dataProvider, null);
         rvCollection.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
