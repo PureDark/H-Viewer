@@ -214,6 +214,18 @@ public class PictureViewerActivity extends BaseActivity {
             }
         return super.onKeyDown(keyCode, event);
     }
+    // 监听音量键，消除按键音
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (volumeKeyEnabled)
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                    return true;
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    return true;
+            }
+        return super.onKeyDown(keyCode, event);
+    }
 
 
     @Override
