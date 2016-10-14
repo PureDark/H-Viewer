@@ -123,7 +123,6 @@ public class SiteFlagHandler {
                     }
 
                     new Handler(context.getMainLooper()).post(() -> {
-                        HViewerApplication.searchSuggestionHolder.removeDuplicate();
                         adapter.notifyItemChanged(position);
                     });
                 }).start();

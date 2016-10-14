@@ -12,6 +12,11 @@ public class Tag extends AbstractDataProvider.Data {
         this.tid = tid;
         this.title = title;
     }
+    public Tag(int tid, String title, String url) {
+        this.tid = tid;
+        this.title = title;
+        this.url = url;
+    }
 
     @Override
     public int getId() {

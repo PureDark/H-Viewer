@@ -35,6 +35,7 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
+import static ml.puredark.hviewer.HViewerApplication.temp;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -56,7 +57,8 @@ public class RuleParser {
         }
         return map;
     }
-    public static CharSequence getClickableHtml(Context context, String html, String sourceUrl, Html.ImageGetter imageGetter){
+
+    public static CharSequence getClickableHtml(Context context, String html, String sourceUrl, Html.ImageGetter imageGetter) {
         return getClickableHtml(context, html, sourceUrl, imageGetter, null);
     }
 
@@ -71,7 +73,7 @@ public class RuleParser {
     }
 
     private static void setLinkClickable(Context context, final SpannableStringBuilder clickableHtmlBuilder,
-                                  final URLSpan urlSpan, String sourceUrl) {
+                                         final URLSpan urlSpan, String sourceUrl) {
         int start = clickableHtmlBuilder.getSpanStart(urlSpan);
         int end = clickableHtmlBuilder.getSpanEnd(urlSpan);
         int flags = clickableHtmlBuilder.getSpanFlags(urlSpan);
@@ -163,8 +165,19 @@ public class RuleParser {
             }
         }
 
+        Elements temp;
+
         List<Tag> tags = new ArrayList<>();
-        if (rule.tags != null) {
+        if (rule.tagRule != null && rule.tagRule.item != null) {
+            temp = element.select(rule.tagRule.item.selector);
+            for (Element tagElement : temp) {
+                String tagTitle = parseSingleProperty(tagElement, rule.tagRule.title, sourceUrl, false);
+                String tagUrl = parseSingleProperty(tagElement, rule.tagRule.url, sourceUrl, true);
+                if(TextUtils.isEmpty(tagUrl))
+                    tagUrl = null;
+                tags.add(new Tag(tags.size() + 1, tagTitle, tagUrl));
+            }
+        } else if (rule.tags != null) {
             List<String> tagStrs = parseSinglePropertyMatchAll(element, rule.tags, sourceUrl, false);
             for (String tagStr : tagStrs) {
                 if (!TextUtils.isEmpty(tagStr))
@@ -172,7 +185,6 @@ public class RuleParser {
             }
         }
 
-        Elements temp;
         List<Picture> pictures = new ArrayList<>();
         if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
             if (rule.item != null) {
@@ -197,7 +209,16 @@ public class RuleParser {
         }
 
         List<Comment> comments = new ArrayList<>();
-        if (rule.commentItem != null && rule.commentContent != null) {
+        if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null){
+            temp = element.select(rule.commentRule.item.selector);
+            for (Element commentElement : temp) {
+                String commentAvatar = parseSingleProperty(commentElement, rule.commentRule.avatar, sourceUrl, false);
+                String commentAuthor = parseSingleProperty(commentElement, rule.commentRule.author, sourceUrl, false);
+                String commentDatetime = parseSingleProperty(commentElement, rule.commentRule.datetime, sourceUrl, false);
+                String commentContent = parseSingleProperty(commentElement, rule.commentRule.content, sourceUrl, false);
+                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
+            }
+        }else if (rule.commentItem != null && rule.commentContent != null) {
             temp = element.select(rule.commentItem.selector);
             for (Element commentElement : temp) {
                 String commentAvatar = parseSingleProperty(commentElement, rule.commentAvatar, sourceUrl, false);

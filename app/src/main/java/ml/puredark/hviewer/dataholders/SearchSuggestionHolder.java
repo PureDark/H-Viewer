@@ -41,8 +41,10 @@ public class SearchSuggestionHolder {
 
     public void addSearchSuggestion(String item) {
         if (item == null) return;
-        searchSuggestions.add(0, item.trim());
-        trimSearchSuggestion();
+        if(!searchSuggestions.contains(item)) {
+            searchSuggestions.add(0, item.trim());
+            trimSearchSuggestion();
+        }
     }
 
     public void deleteSearchSuggestion(String item) {

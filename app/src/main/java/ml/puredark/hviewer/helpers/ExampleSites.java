@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Category;
+import ml.puredark.hviewer.beans.CommentRule;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.TagRule;
 
 /**
  * Created by PureDark on 2016/9/21.
@@ -14,7 +16,7 @@ import ml.puredark.hviewer.beans.Site;
 
 public class ExampleSites {
 
-    public static List<Site> get(){
+    public static List<Site> get() {
 
         List<Site> sites = new ArrayList<>();
 
@@ -66,10 +68,11 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.gdtl,div.gdtm", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://[^\"]*?\\.jpg)", null);
-        galleryRule.commentItem = new Selector("div#cdiv > div.c1", null, null, null, null);
-        galleryRule.commentAuthor = new Selector("div.c3 > a:first-child", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.c3", "html", null, "Posted on (.*?) UTC by", null);
-        galleryRule.commentContent = new Selector("div.c6", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div#cdiv > div.c1", null, null, null, null);
+        galleryRule.commentRule.author = new Selector("div.c3 > a:first-child", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.c3", "html", null, "Posted on (.*?) UTC by", null);
+        galleryRule.commentRule.content = new Selector("div.c6", "html", null, null, null);
 
         extraRule = new Rule();
         extraRule.pictureUrl = new Selector("div.sni a img[style]", "attr", "src", null, null);
@@ -114,10 +117,11 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.gdtl,div.gdtm", null, null, null, null);
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", null, null, "(http://[^\"]*?\\.jpg)", null);
-        galleryRule.commentItem = new Selector("div#cdiv > div.c1", null, null, null, null);
-        galleryRule.commentAuthor = new Selector("div.c3 > a:first-child", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.c3", "html", null, "Posted on (.*?) UTC by", null);
-        galleryRule.commentContent = new Selector("div.c6", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div#cdiv > div.c1", null, null, null, null);
+        galleryRule.commentRule.author = new Selector("div.c3 > a:first-child", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.c3", "html", null, "Posted on (.*?) UTC by", null);
+        galleryRule.commentRule.content = new Selector("div.c6", "html", null, null, null);
 
         extraRule = new Rule();
         extraRule.pictureUrl = new Selector("div.sni a img[style]", "attr", "src", null, null);
@@ -225,11 +229,12 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.tpc_content input", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
         galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
-        galleryRule.commentItem = new Selector("div.t.t2:not([style])", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("td.tac > img", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("th.r_two > font > b", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.tipad", "html", null, "Posted:(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})", null);
-        galleryRule.commentContent = new Selector("div.tpc_content", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div.t.t2:not([style])", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("td.tac > img", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("th.r_two > font > b", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.tipad", "html", null, "Posted:(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})", null);
+        galleryRule.commentRule.content = new Selector("div.tpc_content", "html", null, null, null);
 
         sites.add(new Site(6, "草榴社区",
                 "http://cl.deocool.pw/thread0806.php?fid=8&page={page:1}",
@@ -285,11 +290,12 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.box > a", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", "attr", "href", null, null);
-        galleryRule.commentItem = new Selector("ol.commentlist > li.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("div.comment-author > img", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.comment-author > cite", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.comment-meta > a", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.comment-body > p", null, null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("ol.commentlist > li.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("div.comment-author > img", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.comment-author > cite", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.comment-meta > a", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.comment-body > p", null, null, null, null);
 
         sites.add(new Site(8, "二次萌エロ画像ブログ",
                 "http://moeimg.net/page/{page:1}",
@@ -345,11 +351,12 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(https://files.yande.re/image/[^\"]*?\\.(jpg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("#post-view", "html", null, "\"(https://assets.yande.re/data/preview/[^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
-        galleryRule.commentItem = new Selector("div.response-list > div.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("img.avatar", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.author > h6 > a", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.author > span.date > a", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.content > div.body", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div.response-list > div.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("img.avatar", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.author > h6 > a", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.author > span.date > a", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.content > div.body", "html", null, null, null);
 
         sites.add(new Site(31, "Yande.re Post",
                 "https://yande.re/post?page={page:1}",
@@ -357,7 +364,7 @@ public class ExampleSites {
                 "https://yande.re/post?tags={keyword:}&page={page:1}",
                 "https://yande.re/user/login",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_TITLE));
+                Site.FLAG_NO_TITLE + "|" + Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "https://yande.re/post?page={page:1}"));
@@ -420,11 +427,12 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(https://lolibooru.moe/image/[^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("#post-view", "html", null, "\"https:\\\\/\\\\/lolibooru.moe\\\\/data\\\\/preview\\\\/([^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", "https://lolibooru.moe/data/preview/$1");
-        galleryRule.commentItem = new Selector("div.response-list > div.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("img.avatar", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.author > h6 > a", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.author > span.date > a", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.content > div.body", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div.response-list > div.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("img.avatar", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.author > h6 > a", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.author > span.date > a", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.content > div.body", "html", null, null, null);
 
         sites.add(new Site(33, "Lolibooru Post",
                 "https://lolibooru.moe/post?page={page:1}",
@@ -432,7 +440,7 @@ public class ExampleSites {
                 "https://lolibooru.moe/post?tags={keyword:}&page={page:1}",
                 "https://lolibooru.moe/user/login",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_TITLE));
+                Site.FLAG_NO_TITLE + "|" + Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "https://lolibooru.moe/post?page={page:1}"));
@@ -494,11 +502,12 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(http://konachan.net/image/[^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("#post-view", "html", null, "\"http:\\\\/\\\\/konachan.net\\\\/data\\\\/preview\\\\/([^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", "http://konachan.net/data/preview/$1");
-        galleryRule.commentItem = new Selector("div.response-list > div.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("img.avatar", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.author > h6 > a", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.author > span.date > a", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.content > div.body", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div.response-list > div.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("img.avatar", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.author > h6 > a", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.author > span.date > a", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.content > div.body", "html", null, null, null);
 
         sites.add(new Site(35, "Konachan Post",
                 "https://konachan.net/post?page={page:1}",
@@ -506,7 +515,7 @@ public class ExampleSites {
                 "https://konachan.net/post?tags={keyword:}&page={page:1}",
                 "https://konachan.net/user/login",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_TITLE));
+                Site.FLAG_NO_TITLE + "|" + Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "https://konachan.net/post?page={page:1}"));
@@ -566,11 +575,12 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(http://behoimi.org/data/(?!sample)[^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", "(http://behoimi.org/data)(/sample)?/([^\"]*?)/(sample)?([^/]*)\\.", "$1/preview/$3/$5.jpg");
-        galleryRule.commentItem = new Selector("div.response-list > div.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("img.avatar", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.author > h6 > a", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.author > span.date > a", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.content > div.body", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div.response-list > div.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("img.avatar", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.author > h6 > a", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.author > span.date > a", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.content > div.body", "html", null, null, null);
 
         sites.add(new Site(37, "3dbooru Post",
                 "http://behoimi.org/post?page={page:1}",
@@ -578,7 +588,7 @@ public class ExampleSites {
                 "http://behoimi.org/post?tags={keyword:}&page={page:1}",
                 "http://behoimi.org/user/login",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_TITLE));
+                Site.FLAG_NO_TITLE + "|" + Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://behoimi.org/post?page={page:1}"));
@@ -635,10 +645,11 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(http://gelbooru.com//images/[^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", "http://.*?gelbooru.com//(samples|images)/(.*)/(sample_)?([^/]*)\\.", "http://gelbooru.com/thumbnails/$2/thumbnail_$4.jpg");
-        galleryRule.commentItem = new Selector("div[id^=c][style*='display']", null, null, null, null);
-        galleryRule.commentAuthor = new Selector("a[href^='index']", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("b", "html", null, "Posted on (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", null);
-        galleryRule.commentContent = new Selector("this", "html", null, "(<br>[^<>]*?<br>)", null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div[id^=c][style*='display']", null, null, null, null);
+        galleryRule.commentRule.author = new Selector("a[href^='index']", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("b", "html", null, "Posted on (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", null);
+        galleryRule.commentRule.content = new Selector("this", "html", null, "(<br>[^<>]*?<br>)", null);
 
         sites.add(new Site(39, "Gelbooru Post",
                 "http://gelbooru.com/index.php?page=post&s=list&tags=all&pid={page:0:42}",
@@ -646,58 +657,13 @@ public class ExampleSites {
                 "http://gelbooru.com/index.php?page=post&s=list&tags={keyword:}&pid={page:0:42}",
                 "http://gelbooru.com/index.php?page=account&s=login&code=00",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_TITLE));
+                Site.FLAG_NO_TITLE + "|" + Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://gelbooru.com/index.php?page=post&s=list&tags=all&pid={page:0:42}"));
         categories.add(new Category(3, "评级：安全", "http://gelbooru.com/index.php?page=post&s=list&tags=rating%3Asafe&pid={page:0:42}"));
         categories.add(new Category(4, "评级：存疑", "http://gelbooru.com/index.php?page=post&s=list&tags=rating%3Aquestionable&pid={page:0:42}"));
         categories.add(new Category(5, "评级：露骨", "http://gelbooru.com/index.php?page=post&s=list&tags=rating%3Aexplicit&pid={page:0:42}"));
-        categories.add(new Category(6, "1boy", "http://gelbooru.com/index.php?page=post&s=list&tags=1boy&pid={page:0:42}"));
-        categories.add(new Category(7, "1girl", "http://gelbooru.com/index.php?page=post&s=list&tags=1girl&pid={page:0:42}"));
-        categories.add(new Category(8, "ass", "http://gelbooru.com/index.php?page=post&s=list&tags=ass&pid={page:0:42}"));
-        categories.add(new Category(9, "bare shoulders", "http://gelbooru.com/index.php?page=post&s=list&tags=bare_shoulders&pid={page:0:42}"));
-        categories.add(new Category(10, "blush", "http://gelbooru.com/index.php?page=post&s=list&tags=blush&pid={page:0:42}"));
-        categories.add(new Category(11, "breasts", "http://gelbooru.com/index.php?page=post&s=list&tags=breasts&pid={page:0:42}"));
-        categories.add(new Category(12, "brown eyes", "http://gelbooru.com/index.php?page=post&s=list&tags=brown_eyes&pid={page:0:42}"));
-        categories.add(new Category(13, "brown hair", "http://gelbooru.com/index.php?page=post&s=list&tags=brown_hair&pid={page:0:42}"));
-        categories.add(new Category(14, "eyes closed", "http://gelbooru.com/index.php?page=post&s=list&tags=eyes_closed&pid={page:0:42}"));
-        categories.add(new Category(15, "fingerless gloves", "http://gelbooru.com/index.php?page=post&s=list&tags=fingerless_gloves&pid={page:0:42}"));
-        categories.add(new Category(16, "from behind", "http://gelbooru.com/index.php?page=post&s=list&tags=from_behind&pid={page:0:42}"));
-        categories.add(new Category(17, "hand on", "http://gelbooru.com/index.php?page=post&s=list&tags=hand_on&pid={page:0:42}"));
-        categories.add(new Category(18, "hat", "http://gelbooru.com/index.php?page=post&s=list&tags=hat&pid={page:0:42}"));
-        categories.add(new Category(19, "headband", "http://gelbooru.com/index.php?page=post&s=list&tags=headband&pid={page:0:42}"));
-        categories.add(new Category(20, "hifumi", "http://gelbooru.com/index.php?page=post&s=list&tags=hifumi&pid={page:0:42}"));
-        categories.add(new Category(21, "king of fighters", "http://gelbooru.com/index.php?page=post&s=list&tags=king_of_fighters&pid={page:0:42}"));
-        categories.add(new Category(22, "large breasts", "http://gelbooru.com/index.php?page=post&s=list&tags=large_breasts&pid={page:0:42}"));
-        categories.add(new Category(23, "leaning", "http://gelbooru.com/index.php?page=post&s=list&tags=leaning&pid={page:0:42}"));
-        categories.add(new Category(24, "leaning forward", "http://gelbooru.com/index.php?page=post&s=list&tags=leaning_forward&pid={page:0:42}"));
-        categories.add(new Category(25, "looking at viewer", "http://gelbooru.com/index.php?page=post&s=list&tags=looking_at_viewer&pid={page:0:42}"));
-        categories.add(new Category(26, "male focus", "http://gelbooru.com/index.php?page=post&s=list&tags=male_focus&pid={page:0:42}"));
-        categories.add(new Category(27, "monkey d luffy", "http://gelbooru.com/index.php?page=post&s=list&tags=monkey_d_luffy&pid={page:0:42}"));
-        categories.add(new Category(28, "monochrome", "http://gelbooru.com/index.php?page=post&s=list&tags=monochrome&pid={page:0:42}"));
-        categories.add(new Category(29, "one piece", "http://gelbooru.com/index.php?page=post&s=list&tags=one_piece&pid={page:0:42}"));
-        categories.add(new Category(30, "open clothes", "http://gelbooru.com/index.php?page=post&s=list&tags=open_clothes&pid={page:0:42}"));
-        categories.add(new Category(31, "open shirt", "http://gelbooru.com/index.php?page=post&s=list&tags=open_shirt&pid={page:0:42}"));
-        categories.add(new Category(32, "pantylines", "http://gelbooru.com/index.php?page=post&s=list&tags=pantylines&pid={page:0:42}"));
-        categories.add(new Category(33, "scar", "http://gelbooru.com/index.php?page=post&s=list&tags=scar&pid={page:0:42}"));
-        categories.add(new Category(34, "shiny", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny&pid={page:0:42}"));
-        categories.add(new Category(35, "shiny clothes", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_clothes&pid={page:0:42}"));
-        categories.add(new Category(36, "shiny hair", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_hair&pid={page:0:42}"));
-        categories.add(new Category(37, "shiny skin", "http://gelbooru.com/index.php?page=post&s=list&tags=shiny_skin&pid={page:0:42}"));
-        categories.add(new Category(38, "short hair", "http://gelbooru.com/index.php?page=post&s=list&tags=short_hair&pid={page:0:42}"));
-        categories.add(new Category(39, "sideboob", "http://gelbooru.com/index.php?page=post&s=list&tags=sideboob&pid={page:0:42}"));
-        categories.add(new Category(40, "simple background", "http://gelbooru.com/index.php?page=post&s=list&tags=simple_background&pid={page:0:42}"));
-        categories.add(new Category(41, "skin tight", "http://gelbooru.com/index.php?page=post&s=list&tags=skin_tight&pid={page:0:42}"));
-        categories.add(new Category(42, "smile", "http://gelbooru.com/index.php?page=post&s=list&tags=smile&pid={page:0:42}"));
-        categories.add(new Category(43, "solo", "http://gelbooru.com/index.php?page=post&s=list&tags=solo&pid={page:0:42}"));
-        categories.add(new Category(44, "spandex", "http://gelbooru.com/index.php?page=post&s=list&tags=spandex&pid={page:0:42}"));
-        categories.add(new Category(45, "straw hat", "http://gelbooru.com/index.php?page=post&s=list&tags=straw_hat&pid={page:0:42}"));
-        categories.add(new Category(46, "teeth", "http://gelbooru.com/index.php?page=post&s=list&tags=teeth&pid={page:0:42}"));
-        categories.add(new Category(47, "the king of fighters", "http://gelbooru.com/index.php?page=post&s=list&tags=the_king_of_fighters&pid={page:0:42}"));
-        categories.add(new Category(48, "tongue", "http://gelbooru.com/index.php?page=post&s=list&tags=tongue&pid={page:0:42}"));
-        categories.add(new Category(49, "tongue out", "http://gelbooru.com/index.php?page=post&s=list&tags=tongue_out&pid={page:0:42}"));
-        categories.add(new Category(50, "yuri sakazaki", "http://gelbooru.com/index.php?page=post&s=list&tags=yuri_sakazaki&pid={page:0:42}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         // gelbooru Pool
@@ -729,7 +695,6 @@ public class ExampleSites {
                 Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY));
 
 
-
         // xbooru Post
         indexRule = new Rule();
         indexRule.item = new Selector("span.thumb", null, null, null, null);
@@ -744,10 +709,11 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("img#image", "attr", "src", null, null);
         galleryRule.pictureHighRes = new Selector("#post-view", "html", null, "\"(http://img.xbooru.com//images/[^\"]*?\\.(jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("img#image", "attr", "src", "http://img.xbooru.com//(samples|images)/([^\"]*)/(sample_)?([^/]*)\\.", "http://img.xbooru.com/thumbnails/$2/thumbnail_$4.jpg");
-        galleryRule.commentItem = new Selector("div[id^=c][style*='display']", null, null, null, null);
-        galleryRule.commentAuthor = new Selector("a[href^='index']", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("b", "html", null, "Posted on (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", null);
-        galleryRule.commentContent = new Selector("this", "html", null, "(<br>[^<>]*?<br>)", null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div[id^=c][style*='display']", null, null, null, null);
+        galleryRule.commentRule.author = new Selector("a[href^='index']", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("b", "html", null, "Posted on (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", null);
+        galleryRule.commentRule.content = new Selector("this", "html", null, "(<br>[^<>]*?<br>)", null);
 
         sites.add(new Site(41, "Xbooru Post",
                 "http://xbooru.com/index.php?page=post&s=list&pid={page:0:42}",
@@ -755,7 +721,7 @@ public class ExampleSites {
                 "http://xbooru.com/index.php?page=post&s=list&tags={keyword:}&pid={page:0:42}",
                 "http://xbooru.com/index.php?page=account&s=login&code=00",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_TITLE));
+                Site.FLAG_NO_TITLE + "|" + Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://xbooru.com/index.php?page=post&s=list&pid={page:0:42}"));
@@ -806,11 +772,12 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.main-body p > a", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("this", "attr", "href", null, null);
-        galleryRule.commentItem = new Selector("ol.commentlist > li.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("div.comment-author > img", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.comment-meta > span.comment-name", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.comment-meta > span.comment-date", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.comment-entry", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("ol.commentlist > li.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("div.comment-author > img", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.comment-meta > span.comment-name", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.comment-meta > span.comment-date", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.comment-entry", "html", null, null, null);
 
         sites.add(new Site(51, "绝对领域",
                 "http://www.jdlingyu.moe/page/{page:1}/",
@@ -863,7 +830,8 @@ public class ExampleSites {
                 "http://e-shuushuu.net/{idCode:}",
                 null,
                 "http://e-shuushuu.net/",
-                indexRule, galleryRule, null, null, null));
+                indexRule, galleryRule, null, null,
+                Site.FLAG_ONE_PIC_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://e-shuushuu.net/?page={page:1}"));
@@ -875,7 +843,7 @@ public class ExampleSites {
         indexRule = new Rule();
         indexRule.item = new Selector("ul._image-items>li.image-item, section.ranking-item", null, null, null, null);
         indexRule.idCode = new Selector("a.work", "attr", "href", "illust_id=(\\d+)", null);
-        indexRule.cover = new Selector("div._layout-thumbnail>img", null, null, "\"(http://[^\"]*?\\.(?:jpg|jpeg|png))\"", null);
+        indexRule.cover = new Selector("div._layout-thumbnail>img", null, null, "\"(http://[^\"]*?\\.(?:jpg|jpeg|png|bmp))\"", null);
         indexRule.title = new Selector("a>h1.title, h2>a.title", "html", null, null, null);
         indexRule.uploader = new Selector("a.user, a.user-container>span", "html", null, null, null);
         indexRule.category = new Selector("div.rank>h1>a", "html", null, null, null);
@@ -891,11 +859,12 @@ public class ExampleSites {
         galleryRule.item = new Selector("body", null, null, null, null);
         galleryRule.pictureUrl = new Selector("div#wrapper", "html", null, "\"(member_illust.php\\?mode=manga.*?|http://i\\d.pixiv.net/img-original/img/.*?\\.(?:jpg|jpeg|png|gif|bmp))\"", null);
         galleryRule.pictureThumbnail = new Selector("div.works_display div._layout-thumbnail > img", "attr", "src", "(http://.*?c)/\\d+x\\d+/(.*?\\.(?:jpg|jpeg|png|gif|bmp))", "$1/150x150/$2");
-        galleryRule.commentItem = new Selector("div._comment-items > div._comment-item", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("a.user-icon-container > img", "attr", "data-src", null, null);
-        galleryRule.commentAuthor = new Selector("div.comment > div.meta > a.user-name", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.comment > div.meta > span.date", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.comment>div.body,div.comment>div.sticker-container", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("div._comment-items > div._comment-item", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("a.user-icon-container > img", "attr", "data-src", null, null);
+        galleryRule.commentRule.author = new Selector("div.comment > div.meta > a.user-name", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.comment > div.meta > span.date", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.comment>div.body,div.comment>div.sticker-container", "html", null, null, null);
 
         extraRule = new Rule();
         extraRule.item = new Selector("div.item-container", null, null, null, null);
@@ -908,7 +877,7 @@ public class ExampleSites {
                 "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",
                 "https://accounts.pixiv.net/login",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_SECOND_LEVEL_GALLERY+"|"+Site.FLAG_PRELOAD_GALLERY+"|"+Site.FLAG_NO_TAG));
+                Site.FLAG_SECOND_LEVEL_GALLERY + "|" + Site.FLAG_PRELOAD_GALLERY));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://www.pixiv.net/new_illust.php?p={page:1}"));
         categories.add(new Category(2, "收藏夹", "http://www.pixiv.net/bookmark.php?p={page:1}"));
@@ -930,7 +899,6 @@ public class ExampleSites {
         categories.add(new Category(18, "VOCALOID", "http://www.pixiv.net/search.php?s_mode=s_tag_full&word=VOCALOID&p={page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
         sites.get(sites.size() - 1).cookie = "p_ab_id=4; _gat=1; PHPSESSID=19726569_cf8243e85368f6e8965c6e19068b4da5; device_token=0074d3631c53eff71393c60ac338f0ef; a_type=0; __utmt=1; __utma=235335808.1998756366.1474474879.1474475016.1474475016.1; __utmb=235335808.1.10.1474475016; __utmc=235335808; __utmz=235335808.1474475016.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmv=235335808.|2=login%20ever=yes=1^3=plan=normal=1^5=gender=male=1^6=user_id=19726569=1; _ga=GA1.2.1998756366.1474474879; _gat_UA-74360115-3=1";
-
 
 
         // 妹子图
@@ -964,7 +932,6 @@ public class ExampleSites {
         categories.add(new Category(5, "日本妹子", "http://www.mzitu.com/japan/page/{page:1}"));
         categories.add(new Category(6, "台湾妹子", "http://www.mzitu.com/taiwan/page/{page:1}"));
         categories.add(new Category(7, "清纯妹子", "http://www.mzitu.com/mm/page/{page:1}"));
-        categories.add(new Category(8, "妹子自拍", "http://www.mzitu.com/share/page/{page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
 
@@ -983,11 +950,12 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.single-img,ul.thumbs>li", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "html", null, "href=\"(.*?)\"|src=\"([^\"]*?(?<!_1x)\\.(?:jpg|jpeg|png|gif|bmp))\"", "$1$2");
         galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
-        galleryRule.commentItem = new Selector("ol#comments > li.comment", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("img.photo", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("h2 > a.url", "html", null, "(?:<img.*?>)?(.*)", null);
-        galleryRule.commentDatetime = new Selector("p.comment-meta > a.posted", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.comment-body", "html", null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("ol#comments > li.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("img.photo", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("h2 > a.url", "html", null, "(?:<img.*?>)?(.*)", null);
+        galleryRule.commentRule.datetime = new Selector("p.comment-meta > a.posted", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.comment-body", "html", null, null, null);
 
         extraRule = new Rule();
         extraRule.pictureUrl = new Selector("div#viewer-img > img", "attr", "src", null, null);
@@ -998,7 +966,7 @@ public class ExampleSites {
                 "https://dribbble.com/search?q={keyword:}&page={page:1}&per_page=12",
                 "https://dribbble.com/session/new",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_NO_RATING+"|"+Site.FLAG_SINGLE_PAGE_BIG_PICTURE+"|"+Site.FLAG_PRELOAD_GALLERY+"|"+Site.FLAG_JS_NEEDED));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_JS_NEEDED));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "Popular", "https://dribbble.com/shots?page={page:1}&per_page=12"));
@@ -1030,11 +998,12 @@ public class ExampleSites {
         galleryRule.item = new Selector("div.works-cont>a:has(img),div.works-cont>p:has(img)", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "html", null, "(?:href|src)=\"([^\"]*?)\"", null);
         galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
-        galleryRule.commentItem = new Selector("ul.comment-main > li.item", null, null, null, null);
-        galleryRule.commentAvatar = new Selector("a[class^='avatar'] > img", "attr", "src", null, null);
-        galleryRule.commentAuthor = new Selector("div.comment-cont > .user > a", "html", null, null, null);
-        galleryRule.commentDatetime = new Selector("div.comment-cont > .user > time", "html", null, null, null);
-        galleryRule.commentContent = new Selector("div.comment-cont>div.retext,div.comment-cont>p.text", null, null, null, null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("ul.comment-main > li.item", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("a[class^='avatar'] > img", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("div.comment-cont > .user > a", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.comment-cont > .user > time", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.comment-cont>div.retext,div.comment-cont>p.text", null, null, null, null);
 
         sites.add(new Site(56, "UI中国",
                 "http://www.ui.cn/?p={page:1}#project",
@@ -1061,7 +1030,12 @@ public class ExampleSites {
         indexRule.datetime = new Selector("div.photo-info > span > date:nth-of-type(2)", "html", null, null, null);
 
         galleryRule = new Rule();
-        galleryRule.tags = new Selector("div.info > p > span.genre > a", "html", null, null, null);
+        //新规则支持获取TAG独有的URL
+        //galleryRule.tags = new Selector("div.info > p > span.genre > a", "html", null, null, null);
+        galleryRule.tagRule = new TagRule();
+        galleryRule.tagRule.item = new Selector("div.info > p > span.genre", null, null, null, null);
+        galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", null, null);
         galleryRule.description = new Selector("div.info", "html", null, null, null);
         galleryRule.item = new Selector("div#sample-waterfall > .sample-box", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
@@ -1073,12 +1047,45 @@ public class ExampleSites {
                 "https://avmo.pw/cn/search/{keyword:}/page/{page:1}",
                 null,
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_RATING+"|"+Site.FLAG_PRELOAD_GALLERY));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "全部", "https://avmo.pw/cn/page/{page:1}"));
         categories.add(new Category(2, "已发布", "https://avmo.pw/cn/released/page/{page:1}"));
         categories.add(new Category(3, "热门", "https://avmo.pw/cn/popular/page/{page:1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+        // AVMEMO
+        indexRule = new Rule();
+        indexRule.item = new Selector("#waterfall > div.item", null, null, null, null);
+        indexRule.idCode = new Selector("a.main-movie-box", "attr", "href", "movie/(.*)", null);
+        indexRule.title = new Selector("div.photo-frame > img", "attr", "title", null, null);
+        indexRule.cover = new Selector("div.photo-frame > img", "attr", "src", null, null);
+        indexRule.category = new Selector("div.photo-info > span > date:nth-of-type(1)", "html", null, null, null);
+        indexRule.datetime = new Selector("div.photo-info > span > date:nth-of-type(2)", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.tagRule = new TagRule();
+        galleryRule.tagRule.item = new Selector("div.info > p > span.genre", null, null, null, null);
+        galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*?)", "$1/page/{page:1}");
+        galleryRule.description = new Selector("div.info", "html", null, null, null);
+        galleryRule.item = new Selector("div#sample-waterfall > .movie-sample-box", null, null, null, null);
+        galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
+        galleryRule.pictureThumbnail = new Selector("img", "attr", "src", null, null);
+
+        sites.add(new Site(61, "AVMEMO",
+                "https://avxo.pw/cn/page/{page:1}",
+                "https://avxo.pw/cn/movie/{idCode:}",
+                "https://avxo.pw/cn/search/{keyword:}/page/{page:1}",
+                null,
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "全部", "https://avxo.pw/cn/page/{page:1}"));
+        categories.add(new Category(2, "已发布", "https://avxo.pw/cn/released/page/{page:1}"));
+        categories.add(new Category(3, "热门", "https://avxo.pw/cn/popular/page/{page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;

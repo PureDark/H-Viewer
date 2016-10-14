@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Category;
+import ml.puredark.hviewer.beans.CommentRule;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
@@ -24,6 +25,7 @@ import ml.puredark.hviewer.ui.adapters.CategoryInputAdapter;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 import static java.util.regex.Pattern.DOTALL;
+import static u.aly.au.S;
 
 /**
  * Created by PureDark on 2016/8/14.
@@ -637,30 +639,58 @@ public class SitePropViewHolder {
                 inputGalleryRulePictureHighResRegex.setText(site.galleryRule.pictureHighRes.regex);
                 inputGalleryRulePictureHighResReplacement.setText(site.galleryRule.pictureHighRes.replacement);
             }
-            if (site.galleryRule.commentItem != null) {
-                inputGalleryRuleCommentItemSelector.setText(joinSelector(site.galleryRule.commentItem));
-                inputGalleryRuleCommentItemRegex.setText(site.galleryRule.commentItem.regex);
-                inputGalleryRuleCommentItemReplacement.setText(site.galleryRule.commentItem.replacement);
-            }
-            if (site.galleryRule.commentAvatar != null) {
-                inputGalleryRuleCommentAvatarSelector.setText(joinSelector(site.galleryRule.commentAvatar));
-                inputGalleryRuleCommentAvatarRegex.setText(site.galleryRule.commentAvatar.regex);
-                inputGalleryRuleCommentAvatarReplacement.setText(site.galleryRule.commentAvatar.replacement);
-            }
-            if (site.galleryRule.commentAuthor != null) {
-                inputGalleryRuleCommentAuthorSelector.setText(joinSelector(site.galleryRule.commentAuthor));
-                inputGalleryRuleCommentAuthorRegex.setText(site.galleryRule.commentAuthor.regex);
-                inputGalleryRuleCommentAuthorReplacement.setText(site.galleryRule.commentAuthor.replacement);
-            }
-            if (site.galleryRule.commentDatetime != null) {
-                inputGalleryRuleCommentDatetimeSelector.setText(joinSelector(site.galleryRule.commentDatetime));
-                inputGalleryRuleCommentDatetimeRegex.setText(site.galleryRule.commentDatetime.regex);
-                inputGalleryRuleCommentDatetimeReplacement.setText(site.galleryRule.commentDatetime.replacement);
-            }
-            if (site.galleryRule.commentContent != null) {
-                inputGalleryRuleCommentContentSelector.setText(joinSelector(site.galleryRule.commentContent));
-                inputGalleryRuleCommentContentRegex.setText(site.galleryRule.commentContent.regex);
-                inputGalleryRuleCommentContentReplacement.setText(site.galleryRule.commentContent.replacement);
+            if (site.galleryRule.commentRule != null) {
+                if (site.galleryRule.commentRule.item != null) {
+                    inputGalleryRuleCommentItemSelector.setText(joinSelector(site.galleryRule.commentRule.item));
+                    inputGalleryRuleCommentItemRegex.setText(site.galleryRule.commentRule.item.regex);
+                    inputGalleryRuleCommentItemReplacement.setText(site.galleryRule.commentRule.item.replacement);
+                }
+                if (site.galleryRule.commentRule.avatar != null) {
+                    inputGalleryRuleCommentAvatarSelector.setText(joinSelector(site.galleryRule.commentRule.avatar));
+                    inputGalleryRuleCommentAvatarRegex.setText(site.galleryRule.commentRule.avatar.regex);
+                    inputGalleryRuleCommentAvatarReplacement.setText(site.galleryRule.commentRule.avatar.replacement);
+                }
+                if (site.galleryRule.commentRule.author != null) {
+                    inputGalleryRuleCommentAuthorSelector.setText(joinSelector(site.galleryRule.commentRule.author));
+                    inputGalleryRuleCommentAuthorRegex.setText(site.galleryRule.commentRule.author.regex);
+                    inputGalleryRuleCommentAuthorReplacement.setText(site.galleryRule.commentRule.author.replacement);
+                }
+                if (site.galleryRule.commentRule.datetime != null) {
+                    inputGalleryRuleCommentDatetimeSelector.setText(joinSelector(site.galleryRule.commentRule.datetime));
+                    inputGalleryRuleCommentDatetimeRegex.setText(site.galleryRule.commentRule.datetime.regex);
+                    inputGalleryRuleCommentDatetimeReplacement.setText(site.galleryRule.commentRule.datetime.replacement);
+                }
+                if (site.galleryRule.commentRule.content != null) {
+                    inputGalleryRuleCommentContentSelector.setText(joinSelector(site.galleryRule.commentRule.content));
+                    inputGalleryRuleCommentContentRegex.setText(site.galleryRule.commentRule.content.regex);
+                    inputGalleryRuleCommentContentReplacement.setText(site.galleryRule.commentRule.content.replacement);
+                }
+            } else {
+                if (site.galleryRule.commentItem != null) {
+                    inputGalleryRuleCommentItemSelector.setText(joinSelector(site.galleryRule.commentItem));
+                    inputGalleryRuleCommentItemRegex.setText(site.galleryRule.commentItem.regex);
+                    inputGalleryRuleCommentItemReplacement.setText(site.galleryRule.commentItem.replacement);
+                }
+                if (site.galleryRule.commentAvatar != null) {
+                    inputGalleryRuleCommentAvatarSelector.setText(joinSelector(site.galleryRule.commentAvatar));
+                    inputGalleryRuleCommentAvatarRegex.setText(site.galleryRule.commentAvatar.regex);
+                    inputGalleryRuleCommentAvatarReplacement.setText(site.galleryRule.commentAvatar.replacement);
+                }
+                if (site.galleryRule.commentAuthor != null) {
+                    inputGalleryRuleCommentAuthorSelector.setText(joinSelector(site.galleryRule.commentAuthor));
+                    inputGalleryRuleCommentAuthorRegex.setText(site.galleryRule.commentAuthor.regex);
+                    inputGalleryRuleCommentAuthorReplacement.setText(site.galleryRule.commentAuthor.replacement);
+                }
+                if (site.galleryRule.commentDatetime != null) {
+                    inputGalleryRuleCommentDatetimeSelector.setText(joinSelector(site.galleryRule.commentDatetime));
+                    inputGalleryRuleCommentDatetimeRegex.setText(site.galleryRule.commentDatetime.regex);
+                    inputGalleryRuleCommentDatetimeReplacement.setText(site.galleryRule.commentDatetime.replacement);
+                }
+                if (site.galleryRule.commentContent != null) {
+                    inputGalleryRuleCommentContentSelector.setText(joinSelector(site.galleryRule.commentContent));
+                    inputGalleryRuleCommentContentRegex.setText(site.galleryRule.commentContent.regex);
+                    inputGalleryRuleCommentContentReplacement.setText(site.galleryRule.commentContent.replacement);
+                }
             }
 
             if (site.extraRule != null) {
@@ -754,7 +784,7 @@ public class SitePropViewHolder {
     }
 
     public Site fromEditTextToSite() {
-        if(lastSite==null)
+        if (lastSite == null)
             lastSite = new Site();
         lastSite.title = loadString(inputTitle);
         lastSite.indexUrl = loadString(inputIndexUrl);
@@ -768,14 +798,14 @@ public class SitePropViewHolder {
         List<Category> categories = categoryInputAdapter.getDataProvider().getItems();
         for (int i = 0; i < categories.size(); i++) {
             Category category = categories.get(i);
-            if("".equals(category.title) || "".equals(category.url)){
+            if ("".equals(category.title) || "".equals(category.url)) {
                 categories.remove(i);
                 i--;
-            }else {
+            } else {
                 category.cid = i + 1;
             }
         }
-        if(categories.size()>0)
+        if (categories.size() > 0)
             lastSite.categories = categories;
 
         //index rule
@@ -819,11 +849,14 @@ public class SitePropViewHolder {
         lastSite.galleryRule.pictureThumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
         lastSite.galleryRule.pictureUrl = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
         lastSite.galleryRule.pictureHighRes = loadSelector(inputGalleryRulePictureHighResSelector, inputGalleryRulePictureHighResRegex, inputGalleryRulePictureHighResReplacement);
-        lastSite.galleryRule.commentItem = loadSelector(inputGalleryRuleCommentItemSelector, inputGalleryRuleCommentItemRegex, inputGalleryRuleCommentItemReplacement);
-        lastSite.galleryRule.commentAvatar = loadSelector(inputGalleryRuleCommentAvatarSelector, inputGalleryRuleCommentAvatarRegex, inputGalleryRuleCommentAvatarReplacement);
-        lastSite.galleryRule.commentAuthor = loadSelector(inputGalleryRuleCommentAuthorSelector, inputGalleryRuleCommentAuthorRegex, inputGalleryRuleCommentAuthorReplacement);
-        lastSite.galleryRule.commentDatetime = loadSelector(inputGalleryRuleCommentDatetimeSelector, inputGalleryRuleCommentDatetimeRegex, inputGalleryRuleCommentDatetimeReplacement);
-        lastSite.galleryRule.commentContent = loadSelector(inputGalleryRuleCommentContentSelector, inputGalleryRuleCommentContentRegex, inputGalleryRuleCommentContentReplacement);
+        lastSite.galleryRule.commentRule = new CommentRule();
+        lastSite.galleryRule.commentRule.item = loadSelector(inputGalleryRuleCommentItemSelector, inputGalleryRuleCommentItemRegex, inputGalleryRuleCommentItemReplacement);
+        lastSite.galleryRule.commentRule.avatar = loadSelector(inputGalleryRuleCommentAvatarSelector, inputGalleryRuleCommentAvatarRegex, inputGalleryRuleCommentAvatarReplacement);
+        lastSite.galleryRule.commentRule.author = loadSelector(inputGalleryRuleCommentAuthorSelector, inputGalleryRuleCommentAuthorRegex, inputGalleryRuleCommentAuthorReplacement);
+        lastSite.galleryRule.commentRule.datetime = loadSelector(inputGalleryRuleCommentDatetimeSelector, inputGalleryRuleCommentDatetimeRegex, inputGalleryRuleCommentDatetimeReplacement);
+        lastSite.galleryRule.commentRule.content = loadSelector(inputGalleryRuleCommentContentSelector, inputGalleryRuleCommentContentRegex, inputGalleryRuleCommentContentReplacement);
+        if (lastSite.galleryRule.commentRule.isEmpty())
+            lastSite.galleryRule.commentRule = null;
 
         //extra rule
         lastSite.extraRule = new Rule();
@@ -839,12 +872,14 @@ public class SitePropViewHolder {
         lastSite.extraRule.pictureThumbnail = loadSelector(inputExtraRulePictureThumbnailSelector, inputExtraRulePictureThumbnailRegex, inputExtraRulePictureThumbnailReplacement);
         lastSite.extraRule.pictureUrl = loadSelector(inputExtraRulePictureUrlSelector, inputExtraRulePictureUrlRegex, inputExtraRulePictureUrlReplacement);
         lastSite.extraRule.pictureHighRes = loadSelector(inputExtraRulePictureHighResSelector, inputExtraRulePictureHighResRegex, inputExtraRulePictureHighResReplacement);
-        lastSite.extraRule.commentItem = loadSelector(inputExtraRuleCommentItemSelector, inputExtraRuleCommentItemRegex, inputExtraRuleCommentItemReplacement);
-        lastSite.extraRule.commentAvatar = loadSelector(inputExtraRuleCommentAvatarSelector, inputExtraRuleCommentAvatarRegex, inputExtraRuleCommentAvatarReplacement);
-        lastSite.extraRule.commentAuthor = loadSelector(inputExtraRuleCommentAuthorSelector, inputExtraRuleCommentAuthorRegex, inputExtraRuleCommentAuthorReplacement);
-        lastSite.extraRule.commentDatetime = loadSelector(inputExtraRuleCommentDatetimeSelector, inputExtraRuleCommentDatetimeRegex, inputExtraRuleCommentDatetimeReplacement);
-        lastSite.extraRule.commentContent = loadSelector(inputExtraRuleCommentContentSelector, inputExtraRuleCommentContentRegex, inputExtraRuleCommentContentReplacement);
-
+        lastSite.extraRule.commentRule = new CommentRule();
+        lastSite.extraRule.commentRule.item = loadSelector(inputExtraRuleCommentItemSelector, inputExtraRuleCommentItemRegex, inputExtraRuleCommentItemReplacement);
+        lastSite.extraRule.commentRule.avatar = loadSelector(inputExtraRuleCommentAvatarSelector, inputExtraRuleCommentAvatarRegex, inputExtraRuleCommentAvatarReplacement);
+        lastSite.extraRule.commentRule.author = loadSelector(inputExtraRuleCommentAuthorSelector, inputExtraRuleCommentAuthorRegex, inputExtraRuleCommentAuthorReplacement);
+        lastSite.extraRule.commentRule.datetime = loadSelector(inputExtraRuleCommentDatetimeSelector, inputExtraRuleCommentDatetimeRegex, inputExtraRuleCommentDatetimeReplacement);
+        lastSite.extraRule.commentRule.content = loadSelector(inputExtraRuleCommentContentSelector, inputExtraRuleCommentContentRegex, inputExtraRuleCommentContentReplacement);
+        if (lastSite.extraRule.commentRule.isEmpty())
+            lastSite.extraRule.commentRule = null;
 
         if (lastSite.extraRule.isEmpty())
             lastSite.extraRule = null;
