@@ -15,6 +15,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -67,6 +68,7 @@ import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 
 public class CollectionActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -132,6 +134,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
             toolbar.setLayoutParams(lp);
         }
+        Log.d("CollectionActivity", "onCreate");
 
         setContainer(coordinatorLayout);
 
@@ -241,8 +244,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
         List<Picture> pictures = new ArrayList<>();
-        if (collection.pictures != null && collection.pictures.size() == 0)
-            pictures = collection.pictures;
         pictureAdapter = new PictureAdapter(this, new ListDataProvider(pictures));
         pictureAdapter.setCookie(site.cookie);
         pictureAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
@@ -383,21 +384,24 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, final Object result) {
-                    if (result == null)
+                    if (result == null) {
+                        onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK));
                         return;
+                    }
                     Logger.d("CollectionActivity", "HViewerHttpClient");
                     String html = (String) result;
                     onResultGot(html, url, page);
-                    if(flagSetNull)
-                        pictureViewerActivity = null;
+                    if (flagSetNull)
+                        new Handler().postDelayed(() -> pictureViewerActivity = null, 500);
                 }
 
                 @Override
                 public void onFailure(HViewerHttpClient.HttpError error) {
+                    refreshing = false;
                     showSnackBar(error.getErrorString());
                     rvIndex.setPullLoadMoreCompleted();
-                    if(flagSetNull)
-                        pictureViewerActivity = null;
+                    if (flagSetNull)
+                        new Handler().postDelayed(() -> pictureViewerActivity = null, 500);
                 }
             });
     }
@@ -536,12 +540,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     @Override
     public void onResume() {
         super.onResume();
-        if(refreshing)
-            flagSetNull = true;
-        else
-            pictureViewerActivity = null;
-        if(onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY))
-            finish();
+        if(pictureViewerActivity != null ) {
+            if (onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY))
+                finish();
+            else if (refreshing)
+                flagSetNull = true;
+            else
+                pictureViewerActivity = null;
+        }
     }
 
     @Override

@@ -73,7 +73,8 @@ public class FavouriteHolder {
             else
                 return true;
         } finally {
-            cursor.close();
+            if (cursor != null)
+                cursor.close();
         }
     }
 

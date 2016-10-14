@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -55,6 +56,8 @@ public class PictureViewerActivity extends BaseActivity {
     private PicturePagerAdapter picturePagerAdapter;
     private PictureViewerAdapter pictureViewerAdapter;
 
+    private int currPos = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,12 +87,12 @@ public class PictureViewerActivity extends BaseActivity {
             finish();
             return;
         }
+        if (collectionActivity != null)
+            collectionActivity.setPictureViewerActivity(this);
         HViewerApplication.temp = null;
         HViewerApplication.temp2 = null;
         HViewerApplication.temp3 = null;
         HViewerApplication.temp4 = null;
-        if (collectionActivity != null)
-            collectionActivity.setPictureViewerActivity(this);
 
         volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, true);
         viewDirection = (String) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_DIRECTION, DIREACTION_LEFT_TO_RIGHT);
@@ -98,14 +101,14 @@ public class PictureViewerActivity extends BaseActivity {
                 && !DIREACTION_TOP_TO_BOTTOM.equals(viewDirection))
             viewDirection = DIREACTION_LEFT_TO_RIGHT;
 
-        int position = getIntent().getIntExtra("position", 0);
+        currPos = getIntent().getIntExtra("position", 0);
 
         if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection) || DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)) {
             viewPager.setVisibility(View.VISIBLE);
             rvPicture.setVisibility(View.GONE);
             picturePagerAdapter = new PicturePagerAdapter(this, site, collection, pictures);
             picturePagerAdapter.setViewDirection(viewDirection);
-            position = picturePagerAdapter.getPicturePostion(position);
+            int position = picturePagerAdapter.getPicturePostion(currPos);
             tvCount.setText((position + 1) + "/" + picturePagerAdapter.getCount());
             viewPager.setAdapter(picturePagerAdapter);
             ViewPager.OnPageChangeListener listener = new ViewPager.OnPageChangeListener() {
@@ -115,7 +118,8 @@ public class PictureViewerActivity extends BaseActivity {
 
                 @Override
                 public void onPageSelected(int position) {
-                    tvCount.setText((picturePagerAdapter.getPicturePostion(position) + 1) + "/" + picturePagerAdapter.getCount());
+                    currPos = position;
+                    tvCount.setText((picturePagerAdapter.getPicturePostion(currPos) + 1) + "/" + picturePagerAdapter.getCount());
                 }
 
                 @Override
@@ -150,14 +154,14 @@ public class PictureViewerActivity extends BaseActivity {
                             rvPicture.scrollBy(0, top);
                         }
                     }
-                    int position = linearLayoutManager.findLastVisibleItemPosition();
-                    tvCount.setText((position + 1) + "/" + pictureViewerAdapter.getItemCount());
+                    currPos = linearLayoutManager.findLastVisibleItemPosition();
+                    tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
                 }
             });
-            moveToPosition(rvPicture, position);
+            moveToPosition(rvPicture, currPos);
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
-            position = linearLayoutManager.findLastVisibleItemPosition();
-            tvCount.setText((position + 1) + "/" + pictureViewerAdapter.getItemCount());
+            currPos = linearLayoutManager.findLastVisibleItemPosition();
+            tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
         }
     }
 
@@ -187,10 +191,14 @@ public class PictureViewerActivity extends BaseActivity {
     }
 
     public void notifyDataSetChanged() {
-        if (picturePagerAdapter != null)
+        if (picturePagerAdapter != null) {
             picturePagerAdapter.notifyDataSetChanged();
-        if (pictureViewerAdapter != null)
+            tvCount.setText((picturePagerAdapter.getPicturePostion(currPos) + 1) + "/" + picturePagerAdapter.getCount());
+        }
+        if (pictureViewerAdapter != null) {
             pictureViewerAdapter.notifyDataSetChanged();
+            tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
+        }
     }
 
     @Override
