@@ -97,12 +97,14 @@ public class SiteHolder {
     public int getMaxGroupId() {
         Cursor cursor = dbHelper.query("SELECT MAX(`gid`) AS `maxid` FROM " + groupDbName);
         int maxId = (cursor.moveToNext()) ? cursor.getInt(0) : 0;
+        cursor.close();
         return maxId;
     }
 
     public int getMaxSiteId() {
         Cursor cursor = dbHelper.query("SELECT MAX(`sid`) AS `maxid` FROM " + dbName);
         int maxId = (cursor.moveToNext()) ? cursor.getInt(0) : 0;
+        cursor.close();
         return maxId;
     }
 
@@ -131,8 +133,10 @@ public class SiteHolder {
                     }
                 }
                 siteGroups.add(new Pair<>(group, sites));
+                cursor.close();
             }
         }
+        groupCursor.close();
 
         return siteGroups;
     }
@@ -144,31 +148,40 @@ public class SiteHolder {
             int gid = addSiteGroup(new SiteGroup(0, "未分类"));
             dbHelper.nonQuery("UPDATE " + dbName + " SET `gid` = " + gid + " WHERE `gid` = 0");
         }
+        cursor.close();
     }
 
     public SiteGroup getGroupByTitle(String title) {
         Cursor cursor = dbHelper.query("SELECT * FROM " + groupDbName + " WHERE `title` = '" + title + "' ORDER BY `index` ASC LIMIT 1");
-        if (cursor.moveToNext()) {
-            int gid = cursor.getInt(0);
-            SiteGroup group = new SiteGroup(gid, title);
-            return group;
+        try {
+            if (cursor.moveToNext()) {
+                int gid = cursor.getInt(0);
+                SiteGroup group = new SiteGroup(gid, title);
+                return group;
+            }
+            return null;
+        } finally {
+            cursor.close();
         }
-        return null;
     }
 
     public Site getSiteByTitle(String title) {
         Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `title` = '" + title + "' ORDER BY `index` ASC LIMIT 1");
-        if (cursor.moveToNext()) {
-            int j = cursor.getColumnIndex("json");
-            int id = cursor.getInt(0);
-            if (j >= 0) {
-                String json = cursor.getString(j);
-                Site site = new Gson().fromJson(json, Site.class);
-                site.sid = id;
-                return site;
+        try {
+            if (cursor.moveToNext()) {
+                int j = cursor.getColumnIndex("json");
+                int id = cursor.getInt(0);
+                if (j >= 0) {
+                    String json = cursor.getString(j);
+                    Site site = new Gson().fromJson(json, Site.class);
+                    site.sid = id;
+                    return site;
+                }
             }
+            return null;
+        } finally {
+            cursor.close();
         }
-        return null;
     }
 
     public void onDestroy() {

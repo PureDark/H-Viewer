@@ -23,11 +23,13 @@
     <string name="settings_view_high_res_summary">在浏览时加载高清原图，可能会降低加载速度</string>
     <string name="settings_view_preload_pages">预加载页数</string>
     <string name="settings_view_preload_pages_summary"> 3 页</string>
-    <string name="settings_view_volume_flick">音量键翻页</string>
-    <string name="settings_view_volume_flick_summary">是否开启音量键翻页</string>
     <string name="settings_view_direction">浏览方式</string>
     <string name="settings_view_direction_summary">从左到右</string>
     <string name="settings_view_direction_dialog_title">选择您喜欢的浏览方式</string>
+    <string name="settings_view_volume_flick">音量键翻页</string>
+    <string name="settings_view_volume_flick_summary">是否开启音量键翻页</string>
+    <string name="settings_view_open_one_pic_gallery">单图直接浏览</string>
+    <string name="settings_view_open_one_pic_gallery_summary">画册只有一张图时点击直接浏览</string>
 
     <string-array name="settings_view_direction_option">
         <item>从左到右</item>

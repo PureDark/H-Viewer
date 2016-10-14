@@ -38,7 +38,7 @@ public class ListDataProvider<T extends AbstractDataProvider.Data> extends Abstr
 
     @Override
     public void clear() {
-        items = new ArrayList<>();
+        items.clear();
     }
 
     @Override

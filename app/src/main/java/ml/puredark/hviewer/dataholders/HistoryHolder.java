@@ -63,6 +63,7 @@ public class HistoryHolder {
                 histories.add(collection);
             }
         }
+        cursor.close();
 
         return histories;
     }

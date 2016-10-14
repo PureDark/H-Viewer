@@ -69,6 +69,7 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
     public static final String KEY_PREF_VIEW_DIRECTION = "pref_view_direction";
     public static final String KEY_PREF_VIEW_VOLUME_FLICK = "pref_view_volume_flick";
+    public static final String KEY_PREF_VIEW_ONE_PIC_GALLERY = "pref_view_one_pic_gallery";
 
     public static final String DIREACTION_LEFT_TO_RIGHT =
             HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];

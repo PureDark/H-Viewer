@@ -36,7 +36,7 @@ public class FavouriteHolder {
         dbHelper.insert(dbName, contentValues);
     }
 
-    public void clear(){
+    public void clear() {
         dbHelper.delete(dbName, "", null);
     }
 
@@ -59,6 +59,7 @@ public class FavouriteHolder {
                 favourites.add(collection);
             }
         }
+        cursor.close();
 
         return favourites;
     }
@@ -66,10 +67,14 @@ public class FavouriteHolder {
     public boolean isFavourite(Collection item) {
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `idCode` = ? AND `title` = ? AND `referer` = ?",
                 new String[]{item.idCode, item.title, item.referer});
-        if (cursor == null || !cursor.moveToNext())
-            return false;
-        else
-            return true;
+        try {
+            if (cursor == null || !cursor.moveToNext())
+                return false;
+            else
+                return true;
+        } finally {
+            cursor.close();
+        }
     }
 
     public void onDestroy() {

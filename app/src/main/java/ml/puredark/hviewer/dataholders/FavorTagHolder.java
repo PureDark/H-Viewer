@@ -55,6 +55,7 @@ public class FavorTagHolder extends AbstractTagHolder{
             tag.url = TextUtils.isEmpty(url) ? null : url;
             tags.add(tag);
         }
+        cursor.close();
 
         return tags;
     }
@@ -62,10 +63,14 @@ public class FavorTagHolder extends AbstractTagHolder{
     public boolean tagExist(Tag item) {
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `title` = ?",
                 new String[]{item.title});
-        if (cursor == null || !cursor.moveToNext())
-            return false;
-        else
-            return true;
+        try {
+            if (cursor == null || !cursor.moveToNext())
+                return false;
+            else
+                return true;
+        }finally {
+            cursor.close();
+        }
     }
 
     public void onDestroy() {

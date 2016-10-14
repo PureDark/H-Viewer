@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.facebook.datasource.DataSource;
@@ -116,13 +117,15 @@ public class SiteFlagHandler {
                     if (collection.tags != null) {
                         for (Tag tag : collection.tags) {
                             HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
-                            if(siteTagHolder!=null)
+                            if (siteTagHolder != null)
                                 siteTagHolder.addTag(site.sid, tag);
                         }
                     }
-                    HViewerApplication.searchSuggestionHolder.removeDuplicate();
 
-                    new Handler(context.getMainLooper()).post(() -> adapter.notifyItemChanged(position));
+                    new Handler(context.getMainLooper()).post(() -> {
+                        HViewerApplication.searchSuggestionHolder.removeDuplicate();
+                        adapter.notifyItemChanged(position);
+                    });
                 }).start();
             }
 

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.provider.DocumentFile;
@@ -79,13 +80,14 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
     private DirectoryChooserFragment mDialog;
     private String lastPath = DownloadManager.getDownloadPath();
     private Picture pictureToBeSaved;
+    private boolean firstTime = true;
 
     public PicturePagerAdapter(BaseActivity activity, Site site, Collection collection, List<Picture> pictures) {
         this.activity = activity;
         this.site = site;
         this.collection = collection;
         this.pictures = pictures;
-        for (int i = 0; i < pictures.size(); i++)
+        for (int i = 0; i < getCount(); i++)
             viewHolders.add(null);
     }
 
@@ -118,7 +120,14 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         return viewDirection;
     }
 
-    public int getPicturePostion(int position){
+    @Override
+    public int getItemPosition(Object object) {
+        if (firstTime)
+            return POSITION_NONE;
+        return super.getItemPosition(object);
+    }
+
+    public int getPicturePostion(int position) {
         if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection)) {
             return position;
         } else if (DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)) {
@@ -129,17 +138,23 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
 
     @Override
     public void notifyDataSetChanged() {
-        if (pictures != null && pictures.size() > viewHolders.size()) {
-            int size = pictures.size() - viewHolders.size();
+        if (getCount() > viewHolders.size()) {
+            int size = getCount() - viewHolders.size();
             for (int i = 0; i < size; i++)
                 viewHolders.add(null);
         }
+        if (firstTime)
+            new Handler().postDelayed(() -> firstTime = false, 500);
         super.notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return (pictures == null) ? 0 : pictures.size();
+        if (pictures == null)
+            return 1;
+        if (pictures.size() == 0)
+            return 1;
+        return pictures.size();
     }
 
     @Override
@@ -161,64 +176,66 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_picture_viewer, null);
         final PictureViewHolder viewHolder = new PictureViewHolder(view);
 
-        final Picture picture = pictures.get(getPicturePostion(position));
-        if (picture.pic != null) {
-            loadImage(container.getContext(), picture, viewHolder);
-        } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-            getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
-        } else if (site.picUrlSelector != null) {
-            getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
-        } else {
-            picture.pic = picture.url;
-            loadImage(container.getContext(), picture, viewHolder);
-        }
-        viewHolder.btnRefresh.setOnClickListener(v -> {
+        if (pictures!=null && position < pictures.size()) {
+            final Picture picture = pictures.get(getPicturePostion(position));
             if (picture.pic != null) {
                 loadImage(container.getContext(), picture, viewHolder);
             } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
                 getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
-            } else if (site.picUrlSelector == null) {
+            } else if (site.picUrlSelector != null) {
+                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
+            } else {
                 picture.pic = picture.url;
                 loadImage(container.getContext(), picture, viewHolder);
-            } else {
-                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
             }
-        });
-        viewHolder.ivPicture.setOnLongClickListener(v -> {
-            if (activity != null) {
-                new AlertDialog.Builder(activity).setTitle("保存图片？")
-                        .setMessage("是否保存当前图片")
-                        .setPositiveButton("确定", (dialog, which) -> new AlertDialog.Builder(activity).setTitle("是否直接保存到下载目录？")
-                                .setMessage("否则另存到其他目录")
-                                .setPositiveButton("是", (dialog1, which1) -> {
-                                    pictureToBeSaved = picture;
-                                    onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath()));
-                                })
-                                .setNegativeButton("否", (dialog12, which12) -> {
-                                    pictureToBeSaved = picture;
-                                    final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                            .initialDirectory(lastPath)
-                                            .newDirectoryName("download")
-                                            .allowNewDirectoryNameModification(true)
-                                            .build();
-                                    mDialog = DirectoryChooserFragment.newInstance(config);
-                                    mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                                        try {
-                                            activity.startActivityForResult(intent, PictureViewerActivity.RESULT_CHOOSE_DIRECTORY);
-                                        } catch (ActivityNotFoundException e) {
-                                            e.printStackTrace();
+            viewHolder.btnRefresh.setOnClickListener(v -> {
+                if (picture.pic != null) {
+                    loadImage(container.getContext(), picture, viewHolder);
+                } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
+                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+                } else if (site.picUrlSelector == null) {
+                    picture.pic = picture.url;
+                    loadImage(container.getContext(), picture, viewHolder);
+                } else {
+                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
+                }
+            });
+            viewHolder.ivPicture.setOnLongClickListener(v -> {
+                if (activity != null) {
+                    new AlertDialog.Builder(activity).setTitle("保存图片？")
+                            .setMessage("是否保存当前图片")
+                            .setPositiveButton("确定", (dialog, which) -> new AlertDialog.Builder(activity).setTitle("是否直接保存到下载目录？")
+                                    .setMessage("否则另存到其他目录")
+                                    .setPositiveButton("是", (dialog1, which1) -> {
+                                        pictureToBeSaved = picture;
+                                        onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath()));
+                                    })
+                                    .setNegativeButton("否", (dialog12, which12) -> {
+                                        pictureToBeSaved = picture;
+                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                .initialDirectory(lastPath)
+                                                .newDirectoryName("download")
+                                                .allowNewDirectoryNameModification(true)
+                                                .build();
+                                        mDialog = DirectoryChooserFragment.newInstance(config);
+                                        mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                                            try {
+                                                activity.startActivityForResult(intent, PictureViewerActivity.RESULT_CHOOSE_DIRECTORY);
+                                            } catch (ActivityNotFoundException e) {
+                                                e.printStackTrace();
+                                                mDialog.show(activity.getFragmentManager(), null);
+                                            }
+                                        } else {
                                             mDialog.show(activity.getFragmentManager(), null);
                                         }
-                                    } else {
-                                        mDialog.show(activity.getFragmentManager(), null);
-                                    }
-                                }).show()).setNegativeButton("取消", null).show();
-            }
-            return true;
-        });
+                                    }).show()).setNegativeButton("取消", null).show();
+                }
+                return true;
+            });
+        }
         viewHolders.set(position, viewHolder);
         container.addView(viewHolder.view, 0);
         return viewHolder.view;
