@@ -11,6 +11,8 @@ import ml.puredark.hviewer.beans.Site;
  */
 public abstract class MyFragment extends Fragment {
 
+    public abstract Site getCurrSite();
+
     public abstract void onSearch(String keyword);
 
     public abstract void onLoadUrl(String url);

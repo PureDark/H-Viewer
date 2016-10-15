@@ -233,6 +233,11 @@ public class CollectionFragment extends MyFragment {
     }
 
     @Override
+    public Site getCurrSite() {
+        return site;
+    }
+
+    @Override
     public void onSearch(String keyword) {
         if (site == null || site.searchUrl == null || "".equals(site.searchUrl)) {
             BaseActivity activity = (BaseActivity) getActivity();

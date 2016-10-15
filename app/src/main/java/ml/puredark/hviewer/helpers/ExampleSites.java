@@ -1035,7 +1035,7 @@ public class ExampleSites {
         galleryRule.tagRule = new TagRule();
         galleryRule.tagRule.item = new Selector("div.info > p > span.genre", null, null, null, null);
         galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
-        galleryRule.tagRule.url = new Selector("a", "attr", "href", null, null);
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*?)", "$1/page/{page:1}");
         galleryRule.description = new Selector("div.info", "html", null, null, null);
         galleryRule.item = new Selector("div#sample-waterfall > .sample-box", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
@@ -1087,6 +1087,154 @@ public class ExampleSites {
         categories.add(new Category(2, "已发布", "https://avxo.pw/cn/released/page/{page:1}"));
         categories.add(new Category(3, "热门", "https://avxo.pw/cn/popular/page/{page:1}"));
         sites.get(sites.size() - 1).setCategories(categories);
+
+        // 半次元
+        indexRule = new Rule();
+        indexRule.item = new Selector("li>.imageCard,li.disc_one,li.l-work-thumbnail", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", "/(\\w+/detail/\\d+/\\d+)", null);
+        indexRule.cover = new Selector("img", "attr", "src", null, null);
+        indexRule.title = new Selector("div.work-thumbnail__ft > a", "html", null, null, null);
+        indexRule.uploader = new Selector("a.name>span,div.center.cut>span>a", "html", null, null, null);
+        indexRule.category = new Selector(".imageCard__img span.countBadge", "html", null, null, null);
+        indexRule.datetime = new Selector("div.mt10 > span", "html", null, "(\\d+)", "❤$1");
+
+        galleryRule = new Rule();
+        galleryRule.title = new Selector("article.post > header > div.post__title > h1", "html", null, null, null);
+        galleryRule.uploader = new Selector(".l-detailUser-name > a", "html", null, null, null);
+        galleryRule.category = new Selector("div.container > div.row", "html", null, "<div class=\"btn__text-wrap\">.*?<i></i>.*?赞&nbsp;\\((\\d+)\\).*?<div class=\"post__type post__info-group mb20\">.*?([^<>\"]+)</a>.*?(共\\d+P)", "$2　$3　❤$1");
+        galleryRule.datetime = new Selector("article.post > header > div.post__info > div.post__type", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", null);
+        galleryRule.tags = new Selector("ul.tags>li.tag>a>div,div.post__role h2", null, null, "([^<>\"]+)(?:</div>|</a>)", null);
+        galleryRule.description = new Selector("div.post__content", "html", null, "([^<>\"]+)<div", null);
+        galleryRule.item = new Selector("div.post__content img.detail_std", null, null, null, null);
+        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", "(.*\\.(?:jpg|jpeg|png|gif|bmp))", "$1/2X3");
+        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
+        galleryRule.pictureHighRes = new Selector("this", "attr", "src", "(.*\\.(?:jpg|jpeg|png|gif|bmp))", null);
+        galleryRule.commentRule = new CommentRule();
+        galleryRule.commentRule.item = new Selector("ul.publish__comment-list > li.comment", null, null, null, null);
+        galleryRule.commentRule.avatar = new Selector("a.comment__avatar-img > img", "attr", "src", null, null);
+        galleryRule.commentRule.author = new Selector("a.comment__user-name", "html", null, null, null);
+        galleryRule.commentRule.datetime = new Selector("div.comment__right > div.minor", "html", null, null, null);
+        galleryRule.commentRule.content = new Selector("div.comment__content", null, null, null, null);
+
+        sites.add(new Site(62, "半次元",
+                "http://bcy.net/illust/index/ajaxLoadHotIllust?n={page:0}",
+                "http://bcy.net/{idCode:}",
+                "http://bcy.net/search/all?k={keyword:}&p={page:1}",
+                "http://bcy.net/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "热门绘画", "http://bcy.net/illust/index/ajaxLoadHotIllust?n={page:0}"));
+        categories.add(new Category(2, "精选绘画", "http://bcy.net/illust/discover?&p={page:1}"));
+        categories.add(new Category(3, "最新同人", "http://bcy.net/illust/allfanart?&p={page:1}"));
+        categories.add(new Category(4, "最新原创", "http://bcy.net/illust/allartwork?&{page:1}"));
+        categories.add(new Category(5, "日排行榜", "http://bcy.net/illust/toppost100?type=lastday"));
+        categories.add(new Category(6, "周排行榜", "http://bcy.net/illust/toppost100"));
+        categories.add(new Category(7, "热门COS", "http://bcy.net/coser/index/ajaxLoadHotCos?n={page:0}"));
+        categories.add(new Category(8, "精选COS", "http://bcy.net/coser/discover?&p={page:1}"));
+        categories.add(new Category(9, "最新正片", "http://bcy.net/coser/allwork?&p={page:1}"));
+        categories.add(new Category(10, "最新预告", "http://bcy.net/coser/allpre?&p={page:1}"));
+        categories.add(new Category(11, "日排行榜", "http://bcy.net/coser/toppost100?type=lastday"));
+        categories.add(new Category(12, "周排行榜", "http://bcy.net/coser/toppost100"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+        // 美女图片集
+        indexRule = new Rule();
+        indexRule.item = new Selector("div.album-item", null, null, null, null);
+        indexRule.idCode = new Selector("h2 > a", "attr", "href", "album/(.*)", null);
+        indexRule.cover = new Selector("div.album-grid > a.one-third", "attr", "photo", null, null);
+        indexRule.title = new Selector("h2 > a", "html", null, null, null);
+        indexRule.uploader = new Selector("p.desp > a", "html", null, null, null);
+        indexRule.category = new Selector("p.desp", "html", null, "<code>(\\d+)</code>.*?<code>(\\d+)</code>", "$1张照片　浏览$2次");
+        indexRule.datetime = new Selector("p.desp", "html", null, "(\\d{4}/\\d{2}/\\d{2})", null);
+
+        galleryRule = new Rule();
+        galleryRule.tagRule = new TagRule();
+        galleryRule.tagRule.item = new Selector("span.tag", null, null, null, null);
+        galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*)", "$1?p={page:1}");
+        galleryRule.item = new Selector("ul.gridview > li", null, null, null, null);
+        galleryRule.pictureThumbnail = new Selector("a > img", null, null, "(?:src|data-original)=\"(.*?)\"", null);
+        galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
+
+        sites.add(new Site(63, "美女图片集",
+                "http://www.girl-atlas.com/?p={page:1}",
+                "http://www.girl-atlas.com/album/{idCode:}?display=2",
+                null,
+                "http://www.girl-atlas.com/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "精华图片集", "http://www.girl-atlas.com/?p={page:1}"));
+        categories.add(new Category(2, "最新图片集", "http://www.girl-atlas.com/index1?p={page:1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+        // Nude-Atlas
+        indexRule = new Rule();
+        indexRule.item = new Selector("div#posts div.post-with-pic", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", "blog/post/(.*)", null);
+        indexRule.cover = new Selector("a > img", "attr", "src", null, null);
+        indexRule.title = new Selector("a.post-title", "html", null, null, null);
+        indexRule.uploader = new Selector("span.post_date", "html", null, "</i> (\\d+&nbsp;views)", null);
+        indexRule.tags = new Selector("span.post-tag", "html", null, null, null);
+        indexRule.datetime = new Selector("span.post-date", "html", null, "</i>(.*?)<i", null);
+
+        galleryRule = new Rule();
+        galleryRule.description = new Selector("div.post-body", "html", null, null, null);
+        galleryRule.item = new Selector("div.post-pics > a", null, null, null, null);
+        galleryRule.pictureThumbnail = new Selector("this", "attr", "href", null, null);
+        galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
+
+        sites.add(new Site(64, "Nude-Atlas",
+                "http://nude-atlas.com/blog/index?p={page:1}",
+                "http://nude-atlas.com/blog/post/{idCode:}",
+                null,
+                "http://nude-atlas.com/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "#ALL", "http://nude-atlas.com/blog/index?p={page:1}"));
+        categories.add(new Category(2, "#CHINESE", "http://nude-atlas.com/blog/index?t=57beb41e5ca248101fb2332d&p={page:1}"));
+        categories.add(new Category(3, "#JAPANESE", "http://nude-atlas.com/blog/index?t=57beb4e25ca248101fb2332e&p={page:1}"));
+        categories.add(new Category(4, "#WESTERN", "http://nude-atlas.com/blog/index?t=57beb5345ca248101fb2332f&p={page:1}"));
+        categories.add(new Category(5, "#RUSSIAN", "http://nude-atlas.com/blog/index?t=57bf2d5c5ca24815fa29e77c&p={page:1}"));
+        categories.add(new Category(6, "#FRENCH", "http://nude-atlas.com/blog/index?t=57bf302e5ca24815fa29e781&p={page:1}"));
+        categories.add(new Category(7, "#MIDDLE EASTERN", "http://nude-atlas.com/blog/index?t=57bf31935ca24815fa29e783&p={page:1}"));
+        categories.add(new Category(8, "#EASTERN EUROPEAN", "http://nude-atlas.com/blog/index?t=57bf36f45ca24815fa29e788&p={page:1}"));
+        categories.add(new Category(9, "#GERMAN", "http://nude-atlas.com/blog/index?t=57bf3beb5ca24815fa29e78e&p={page:1}"));
+        categories.add(new Category(10, "#USA", "http://nude-atlas.com/blog/index?t=57c27e465ca248175753c287&p={page:1}"));
+        categories.add(new Category(11, "#KOREAN", "http://nude-atlas.com/blog/index?t=57fb0df05ca24814954f5a2f&p={page:1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+        // 宅男女神
+        indexRule = new Rule();
+        indexRule.item = new Selector("ul>li.galleryli,ul>li.igalleryli", null, null, null, null);
+        indexRule.idCode = new Selector("a.galleryli_link,a.igalleryli_link", "attr", "href", "/g/(\\d*)", null);
+        indexRule.cover = new Selector("a > img", "attr", "data-original", null, null);
+        indexRule.title = new Selector("div.galleryli_title>a,div.igalleryli_title>a", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.tagRule = new TagRule();
+        galleryRule.tagRule.item = new Selector("ul#utag > li", null, null, null, null);
+        galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*)", "$1{pageStr:{page:1}.html}");
+        galleryRule.description = new Selector("div#ddesc", "html", null, null, null);
+        galleryRule.category = new Selector("div#dinfo", "html", null, ">(\\d+)张.*?浏览了(.*?)次", "$1张照片　浏览$2次");
+        galleryRule.datetime = new Selector("div#dinfo", "html", null, "(\\d{4}/\\d{2}/\\d{2})", null);
+        galleryRule.item = new Selector("ul#hgallery img", null, null, null, null);
+        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
+        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
+
+        sites.add(new Site(65, "宅男女神",
+                "http://www.zngirls.com/gallery/{pageStr:{page:1}.html}",
+                "http://www.zngirls.com/g/{idCode:}/{page:1}.html",
+                null,
+                null,
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
 
         return sites;
     }

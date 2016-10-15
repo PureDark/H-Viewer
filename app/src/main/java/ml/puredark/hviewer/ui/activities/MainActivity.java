@@ -76,11 +76,13 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
 import ml.puredark.hviewer.utils.DensityUtil;
+import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.R.attr.padding;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
+import static ml.puredark.hviewer.utils.RegexValidateUtil.getDominFromUrl;
 
 
 public class MainActivity extends BaseActivity {
@@ -191,12 +193,12 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-        List<Site> sites = ExampleSites.get();
-        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+//        List<Site> sites = ExampleSites.get();
+//        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
 //        siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-2));
-        siteGroups.get(0).second.add(sites.get(sites.size()-1));
-        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
+//        siteGroups.get(0).second.add(sites.get(sites.size()-1));
+//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
@@ -666,9 +668,15 @@ public class MainActivity extends BaseActivity {
             EditText editText = (EditText) searchView.getChildAt(0).findViewById(R.id.searchTextView);
             if (selectedTags.size() == 1) {
                 Tag tag = selectedTags.get(0);
-                if (tag.url != null)
-                    currFragment.onLoadUrl(tag.url);
-                else
+                Site currSite = currFragment.getCurrSite();
+                if (tag.url != null && currSite!=null) {
+                    String domin1 = RegexValidateUtil.getDominFromUrl(tag.url);
+                    String domin2 = RegexValidateUtil.getDominFromUrl(currFragment.getCurrSite().indexUrl);
+                    if(domin1.equals(domin2)) {
+                        currFragment.onLoadUrl(tag.url);
+                    }else
+                        currFragment.onSearch(tag.title);
+                }else
                     currFragment.onSearch(tag.title);
                 HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
                 historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
