@@ -190,22 +190,17 @@ public class PictureViewerActivity extends BaseActivity {
         }
     }
 
-    public void notifyDataSetChanged() {
+    public void notifyDataSetChanged(List<Picture> pictures) {
         if (picturePagerAdapter != null) {
+            picturePagerAdapter.pictures = pictures;
             picturePagerAdapter.notifyDataSetChanged();
             tvCount.setText((picturePagerAdapter.getPicturePostion(currPos) + 1) + "/" + picturePagerAdapter.getCount());
         }
         if (pictureViewerAdapter != null) {
+            pictureViewerAdapter.getDataProvider().setDataSet(pictures);
             pictureViewerAdapter.notifyDataSetChanged();
             tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (picturePagerAdapter != null)
-            picturePagerAdapter.clearItems();
-        super.onDestroy();
     }
 
     // 监听音量键，实现翻页

@@ -309,7 +309,9 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         HViewerApplication.temp = CollectionActivity.this;
         HViewerApplication.temp2 = site;
         HViewerApplication.temp3 = collection;
-        HViewerApplication.temp4 = pictureAdapter.getDataProvider().getItems();
+        List<Picture> pictures = new ArrayList<>();
+        pictures.addAll(pictureAdapter.getDataProvider().getItems());
+        HViewerApplication.temp4 = pictures;
         Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
         intent.putExtra("position", position);
         startActivity(intent);
@@ -494,8 +496,11 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         refreshDescription(url);
         if (pictureAdapter != null)
             pictureAdapter.notifyDataSetChanged();
-        if (pictureViewerActivity != null)
-            pictureViewerActivity.notifyDataSetChanged();
+        if (pictureViewerActivity != null) {
+            List<Picture> pictures = new ArrayList<>();
+            pictures.addAll(pictureAdapter.getDataProvider().getItems());
+            pictureViewerActivity.notifyDataSetChanged(pictures);
+        }
         if (commentAdapter != null)
             commentAdapter.notifyDataSetChanged();
     }

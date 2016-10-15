@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.gc.materialdesign.views.ButtonFlat;
-import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -59,7 +58,6 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
-import ml.puredark.hviewer.helpers.ExampleSites;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -71,7 +69,6 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
@@ -653,6 +650,7 @@ public class MainActivity extends BaseActivity {
         }
 
         private void searchTags() {
+            if (currFragment == null) return;
             List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
             List<Tag> selectedTags = new ArrayList<>();
             for (Tag tag : tags) {
@@ -680,7 +678,7 @@ public class MainActivity extends BaseActivity {
                 historyTagAdapter.notifyDataSetChanged();
                 keyword = keyword.trim();
                 currFragment.onSearch(keyword);
-                historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
+                historyTagAdapter.getDataProvider().setDataSet(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag());
                 historyTagAdapter.notifyDataSetChanged();
                 editText.setText(keyword);
                 new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
@@ -693,7 +691,7 @@ public class MainActivity extends BaseActivity {
                 if (tag.selected)
                     favorTagHolder.addTag(tag);
             }
-            favorTagAdapter.setDataProvider(new ListDataProvider(favorTagHolder.getTags(0)));
+            favorTagAdapter.getDataProvider().setDataSet(favorTagHolder.getTags(0));
             favorTagAdapter.notifyDataSetChanged();
             Toast.makeText(MainActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
         }
@@ -722,7 +720,7 @@ public class MainActivity extends BaseActivity {
         }
 
         private void refreshTags(int sid, AbstractTagHolder tagHolder) {
-            mSiteTagAdapter.setDataProvider(new ListDataProvider(tagHolder.getTags(sid)));
+            mSiteTagAdapter.getDataProvider().setDataSet(tagHolder.getTags(sid));
             mSiteTagAdapter.notifyDataSetChanged();
         }
 
@@ -731,7 +729,7 @@ public class MainActivity extends BaseActivity {
                     .setMessage("清空后将无法恢复")
                     .setPositiveButton("确定", (dialog, which) -> {
                         tagHolder.clear(sid);
-                        mSiteTagAdapter.setDataProvider(new ListDataProvider(new ArrayList<>()));
+                        mSiteTagAdapter.getDataProvider().clear();
                         mSiteTagAdapter.notifyDataSetChanged();
                     }).setNegativeButton("取消", null).show();
         }
@@ -740,7 +738,7 @@ public class MainActivity extends BaseActivity {
     private void showBottomSheet(BottomSheetBehavior behavior, boolean show) {
         if (show) {
             if (currFragment != null && siteAdapter.selectedSid != 0) {
-                siteTagAdapter.setDataProvider(new ListDataProvider(siteTagHolder.getRandomTags(siteAdapter.selectedSid, 30)));
+                siteTagAdapter.getDataProvider().setDataSet(siteTagHolder.getRandomTags(siteAdapter.selectedSid, 30));
                 siteTagAdapter.notifyDataSetChanged();
             }
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

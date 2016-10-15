@@ -11,7 +11,7 @@ public class CommentRule {
 
     public boolean isEmpty() {
         boolean notEmpty = false;
-        Field[] fs = Collection.class.getDeclaredFields();
+        Field[] fs = getClass().getDeclaredFields();
         try {
             for (Field f : fs) {
                 f.setAccessible(true);

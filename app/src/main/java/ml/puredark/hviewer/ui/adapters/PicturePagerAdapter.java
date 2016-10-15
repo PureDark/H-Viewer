@@ -108,11 +108,6 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         }
     }
 
-    public void clearItems() {
-        pictures = null;
-        notifyDataSetChanged();
-    }
-
     public void setViewDirection(String viewDirection) {
         this.viewDirection = viewDirection;
     }
