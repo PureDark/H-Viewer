@@ -120,7 +120,6 @@ public class MyOkHttpNetworkFetcher extends
                         final ResponseBody body = response.body();
                         try {
                             if (!response.isSuccessful()) {
-                                Log.d("MyOkHttpNetworkFetcher", "request.headers():" + request.headers());
                                 handleException(
                                         call,
                                         new IOException("Unexpected HTTP code " + response),

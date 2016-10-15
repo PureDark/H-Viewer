@@ -147,12 +147,7 @@ public class CollectionFragment extends MyFragment {
     private void getCollections(String keyword, final int page) {
         if (onePage && page > startPage) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    rvCollection.setPullLoadMoreCompleted();
-                }
-            });
+            getActivity().runOnUiThread(() -> rvCollection.setPullLoadMoreCompleted());
             return;
         }
         this.keyword = keyword;
@@ -299,6 +294,13 @@ public class CollectionFragment extends MyFragment {
                 }
             }, 300);
         }
+    }
+
+    @Override
+    public void onJumpToPage(int page) {
+        rvCollection.setRefreshing(true);
+        adapter.getDataProvider().clear();
+        getCollections(keyword, page);
     }
 
     @Override

@@ -44,7 +44,7 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/tool_bar_height"
                     android:layout_weight="1"
-                    android:gravity="center"
+                    android:gravity="center_vertical"
                     android:text=""
                     android:textAppearance="@style/ActionBar.Title" />
 

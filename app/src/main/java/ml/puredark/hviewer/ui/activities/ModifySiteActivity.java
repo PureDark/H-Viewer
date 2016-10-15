@@ -173,7 +173,7 @@ public class ModifySiteActivity extends BaseActivity {
                 new Thread(() -> {
                     FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath());
                     final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
-                            BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher),
+                            BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                             FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath()));
 
                     runOnUiThread(() -> {

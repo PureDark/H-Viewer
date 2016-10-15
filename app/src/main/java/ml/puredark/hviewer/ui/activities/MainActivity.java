@@ -19,19 +19,24 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.gc.materialdesign.views.ButtonFlat;
+import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
@@ -58,6 +63,7 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
+import ml.puredark.hviewer.helpers.ExampleSites;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -69,7 +75,10 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
+import ml.puredark.hviewer.utils.DensityUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
+import static android.R.attr.padding;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -182,12 +191,12 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-//        List<Site> sites = ExampleSites.get();
-//        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+        List<Site> sites = ExampleSites.get();
+        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
 //        siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-2));
-//        siteGroups.get(0).second.add(sites.get(sites.size()-1));
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
+        siteGroups.get(0).second.add(sites.get(sites.size()-1));
+        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
@@ -232,10 +241,11 @@ public class MainActivity extends BaseActivity {
             public void onGroupClick(View v, int groupPosition) {
                 // 点击分类（如果是新建按钮则创建，否则展开）
                 if (groupPosition == siteAdapter.getGroupCount() - 1) {
-                    final EditText inputGroupTitle = new EditText(MainActivity.this);
+                    View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+                    MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("新建组名")
-                            .setView(inputGroupTitle)
+                            .setView(view)
                             .setNegativeButton("取消", null)
                             .setPositiveButton("确定", (dialog, which) -> {
                                 String title = inputGroupTitle.getText().toString();
@@ -259,36 +269,28 @@ public class MainActivity extends BaseActivity {
                 final SiteGroup group = siteAdapter.getDataProvider().getGroupItem(groupPosition);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("操作")
-                        .setItems(new String[]{"重命名", "删除"}, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                if (i == 0) {
-                                    final EditText inputGroupTitle = new EditText(MainActivity.this);
-                                    inputGroupTitle.setText(group.title);
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                    builder.setTitle("重命名组").setView(inputGroupTitle)
-                                            .setNegativeButton("取消", null)
-                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    String title = inputGroupTitle.getText().toString();
-                                                    group.title = title;
-                                                    siteHolder.updateSiteGroup(group);
-                                                    siteAdapter.notifyDataSetChanged();
-                                                }
-                                            }).show();
-                                } else if (i == 1) {
-                                    new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
-                                            .setMessage("删除后将无法恢复")
-                                            .setNegativeButton("取消", null)
-                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    siteHolder.deleteSiteGroup(group);
-                                                    siteAdapter.getDataProvider().removeGroupItem(groupPosition);
-                                                    siteAdapter.notifyDataSetChanged();
-                                                }
-                                            }).show();
-                                }
+                        .setItems(new String[]{"重命名", "删除"}, (dialogInterface, i) -> {
+                            if (i == 0) {
+                                View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+                                MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
+                                new AlertDialog.Builder(MainActivity.this).setTitle("重命名组")
+                                        .setView(view)
+                                        .setNegativeButton("取消", null)
+                                        .setPositiveButton("确定", (dialog, which) -> {
+                                            String title = inputGroupTitle.getText().toString();
+                                            group.title = title;
+                                            siteHolder.updateSiteGroup(group);
+                                            siteAdapter.notifyDataSetChanged();
+                                        }).show();
+                            } else if (i == 1) {
+                                new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
+                                        .setMessage("删除后将无法恢复")
+                                        .setNegativeButton("取消", null)
+                                        .setPositiveButton("确定", (dialog, which) -> {
+                                            siteHolder.deleteSiteGroup(group);
+                                            siteAdapter.getDataProvider().removeGroupItem(groupPosition);
+                                            siteAdapter.notifyDataSetChanged();
+                                        }).show();
                             }
                         })
                         .setNegativeButton("取消", null)
@@ -467,6 +469,8 @@ public class MainActivity extends BaseActivity {
                 if (state == State.COLLAPSED) {
                     if (size > 1)
                         toolbar.getMenu().getItem(size - 1).setVisible(true);
+                    if (size > 2)
+                        toolbar.getMenu().getItem(size - 2).setVisible(true);
                     if (searchView.isSearchOpen()) {
                         searchView.animate().alpha(1f).setDuration(300);
                         showBottomSheet(behavior, true);
@@ -474,6 +478,8 @@ public class MainActivity extends BaseActivity {
                 } else {
                     if (size > 1)
                         toolbar.getMenu().getItem(size - 1).setVisible(false);
+                    if (size > 2)
+                        toolbar.getMenu().getItem(size - 2).setVisible(false);
                     if (searchView.isSearchOpen()) {
                         searchView.animate().alpha(0f).setDuration(300);
                         showBottomSheet(behavior, false);
@@ -697,13 +703,14 @@ public class MainActivity extends BaseActivity {
         }
 
         private void addTags(int sid, AbstractTagHolder tagHolder) {
-            final EditText inputGroupTitle = new EditText(MainActivity.this);
+            View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+            MaterialEditText inputTagTitle = (MaterialEditText) view.findViewById(R.id.input_text);
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("TAG名")
-                    .setView(inputGroupTitle)
+                    .setView(view)
                     .setNegativeButton("取消", null)
                     .setPositiveButton("确定", (dialog, which) -> {
-                        String title = inputGroupTitle.getText().toString();
+                        String title = inputTagTitle.getText().toString();
                         Tag tag = new Tag(0, title);
                         tagHolder.addTag(sid, tag);
                         refreshTags(sid, tagHolder);
@@ -807,6 +814,26 @@ public class MainActivity extends BaseActivity {
             case R.id.action_favourite:
                 intent = new Intent(MainActivity.this, FavouriteActivity.class);
                 break;
+            case R.id.action_jump_to_page:
+                View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+                MaterialEditText inputJumpToPage = (MaterialEditText) view.findViewById(R.id.input_text);
+                inputJumpToPage.setInputType(InputType.TYPE_CLASS_NUMBER);
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("跳转到第几页？")
+                        .setView(view)
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", (dialog, which) -> {
+                            String pageStr = inputJumpToPage.getText().toString();
+                            int page = 0;
+                            try{
+                                page = Integer.parseInt(pageStr);
+                            }catch (Exception e){
+                                page = 0;
+                            }
+                            if(currFragment!=null)
+                                currFragment.onJumpToPage(page);
+                        }).show();
+                return true;
             case R.id.action_search:
                 search();
                 return true;

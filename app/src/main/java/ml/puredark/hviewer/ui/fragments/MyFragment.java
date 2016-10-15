@@ -15,6 +15,8 @@ public abstract class MyFragment extends Fragment {
 
     public abstract void onLoadUrl(String url);
 
+    public abstract void onJumpToPage(int page);
+
     public abstract void setRecyclerViewToList();
 
     public abstract void setRecyclerViewToGrid();

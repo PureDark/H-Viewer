@@ -322,9 +322,13 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     private boolean commentEnabled() {
-        return site.galleryRule.commentItem != null &&
+        return (site.galleryRule.commentRule != null &&
+                site.galleryRule.commentRule.item != null &&
+                site.galleryRule.commentRule.author != null&&
+                site.galleryRule.commentRule.content != null)
+                ||(site.galleryRule.commentItem != null &&
                 site.galleryRule.commentAuthor != null &&
-                site.galleryRule.commentContent != null;
+                site.galleryRule.commentContent != null);
     }
 
     private void refreshDescription(String url) {
