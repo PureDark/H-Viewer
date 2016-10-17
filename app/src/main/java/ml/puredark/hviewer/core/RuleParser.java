@@ -11,6 +11,9 @@ import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.view.View;
 
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
+
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
@@ -35,7 +38,6 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
-import static ml.puredark.hviewer.HViewerApplication.temp;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -90,31 +92,58 @@ public class RuleParser {
         clickableHtmlBuilder.setSpan(clickableSpan, start, end, flags);
     }
 
-    public static List<Collection> getCollections(List<Collection> collections, String html, Rule rule, String sourceUrl) {
+    public static boolean isJson(String string) {
+        if (string == null)
+            return false;
+        string = string.trim();
+        return string.startsWith("{") || string.startsWith("[");
+    }
+
+    public static List<Collection> getCollections(List<Collection> collections, String text, Rule rule, String sourceUrl) {
         try {
-            Document doc = Jsoup.parse(html);
-            Elements elements = doc.select(rule.item.selector);
-            for (Element element : elements) {
-                String itemStr;
-                if ("attr".equals(rule.item.fun)) {
-                    itemStr = element.attr(rule.title.param);
-                } else if ("html".equals(rule.item.fun)) {
-                    itemStr = element.html();
-                } else {
-                    itemStr = element.toString();
-                }
-                if (rule.item.regex != null) {
-                    Pattern pattern = Pattern.compile(rule.item.regex);
-                    Matcher matcher = pattern.matcher(itemStr);
-                    if (!matcher.find()) {
-                        continue;
+            if (!isJson(text)) {
+                Document doc = Jsoup.parse(text);
+                Elements elements = doc.select(rule.item.selector);
+                for (Element element : elements) {
+                    String itemStr;
+                    if ("attr".equals(rule.item.fun)) {
+                        itemStr = element.attr(rule.title.param);
+                    } else if ("html".equals(rule.item.fun)) {
+                        itemStr = element.html();
+                    } else {
+                        itemStr = element.toString();
                     }
+                    if (rule.item.regex != null) {
+                        Pattern pattern = Pattern.compile(rule.item.regex);
+                        Matcher matcher = pattern.matcher(itemStr);
+                        if (!matcher.find()) {
+                            continue;
+                        }
+                    }
+
+                    Collection collection = new Collection(collections.size() + 1);
+                    collection = getCollectionDetail(collection, element, rule, sourceUrl);
+
+                    collections.add(collection);
                 }
+            } else {
+                ReadContext ctx = JsonPath.parse(text);
+                List<ReadContext> items = ctx.read(rule.item.path);
+                for (ReadContext item : items) {
+                    String itemStr = item.jsonString();
+                    if (rule.item.regex != null) {
+                        Pattern pattern = Pattern.compile(rule.item.regex);
+                        Matcher matcher = pattern.matcher(itemStr);
+                        if (!matcher.find()) {
+                            continue;
+                        }
+                    }
 
-                Collection collection = new Collection(collections.size() + 1);
-                collection = getCollectionDetail(collection, element, rule, sourceUrl);
+                    Collection collection = new Collection(collections.size() + 1);
+                    collection = getCollectionDetail(collection, item, rule, sourceUrl);
 
-                collections.add(collection);
+                    collections.add(collection);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,10 +151,15 @@ public class RuleParser {
         return collections;
     }
 
-    public static Collection getCollectionDetail(Collection collection, String html, Rule rule, String sourceUrl) {
+    public static Collection getCollectionDetail(Collection collection, String text, Rule rule, String sourceUrl) {
         try {
-            Document element = Jsoup.parse(html);
-            collection = getCollectionDetail(collection, element, rule, sourceUrl);
+            if (!isJson(text)) {
+                Document element = Jsoup.parse(text);
+                collection = getCollectionDetail(collection, element, rule, sourceUrl);
+            } else {
+                ReadContext ctx = JsonPath.parse(text);
+                collection = getCollectionDetail(collection, ctx, rule, sourceUrl);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -173,7 +207,7 @@ public class RuleParser {
             for (Element tagElement : temp) {
                 String tagTitle = parseSingleProperty(tagElement, rule.tagRule.title, sourceUrl, false);
                 String tagUrl = parseSingleProperty(tagElement, rule.tagRule.url, sourceUrl, true);
-                if(TextUtils.isEmpty(tagUrl))
+                if (TextUtils.isEmpty(tagUrl))
                     tagUrl = null;
                 tags.add(new Tag(tags.size() + 1, tagTitle, tagUrl));
             }
@@ -209,7 +243,7 @@ public class RuleParser {
         }
 
         List<Comment> comments = new ArrayList<>();
-        if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null){
+        if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null) {
             temp = element.select(rule.commentRule.item.selector);
             for (Element commentElement : temp) {
                 String commentAvatar = parseSingleProperty(commentElement, rule.commentRule.avatar, sourceUrl, false);
@@ -218,7 +252,7 @@ public class RuleParser {
                 String commentContent = parseSingleProperty(commentElement, rule.commentRule.content, sourceUrl, false);
                 comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
             }
-        }else if (rule.commentItem != null && rule.commentContent != null) {
+        } else if (rule.commentItem != null && rule.commentContent != null) {
             temp = element.select(rule.commentItem.selector);
             for (Element commentElement : temp) {
                 String commentAvatar = parseSingleProperty(commentElement, rule.commentAvatar, sourceUrl, false);
@@ -276,34 +310,7 @@ public class RuleParser {
                     } else {
                         prop = elem.toString();
                     }
-                    if (selector.regex != null) {
-                        Pattern pattern = Pattern.compile(selector.regex, DOTALL);
-                        Matcher matcher = pattern.matcher(prop);
-                        while (matcher.find() && matcher.groupCount() >= 1) {
-                            if (selector.replacement != null) {
-                                prop = selector.replacement;
-                                for (int i = 1; i <= matcher.groupCount(); i++) {
-                                    String replace = matcher.group(i);
-                                    prop = prop.replaceAll("\\$" + i, (replace != null) ? replace : "");
-                                }
-                            } else {
-                                prop = matcher.group(1);
-                            }
-                            if (isUrl) {
-                                if (TextUtils.isEmpty(prop))
-                                    break;
-                                prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
-                            }
-                            props.add(StringEscapeUtils.unescapeHtml(prop.trim()));
-                        }
-                    } else {
-                        if (isUrl) {
-                            if (TextUtils.isEmpty(prop))
-                                break;
-                            prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
-                        }
-                        props.add(StringEscapeUtils.unescapeHtml(prop.trim()));
-                    }
+                    props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
                 }
             }
         }
@@ -321,5 +328,192 @@ public class RuleParser {
             return "";
         }
     }
+
+    public static Collection getCollectionDetail(Collection collection, ReadContext jsonRoot, Rule rule, String sourceUrl) throws Exception {
+
+        String idCode = parseSingleProperty(jsonRoot, rule.idCode, sourceUrl, false);
+
+        String title = parseSingleProperty(jsonRoot, rule.title, sourceUrl, false);
+
+        String uploader = parseSingleProperty(jsonRoot, rule.uploader, sourceUrl, false);
+
+        String cover = parseSingleProperty(jsonRoot, rule.cover, sourceUrl, true);
+
+        String category = parseSingleProperty(jsonRoot, rule.category, sourceUrl, false);
+
+        String datetime = parseSingleProperty(jsonRoot, rule.datetime, sourceUrl, false);
+
+        String description = parseSingleProperty(jsonRoot, rule.description, sourceUrl, false);
+
+        String ratingStr = parseSingleProperty(jsonRoot, rule.rating, sourceUrl, false);
+
+        float rating;
+
+        if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
+            rating = Float.parseFloat(ratingStr);
+        } else if (StringUtil.isNumeric(ratingStr)) {
+            rating = Float.parseFloat(ratingStr);
+        } else {
+            String result = MathUtil.computeString(ratingStr);
+            try {
+                rating = result.contains("NaN") ? 0 : Float.parseFloat(result);
+            } catch (NumberFormatException e) {
+                rating = Math.min(ratingStr.replace(" ", "").length(), 5);
+            }
+        }
+
+        List<ReadContext> temp;
+
+        List<Tag> tags = new ArrayList<>();
+        if (rule.tagRule != null && rule.tagRule.item != null) {
+            temp = jsonRoot.read(rule.tagRule.item.path);
+            for (ReadContext tagItem : temp) {
+                String tagTitle = parseSingleProperty(tagItem, rule.tagRule.title, sourceUrl, false);
+                String tagUrl = parseSingleProperty(tagItem, rule.tagRule.url, sourceUrl, true);
+                if (TextUtils.isEmpty(tagUrl))
+                    tagUrl = null;
+                tags.add(new Tag(tags.size() + 1, tagTitle, tagUrl));
+            }
+        } else if (rule.tags != null) {
+            List<String> tagStrs = parseSinglePropertyMatchAll(jsonRoot, rule.tags, sourceUrl, false);
+            for (String tagStr : tagStrs) {
+                if (!TextUtils.isEmpty(tagStr))
+                    tags.add(new Tag(tags.size() + 1, tagStr));
+            }
+        }
+
+        List<Picture> pictures = new ArrayList<>();
+        if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
+            if (rule.item != null) {
+                temp = jsonRoot.read(rule.item.path);
+                for (ReadContext pictureItem : temp) {
+                    String pictureUrl = parseSingleProperty(pictureItem, rule.pictureUrl, sourceUrl, true);
+                    String PictureHighRes = parseSingleProperty(pictureItem, rule.pictureHighRes, sourceUrl, true);
+                    String pictureThumbnail = parseSingleProperty(pictureItem, rule.pictureThumbnail, sourceUrl, true);
+                    pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
+                }
+            } else {
+                List<String> urls = parseSinglePropertyMatchAll(jsonRoot, rule.pictureUrl, sourceUrl, false);
+                List<String> thumbnails = parseSinglePropertyMatchAll(jsonRoot, rule.pictureThumbnail, sourceUrl, false);
+                List<String> highReses = parseSinglePropertyMatchAll(jsonRoot, rule.pictureHighRes, sourceUrl, false);
+                for (int i = 0; i < urls.size(); i++) {
+                    String url = urls.get(i);
+                    String thumbnail = (i < thumbnails.size()) ? thumbnails.get(i) : "";
+                    String highRes = (i < highReses.size()) ? highReses.get(i) : "";
+                    pictures.add(new Picture(pictures.size() + 1, url, thumbnail, highRes, sourceUrl));
+                }
+            }
+        }
+
+        List<Comment> comments = new ArrayList<>();
+        if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null) {
+            temp = jsonRoot.read(rule.commentRule.item.path);
+            for (ReadContext commentItem : temp) {
+                String commentAvatar = parseSingleProperty(commentItem, rule.commentRule.avatar, sourceUrl, false);
+                String commentAuthor = parseSingleProperty(commentItem, rule.commentRule.author, sourceUrl, false);
+                String commentDatetime = parseSingleProperty(commentItem, rule.commentRule.datetime, sourceUrl, false);
+                String commentContent = parseSingleProperty(commentItem, rule.commentRule.content, sourceUrl, false);
+                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
+            }
+        } else if (rule.commentItem != null && rule.commentContent != null) {
+            temp = jsonRoot.read(rule.commentItem.selector);
+            for (ReadContext commentItem : temp) {
+                String commentAvatar = parseSingleProperty(commentItem, rule.commentAvatar, sourceUrl, false);
+                String commentAuthor = parseSingleProperty(commentItem, rule.commentAuthor, sourceUrl, false);
+                String commentDatetime = parseSingleProperty(commentItem, rule.commentDatetime, sourceUrl, false);
+                String commentContent = parseSingleProperty(commentItem, rule.commentContent, sourceUrl, false);
+                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
+            }
+        }
+
+        if (!TextUtils.isEmpty(idCode))
+            collection.idCode = idCode;
+        if (!TextUtils.isEmpty(title))
+            collection.title = title;
+        if (!TextUtils.isEmpty(uploader))
+            collection.uploader = uploader;
+        if (!TextUtils.isEmpty(cover))
+            collection.cover = cover;
+        if (!TextUtils.isEmpty(category))
+            collection.category = category;
+        if (!TextUtils.isEmpty(datetime))
+            collection.datetime = datetime;
+        if (!TextUtils.isEmpty(description))
+            collection.description = description;
+        if (rating > 0)
+            collection.rating = rating;
+        if (!TextUtils.isEmpty(sourceUrl))
+            collection.referer = sourceUrl;
+        if (tags != null && tags.size() > 0)
+            collection.tags = tags;
+        if (pictures != null && pictures.size() > 0)
+            collection.pictures = pictures;
+        if (comments != null && comments.size() > 0)
+            collection.comments = comments;
+        return collection;
+    }
+
+
+    public static String parseSingleProperty(ReadContext jsonRoot, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
+        List<String> props = parseSinglePropertyMatchAll(jsonRoot, selector, sourceUrl, isUrl);
+        return (props.size() > 0) ? props.get(0) : "";
+    }
+
+    public static List<String> parseSinglePropertyMatchAll(ReadContext jsonRoot, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
+        List<String> props = new ArrayList<>();
+
+        if (selector != null) {
+            String prop;
+            List<ReadContext> temp = new ArrayList<>();
+            if ("this".equals(selector.path))
+                temp.add(jsonRoot);
+            else
+                temp = jsonRoot.read(selector.path);
+
+            if (temp != null) {
+                for (ReadContext item : temp) {
+                    prop = item.toString();
+                    props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
+                }
+            }
+        }
+        if (props.size() == 0)
+            props.add("");
+        return props;
+    }
+
+    public static List<String> getPropertyAfterRegex(List<String> props, String prop, Selector selector, String sourceUrl, boolean isUrl) {
+        if (selector.regex != null) {
+            Pattern pattern = Pattern.compile(selector.regex, DOTALL);
+            Matcher matcher = pattern.matcher(prop);
+            while (matcher.find() && matcher.groupCount() >= 1) {
+                if (selector.replacement != null) {
+                    prop = selector.replacement;
+                    for (int i = 1; i <= matcher.groupCount(); i++) {
+                        String replace = matcher.group(i);
+                        prop = prop.replaceAll("\\$" + i, (replace != null) ? replace : "");
+                    }
+                } else {
+                    prop = matcher.group(1);
+                }
+                if (isUrl) {
+                    if (TextUtils.isEmpty(prop))
+                        break;
+                    prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
+                }
+                props.add(StringEscapeUtils.unescapeHtml(prop.trim()));
+            }
+        } else {
+            if (isUrl) {
+                if (!TextUtils.isEmpty(prop)) {
+                    prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
+                    props.add(StringEscapeUtils.unescapeHtml(prop.trim()));
+                }
+            } else
+                props.add(StringEscapeUtils.unescapeHtml(prop.trim()));
+        }
+        return props;
+    }
+
 
 }

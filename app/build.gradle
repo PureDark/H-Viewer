@@ -122,6 +122,7 @@ dependencies {
     //format, gson, jsoup, etc
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.jhy:jsoup:jsoup-1.9.2'
+    compile 'com.jayway.jsonpath:json-path:2.2.0'
     //zxing
     compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     compile 'com.google.zxing:core:3.2.0'

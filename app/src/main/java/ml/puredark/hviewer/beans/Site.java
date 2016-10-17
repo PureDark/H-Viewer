@@ -41,6 +41,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public String cookie = "";
     public String flag = "";
     public int index;
+    public boolean isGrid = false;
 
     public Site() {
     }
@@ -103,18 +104,35 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
             return this.flag.contains(flag);
     }
 
-    public String getListUrl(String url, int page, String keyword) {
+    public String getListUrl(String url, int page, String keyword, List<Collection> collections) {
         Map<String, String> matchResult = RuleParser.parseUrl(url);
         String pageStr = matchResult.get("page");
         int startPage;
         try {
-            startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+            if ("minid".equals(pageStr)) {
+                startPage = 0;
+                int min = Integer.MAX_VALUE;
+                for (Collection collection : collections) {
+                    min = Math.min(min, Integer.parseInt(collection.idCode));
+                }
+                page = min;
+            } else if ("maxid".equals(pageStr)) {
+                startPage = 0;
+                int max = Integer.MIN_VALUE;
+                for (Collection collection : collections) {
+                    max = Math.max(max, Integer.parseInt(collection.idCode));
+                }
+                page = max;
+            } else {
+                startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+            }
         } catch (NumberFormatException e) {
             startPage = 0;
         }
         url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
-                .replaceAll("\\{page:.*?\\}", "" + page)
-                .replaceAll("\\{keyword:.*?\\}", keyword);
+                .replaceAll("\\{keyword:.*?\\}", keyword)
+                .replaceAll("\\{page:.*?\\}", "" + page);
+
         return url;
     }
 
@@ -138,13 +156,13 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
                     int value = (int) f.get(site);
                     if (value != 0)
                         f.set(this, value);
-                } else if("categories".equals(f.getName())){
+                } else if ("categories".equals(f.getName())) {
                     List<Category> categories = (List<Category>) f.get(site);
-                    if(this.categories!=null){
-                        if(categories==null)
+                    if (this.categories != null) {
+                        if (categories == null)
                             categories = new ArrayList<>();
-                        for(Category category : this.categories){
-                            if(!this.categories.contains(category))
+                        for (Category category : this.categories) {
+                            if (!this.categories.contains(category))
                                 categories.add(category);
                         }
                     }
