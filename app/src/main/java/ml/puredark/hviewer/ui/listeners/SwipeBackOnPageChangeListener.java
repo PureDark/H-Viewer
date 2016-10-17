@@ -1,4 +1,4 @@
-package ml.puredark.hviewer.ui.customs;
+package ml.puredark.hviewer.ui.listeners;
 
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 

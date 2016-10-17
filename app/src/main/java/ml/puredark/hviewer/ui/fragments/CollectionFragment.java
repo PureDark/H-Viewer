@@ -203,7 +203,6 @@ public class CollectionFragment extends MyFragment {
                 }
             }
         }
-        HViewerApplication.searchSuggestionHolder.removeDuplicate();
     }
 
     @Override

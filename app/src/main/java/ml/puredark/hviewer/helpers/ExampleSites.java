@@ -1035,7 +1035,7 @@ public class ExampleSites {
         galleryRule.tagRule = new TagRule();
         galleryRule.tagRule.item = new Selector("div.info > p > span.genre", null, null, null, null);
         galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
-        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*?)", "$1/page/{page:1}");
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*)", "$1/page/{page:1}");
         galleryRule.description = new Selector("div.info", "html", null, null, null);
         galleryRule.item = new Selector("div#sample-waterfall > .sample-box", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
@@ -1068,7 +1068,7 @@ public class ExampleSites {
         galleryRule.tagRule = new TagRule();
         galleryRule.tagRule.item = new Selector("div.info > p > span.genre", null, null, null, null);
         galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
-        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*?)", "$1/page/{page:1}");
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*)", "$1/page/{page:1}");
         galleryRule.description = new Selector("div.info", "html", null, null, null);
         galleryRule.item = new Selector("div#sample-waterfall > .movie-sample-box", null, null, null, null);
         galleryRule.pictureUrl = new Selector("this", "attr", "href", null, null);
@@ -1104,7 +1104,7 @@ public class ExampleSites {
         galleryRule.category = new Selector("div.container > div.row", "html", null, "<div class=\"btn__text-wrap\">.*?<i></i>.*?赞&nbsp;\\((\\d+)\\).*?<div class=\"post__type post__info-group mb20\">.*?([^<>\"]+)</a>.*?(共\\d+P)", "$2　$3　❤$1");
         galleryRule.datetime = new Selector("article.post > header > div.post__info > div.post__type", "html", null, "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", null);
         galleryRule.tags = new Selector("ul.tags>li.tag>a>div,div.post__role h2", null, null, "([^<>\"]+)(?:</div>|</a>)", null);
-        galleryRule.description = new Selector("div.post__content", "html", null, "([^<>\"]+)<div", null);
+        galleryRule.description = new Selector("div.post__content,div.l-detail-no-right-to-see", "html", null, null, null);
         galleryRule.item = new Selector("div.post__content img.detail_std", null, null, null, null);
         galleryRule.pictureThumbnail = new Selector("this", "attr", "src", "(.*\\.(?:jpg|jpeg|png|gif|bmp))", "$1/2X3");
         galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);

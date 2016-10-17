@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -26,6 +25,7 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureViewerAdapter;
+import ml.puredark.hviewer.ui.customs.AreaClickHelper;
 import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
@@ -96,7 +96,7 @@ public class PictureViewerActivity extends BaseActivity {
 
         volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, true);
         viewDirection = (String) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_DIRECTION, DIREACTION_LEFT_TO_RIGHT);
-        if(!DIREACTION_LEFT_TO_RIGHT.equals(viewDirection)
+        if (!DIREACTION_LEFT_TO_RIGHT.equals(viewDirection)
                 && !DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)
                 && !DIREACTION_TOP_TO_BOTTOM.equals(viewDirection))
             viewDirection = DIREACTION_LEFT_TO_RIGHT;
@@ -108,6 +108,24 @@ public class PictureViewerActivity extends BaseActivity {
             rvPicture.setVisibility(View.GONE);
             picturePagerAdapter = new PicturePagerAdapter(this, site, collection, pictures);
             picturePagerAdapter.setViewDirection(viewDirection);
+            picturePagerAdapter.setAreaClickListener(new AreaClickHelper.OnLeftRightClickListener() {
+                @Override
+                public void left() {
+                    if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection))
+                        prevPage(false);
+                    else
+                        nextPage(false);
+                }
+
+                @Override
+                public void right() {
+                    if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection))
+                        nextPage(false);
+                    else
+                        prevPage(false);
+                }
+            });
+
             int position = picturePagerAdapter.getPicturePostion(currPos);
             tvCount.setText((position + 1) + "/" + picturePagerAdapter.getCount());
             viewPager.setAdapter(picturePagerAdapter);
@@ -209,14 +227,15 @@ public class PictureViewerActivity extends BaseActivity {
         if (volumeKeyEnabled)
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    nextPage();
+                    nextPage(false);
                     return true;
                 case KeyEvent.KEYCODE_VOLUME_UP:
-                    prevPage();
+                    prevPage(false);
                     return true;
             }
         return super.onKeyDown(keyCode, event);
     }
+
     // 监听音量键，消除按键音
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -252,15 +271,15 @@ public class PictureViewerActivity extends BaseActivity {
         }
     }
 
-    private void prevPage() {
+    private void prevPage(boolean anim) {
         if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection) && picturePagerAdapter != null) {
             int currItem = viewPager.getCurrentItem();
             if (currItem > 0)
-                viewPager.setCurrentItem(currItem - 1, true);
+                viewPager.setCurrentItem(currItem - 1, anim);
         } else if (DIREACTION_RIGHT_TO_LEFT.equals(viewDirection) && picturePagerAdapter != null) {
             int currItem = viewPager.getCurrentItem();
             if (currItem + 1 < viewPager.getAdapter().getCount())
-                viewPager.setCurrentItem(currItem + 1, true);
+                viewPager.setCurrentItem(currItem + 1, anim);
         } else if (DIREACTION_TOP_TO_BOTTOM.equals(viewDirection) && pictureViewerAdapter != null) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
             int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
@@ -270,15 +289,15 @@ public class PictureViewerActivity extends BaseActivity {
         }
     }
 
-    private void nextPage() {
+    private void nextPage(boolean anim) {
         if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection) && picturePagerAdapter != null) {
             int currItem = viewPager.getCurrentItem();
             if (currItem + 1 < viewPager.getAdapter().getCount())
-                viewPager.setCurrentItem(currItem + 1, true);
+                viewPager.setCurrentItem(currItem + 1, anim);
         } else if (DIREACTION_RIGHT_TO_LEFT.equals(viewDirection) && picturePagerAdapter != null) {
             int currItem = viewPager.getCurrentItem();
             if (currItem > 0)
-                viewPager.setCurrentItem(currItem - 1, true);
+                viewPager.setCurrentItem(currItem - 1, anim);
         } else if (DIREACTION_TOP_TO_BOTTOM.equals(viewDirection) && pictureViewerAdapter != null) {
             LinearLayoutManager layoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
             int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
@@ -287,6 +306,4 @@ public class PictureViewerActivity extends BaseActivity {
             }
         }
     }
-
-
 }

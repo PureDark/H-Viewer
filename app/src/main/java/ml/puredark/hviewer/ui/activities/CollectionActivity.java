@@ -61,14 +61,13 @@ import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
-import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
+import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
-import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 
 public class CollectionActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener {

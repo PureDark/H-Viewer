@@ -39,6 +39,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.relex.photodraweeview.OnPhotoTapListener;
+import me.relex.photodraweeview.OnViewTapListener;
 import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
@@ -54,6 +56,7 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
+import ml.puredark.hviewer.ui.customs.AreaClickHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -83,6 +86,8 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
     private Picture pictureToBeSaved;
     private boolean firstTime = true;
 
+    private AreaClickHelper areaClickHelper;
+
     public PicturePagerAdapter(BaseActivity activity, Site site, Collection collection, List<Picture> pictures) {
         this.activity = activity;
         this.site = site;
@@ -90,6 +95,7 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         this.pictures = pictures;
         for (int i = 0; i < getCount(); i++)
             viewHolders.add(null);
+        areaClickHelper = new AreaClickHelper(activity);
     }
 
     public class PictureViewHolder {
@@ -114,6 +120,10 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
 
     public String getViewDirection() {
         return viewDirection;
+    }
+
+    public void setAreaClickListener(AreaClickHelper.OnAreaClickListener onAreaClickListener){
+        areaClickHelper.setAreaClickListener(onAreaClickListener);
     }
 
     @Override
@@ -230,6 +240,11 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
                                     }).show()).setNegativeButton("取消", null).show();
                 }
                 return true;
+            });
+            viewHolder.ivPicture.setOnViewTapListener((v, x, y) -> {
+                if(viewHolder.ivPicture.getScale()<=1){
+                    areaClickHelper.onClick(x, y);
+                }
             });
         }
         viewHolders.set(position, viewHolder);

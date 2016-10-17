@@ -21,7 +21,7 @@ public class AutoFitStaggeredGridLayoutManager extends StaggeredGridLayoutManage
         int rvWidth = getWidth();
         int rvHeight = getHeight();
         if (rvWidth > 0 && rvHeight > 0) {
-            rvWidth -= 50;
+            rvWidth -= 100;
             int childrenWidth1st = 0;
             int childrenWidth2nd = 0;
             View firstView = findViewByPosition(0);

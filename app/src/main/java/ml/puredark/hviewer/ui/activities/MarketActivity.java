@@ -36,7 +36,7 @@ import ml.puredark.hviewer.ui.adapters.MarketSiteAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
-import ml.puredark.hviewer.ui.customs.SwipeBackOnPageChangeListener;
+import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
