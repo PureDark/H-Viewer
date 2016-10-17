@@ -292,7 +292,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onItemClick(View v, int groupPosition, int childPosition, boolean isGrid) {
+            public void onItemClick(View v, int groupPosition, int childPosition) {
                 // 点击站点
                 if (childPosition == siteAdapter.getChildCount(groupPosition) - 1) {
                     Pair<SiteGroup, List<Site>> pair = siteAdapter.getDataProvider().getItem(groupPosition);
@@ -302,9 +302,6 @@ public class MainActivity extends BaseActivity {
                 } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                     CollectionFragment fragment = CollectionFragment.newInstance(site, siteTagHolder);
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean("isGrid", isGrid);
-                    fragment.setArguments(bundle);
                     selectSite(fragment, site);
                     notifyChildItemChanged(groupPosition, childPosition);
                     drawer.closeDrawer(GravityCompat.START);
@@ -403,13 +400,16 @@ public class MainActivity extends BaseActivity {
         });
 
         siteAdapter.setOnCheckedChangeListener(right -> new Handler().postDelayed(() -> {
-            if (right)
+            if (right) {
+                currFragment.getCurrSite().isGrid = true;
                 currFragment.setRecyclerViewToGrid();
-            else
+            }else {
+                currFragment.getCurrSite().isGrid = false;
                 currFragment.setRecyclerViewToList();
+            }
             new Handler().postDelayed(() -> {
-                DrawerLayout drawer1 = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer1.closeDrawer(GravityCompat.START);
+                siteHolder.updateSite(currFragment.getCurrSite());
+                drawer.closeDrawer(GravityCompat.START);
             }, 200);
         }, 300));
     }
@@ -770,6 +770,9 @@ public class MainActivity extends BaseActivity {
         siteAdapter.selectedSid = site.sid;
         siteAdapter.notifyDataSetChanged();
         setTitle(site.title);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isGrid", site.isGrid);
+        fragment.setArguments(bundle);
         replaceFragment(fragment, site.title);
         searchView.closeSearch();
 

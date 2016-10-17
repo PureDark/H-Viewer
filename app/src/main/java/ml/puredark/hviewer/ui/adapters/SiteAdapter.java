@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.ui.adapters;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,33 +141,24 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
             if (selectedSid == site.sid) {
                 holder.container.setBackgroundResource(R.color.black_10);
                 holder.switchListGrid.setVisibility(View.VISIBLE);
+                if(holder.switchListGrid.isChecked() != site.isGrid)
+                    new Handler().postDelayed(()->holder.switchListGrid.toggle(), 100);
             } else {
                 holder.container.setBackground(null);
                 holder.switchListGrid.setVisibility(View.GONE);
             }
         }
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mItemClickListener != null && childPosition >= 0)
-                    mItemClickListener.onItemClick(v, groupPosition, childPosition, holder.switchListGrid.isChecked());
-            }
+        holder.container.setOnClickListener(v -> {
+            if (mItemClickListener != null && childPosition >= 0)
+                mItemClickListener.onItemClick(v, groupPosition, childPosition);
         });
-        holder.container.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (mItemClickListener != null && childPosition >= 0 && childPosition < getChildCount(groupPosition) - 1)
-                    return mItemClickListener.onItemLongClick(v, groupPosition, childPosition);
-                else
-                    return false;
-            }
+        holder.container.setOnLongClickListener(v -> {
+            if (mItemClickListener != null && childPosition >= 0 && childPosition < getChildCount(groupPosition) - 1)
+                return mItemClickListener.onItemLongClick(v, groupPosition, childPosition);
+            else
+                return false;
         });
-        holder.switchListGrid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.switchListGrid.toggle();
-            }
-        });
+        holder.switchListGrid.setOnClickListener(view -> holder.switchListGrid.toggle());
         if (mOnCheckedChangeListener != null)
             holder.switchListGrid.setOnCheckedChangeListener(mOnCheckedChangeListener);
     }
@@ -290,7 +282,7 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
         boolean onGroupLongClick(View v, int groupPosition);
 
-        void onItemClick(View v, int groupPosition, int childPosition, boolean isGrid);
+        void onItemClick(View v, int groupPosition, int childPosition);
 
         boolean onItemLongClick(View v, int groupPosition, int childPosition);
     }

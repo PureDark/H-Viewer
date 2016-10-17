@@ -25,7 +25,6 @@ import ml.puredark.hviewer.ui.adapters.CategoryInputAdapter;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 import static java.util.regex.Pattern.DOTALL;
-import static u.aly.au.S;
 
 /**
  * Created by PureDark on 2016/8/14.
