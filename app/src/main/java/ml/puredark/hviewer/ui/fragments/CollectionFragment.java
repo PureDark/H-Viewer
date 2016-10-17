@@ -4,12 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
@@ -40,6 +45,7 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 import static android.R.attr.category;
+import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 
 public class CollectionFragment extends MyFragment {
 
@@ -151,45 +157,74 @@ public class CollectionFragment extends MyFragment {
             return;
         }
         this.keyword = keyword;
-        final Rule rule;
-        if (keyword == null) {
-            rule = site.indexRule;
+        if (keyword == null)
             keyword = "";
-        } else {
-            rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
-        }
         if (currUrl == null || site == null)
             return;
         final String url = site.getListUrl(currUrl, page, keyword, adapter.getDataProvider().getItems());
         Logger.d("CollectionFragment", url);
-        HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, final Object result) {
-                if (!(result instanceof String))
-                    return;
-                if (page == startPage) {
-                    adapter.getDataProvider().clear();
-                }
-                String html = (String) result;
-                List<Collection> collections = adapter.getDataProvider().getItems();
-                int oldSize = collections.size();
-                collections = RuleParser.getCollections(collections, html, rule, url);
-                int newSize = collections.size();
-                if (newSize > oldSize) {
-                    currPage = page;
-                    addSearchSuggestions(collections);
-                }
-                adapter.notifyDataSetChanged();
-                rvCollection.setPullLoadMoreCompleted();
-            }
+        //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
+        if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+            WebView webView = new WebView(getContext());
+            WebSettings mWebSettings = webView.getSettings();
+            mWebSettings.setJavaScriptEnabled(true);
+            mWebSettings.setBlockNetworkImage(true);
+            mWebSettings.setDomStorageEnabled(true);
+            mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
+            mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+            webView.addJavascriptInterface(this, "HtmlParser");
 
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-                BaseActivity activity = (BaseActivity) getActivity();
-                if (activity != null)
-                    activity.showSnackBar(error.getErrorString());
-                rvCollection.setPullLoadMoreCompleted();
-            }
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    //Load HTML
+                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    Logger.d("CollectionFragment", "onPageFinished");
+                }
+            });
+            webView.loadUrl(url);
+            new Handler().postDelayed(() -> webView.stopLoading(), 30000);
+            Logger.d("CollectionFragment", "WebView");
+        } else
+            HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                @Override
+                public void onSuccess(String contentType, final Object result) {
+                    if (!(result instanceof String))
+                        return;
+                    if (page == startPage) {
+                        adapter.getDataProvider().clear();
+                    }
+                    String html = (String) result;
+                    onResultGot(html, url, page);
+                }
+
+                @Override
+                public void onFailure(HViewerHttpClient.HttpError error) {
+                    BaseActivity activity = (BaseActivity) getActivity();
+                    if (activity != null)
+                        activity.showSnackBar(error.getErrorString());
+                    rvCollection.setPullLoadMoreCompleted();
+                }
+            });
+    }
+    @JavascriptInterface
+    public void onResultGot(String html, String url, int page) {
+        final Rule rule;
+        if (keyword == null)
+            rule = site.indexRule;
+        else
+            rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
+        List<Collection> collections = adapter.getDataProvider().getItems();
+        int oldSize = collections.size();
+        collections = RuleParser.getCollections(collections, html, rule, url);
+        int newSize = collections.size();
+        if (newSize > oldSize) {
+            currPage = page;
+            addSearchSuggestions(collections);
+        }
+        new Handler(Looper.getMainLooper()).post(()->{
+            adapter.notifyDataSetChanged();
+            rvCollection.setPullLoadMoreCompleted();
         });
     }
 

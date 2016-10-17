@@ -1236,6 +1236,38 @@ public class ExampleSites {
                 indexRule, galleryRule, null, null,
                 Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
 
+        // 花瓣网
+        indexRule = new Rule();
+        indexRule.item = new Selector("ul>li.galleryli,ul>li.igalleryli", null, null, null, null);
+        indexRule.idCode = new Selector("a.galleryli_link,a.igalleryli_link", "attr", "href", "/g/(\\d*)", null);
+        indexRule.cover = new Selector("a > img", "attr", "data-original", null, null);
+        indexRule.title = new Selector("div.galleryli_title>a,div.igalleryli_title>a", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.tagRule = new TagRule();
+        galleryRule.tagRule.item = new Selector("ul#utag > li", null, null, null, null);
+        galleryRule.tagRule.title = new Selector("a", "html", null, null, null);
+        galleryRule.tagRule.url = new Selector("a", "attr", "href", "(.*)", "$1{pageStr:{page:1}.html}");
+        galleryRule.description = new Selector("div#ddesc", "html", null, null, null);
+        galleryRule.category = new Selector("div#dinfo", "html", null, ">(\\d+)张.*?浏览了(.*?)次", "$1张照片　浏览$2次");
+        galleryRule.datetime = new Selector("div#dinfo", "html", null, "(\\d{4}/\\d{2}/\\d{2})", null);
+        galleryRule.item = new Selector("ul#hgallery img", null, null, null, null);
+        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", null, null);
+        galleryRule.pictureUrl = new Selector("this", "attr", "src", null, null);
+
+        sites.add(new Site(66, "花瓣网",
+                "http://huaban.com/?page={page:1}",
+                "http://www.zngirls.com/g/{idCode:}/{page:1}.html",
+                null,
+                null,
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(1, "发现", "http://huaban.com/?page={page:1}"));
+        categories.add(new Category(2, "最新", "http://huaban.com/all/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
         return sites;
     }
 }

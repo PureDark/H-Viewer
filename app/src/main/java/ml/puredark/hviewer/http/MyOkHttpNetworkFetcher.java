@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
 
+import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.R;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -94,7 +96,7 @@ public class MyOkHttpNetworkFetcher extends
         }
         final Request request = builder
                 .cacheControl(new CacheControl.Builder().noStore().build())
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36")
+                .header("User-Agent", HViewerApplication.mContext.getResources().getString(R.string.UA))
                 .url(uri.toString())
                 .get()
                 .build();

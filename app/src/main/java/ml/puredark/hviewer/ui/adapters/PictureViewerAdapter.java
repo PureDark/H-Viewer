@@ -7,9 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.provider.DocumentFile;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,6 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -32,6 +39,9 @@ import com.umeng.analytics.MobclickAgent;
 
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +64,9 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+
+import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdapter.PictureViewerViewHolder>
         implements DirectoryChooserFragment.OnFragmentInteractionListener {
@@ -313,52 +326,112 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
         });
     }
 
+    private Map<Integer, Pair<Picture, PictureViewerViewHolder>> pictureInQueue = new HashMap<>();
+
     private void getPictureUrl(final Context context, final PictureViewerViewHolder viewHolder, final Picture picture, final Site site, final Selector selector, final Selector highResSelector) {
         Logger.d("PictureViewerAdapter", "picture.url = " + picture.url);
         if (Picture.hasPicPosfix(picture.url)) {
             picture.pic = picture.url;
             loadImage(context, picture, viewHolder);
         } else
-            HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+            //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
+            if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+                WebView webView = new WebView(context);
+                WebSettings mWebSettings = webView.getSettings();
+                mWebSettings.setJavaScriptEnabled(true);
+                mWebSettings.setBlockNetworkImage(true);
+                mWebSettings.setDomStorageEnabled(true);
+                mWebSettings.setUserAgentString(context.getResources().getString(R.string.UA));
+                mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+                webView.addJavascriptInterface(this, "HtmlParser");
 
-                @Override
-                public void onSuccess(String contentType, Object result) {
-                    if (result == null || result.equals(""))
-                        return;
-                    if (contentType.contains("image")) {
-                        picture.pic = picture.url;
-                        if (result instanceof Bitmap) {
-                            viewHolder.ivPicture.setImageBitmap((Bitmap) result);
-                            viewHolder.progressBar.setVisibility(View.GONE);
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        //Load HTML
+                        pictureInQueue.put(picture.pid, new Pair<>(picture, viewHolder));
+                        boolean highRes = (highResSelector != null);
+                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + highRes + ");");
+                        Logger.d("PictureViewerAdapter", "onPageFinished");
+                    }
+                });
+                webView.loadUrl(url);
+                new Handler().postDelayed(() -> webView.stopLoading(), 30000);
+                Logger.d("PictureViewerAdapter", "WebView");
+            } else
+                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+
+                    @Override
+                    public void onSuccess(String contentType, Object result) {
+                        if (result == null || result.equals(""))
+                            return;
+                        if (contentType.contains("image")) {
+                            picture.pic = picture.url;
+                            if (result instanceof Bitmap) {
+                                viewHolder.ivPicture.setImageBitmap((Bitmap) result);
+                                viewHolder.progressBar.setVisibility(View.GONE);
+                            } else {
+                                loadImage(context, picture, viewHolder);
+                            }
                         } else {
-                            loadImage(context, picture, viewHolder);
+                            picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
+                            picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
+                            Logger.d("PictureViewerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
+                            Logger.d("PictureViewerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
+                            if (picture.pic != null) {
+                                picture.retries = 0;
+                                picture.referer = picture.url;
+                                loadImage(context, picture, viewHolder);
+                            } else {
+                                onFailure(null);
+                            }
                         }
-                    } else {
-                        picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
-                        picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
-                        Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
-                        Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
-                        if (picture.pic != null) {
+                    }
+
+                    @Override
+                    public void onFailure(HViewerHttpClient.HttpError error) {
+                        if (picture.retries < 15) {
+                            picture.retries++;
+                            getPictureUrl(context, viewHolder, picture, site, selector, highResSelector);
+                        } else {
                             picture.retries = 0;
-                            picture.referer = picture.url;
-                            loadImage(context, picture, viewHolder);
-                        } else {
-                            onFailure(null);
+                            viewHolder.progressBar.setVisibility(View.GONE);
+                            viewHolder.btnRefresh.setVisibility(View.VISIBLE);
                         }
                     }
-                }
-
-                @Override
-                public void onFailure(HViewerHttpClient.HttpError error) {
-                    if (picture.retries < 15) {
-                        picture.retries++;
-                        getPictureUrl(context, viewHolder, picture, site, selector, highResSelector);
-                    } else {
-                        picture.retries = 0;
-                        viewHolder.progressBar.setVisibility(View.GONE);
-                        viewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                    }
+                });
+    }
+    @JavascriptInterface
+    public void onResultGot(String html, int pid, boolean highRes) {
+        Pair<Picture, PictureViewerViewHolder> pair = pictureInQueue.get(pid);
+        if (pair == null)
+            return;
+        Picture picture = pair.first;
+        PictureViewerViewHolder viewHolder = pair.second;
+        if (picture == null || viewHolder == null)
+            return;
+        pictureInQueue.remove(pid);
+        Selector selector = (highRes) ? site.extraRule.pictureUrl : site.picUrlSelector;
+        Selector highResSelector = (highRes) ? site.extraRule.pictureHighRes : null;
+        picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
+        picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
+        Logger.d("PictureViewerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
+        Logger.d("PictureViewerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
+        if (picture.pic != null) {
+            picture.retries = 0;
+            picture.referer = picture.url;
+            new Handler(Looper.getMainLooper()).post(()->loadImage(activity, picture, viewHolder));
+        } else {
+            new Handler(Looper.getMainLooper()).post(()->{
+                if (picture.retries < 15) {
+                    picture.retries++;
+                    getPictureUrl(activity, viewHolder, picture, site, selector, highResSelector);
+                } else {
+                    picture.retries = 0;
+                    viewHolder.progressBar.setVisibility(View.GONE);
+                    viewHolder.btnRefresh.setVisibility(View.VISIBLE);
                 }
             });
+        }
     }
 }

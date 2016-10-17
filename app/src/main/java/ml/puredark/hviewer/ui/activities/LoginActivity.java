@@ -83,7 +83,7 @@ public class LoginActivity extends BaseActivity {
 //        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 //        settings.setLoadWithOverviewMode(true);
 //        settings.setUseWideViewPort(true);
-        settings.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+        settings.setUserAgentString(getResources().getString(R.string.UA));
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {

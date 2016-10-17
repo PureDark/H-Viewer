@@ -4,10 +4,14 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
-import android.util.Log;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -16,8 +20,11 @@ import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
@@ -31,9 +38,11 @@ import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
+import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 /**
  * Created by PureDark on 2016/8/16.
@@ -50,6 +59,8 @@ public class DownloadService extends Service {
 
     private DownloadTask currTask;
 
+    private Map<Integer, Picture> pictureInQueue;
+
     public boolean downloadHighRes() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
                 SettingFragment.KEY_PREF_DOWNLOAD_HIGH_RES, false);
@@ -59,6 +70,7 @@ public class DownloadService extends Service {
         pauseNoBrocast();
         currTask = task;
         currTask.status = STATUS_DOWNLOADING;
+        pictureInQueue = new HashMap<>();
         downloadNewPage(currTask);
         downloadNewPage(currTask);
         downloadNewPage(currTask);
@@ -115,7 +127,7 @@ public class DownloadService extends Service {
 
                 // 记录信息，以求恢复删除了的下载记录
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
                 FileHelper.createFileIfNotExist("detail.txt", rootPath, dirName);
                 FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dirName);
             }
@@ -149,45 +161,98 @@ public class DownloadService extends Service {
             picture.pic = picture.url;
             loadPicture(picture, task, null, false);
         } else
-            HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+            //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
+            if (task.collection.site.hasFlag(Site.FLAG_JS_NEEDED)) {
+                WebView webView = new WebView(HViewerApplication.mContext);
+                WebSettings mWebSettings = webView.getSettings();
+                mWebSettings.setJavaScriptEnabled(true);
+                mWebSettings.setBlockNetworkImage(true);
+                mWebSettings.setDomStorageEnabled(true);
+                mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
+                mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+                webView.addJavascriptInterface(this, "HtmlParser");
 
-                @Override
-                public void onSuccess(String contentType, Object result) {
-                    if (result == null || result.equals(""))
-                        onFailure(null);
-                    else if (contentType.contains("image")) {
-                        picture.pic = picture.url;
-                        if (result instanceof Bitmap)
-                            loadPicture(picture, task, (Bitmap) result, false);
-                        else
-                            loadPicture(picture, task, null, false);
-                    } else {
-                        picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
-                        picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
-                        if (!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
-                            picture.retries = 0;
-                            picture.referer = picture.url;
-                            loadPicture(picture, task, null, true);
-                        } else if (!TextUtils.isEmpty(picture.pic)) {
-                            picture.retries = 0;
-                            picture.referer = picture.url;
-                            loadPicture(picture, task, null, false);
-                        } else {
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        //Load HTML
+                        pictureInQueue.put(picture.pid, picture);
+                        boolean highRes = (highResSelector != null);
+                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + highRes + ");");
+                        Logger.d("DownloadService", "onPageFinished");
+                    }
+                });
+                webView.loadUrl(url);
+                new Handler().postDelayed(() -> webView.stopLoading(), 30000);
+                Logger.d("DownloadService", "WebView");
+            } else
+                HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+
+                    @Override
+                    public void onSuccess(String contentType, Object result) {
+                        if (result == null || result.equals(""))
                             onFailure(null);
+                        else if (contentType.contains("image")) {
+                            picture.pic = picture.url;
+                            if (result instanceof Bitmap)
+                                loadPicture(picture, task, (Bitmap) result, false);
+                            else
+                                loadPicture(picture, task, null, false);
+                        } else {
+                            picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
+                            picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
+                            if (!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
+                                picture.retries = 0;
+                                picture.referer = picture.url;
+                                loadPicture(picture, task, null, true);
+                            } else if (!TextUtils.isEmpty(picture.pic)) {
+                                picture.retries = 0;
+                                picture.referer = picture.url;
+                                loadPicture(picture, task, null, false);
+                            } else {
+                                onFailure(null);
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(HViewerHttpClient.HttpError error) {
-                    task.status = STATUS_PAUSED;
-                    picture.status = Picture.STATUS_WAITING;
-                    Intent intent = new Intent(ON_FAILURE);
-                    intent.putExtra("message", "图片地址获取失败，请检查网络连接");
-                    Logger.d("DownloadService", "url : " + picture.url);
-                    sendBroadcast(intent);
-                }
-            });
+                    @Override
+                    public void onFailure(HViewerHttpClient.HttpError error) {
+                        task.status = STATUS_PAUSED;
+                        picture.status = Picture.STATUS_WAITING;
+                        Intent intent = new Intent(ON_FAILURE);
+                        intent.putExtra("message", "图片地址获取失败，请检查网络连接");
+                        Logger.d("DownloadService", "url : " + picture.url);
+                        sendBroadcast(intent);
+                    }
+                });
+    }
+
+    @JavascriptInterface
+    public void onResultGot(String html, int pid, boolean highRes) {
+        Picture picture = pictureInQueue.get(pid);
+        if (picture == null)
+            return;
+        pictureInQueue.remove(pid);
+        Selector selector = (highRes) ? currTask.collection.site.extraRule.pictureUrl : currTask.collection.site.picUrlSelector;
+        Selector highResSelector = (highRes) ? currTask.collection.site.extraRule.pictureHighRes : null;
+        picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
+        picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
+        if (!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
+            picture.retries = 0;
+            picture.referer = picture.url;
+            loadPicture(picture, currTask, null, true);
+        } else if (!TextUtils.isEmpty(picture.pic)) {
+            picture.retries = 0;
+            picture.referer = picture.url;
+            loadPicture(picture, currTask, null, false);
+        } else {
+            currTask.status = STATUS_PAUSED;
+            picture.status = Picture.STATUS_WAITING;
+            Intent intent = new Intent(ON_FAILURE);
+            intent.putExtra("message", "图片地址获取失败，请检查网络连接");
+            Logger.d("DownloadService", "url : " + picture.url);
+            sendBroadcast(intent);
+        }
     }
 
     private void loadPicture(final Picture picture, final DownloadTask task, Bitmap bitmap, final boolean highRes) {
@@ -253,7 +318,7 @@ public class DownloadService extends Service {
                 }
                 fileName += ".jpg";
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
                 documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
                 FileHelper.saveBitmapToFile((Bitmap) pic, documentFile);
             } else if (pic instanceof PooledByteBuffer) {
@@ -273,14 +338,14 @@ public class DownloadService extends Service {
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
                 documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
                 if (!FileHelper.writeBytes(bytes, documentFile)) {
                     throw new IOException();
                 }
             } else
                 return;
-            if(documentFile==null)
+            if (documentFile == null)
                 return;
             if (picture.pid == 1) {
                 task.collection.cover = documentFile.getUri().toString();

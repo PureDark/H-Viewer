@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -371,6 +372,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             mWebSettings.setJavaScriptEnabled(true);
             mWebSettings.setBlockNetworkImage(true);
             mWebSettings.setDomStorageEnabled(true);
+            mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
             mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
             webView.addJavascriptInterface(this, "HtmlParser");
 
@@ -383,7 +385,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 }
             });
             webView.loadUrl(url);
-            new Handler().postDelayed(() -> webView.stopLoading(), 10000);
+            new Handler().postDelayed(() -> webView.stopLoading(), 30000);
             Logger.d("CollectionActivity", "WebView");
         } else
             HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
@@ -494,18 +496,20 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 commentAdapter.getDataProvider().addAll(myCollection.comments);
             }
         }
-        if (!refreshing)
-            rvIndex.setPullLoadMoreCompleted();
-        refreshDescription(url);
-        if (pictureAdapter != null)
-            pictureAdapter.notifyDataSetChanged();
-        if (pictureViewerActivity != null) {
-            List<Picture> pictures = new ArrayList<>();
-            pictures.addAll(pictureAdapter.getDataProvider().getItems());
-            pictureViewerActivity.notifyDataSetChanged(pictures);
-        }
-        if (commentAdapter != null)
-            commentAdapter.notifyDataSetChanged();
+        new Handler(Looper.getMainLooper()).post(()->{
+            if (!refreshing)
+                rvIndex.setPullLoadMoreCompleted();
+            refreshDescription(url);
+            if (pictureAdapter != null)
+                pictureAdapter.notifyDataSetChanged();
+            if (pictureViewerActivity != null) {
+                List<Picture> pictures = new ArrayList<>();
+                pictures.addAll(pictureAdapter.getDataProvider().getItems());
+                pictureViewerActivity.notifyDataSetChanged(pictures);
+            }
+            if (commentAdapter != null)
+                commentAdapter.notifyDataSetChanged();
+        });
     }
 
     @OnClick(R.id.btn_return)
