@@ -57,7 +57,6 @@ public class ImageLoader {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
                 header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-                MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
             }
             MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
         }

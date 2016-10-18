@@ -134,7 +134,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
             toolbar.setLayoutParams(lp);
         }
-        Log.d("CollectionActivity", "onCreate");
 
         setContainer(coordinatorLayout);
 
@@ -365,6 +364,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         }
         final String url = site.getGalleryUrl(myCollection.idCode, page, pictureAdapter.getDataProvider().getItems());
         Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
+        Logger.d("CollectionActivity", "starPage:" + startPage + " page:" + page);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
         if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_GALLERY)) {
             WebView webView = new WebView(this);
@@ -415,7 +415,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
-        refreshing = false;
         myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
 
         if (myCollection.tags != null) {
@@ -458,20 +457,22 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     pictureAdapter.getDataProvider().clear();
                     pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                     currPage = page;
-                    getCollectionDetail(currPage + pageStep);
+                    new Handler(Looper.getMainLooper()).post(()->getCollectionDetail(currPage + pageStep));
                 } else if (!pictureAdapter.getDataProvider().getItems().contains(picture)) {
                     // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
                     int currPid = pictureAdapter.getItemCount() + 1;
                     for (int i = 0; i < myCollection.pictures.size(); i++) {
-                        myCollection.pictures.get(i).pid = currPid + i;
+                        if(myCollection.pictures.get(i).pid < currPid + i)
+                            myCollection.pictures.get(i).pid = currPid + i;
                     }
                     pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                     currPage = page;
                     refreshing = true;
-                    getCollectionDetail(currPage + pageStep);
+                    new Handler(Looper.getMainLooper()).post(()->getCollectionDetail(currPage + pageStep));
                 } else {
                     // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
-                    isIndexComplete = true;
+                    isIndexComplete = true;;
+                    refreshing = false;
                     myCollection.pictures = pictureAdapter.getDataProvider().getItems();
                     if (commentAdapter != null)
                         myCollection.comments = commentAdapter.getDataProvider().getItems();
@@ -480,6 +481,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         } else {
             // 获取到的图片数量为0，则直接判定已达到末尾
             isIndexComplete = true;
+            refreshing = false;
             myCollection.pictures = pictureAdapter.getDataProvider().getItems();
             if (commentAdapter != null)
                 myCollection.comments = commentAdapter.getDataProvider().getItems();

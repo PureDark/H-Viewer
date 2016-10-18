@@ -78,6 +78,7 @@ import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
+import static android.R.attr.category;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -254,7 +255,7 @@ public class MainActivity extends BaseActivity {
         if (siteGroups.size() > 0 && siteGroups.get(0).second.size() > 0) {
             mRecyclerViewExpandableItemManager.expandGroup(0);
             Site site = siteGroups.get(0).second.get(0);
-            selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
+            selectSite(site);
         }
 
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
@@ -329,8 +330,7 @@ public class MainActivity extends BaseActivity {
                     startActivityForResult(intent, RESULT_ADD_SITE);
                 } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
-                    CollectionFragment fragment = CollectionFragment.newInstance(site, siteTagHolder);
-                    selectSite(fragment, site);
+                    selectSite(site);
                     notifyChildItemChanged(groupPosition, childPosition);
                     drawer.closeDrawer(GravityCompat.START);
                 }
@@ -816,7 +816,8 @@ public class MainActivity extends BaseActivity {
         currFragment = fragment;
     }
 
-    public void selectSite(MyFragment fragment, Site site) {
+    public void selectSite(Site site) {
+        MyFragment fragment = CollectionFragment.newInstance(site, siteTagHolder);
         siteAdapter.selectedSid = site.sid;
         siteAdapter.notifyDataSetChanged();
         setTitle(site.title);
@@ -840,6 +841,7 @@ public class MainActivity extends BaseActivity {
             categoryAdapter.getDataProvider().clear();
             categoryAdapter.notifyDataSetChanged();
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
+            currFragment.onLoadUrl(site.indexUrl);
         }
     }
 
@@ -913,7 +915,7 @@ public class MainActivity extends BaseActivity {
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();
-                    final Runnable r = () -> selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
+                    final Runnable r = () -> selectSite(site);
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_MODIFY_SITE) {
@@ -922,7 +924,7 @@ public class MainActivity extends BaseActivity {
                 if (temp instanceof Site) {
                     final Site site = (Site) temp;
                     Handler handler = new Handler();
-                    final Runnable r = () -> selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
+                    final Runnable r = () -> selectSite(site);
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_LOGIN) {
@@ -930,7 +932,7 @@ public class MainActivity extends BaseActivity {
                     final Site site = (Site) temp;
                     siteHolder.updateSite(site);
                     Handler handler = new Handler();
-                    final Runnable r = () -> selectSite(CollectionFragment.newInstance(site, siteTagHolder), site);
+                    final Runnable r = () -> selectSite(site);
                     handler.post(r);
                 }
             } else if (requestCode == RESULT_SITE_MARKET) {

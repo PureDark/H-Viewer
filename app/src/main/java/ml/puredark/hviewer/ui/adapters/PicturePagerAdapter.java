@@ -64,6 +64,7 @@ import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
 import ml.puredark.hviewer.ui.customs.AreaClickHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
+import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
@@ -338,7 +339,9 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
 
     private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
         String url = (viewHighRes() && !TextUtils.isEmpty(picture.highRes)) ? picture.highRes : picture.pic;
-        Logger.d("PicturePagerAdapter", "url = " + url);
+        if(site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
+            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
+        Logger.d("PicturePagerAdapter", "url:" + url + "\n picture.referer:" + picture.referer);
         if (site == null) return;
         ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, url, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
             @Override
@@ -453,12 +456,12 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         Pair<Picture, PictureViewHolder> pair = pictureInQueue.get(pid);
         if (pair == null)
             return;
+        Log.d("PicturePagerAdapter", html);
         Picture picture = pair.first;
         PictureViewHolder viewHolder = pair.second;
         if (picture == null || viewHolder == null)
             return;
         pictureInQueue.remove(pid);
-        Log.d("PicturePagerAdapter", "extra:"+extra+" html:::"+html);
         Selector selector = (extra) ? site.extraRule.pictureUrl : site.picUrlSelector;
         Selector highResSelector = (extra) ? site.extraRule.pictureHighRes : null;
         picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);

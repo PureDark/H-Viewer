@@ -65,8 +65,6 @@ public class CollectionFragment extends MyFragment {
     private int pageStep = 1;
     private int currPage;
 
-    private int waitingForSign = 0;
-
     public CollectionFragment() {
     }
 
@@ -143,10 +141,6 @@ public class CollectionFragment extends MyFragment {
 
         if (site != null) {
             adapter.setSite(site);
-            parseUrl(site.indexUrl);
-            currUrl = site.indexUrl;
-            rvCollection.setRefreshing(true);
-            getCollections(null, startPage);
         }
         adapter.setOnItemClickListener(new CollectionAdapter.OnItemClickListener() {
             @Override
@@ -195,8 +189,7 @@ public class CollectionFragment extends MyFragment {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //Load HTML
-                    waitingForSign = (int) System.currentTimeMillis() % Integer.MAX_VALUE;
-                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ", " + waitingForSign + ");");
+                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
                     Logger.d("CollectionFragment", "onPageFinished");
                 }
             });
@@ -210,8 +203,7 @@ public class CollectionFragment extends MyFragment {
                     if (!(result instanceof String))
                         return;
                     String html = (String) result;
-                    waitingForSign = (int) System.currentTimeMillis() % Integer.MAX_VALUE;
-                    onResultGot(html, url, page, waitingForSign);
+                    onResultGot(html, url, page);
                 }
 
                 @Override
@@ -225,10 +217,8 @@ public class CollectionFragment extends MyFragment {
     }
 
     @JavascriptInterface
-    public void onResultGot(String html, String url, int page, int mySign) {
+    public void onResultGot(String html, String url, int page) {
         new Thread(() -> {
-            if (waitingForSign != mySign)
-                return;
             if (page == startPage)
                 adapter.getDataProvider().clear();
             final Rule rule;
@@ -245,8 +235,6 @@ public class CollectionFragment extends MyFragment {
                 List<Collection> extraCollections = RuleParser.getCollections(new ArrayList<>(), html, site.extraRule, url);
                 for (int i = 0; i < extraCollections.size() && oldSize + i < collections.size(); i++) {
                     collections.get(oldSize + i).fillEmpty(extraCollections.get(i));
-                    Log.d("CollectionFragment", "collections:" + collections.get(oldSize + i).cover);
-                    Log.d("CollectionFragment", "extraCollections:" + extraCollections.get(i).cover);
                 }
             }
 

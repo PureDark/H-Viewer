@@ -86,7 +86,12 @@ public class RegexValidateUtil {
     public static String getAbsoluteUrlFromRelative(String url, String host) {
         if(urlHasProtocol(url))
             return url;
-        if (url.startsWith("/"))
+        if (url.startsWith("//"))
+            if(host.startsWith("https://"))
+                return "https:"+url;
+            else
+                return "http:"+url;
+        else if (url.startsWith("/"))
             return getHostFromUrl(host) + url;
         else if (url.startsWith("./"))
             return geCurrDirFromUrl(host) + url.substring(2);

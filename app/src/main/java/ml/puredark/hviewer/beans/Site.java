@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.beans;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_NO_TITLE = "noTitle";
     public final static String FLAG_NO_RATING = "noRating";
     public final static String FLAG_NO_TAG = "noTag";
+    public final static String FLAG_WATERFALL_INDEX = "waterfallIndex";
     public final static String FLAG_SECOND_LEVEL_GALLERY = "secondLevelGallery";
     public final static String FLAG_REPEATED_THUMBNAIL = "repeatedThumbnail";
     public final static String FLAG_SINGLE_PAGE_BIG_PICTURE = "singlePageBigPicture";
@@ -117,14 +119,14 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
                 startPage = 0;
                 int min = Integer.MAX_VALUE;
                 for (Collection collection : collections) {
-                    min = Math.min(min, Integer.parseInt(collection.idCode));
+                    min = Math.min(min, Integer.parseInt(collection.idCode.replaceAll("[^0-9]", "")));
                 }
                 page = min;
             } else if ("maxid".equals(pageStr)) {
                 startPage = 0;
                 int max = Integer.MIN_VALUE;
                 for (Collection collection : collections) {
-                    max = Math.max(max, Integer.parseInt(collection.idCode));
+                    max = Math.max(max, Integer.parseInt(collection.idCode.replaceAll("[^0-9]", "")));
                 }
                 page = max;
             } else {
@@ -143,29 +145,30 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public String getGalleryUrl(String idCode, int page, List<Picture> pictures) {
         Map<String, String> matchResult = RuleParser.parseUrl(galleryUrl);
         String pageStr = matchResult.get("page");
-        int startPage;
+        boolean firstPage;
         try {
             if ("minid".equals(pageStr)) {
-                startPage = 0;
+                firstPage = (page == 0);
                 int min = Integer.MAX_VALUE;
                 for (Picture picture : pictures) {
                     min = Math.min(min, picture.pid);
                 }
                 page = min;
             } else if ("maxid".equals(pageStr)) {
-                startPage = 0;
+                firstPage = (page == 0);
                 int max = Integer.MIN_VALUE;
                 for (Picture picture : pictures) {
                     max = Math.max(max, picture.pid);
                 }
                 page = max;
             } else {
-                startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+                int startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+                firstPage = (page == startPage);
             }
         } catch (NumberFormatException e) {
-            startPage = 0;
+            firstPage = (page == 0);
         }
-        String url = galleryUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
+        String url = galleryUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", firstPage ? "" : "" + matchResult.get("pageStr"))
                 .replaceAll("\\{page:.*?\\}", "" + page)
                 .replaceAll("\\{idCode:\\}", idCode);
         return url;

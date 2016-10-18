@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.View;
 
 import com.jayway.jsonpath.JsonPath;
@@ -47,12 +48,12 @@ public class RuleParser {
 
     public static Map<String, String> parseUrl(String url) {
         Map<String, String> map = new HashMap<>();
-        Pattern pattern = Pattern.compile("\\{([^\\{\\}]*?):([^\\{\\}]*?)\\}", DOTALL);
+        Pattern pattern = Pattern.compile("\\{([^{}]*?):([^{}]*?)\\}", DOTALL);
         Matcher matcher = pattern.matcher(url);
         while (matcher.find()) {
             map.put(matcher.group(1), matcher.group(2));
         }
-        Pattern pattern2 = Pattern.compile("\\{([^\\{\\}]*?):(.*?\\{.*?\\}.*?)\\}", DOTALL);
+        Pattern pattern2 = Pattern.compile("\\{([^{}]*?):([^{}]*?\\{[^{}]*?\\}[^{}]*?)\\}", DOTALL);
         Matcher matcher2 = pattern2.matcher(url);
         while (matcher2.find()) {
             map.put(matcher2.group(1), matcher2.group(2));
@@ -224,7 +225,7 @@ public class RuleParser {
             if (rule.item != null) {
                 temp = element.select(rule.item.selector);
                 for (Element pictureElement : temp) {
-                    String pictureId = parseSingleProperty(pictureElement, rule.pictureId, sourceUrl, true);
+                    String pictureId = parseSingleProperty(pictureElement, rule.pictureId, sourceUrl, false);
                     int pid;
                     try {
                         pid = Integer.parseInt(pictureId);
@@ -239,9 +240,9 @@ public class RuleParser {
                 }
             } else {
                 List<String> pids = parseSinglePropertyMatchAll(element, rule.pictureId, sourceUrl, false);
-                List<String> urls = parseSinglePropertyMatchAll(element, rule.pictureUrl, sourceUrl, false);
-                List<String> thumbnails = parseSinglePropertyMatchAll(element, rule.pictureThumbnail, sourceUrl, false);
-                List<String> highReses = parseSinglePropertyMatchAll(element, rule.pictureHighRes, sourceUrl, false);
+                List<String> urls = parseSinglePropertyMatchAll(element, rule.pictureUrl, sourceUrl, true);
+                List<String> thumbnails = parseSinglePropertyMatchAll(element, rule.pictureThumbnail, sourceUrl, true);
+                List<String> highReses = parseSinglePropertyMatchAll(element, rule.pictureHighRes, sourceUrl, true);
                 for (int i = 0; i < urls.size(); i++) {
                     String pictureId = (i < pids.size()) ? pids.get(i) : "";
                     int pid;
@@ -403,13 +404,14 @@ public class RuleParser {
             if (rule.item != null) {
                 temp = jsonRoot.read(rule.item.path);
                 for (ReadContext pictureItem : temp) {
-                    String pictureId = parseSingleProperty(pictureItem, rule.pictureId, sourceUrl, true);
+                    String pictureId = parseSingleProperty(pictureItem, rule.pictureId, sourceUrl, false);
                     int pid;
                     try {
                         pid = Integer.parseInt(pictureId);
                     } catch (Exception e) {
                         pid = 0;
                     }
+
                     pid = (pid == 0) ? pictures.size() + 1 : pid;
                     String pictureUrl = parseSingleProperty(pictureItem, rule.pictureUrl, sourceUrl, true);
                     String PictureHighRes = parseSingleProperty(pictureItem, rule.pictureHighRes, sourceUrl, true);
@@ -418,9 +420,9 @@ public class RuleParser {
                 }
             } else {
                 List<String> pids = parseSinglePropertyMatchAll(jsonRoot, rule.pictureId, sourceUrl, false);
-                List<String> urls = parseSinglePropertyMatchAll(jsonRoot, rule.pictureUrl, sourceUrl, false);
-                List<String> thumbnails = parseSinglePropertyMatchAll(jsonRoot, rule.pictureThumbnail, sourceUrl, false);
-                List<String> highReses = parseSinglePropertyMatchAll(jsonRoot, rule.pictureHighRes, sourceUrl, false);
+                List<String> urls = parseSinglePropertyMatchAll(jsonRoot, rule.pictureUrl, sourceUrl, true);
+                List<String> thumbnails = parseSinglePropertyMatchAll(jsonRoot, rule.pictureThumbnail, sourceUrl, true);
+                List<String> highReses = parseSinglePropertyMatchAll(jsonRoot, rule.pictureHighRes, sourceUrl, true);
                 for (int i = 0; i < urls.size(); i++) {
                     String pictureId = (i < pids.size()) ? pids.get(i) : "";
                     int pid;
