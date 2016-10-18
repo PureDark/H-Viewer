@@ -224,20 +224,36 @@ public class RuleParser {
             if (rule.item != null) {
                 temp = element.select(rule.item.selector);
                 for (Element pictureElement : temp) {
+                    String pictureId = parseSingleProperty(pictureElement, rule.pictureId, sourceUrl, true);
+                    int pid;
+                    try {
+                        pid = Integer.parseInt(pictureId);
+                    } catch (Exception e) {
+                        pid = 0;
+                    }
+                    pid = (pid == 0) ? pictures.size() + 1 : pid;
                     String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true);
                     String PictureHighRes = parseSingleProperty(pictureElement, rule.pictureHighRes, sourceUrl, true);
                     String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true);
-                    pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
+                    pictures.add(new Picture(pid, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
                 }
             } else {
+                List<String> pids = parseSinglePropertyMatchAll(element, rule.pictureId, sourceUrl, false);
                 List<String> urls = parseSinglePropertyMatchAll(element, rule.pictureUrl, sourceUrl, false);
                 List<String> thumbnails = parseSinglePropertyMatchAll(element, rule.pictureThumbnail, sourceUrl, false);
                 List<String> highReses = parseSinglePropertyMatchAll(element, rule.pictureHighRes, sourceUrl, false);
                 for (int i = 0; i < urls.size(); i++) {
+                    String pictureId = (i < pids.size()) ? pids.get(i) : "";
+                    int pid;
+                    try {
+                        pid = Integer.parseInt(pictureId);
+                    } catch (Exception e) {
+                        pid = 0;
+                    }
                     String url = urls.get(i);
                     String thumbnail = (i < thumbnails.size()) ? thumbnails.get(i) : "";
                     String highRes = (i < highReses.size()) ? highReses.get(i) : "";
-                    pictures.add(new Picture(pictures.size() + 1, url, thumbnail, highRes, sourceUrl));
+                    pictures.add(new Picture(pid, url, thumbnail, highRes, sourceUrl));
                 }
             }
         }
@@ -387,20 +403,36 @@ public class RuleParser {
             if (rule.item != null) {
                 temp = jsonRoot.read(rule.item.path);
                 for (ReadContext pictureItem : temp) {
+                    String pictureId = parseSingleProperty(pictureItem, rule.pictureId, sourceUrl, true);
+                    int pid;
+                    try {
+                        pid = Integer.parseInt(pictureId);
+                    } catch (Exception e) {
+                        pid = 0;
+                    }
+                    pid = (pid == 0) ? pictures.size() + 1 : pid;
                     String pictureUrl = parseSingleProperty(pictureItem, rule.pictureUrl, sourceUrl, true);
                     String PictureHighRes = parseSingleProperty(pictureItem, rule.pictureHighRes, sourceUrl, true);
                     String pictureThumbnail = parseSingleProperty(pictureItem, rule.pictureThumbnail, sourceUrl, true);
-                    pictures.add(new Picture(pictures.size() + 1, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
+                    pictures.add(new Picture(pid, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
                 }
             } else {
+                List<String> pids = parseSinglePropertyMatchAll(jsonRoot, rule.pictureId, sourceUrl, false);
                 List<String> urls = parseSinglePropertyMatchAll(jsonRoot, rule.pictureUrl, sourceUrl, false);
                 List<String> thumbnails = parseSinglePropertyMatchAll(jsonRoot, rule.pictureThumbnail, sourceUrl, false);
                 List<String> highReses = parseSinglePropertyMatchAll(jsonRoot, rule.pictureHighRes, sourceUrl, false);
                 for (int i = 0; i < urls.size(); i++) {
+                    String pictureId = (i < pids.size()) ? pids.get(i) : "";
+                    int pid;
+                    try {
+                        pid = Integer.parseInt(pictureId);
+                    } catch (Exception e) {
+                        pid = 0;
+                    }
                     String url = urls.get(i);
                     String thumbnail = (i < thumbnails.size()) ? thumbnails.get(i) : "";
                     String highRes = (i < highReses.size()) ? highReses.get(i) : "";
-                    pictures.add(new Picture(pictures.size() + 1, url, thumbnail, highRes, sourceUrl));
+                    pictures.add(new Picture(pid, url, thumbnail, highRes, sourceUrl));
                 }
             }
         }

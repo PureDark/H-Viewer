@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 public class Rule {
     public Selector item, idCode, title, uploader, cover, category, datetime, rating, tags, description,
-            pictureUrl, pictureThumbnail, pictureHighRes;
+            pictureId, pictureUrl, pictureThumbnail, pictureHighRes;
 
     @Deprecated
     public Selector commentItem, commentAvatar, commentAuthor, commentDatetime, commentContent;

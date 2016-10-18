@@ -16,6 +16,7 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,6 @@ import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
-import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
 
@@ -381,7 +381,7 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
             loadImage(context, picture, viewHolder);
         } else
             //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
-            if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+            if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_PICTURE)) {
                 WebView webView = new WebView(context);
                 WebSettings mWebSettings = webView.getSettings();
                 mWebSettings.setJavaScriptEnabled(true);
@@ -396,12 +396,12 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
                     public void onPageFinished(WebView view, String url) {
                         //Load HTML
                         pictureInQueue.put(picture.pid, new Pair<>(picture, viewHolder));
-                        boolean highRes = (highResSelector != null);
-                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + highRes + ");");
+                        boolean extra = !selector.equals(site.picUrlSelector);
+                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
                         Logger.d("PicturePagerAdapter", "onPageFinished");
                     }
                 });
-                webView.loadUrl(url);
+                webView.loadUrl(picture.url);
                 new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("PicturePagerAdapter", "WebView");
             } else
@@ -449,7 +449,7 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
     }
 
     @JavascriptInterface
-    public void onResultGot(String html, int pid, boolean highRes) {
+    public void onResultGot(String html, int pid, boolean extra) {
         Pair<Picture, PictureViewHolder> pair = pictureInQueue.get(pid);
         if (pair == null)
             return;
@@ -458,8 +458,9 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         if (picture == null || viewHolder == null)
             return;
         pictureInQueue.remove(pid);
-        Selector selector = (highRes) ? site.extraRule.pictureUrl : site.picUrlSelector;
-        Selector highResSelector = (highRes) ? site.extraRule.pictureHighRes : null;
+        Log.d("PicturePagerAdapter", "extra:"+extra+" html:::"+html);
+        Selector selector = (extra) ? site.extraRule.pictureUrl : site.picUrlSelector;
+        Selector highResSelector = (extra) ? site.extraRule.pictureHighRes : null;
         picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
         picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
         Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);

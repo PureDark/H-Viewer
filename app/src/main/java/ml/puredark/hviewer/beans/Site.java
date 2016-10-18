@@ -24,7 +24,11 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_SINGLE_PAGE_BIG_PICTURE = "singlePageBigPicture";
     public final static String FLAG_PRELOAD_GALLERY = "preloadGallery";
     public final static String FLAG_ONE_PIC_GALLERY = "onePicGallery";
-    public final static String FLAG_JS_NEEDED = "jsNeeded";
+    public final static String FLAG_EXTRA_INDEX_INFO = "extraIndexInfo";
+    public final static String FLAG_JS_NEEDED_ALL = "jsNeededAll";
+    public final static String FLAG_JS_NEEDED_INDEX = "jsNeededIndex";
+    public final static String FLAG_JS_NEEDED_GALLERY = "jsNeededGallery";
+    public final static String FLAG_JS_NEEDED_PICTURE = "jsNeededPicture";
 
     public int sid, gid;
     public String title = "";
@@ -136,9 +140,35 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
         return url;
     }
 
-    public String getGalleryUrl(String idCode, int page) {
-        return galleryUrl.replaceAll("\\{idCode:\\}", idCode)
-                .replaceAll("\\{page:\\d+?\\}", "" + page);
+    public String getGalleryUrl(String idCode, int page, List<Picture> pictures) {
+        Map<String, String> matchResult = RuleParser.parseUrl(galleryUrl);
+        String pageStr = matchResult.get("page");
+        int startPage;
+        try {
+            if ("minid".equals(pageStr)) {
+                startPage = 0;
+                int min = Integer.MAX_VALUE;
+                for (Picture picture : pictures) {
+                    min = Math.min(min, picture.pid);
+                }
+                page = min;
+            } else if ("maxid".equals(pageStr)) {
+                startPage = 0;
+                int max = Integer.MIN_VALUE;
+                for (Picture picture : pictures) {
+                    max = Math.max(max, picture.pid);
+                }
+                page = max;
+            } else {
+                startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
+            }
+        } catch (NumberFormatException e) {
+            startPage = 0;
+        }
+        String url = galleryUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
+                .replaceAll("\\{page:.*?\\}", "" + page)
+                .replaceAll("\\{idCode:\\}", idCode);
+        return url;
     }
 
     public void replace(Site site) {

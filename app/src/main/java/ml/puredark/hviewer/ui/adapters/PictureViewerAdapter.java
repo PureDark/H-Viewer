@@ -66,7 +66,6 @@ import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
-import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdapter.PictureViewerViewHolder>
         implements DirectoryChooserFragment.OnFragmentInteractionListener {
@@ -335,7 +334,7 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
             loadImage(context, picture, viewHolder);
         } else
             //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
-            if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+            if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL)) {
                 WebView webView = new WebView(context);
                 WebSettings mWebSettings = webView.getSettings();
                 mWebSettings.setJavaScriptEnabled(true);
@@ -350,12 +349,12 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
                     public void onPageFinished(WebView view, String url) {
                         //Load HTML
                         pictureInQueue.put(picture.pid, new Pair<>(picture, viewHolder));
-                        boolean highRes = (highResSelector != null);
-                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + highRes + ");");
+                        boolean extra = !selector.equals(site.picUrlSelector);
+                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
                         Logger.d("PictureViewerAdapter", "onPageFinished");
                     }
                 });
-                webView.loadUrl(url);
+                webView.loadUrl(picture.url);
                 new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("PictureViewerAdapter", "WebView");
             } else
@@ -402,7 +401,7 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
                 });
     }
     @JavascriptInterface
-    public void onResultGot(String html, int pid, boolean highRes) {
+    public void onResultGot(String html, int pid, boolean extra) {
         Pair<Picture, PictureViewerViewHolder> pair = pictureInQueue.get(pid);
         if (pair == null)
             return;
@@ -411,8 +410,8 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
         if (picture == null || viewHolder == null)
             return;
         pictureInQueue.remove(pid);
-        Selector selector = (highRes) ? site.extraRule.pictureUrl : site.picUrlSelector;
-        Selector highResSelector = (highRes) ? site.extraRule.pictureHighRes : null;
+        Selector selector = (extra) ? site.extraRule.pictureUrl : site.picUrlSelector;
+        Selector highResSelector = (extra) ? site.extraRule.pictureHighRes : null;
         picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
         picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
         Logger.d("PictureViewerAdapter", "getPictureUrl: picture.pic: " + picture.pic);

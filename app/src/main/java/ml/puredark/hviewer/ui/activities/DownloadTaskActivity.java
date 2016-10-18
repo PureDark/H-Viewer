@@ -52,8 +52,6 @@ import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
 
-import static ml.puredark.hviewer.configs.PasteEEConfig.url;
-
 public class DownloadTaskActivity extends BaseActivity {
 
     @BindView(R.id.coordinator_layout)
@@ -268,6 +266,7 @@ public class DownloadTaskActivity extends BaseActivity {
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(task.collection.rating);
         holder.tvSubmittime.setText(task.collection.datetime);
+        String url = task.collection.site.getGalleryUrl(task.collection.idCode, 0, task.collection.pictures);
         if(task.collection.description!=null)
             holder.tvDescription.setText(RuleParser.getClickableHtml(this, task.collection.description, url, source -> new BitmapDrawable()));
     }
@@ -279,7 +278,7 @@ public class DownloadTaskActivity extends BaseActivity {
 
     @OnClick(R.id.fab_browser)
     void fab_browser() {
-        final String url = task.collection.site.getGalleryUrl(task.collection.idCode, startPage);
+        final String url = task.collection.site.getGalleryUrl(task.collection.idCode, startPage, pictureAdapter.getDataProvider().getItems());
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);

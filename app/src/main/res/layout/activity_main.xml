@@ -9,15 +9,20 @@
     <include layout="@layout/content_main" />
 
     <include
+        android:id="@+id/nav_main"
         layout="@layout/nav_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="true"
         android:layout_gravity="start" />
 
     <include
+        android:id="@+id/nav_categories"
         layout="@layout/nav_categories"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="100dp"
+        android:clickable="true"
         android:layout_gravity="end" />
 
 </android.support.v4.widget.DrawerLayout>

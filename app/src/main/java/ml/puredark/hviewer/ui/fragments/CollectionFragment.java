@@ -15,6 +15,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AbsListView;
 
 import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
@@ -28,7 +29,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
@@ -44,9 +44,6 @@ import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
 
-import static android.R.attr.category;
-import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
-
 public class CollectionFragment extends MyFragment {
 
     @BindView(R.id.rv_collection)
@@ -56,6 +53,7 @@ public class CollectionFragment extends MyFragment {
 
     private RecyclerView.LayoutManager mLinearLayoutManager, mGridLayoutManager;
 
+    private BaseActivity activity;
     private Site site;
     private SiteTagHolder siteTagHolder;
 
@@ -66,6 +64,8 @@ public class CollectionFragment extends MyFragment {
     private int startPage;
     private int pageStep = 1;
     private int currPage;
+
+    private int waitingForSign = 0;
 
     public CollectionFragment() {
     }
@@ -87,6 +87,8 @@ public class CollectionFragment extends MyFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
         ButterKnife.bind(this, rootView);
+        if (getActivity() instanceof BaseActivity)
+            activity = (BaseActivity) getActivity();
 
         mLinearLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
@@ -107,6 +109,21 @@ public class CollectionFragment extends MyFragment {
         rvCollection.setPullRefreshEnable(true);
         rvCollection.getRecyclerView().setClipToPadding(false);
         rvCollection.getRecyclerView().setPadding(0, DensityUtil.dp2px(getActivity(), 8), 0, DensityUtil.dp2px(getActivity(), 8));
+        rvCollection.getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (activity == null) return;
+                switch (newState) {
+                    case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                        activity.setDrawerEnabled(false);
+                        break;
+                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+                        activity.setDrawerEnabled(true);
+                        break;
+                }
+            }
+        });
 
         //下拉刷新和加载更多
         rvCollection.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
@@ -164,21 +181,22 @@ public class CollectionFragment extends MyFragment {
         final String url = site.getListUrl(currUrl, page, keyword, adapter.getDataProvider().getItems());
         Logger.d("CollectionFragment", url);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
-        if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+        if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_INDEX)) {
             WebView webView = new WebView(getContext());
             WebSettings mWebSettings = webView.getSettings();
             mWebSettings.setJavaScriptEnabled(true);
             mWebSettings.setBlockNetworkImage(true);
-            mWebSettings.setDomStorageEnabled(true);
+            mWebSettings.setDomStorageEnabled(false);
             mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
-            mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+            mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
             webView.addJavascriptInterface(this, "HtmlParser");
 
             webView.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //Load HTML
-                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    waitingForSign = (int) System.currentTimeMillis() % Integer.MAX_VALUE;
+                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ", " + waitingForSign + ");");
                     Logger.d("CollectionFragment", "onPageFinished");
                 }
             });
@@ -191,11 +209,9 @@ public class CollectionFragment extends MyFragment {
                 public void onSuccess(String contentType, final Object result) {
                     if (!(result instanceof String))
                         return;
-                    if (page == startPage) {
-                        adapter.getDataProvider().clear();
-                    }
                     String html = (String) result;
-                    onResultGot(html, url, page);
+                    waitingForSign = (int) System.currentTimeMillis() % Integer.MAX_VALUE;
+                    onResultGot(html, url, page, waitingForSign);
                 }
 
                 @Override
@@ -207,29 +223,46 @@ public class CollectionFragment extends MyFragment {
                 }
             });
     }
+
     @JavascriptInterface
-    public void onResultGot(String html, String url, int page) {
-        final Rule rule;
-        if (keyword == null)
-            rule = site.indexRule;
-        else
-            rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
-        List<Collection> collections = adapter.getDataProvider().getItems();
-        int oldSize = collections.size();
-        collections = RuleParser.getCollections(collections, html, rule, url);
-        int newSize = collections.size();
-        if (newSize > oldSize) {
-            currPage = page;
-            addSearchSuggestions(collections);
-        }
-        new Handler(Looper.getMainLooper()).post(()->{
-            adapter.notifyDataSetChanged();
-            rvCollection.setPullLoadMoreCompleted();
-        });
+    public void onResultGot(String html, String url, int page, int mySign) {
+        new Thread(() -> {
+            if (waitingForSign != mySign)
+                return;
+            if (page == startPage)
+                adapter.getDataProvider().clear();
+            final Rule rule;
+            if (keyword == null)
+                rule = site.indexRule;
+            else
+                rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
+            List<Collection> collections = adapter.getDataProvider().getItems();
+            int oldSize = collections.size();
+            collections = RuleParser.getCollections(collections, html, rule, url);
+            int newSize = collections.size();
+
+            if (site.hasFlag(Site.FLAG_EXTRA_INDEX_INFO) && site.extraRule != null) {
+                List<Collection> extraCollections = RuleParser.getCollections(new ArrayList<>(), html, site.extraRule, url);
+                for (int i = 0; i < extraCollections.size() && oldSize + i < collections.size(); i++) {
+                    collections.get(oldSize + i).fillEmpty(extraCollections.get(i));
+                    Log.d("CollectionFragment", "collections:" + collections.get(oldSize + i).cover);
+                    Log.d("CollectionFragment", "extraCollections:" + extraCollections.get(i).cover);
+                }
+            }
+
+            if (newSize > oldSize) {
+                currPage = page;
+                addSearchSuggestions(collections, oldSize);
+            }
+            new Handler(Looper.getMainLooper()).post(() -> {
+                adapter.notifyDataSetChanged();
+                rvCollection.setPullLoadMoreCompleted();
+            });
+        }).start();
     }
 
-    private void addSearchSuggestions(List<Collection> collections) {
-        for (int i = 0; i < collections.size(); i++) {
+    private void addSearchSuggestions(List<Collection> collections, int start) {
+        for (int i = start; i < collections.size(); i++) {
             Collection collection = collections.get(i);
             if (collection.tags != null) {
                 for (Tag tag : collection.tags) {
@@ -284,7 +317,7 @@ public class CollectionFragment extends MyFragment {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Logger.d("CollectionFragment"," keyword:" + keyword);
+        Logger.d("CollectionFragment", " keyword:" + keyword);
         currUrl = site.searchUrl;
         parseUrl(currUrl);
         rvCollection.setRefreshing(true);

@@ -363,10 +363,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             isIndexComplete = true;
             return;
         }
-        final String url = site.getGalleryUrl(myCollection.idCode, page);
+        final String url = site.getGalleryUrl(myCollection.idCode, page, pictureAdapter.getDataProvider().getItems());
         Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
-        if (site.hasFlag(Site.FLAG_JS_NEEDED)) {
+        if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_GALLERY)) {
             WebView webView = new WebView(this);
             WebSettings mWebSettings = webView.getSettings();
             mWebSettings.setJavaScriptEnabled(true);
@@ -519,7 +519,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @OnClick(R.id.fab_browser)
     void fab_browser() {
-        final String url = site.getGalleryUrl(myCollection.idCode, startPage);
+        final String url = site.getGalleryUrl(myCollection.idCode, startPage, pictureAdapter.getDataProvider().getItems());
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);

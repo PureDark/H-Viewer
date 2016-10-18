@@ -958,7 +958,7 @@ public class ExampleSites {
         galleryRule.commentRule.content = new Selector("div.comment-body", "html", null, null, null);
 
         extraRule = new Rule();
-        extraRule.pictureUrl = new Selector("div#viewer-img > img", "attr", "src", null, null);
+        extraRule.pictureUrl = new Selector("#viewer img", "attr", "src", null, null);
 
         sites.add(new Site(55, "Dribbble",
                 "https://dribbble.com/?page={page:1}&per_page=12",
@@ -966,7 +966,7 @@ public class ExampleSites {
                 "https://dribbble.com/search?q={keyword:}&page={page:1}&per_page=12",
                 "https://dribbble.com/session/new",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_NO_RATING + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_JS_NEEDED));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_JS_NEEDED_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "Popular", "https://dribbble.com/shots?page={page:1}&per_page=12"));
@@ -1238,10 +1238,15 @@ public class ExampleSites {
 
         // 花瓣网
         indexRule = new Rule();
-        indexRule.item = new Selector("ul>li.galleryli,ul>li.igalleryli", null, null, null, null);
-        indexRule.idCode = new Selector("a.galleryli_link,a.igalleryli_link", "attr", "href", "/g/(\\d*)", null);
-        indexRule.cover = new Selector("a > img", "attr", "data-original", null, null);
-        indexRule.title = new Selector("div.galleryli_title>a,div.igalleryli_title>a", "html", null, null, null);
+        indexRule.item = new Selector("#recommend_container .recommend-imgbox", null, null, null, null);
+        indexRule.idCode = new Selector("a", "attr", "href", "/(.*)/", null);
+        indexRule.cover = new Selector("a > img", "attr", "src", "//(.*)", "http://$1");
+
+        extraRule = new Rule();
+        extraRule.item = new Selector("#recommend_container .recommend-infobox:not(.user)", null, null, null, null);
+        extraRule.title = new Selector("h2 > a", "html", null, null, null);
+        extraRule.uploader = new Selector("span > a", "html", null, null, null);
+        extraRule.category = new Selector("p > span:nth-child(2)", "html", null, null, null);
 
         galleryRule = new Rule();
         galleryRule.tagRule = new TagRule();
@@ -1257,11 +1262,11 @@ public class ExampleSites {
 
         sites.add(new Site(66, "花瓣网",
                 "http://huaban.com/?page={page:1}",
-                "http://www.zngirls.com/g/{idCode:}/{page:1}.html",
+                "http://huaban.com/{idCode:}/{pageStr:?max={page:minid}&limit=20&wfl=1}",
                 null,
                 null,
-                indexRule, galleryRule, null, null,
-                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
+                indexRule, galleryRule, null, extraRule,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_JS_NEEDED_ALL + "|" + Site.FLAG_EXTRA_INDEX_INFO));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "发现", "http://huaban.com/?page={page:1}"));

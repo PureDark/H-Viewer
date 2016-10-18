@@ -28,8 +28,6 @@ import ml.puredark.hviewer.helpers.SiteFlagHandler;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
-import static android.R.attr.tag;
-
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
     public final static int TYPE_GRID = 2;

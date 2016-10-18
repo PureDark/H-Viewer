@@ -42,7 +42,6 @@ import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
-import static ml.puredark.hviewer.configs.PasteEEConfig.url;
 
 /**
  * Created by PureDark on 2016/8/16.
@@ -162,7 +161,7 @@ public class DownloadService extends Service {
             loadPicture(picture, task, null, false);
         } else
             //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
-            if (task.collection.site.hasFlag(Site.FLAG_JS_NEEDED)) {
+            if (task.collection.site.hasFlag(Site.FLAG_JS_NEEDED_ALL)) {
                 WebView webView = new WebView(HViewerApplication.mContext);
                 WebSettings mWebSettings = webView.getSettings();
                 mWebSettings.setJavaScriptEnabled(true);
@@ -177,12 +176,12 @@ public class DownloadService extends Service {
                     public void onPageFinished(WebView view, String url) {
                         //Load HTML
                         pictureInQueue.put(picture.pid, picture);
-                        boolean highRes = (highResSelector != null);
-                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + highRes + ");");
+                        boolean extra = !selector.equals(task.collection.site.picUrlSelector);
+                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
                         Logger.d("DownloadService", "onPageFinished");
                     }
                 });
-                webView.loadUrl(url);
+                webView.loadUrl(picture.url);
                 new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("DownloadService", "WebView");
             } else
@@ -221,20 +220,20 @@ public class DownloadService extends Service {
                         picture.status = Picture.STATUS_WAITING;
                         Intent intent = new Intent(ON_FAILURE);
                         intent.putExtra("message", "图片地址获取失败，请检查网络连接");
-                        Logger.d("DownloadService", "url : " + picture.url);
+                        Logger.d("DownloadService", "apiUrl : " + picture.url);
                         sendBroadcast(intent);
                     }
                 });
     }
 
     @JavascriptInterface
-    public void onResultGot(String html, int pid, boolean highRes) {
+    public void onResultGot(String html, int pid, boolean extra) {
         Picture picture = pictureInQueue.get(pid);
         if (picture == null)
             return;
         pictureInQueue.remove(pid);
-        Selector selector = (highRes) ? currTask.collection.site.extraRule.pictureUrl : currTask.collection.site.picUrlSelector;
-        Selector highResSelector = (highRes) ? currTask.collection.site.extraRule.pictureHighRes : null;
+        Selector selector = (extra) ? currTask.collection.site.extraRule.pictureUrl : currTask.collection.site.picUrlSelector;
+        Selector highResSelector = (extra) ? currTask.collection.site.extraRule.pictureHighRes : null;
         picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
         picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
         if (!TextUtils.isEmpty(picture.highRes) && downloadHighRes()) {
@@ -250,7 +249,7 @@ public class DownloadService extends Service {
             picture.status = Picture.STATUS_WAITING;
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "图片地址获取失败，请检查网络连接");
-            Logger.d("DownloadService", "url : " + picture.url);
+            Logger.d("DownloadService", "apiUrl : " + picture.url);
             sendBroadcast(intent);
         }
     }
@@ -262,7 +261,7 @@ public class DownloadService extends Service {
             String url = (highRes) ? picture.highRes : picture.pic;
             Logger.d("DownloadService", "loadPicture pic : " + picture.pic);
             Logger.d("DownloadService", "loadPicture highRes : " + picture.highRes);
-            Logger.d("DownloadService", "loadPicture url : " + url);
+            Logger.d("DownloadService", "loadPicture apiUrl : " + url);
             ImageLoader.loadResourceFromUrl(getApplicationContext(), url, task.collection.site.cookie, picture.referer,
                     new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
                         private DownloadTask myTask = task;

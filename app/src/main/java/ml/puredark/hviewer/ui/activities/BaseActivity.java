@@ -10,6 +10,8 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
@@ -37,6 +39,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     private DrawerArrowDrawable btnReturnIcon;
 
     private View container;
+    private DrawerLayout drawerLayout;
     private ImageView btnReturn;
     private AppBarLayout appBar;
     private FloatingActionMenu fabMenu;
@@ -71,6 +74,10 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         this.container = container;
     }
 
+    protected void setDrawerLayout(DrawerLayout drawerLayout) {
+        this.drawerLayout = drawerLayout;
+    }
+
     protected void setAppBar(AppBarLayout appBar) {
         this.appBar = appBar;
     }
@@ -93,6 +100,18 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
 
     protected void setAnalyze(boolean analyze) {
         this.analyze = analyze;
+    }
+
+    public void setDrawerEnabled(boolean enabled) {
+        if (drawerLayout != null) {
+            if (enabled) {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
+            } else {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
+            }
+        }
     }
 
     public void showSnackBar(String content) {

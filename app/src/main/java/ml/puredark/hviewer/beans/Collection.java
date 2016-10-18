@@ -46,6 +46,21 @@ public class Collection extends AbstractDataProvider.Data {
         return cid;
     }
 
+    public void fillEmpty(Collection collection) {
+        Field[] fs = Collection.class.getDeclaredFields();
+        try {
+            for (Field f : fs) {
+                f.setAccessible(true);
+                Object v1 = f.get(this);
+                Object v2 = f.get(collection);
+                if (v1 == null || "".equals(v1))
+                    f.set(this, v2);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         if ((obj instanceof Collection)) {

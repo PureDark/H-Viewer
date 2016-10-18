@@ -147,7 +147,7 @@ public class ModifySiteActivity extends BaseActivity {
 
         showSnackBar("正在生成二维码，请稍候");
         isPosting = true;
-        HViewerHttpClient.post(PasteEEConfig.url, requestBody, null, new HViewerHttpClient.OnResponseListener() {
+        HViewerHttpClient.post(PasteEEConfig.apiUrl, requestBody, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
                 isPosting = false;
