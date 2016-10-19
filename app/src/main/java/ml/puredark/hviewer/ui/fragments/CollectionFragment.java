@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,8 +89,14 @@ public class CollectionFragment extends MyFragment {
         if (getActivity() instanceof BaseActivity)
             activity = (BaseActivity) getActivity();
 
-        mLinearLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
-        mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
+        if(site!=null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
+            mLinearLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        else
+            mLinearLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
+        if(site!=null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
+            mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        else
+            mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
 
         List<Collection> collections = new ArrayList<>();
         ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);

@@ -213,12 +213,12 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-        List<Site> sites = ExampleSites.get();
-        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+//        List<Site> sites = ExampleSites.get();
+//        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
 //        siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-2));
-        siteGroups.get(0).second.add(sites.get(sites.size()-1));
-        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
+//        siteGroups.get(0).second.add(sites.get(sites.size()-1));
+//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);

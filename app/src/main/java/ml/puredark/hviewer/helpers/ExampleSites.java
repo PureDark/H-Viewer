@@ -877,7 +877,7 @@ public class ExampleSites {
                 "http://www.pixiv.net/search.php?word={keyword:}&p={page:1}",
                 "https://accounts.pixiv.net/login",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_SECOND_LEVEL_GALLERY + "|" + Site.FLAG_PRELOAD_GALLERY));
+                Site.FLAG_SECOND_LEVEL_GALLERY + "|" + Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_WATERFALL_AS_GRID));
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页", "http://www.pixiv.net/new_illust.php?p={page:1}"));
         categories.add(new Category(2, "收藏夹", "http://www.pixiv.net/bookmark.php?p={page:1}"));
@@ -966,7 +966,8 @@ public class ExampleSites {
                 "https://dribbble.com/search?q={keyword:}&page={page:1}&per_page=12",
                 "https://dribbble.com/session/new",
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_NO_RATING + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_JS_NEEDED_GALLERY));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_PRELOAD_GALLERY
+                        + "|" + Site.FLAG_JS_NEEDED_GALLERY));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "Popular", "https://dribbble.com/shots?page={page:1}&per_page=12"));
@@ -1011,7 +1012,7 @@ public class ExampleSites {
                 "http://s.ui.cn/index.html?keywords={keyword:}&page={page:1}&type=project",
                 "http://ui.cn/login.html",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_RATING));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_WATERFALL_AS_GRID));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "首页推荐", "http://www.ui.cn/?p={page:1}#project"));
@@ -1122,7 +1123,7 @@ public class ExampleSites {
                 "http://bcy.net/search/all?k={keyword:}&p={page:1}",
                 "http://bcy.net/login",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_WATERFALL_AS_GRID));
 
         categories = new ArrayList<>();
         categories.add(new Category(1, "热门绘画", "http://bcy.net/illust/index/ajaxLoadHotIllust?n={page:0}"));
@@ -1269,77 +1270,77 @@ public class ExampleSites {
                 null,
                 null,
                 indexRule, galleryRule, null, extraRule,
-                Site.FLAG_NO_RATING + "|" + Site.FLAG_JS_NEEDED_ALL + "|" + Site.FLAG_EXTRA_INDEX_INFO + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_JS_NEEDED_ALL + "|" + Site.FLAG_EXTRA_INDEX_INFO
+                        + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_WATERFALL_AS_LIST));
 
         categories = new ArrayList<>();
-        categories.add(new Category(categories.size()+1, "发现", "http://huaban.com/?page={page:1}"));
-        categories.add(new Category(categories.size()+1, "最新", "http://huaban.com/all/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "UI/UX-采集", "http://huaban.com/favorite/web_app_icon/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "UI/UX-画板", "http://huaban.com/boards/favorite/web_app_icon/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "平面-采集", "http://huaban.com/favorite/design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "平面-画板", "http://huaban.com/boards/favorite/design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "插画/漫画-采集", "http://huaban.com/favorite/illustration/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "插画/漫画-画板", "http://huaban.com/boards/favorite/illustration/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "家居/家装-采集", "http://huaban.com/favorite/home/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "家居/家装-画板", "http://huaban.com/boards/favorite/home/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "女装/搭配-采集", "http://huaban.com/favorite/apparel/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "女装/搭配-画板", "http://huaban.com/boards/favorite/apparel/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "男装/风尚-采集", "http://huaban.com/favorite/men/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "男装/风尚-画板", "http://huaban.com/boards/favorite/men/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "婚礼-采集", "http://huaban.com/favorite/wedding_events/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "婚礼-画板", "http://huaban.com/boards/favorite/wedding_events/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "工业设计-采集", "http://huaban.com/favorite/industrial_design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "工业设计-画板", "http://huaban.com/boards/favorite/industrial_design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "摄影-采集", "http://huaban.com/favorite/photography/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "摄影-画板", "http://huaban.com/boards/favorite/photography/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "造型/美妆-采集", "http://huaban.com/favorite/modeling_hair/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "造型/美妆-画板", "http://huaban.com/boards/favorite/modeling_hair/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "美食-采集", "http://huaban.com/favorite/food_drink/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "美食-画板", "http://huaban.com/boards/favorite/food_drink/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "旅行-采集", "http://huaban.com/favorite/travel_places/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "旅行-画板", "http://huaban.com/boards/favorite/travel_places/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "手工/布艺-采集", "http://huaban.com/favorite/diy_crafts/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "手工/布艺-画板", "http://huaban.com/boards/favorite/diy_crafts/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "健身/舞蹈-采集", "http://huaban.com/favorite/fitness/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "健身/舞蹈-画板", "http://huaban.com/boards/favorite/fitness/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "儿童-采集", "http://huaban.com/favorite/kids/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "儿童-画板", "http://huaban.com/boards/favorite/kids/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "宠物-采集", "http://huaban.com/favorite/pets/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "宠物-画板", "http://huaban.com/boards/favorite/pets/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "美图-采集", "http://huaban.com/favorite/quotes/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "美图-画板", "http://huaban.com/boards/favorite/quotes/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "明星-采集", "http://huaban.com/favorite/people/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "明星-画板", "http://huaban.com/boards/favorite/people/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "美女-采集", "http://huaban.com/favorite/beauty/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "美女-画板", "http://huaban.com/boards/favorite/beauty/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "礼物-采集", "http://huaban.com/favorite/desire/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "礼物-画板", "http://huaban.com/boards/favorite/desire/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "极客-采集", "http://huaban.com/favorite/geek/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "极客-画板", "http://huaban.com/boards/favorite/geek/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "动漫-采集", "http://huaban.com/favorite/anime/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "动漫-画板", "http://huaban.com/boards/favorite/anime/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "建筑设计-采集", "http://huaban.com/favorite/architecture/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "建筑设计-画板", "http://huaban.com/boards/favorite/architecture/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "人文艺术-采集", "http://huaban.com/favorite/art/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "人文艺术-画板", "http://huaban.com/boards/favorite/art/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "数据图-采集", "http://huaban.com/favorite/data_presentation/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "数据图-画板", "http://huaban.com/boards/favorite/data_presentation/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "游戏-采集", "http://huaban.com/favorite/games/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "游戏-画板", "http://huaban.com/boards/favorite/games/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "汽车/摩托-采集", "http://huaban.com/favorite/cars_motorcycles/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "汽车/摩托-画板", "http://huaban.com/boards/favorite/cars_motorcycles/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "电影/图书-采集", "http://huaban.com/favorite/film_music_books/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "电影/图书-画板", "http://huaban.com/boards/favorite/film_music_books/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "生活百科-采集", "http://huaban.com/favorite/tips/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "生活百科-画板", "http://huaban.com/boards/favorite/tips/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "教育-采集", "http://huaban.com/favorite/education/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "教育-画板", "http://huaban.com/boards/favorite/education/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "运动-采集", "http://huaban.com/favorite/sports/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "运动-画板", "http://huaban.com/boards/favorite/sports/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "搞笑-采集", "http://huaban.com/favorite/funny/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
-        categories.add(new Category(categories.size()+1, "搞笑-画板", "http://huaban.com/boards/favorite/funny/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "发现", "http://huaban.com/?page={page:1}"));
+        categories.add(new Category(categories.size() + 1, "最新", "http://huaban.com/all/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "UI/UX-采集", "http://huaban.com/favorite/web_app_icon/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "UI/UX-画板", "http://huaban.com/boards/favorite/web_app_icon/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "平面-采集", "http://huaban.com/favorite/design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "平面-画板", "http://huaban.com/boards/favorite/design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "插画/漫画-采集", "http://huaban.com/favorite/illustration/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "插画/漫画-画板", "http://huaban.com/boards/favorite/illustration/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "家居/家装-采集", "http://huaban.com/favorite/home/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "家居/家装-画板", "http://huaban.com/boards/favorite/home/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "女装/搭配-采集", "http://huaban.com/favorite/apparel/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "女装/搭配-画板", "http://huaban.com/boards/favorite/apparel/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "男装/风尚-采集", "http://huaban.com/favorite/men/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "男装/风尚-画板", "http://huaban.com/boards/favorite/men/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "婚礼-采集", "http://huaban.com/favorite/wedding_events/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "婚礼-画板", "http://huaban.com/boards/favorite/wedding_events/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "工业设计-采集", "http://huaban.com/favorite/industrial_design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "工业设计-画板", "http://huaban.com/boards/favorite/industrial_design/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "摄影-采集", "http://huaban.com/favorite/photography/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "摄影-画板", "http://huaban.com/boards/favorite/photography/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "造型/美妆-采集", "http://huaban.com/favorite/modeling_hair/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "造型/美妆-画板", "http://huaban.com/boards/favorite/modeling_hair/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "美食-采集", "http://huaban.com/favorite/food_drink/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "美食-画板", "http://huaban.com/boards/favorite/food_drink/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "旅行-采集", "http://huaban.com/favorite/travel_places/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "旅行-画板", "http://huaban.com/boards/favorite/travel_places/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "手工/布艺-采集", "http://huaban.com/favorite/diy_crafts/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "手工/布艺-画板", "http://huaban.com/boards/favorite/diy_crafts/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "健身/舞蹈-采集", "http://huaban.com/favorite/fitness/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "健身/舞蹈-画板", "http://huaban.com/boards/favorite/fitness/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "儿童-采集", "http://huaban.com/favorite/kids/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "儿童-画板", "http://huaban.com/boards/favorite/kids/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "宠物-采集", "http://huaban.com/favorite/pets/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "宠物-画板", "http://huaban.com/boards/favorite/pets/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "美图-采集", "http://huaban.com/favorite/quotes/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "美图-画板", "http://huaban.com/boards/favorite/quotes/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "明星-采集", "http://huaban.com/favorite/people/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "明星-画板", "http://huaban.com/boards/favorite/people/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "美女-采集", "http://huaban.com/favorite/beauty/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "美女-画板", "http://huaban.com/boards/favorite/beauty/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "礼物-采集", "http://huaban.com/favorite/desire/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "礼物-画板", "http://huaban.com/boards/favorite/desire/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "极客-采集", "http://huaban.com/favorite/geek/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "极客-画板", "http://huaban.com/boards/favorite/geek/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "动漫-采集", "http://huaban.com/favorite/anime/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "动漫-画板", "http://huaban.com/boards/favorite/anime/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "建筑设计-采集", "http://huaban.com/favorite/architecture/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "建筑设计-画板", "http://huaban.com/boards/favorite/architecture/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "人文艺术-采集", "http://huaban.com/favorite/art/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "人文艺术-画板", "http://huaban.com/boards/favorite/art/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "数据图-采集", "http://huaban.com/favorite/data_presentation/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "数据图-画板", "http://huaban.com/boards/favorite/data_presentation/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "游戏-采集", "http://huaban.com/favorite/games/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "游戏-画板", "http://huaban.com/boards/favorite/games/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "汽车/摩托-采集", "http://huaban.com/favorite/cars_motorcycles/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "汽车/摩托-画板", "http://huaban.com/boards/favorite/cars_motorcycles/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "电影/图书-采集", "http://huaban.com/favorite/film_music_books/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "电影/图书-画板", "http://huaban.com/boards/favorite/film_music_books/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "生活百科-采集", "http://huaban.com/favorite/tips/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "生活百科-画板", "http://huaban.com/boards/favorite/tips/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "教育-采集", "http://huaban.com/favorite/education/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "教育-画板", "http://huaban.com/boards/favorite/education/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "运动-采集", "http://huaban.com/favorite/sports/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "运动-画板", "http://huaban.com/boards/favorite/sports/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "搞笑-采集", "http://huaban.com/favorite/funny/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        categories.add(new Category(categories.size() + 1, "搞笑-画板", "http://huaban.com/boards/favorite/funny/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
         sites.get(sites.size() - 1).setCategories(categories);
-        sites.get(sites.size() - 1).isGrid = true;
 
         return sites;
     }

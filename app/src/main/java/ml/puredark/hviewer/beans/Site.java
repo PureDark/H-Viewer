@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.beans;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -20,7 +19,8 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_NO_TITLE = "noTitle";
     public final static String FLAG_NO_RATING = "noRating";
     public final static String FLAG_NO_TAG = "noTag";
-    public final static String FLAG_WATERFALL_INDEX = "waterfallIndex";
+    public final static String FLAG_WATERFALL_AS_LIST = "waterfallAsList";
+    public final static String FLAG_WATERFALL_AS_GRID = "waterfallAsGrid";
     public final static String FLAG_SECOND_LEVEL_GALLERY = "secondLevelGallery";
     public final static String FLAG_REPEATED_THUMBNAIL = "repeatedThumbnail";
     public final static String FLAG_SINGLE_PAGE_BIG_PICTURE = "singlePageBigPicture";

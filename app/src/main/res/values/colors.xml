@@ -150,6 +150,8 @@
     <color name="bgcolor">#f2f1ed</color>
 
 
+    <color name="waterfall_bgcolor">#fafafa</color>
+
     <color name="transparent">@android:color/transparent</color>
     <color name="white_10">#1AFFFFFF</color>
     <color name="white_20">#33FFFFFF</color>

@@ -1,9 +1,12 @@
 package ml.puredark.hviewer.ui.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Animatable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +16,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
+import com.facebook.common.logging.FLog;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.image.ImageInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,12 +40,16 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
     public final static int TYPE_GRID = 2;
+    public final static int TYPE_WATERFALL = 3;
     private Context context;
     private ListDataProvider mProvider;
     private OnItemClickListener mItemClickListener;
     private Site site;
     private boolean isGrid = false;
+    private boolean waterfallAsList = false;
+    private boolean waterfallAsGrid = false;
     private SiteTagHolder siteTagHolder;
+    private Map<Collection, Integer> storedHeights = new HashMap<>();
 
     public CollectionAdapter(Context context, ListDataProvider mProvider, SiteTagHolder siteTagHolder) {
         this.mProvider = mProvider;
@@ -52,6 +65,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     .inflate(R.layout.item_collection, parent, false);
             RecyclerView.ViewHolder vh = new CollectionViewHolder(v);
             return vh;
+        } else if (viewType == TYPE_WATERFALL) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_collection_waterfall, parent, false);
+            RecyclerView.ViewHolder vh = new CollectionWaterfallViewHolder(v);
+            return vh;
         } else {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_collection_grid, parent, false);
@@ -63,13 +81,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Collection collection = (Collection) mProvider.getItem(position);
+        Logger.d("CollectionAdapter", "collection.cover:" + collection.cover);
         if (viewHolder instanceof CollectionViewHolder) {
             CollectionViewHolder holder = (CollectionViewHolder) viewHolder;
             String cookie = (site == null) ? "" : site.cookie;
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            Logger.d("CollectionAdapter", "collection.cover:" + collection.cover);
             ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
@@ -87,9 +105,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             holder.rbRating.setRating(collection.rating);
             holder.tvSubmittime.setText(collection.datetime);
-            if(site!=null) {
+            if (site != null) {
                 checkSiteFlags(position, site, collection);
-            }else if (collection instanceof LocalCollection) {
+            } else if (collection instanceof LocalCollection) {
                 holder.layoutCover.setVisibility(View.VISIBLE);
                 holder.tvTitle.setVisibility(View.VISIBLE);
                 holder.rbRating.setVisibility(View.VISIBLE);
@@ -104,6 +122,72 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 cookie = ((LocalCollection) collection).site.cookie;
             }
             ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
+        } else if (viewHolder instanceof CollectionWaterfallViewHolder) {
+            CollectionWaterfallViewHolder holder = (CollectionWaterfallViewHolder) viewHolder;
+            String cookie = (site == null) ? "" : site.cookie;
+            if (collection instanceof LocalCollection) {
+                cookie = ((LocalCollection) collection).site.cookie;
+            }
+            waterfallCheckTextView(holder.tvTitle, collection.title);
+            waterfallCheckTextView(holder.tvUploader, collection.uploader);
+            waterfallCheckTextView(holder.tvCategory, collection.category);
+            waterfallCheckTextView(holder.tvSubmittime, collection.datetime);
+            if (storedHeights.get(collection) != null) {
+                int originHeight = storedHeights.get(collection);
+                holder.ivCover.getLayoutParams().height = originHeight;
+                holder.ivCover.requestLayout();
+                holder.ivIcon.getLayoutParams().height = originHeight;
+                holder.ivIcon.requestLayout();
+            }
+            ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer, new BaseControllerListener<ImageInfo>() {
+                @Override
+                public void onSubmit(String id, Object callerContext) {
+                    super.onSubmit(id, callerContext);
+                }
+
+                @Override
+                public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
+                    super.onFinalImageSet(id, imageInfo, anim);
+                    if (imageInfo == null) {
+                        return;
+                    }
+                    holder.ivCover.post(() -> {
+                        final float factor = (float) imageInfo.getHeight() / imageInfo.getWidth();
+                        final int originWidth = holder.ivCover.getWidth();
+                        final int originHeight = (int) (factor * originWidth);
+                        holder.ivCover.getLayoutParams().height = originHeight;
+                        holder.ivCover.requestLayout();
+                        holder.ivIcon.getLayoutParams().height = originHeight;
+                        holder.ivIcon.requestLayout();
+                        storedHeights.put(collection, originHeight);
+                    });
+                }
+
+                @Override
+                public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+                }
+
+                @Override
+                public void onFailure(String id, Throwable throwable) {
+                    FLog.e(getClass(), throwable, "Error loading %s", id);
+                }
+            });
+            if (site != null) {
+                checkSiteFlags(position, site, collection);
+            } else if (collection instanceof LocalCollection) {
+                holder.tvTitle.setVisibility(View.VISIBLE);
+                checkSiteFlags(holder, ((LocalCollection) collection).site);
+                checkSiteFlags(position, ((LocalCollection) collection).site, collection);
+            }
+        }
+    }
+
+    private void waterfallCheckTextView(TextView textView, String text) {
+        if (TextUtils.isEmpty(text))
+            textView.setVisibility(View.GONE);
+        else {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
         }
     }
 
@@ -122,7 +206,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (holder.rvTags != null) {
                 holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.HORIZONTAL));
             }
-        }else{
+        } else {
             if (holder.rvTags != null) {
                 holder.rvTags.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.HORIZONTAL));
             }
@@ -139,6 +223,12 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    private void checkSiteFlags(CollectionWaterfallViewHolder holder, Site site) {
+        if (site.hasFlag(Site.FLAG_NO_TITLE)) {
+            holder.tvTitle.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public int getItemCount() {
         return (mProvider == null) ? 0 : mProvider.getCount();
@@ -151,7 +241,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return (isGrid) ? TYPE_GRID : TYPE_LIST;
+        return (isGrid) ? (waterfallAsGrid ? TYPE_WATERFALL: TYPE_GRID) : (waterfallAsList ? TYPE_WATERFALL : TYPE_LIST);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -160,6 +250,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setSite(Site site) {
         this.site = site;
+        if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
+            waterfallAsList = true;
+        if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
+            waterfallAsGrid = true;
     }
 
     public ListDataProvider getDataProvider() {
@@ -203,40 +297,27 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public CollectionViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            if(site!=null) {
+            if (site != null)
                 checkSiteFlags(this, site);
-            }
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
-                }
+            view.setOnLongClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                else
+                    return false;
             });
-            rippleLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            rippleLayout.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
-                }
+            rippleLayout.setOnLongClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                else
+                    return false;
             });
         }
 
@@ -251,39 +332,71 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public CollectionGridViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
-                }
+            view.setOnLongClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                else
+                    return false;
             });
-            rippleLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            rippleLayout.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        return mItemClickListener.onItemLongClick(v, getAdapterPosition());
-                    else
-                        return false;
-                }
+            rippleLayout.setOnLongClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                else
+                    return false;
             });
         }
 
+    }
+
+    public class CollectionWaterfallViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.iv_icon)
+        ImageView ivIcon;
+        @BindView(R.id.iv_cover)
+        SimpleDraweeView ivCover;
+        @BindView(R.id.tv_title)
+        TextView tvTitle;
+        @BindView(R.id.tv_submittime)
+        TextView tvSubmittime;
+        @BindView(R.id.tv_uploader)
+        TextView tvUploader;
+        @BindView(R.id.tv_category)
+        TextView tvCategory;
+        @BindView(R.id.ripple_layout)
+        MaterialRippleLayout rippleLayout;
+
+        public CollectionWaterfallViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+            if (site != null)
+                checkSiteFlags(this, site);
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
+            });
+            view.setOnLongClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                else
+                    return false;
+            });
+            rippleLayout.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
+            });
+            rippleLayout.setOnLongClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    return mItemClickListener.onItemLongClick(v, getAdapterPosition());
+                else
+                    return false;
+            });
+        }
     }
 }

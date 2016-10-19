@@ -237,6 +237,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setOffscreenPageLimit(3);
 
         viewPager.addOnPageChangeListener(new SwipeBackOnPageChangeListener(this));
 

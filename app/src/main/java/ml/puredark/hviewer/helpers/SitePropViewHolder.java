@@ -1,11 +1,13 @@
 package ml.puredark.hviewer.helpers;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gc.materialdesign.views.CheckBox;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.ArrayList;
@@ -46,6 +48,15 @@ public class SitePropViewHolder {
     MaterialEditText inputFlag;
     @BindView(R.id.input_cookie)
     MaterialEditText inputCookie;
+
+    @BindView(R.id.btn_waterfall_as_list)
+    LinearLayout btnWaterfallAsList;
+    @BindView(R.id.btn_waterfall_as_grid)
+    LinearLayout btnWaterfallAsGrid;
+    @BindView(R.id.checkbox_waterfall_as_list)
+    CheckBox checkBoxWaterfallAsList;
+    @BindView(R.id.checkbox_waterfall_as_grid)
+    CheckBox checkBoxWaterfallAsGrid;
 
     @BindView(R.id.btn_category)
     TextView btnCategory;
@@ -392,7 +403,49 @@ public class SitePropViewHolder {
 
     public SitePropViewHolder(View view) {
         ButterKnife.bind(this, view);
-        btnCategory.setOnClickListener(view12 -> {
+        if (lastSite == null)
+            lastSite = new Site();
+        btnWaterfallAsList.setOnClickListener(v -> {
+            if (checkBoxWaterfallAsList.isCheck()) {
+                checkBoxWaterfallAsList.setChecked(false);
+                String newFlags = removeFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_LIST);
+                inputFlag.setText(newFlags);
+            } else {
+                checkBoxWaterfallAsList.setChecked(true);
+                String newFlags = addFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_LIST);
+                inputFlag.setText(newFlags);
+            }
+        });
+        btnWaterfallAsGrid.setOnClickListener(v -> {
+            if (checkBoxWaterfallAsGrid.isCheck()) {
+                checkBoxWaterfallAsGrid.setChecked(false);
+                String newFlags = removeFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_GRID);
+                inputFlag.setText(newFlags);
+            } else {
+                checkBoxWaterfallAsGrid.setChecked(true);
+                String newFlags = addFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_GRID);
+                inputFlag.setText(newFlags);
+            }
+        });
+        checkBoxWaterfallAsList.setOncheckListener((checkBox, checked) -> {
+            if (checked) {
+                String newFlags = addFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_LIST);
+                inputFlag.setText(newFlags);
+            } else {
+                String newFlags = removeFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_LIST);
+                inputFlag.setText(newFlags);
+            }
+        });
+        checkBoxWaterfallAsGrid.setOncheckListener((checkBox, checked) -> {
+            if (checked) {
+                String newFlags = addFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_GRID);
+                inputFlag.setText(newFlags);
+            } else {
+                String newFlags = removeFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_GRID);
+                inputFlag.setText(newFlags);
+            }
+        });
+        btnCategory.setOnClickListener(v -> {
             if (rvCategory.getVisibility() == View.GONE) {
                 rvCategory.setVisibility(View.VISIBLE);
                 btnCategory.setText("-" + btnCategory.getText().toString().substring(1));
@@ -401,7 +454,7 @@ public class SitePropViewHolder {
                 btnCategory.setText("+" + btnCategory.getText().toString().substring(1));
             }
         });
-        btnIndexRule.setOnClickListener(view1 -> {
+        btnIndexRule.setOnClickListener(v -> {
             if (layoutIndexRule.getVisibility() == View.GONE) {
                 layoutIndexRule.setVisibility(View.VISIBLE);
                 btnIndexRule.setText("-" + btnIndexRule.getText().toString().substring(1));
@@ -410,7 +463,7 @@ public class SitePropViewHolder {
                 btnIndexRule.setText("+" + btnIndexRule.getText().toString().substring(1));
             }
         });
-        btnSearchRule.setOnClickListener(view13 -> {
+        btnSearchRule.setOnClickListener(v -> {
             if (layoutSearchRule.getVisibility() == View.GONE) {
                 layoutSearchRule.setVisibility(View.VISIBLE);
                 btnSearchRule.setText("-" + btnSearchRule.getText().toString().substring(1));
@@ -419,7 +472,7 @@ public class SitePropViewHolder {
                 btnSearchRule.setText("+" + btnSearchRule.getText().toString().substring(1));
             }
         });
-        btnGalleryRule.setOnClickListener(view14 -> {
+        btnGalleryRule.setOnClickListener(v -> {
             if (layoutGalleryRule.getVisibility() == View.GONE) {
                 layoutGalleryRule.setVisibility(View.VISIBLE);
                 btnGalleryRule.setText("-" + btnGalleryRule.getText().toString().substring(1));
@@ -428,7 +481,7 @@ public class SitePropViewHolder {
                 btnGalleryRule.setText("+" + btnGalleryRule.getText().toString().substring(1));
             }
         });
-        btnExtraRule.setOnClickListener(view15 -> {
+        btnExtraRule.setOnClickListener(v -> {
             if (layoutExtraRule.getVisibility() == View.GONE) {
                 layoutExtraRule.setVisibility(View.VISIBLE);
                 btnExtraRule.setText("-" + btnExtraRule.getText().toString().substring(1));
@@ -440,6 +493,30 @@ public class SitePropViewHolder {
 
         categoryInputAdapter = new CategoryInputAdapter(new ListDataProvider(new ArrayList()));
         rvCategory.setAdapter(categoryInputAdapter);
+    }
+
+    public String addFlag(String flagStr, String flagToBeAdded) {
+        if (!flagStr.contains(flagToBeAdded)) {
+            if (!flagStr.endsWith("|"))
+                flagStr += "|";
+            flagStr += flagToBeAdded;
+        }
+        return flagStr;
+    }
+
+    public String removeFlag(String flagStr, String flagToBeRemoved) {
+        if (!flagStr.contains(flagToBeRemoved))
+            return flagStr;
+        String newFlags = "";
+        String[] flags = flagStr.split("\\|");
+        for (String flag : flags) {
+            flag = flag.trim();
+            if (!TextUtils.isEmpty(flag) && !flagToBeRemoved.equals(flag))
+                newFlags += flag + "|";
+        }
+        if (newFlags.endsWith("|"))
+            newFlags = newFlags.substring(0, newFlags.length() - 1);
+        return newFlags;
     }
 
     public String joinSelector(Selector selector) {
@@ -475,6 +552,8 @@ public class SitePropViewHolder {
         inputLoginUrl.setText(site.loginUrl);
         inputCookie.setText(site.cookie);
         inputFlag.setText(site.flag);
+        checkBoxWaterfallAsList.setChecked(site.hasFlag(Site.FLAG_WATERFALL_AS_LIST));
+        checkBoxWaterfallAsGrid.setChecked(site.hasFlag(Site.FLAG_WATERFALL_AS_GRID));
 
         if (site.categories != null) {
             categoryInputAdapter.getDataProvider().addAll(site.categories);
