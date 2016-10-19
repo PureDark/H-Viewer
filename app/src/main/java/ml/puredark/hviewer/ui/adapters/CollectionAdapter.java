@@ -135,8 +135,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (storedHeights.get(collection) != null) {
                 int originHeight = storedHeights.get(collection);
                 holder.ivCover.getLayoutParams().height = originHeight;
-                holder.ivCover.requestLayout();
                 holder.ivIcon.getLayoutParams().height = originHeight;
+                holder.ivCover.requestLayout();
                 holder.ivIcon.requestLayout();
             }
             ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer, new BaseControllerListener<ImageInfo>() {
@@ -156,8 +156,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         final int originWidth = holder.ivCover.getWidth();
                         final int originHeight = (int) (factor * originWidth);
                         holder.ivCover.getLayoutParams().height = originHeight;
-                        holder.ivCover.requestLayout();
                         holder.ivIcon.getLayoutParams().height = originHeight;
+                        holder.ivCover.requestLayout();
                         holder.ivIcon.requestLayout();
                         storedHeights.put(collection, originHeight);
                     });

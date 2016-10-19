@@ -78,7 +78,7 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
     private Picture pictureToBeSaved;
 
     public PictureViewerAdapter(BaseActivity activity, Site site, Collection collection, ListDataProvider provider) {
-        setHasStableIds(false);
+        setHasStableIds(true);
         this.activity = activity;
         this.site = site;
         this.collection = collection;

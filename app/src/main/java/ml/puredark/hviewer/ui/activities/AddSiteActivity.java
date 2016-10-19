@@ -163,7 +163,9 @@ public class AddSiteActivity extends BaseActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (result != null && result.getContents() != null) {
-            HViewerHttpClient.get(result.getContents(), null, new HViewerHttpClient.OnResponseListener() {
+            String url = result.getContents();
+            Log.d("AddSiteActivity", "url:" + url);
+            HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, Object result) {
                     final Site newSite = parseSite((String) result);

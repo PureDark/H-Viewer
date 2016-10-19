@@ -39,8 +39,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Category category = (Category) mProvider.getItem(position);
         holder.tvTitle.setText(category.title);
         if (selectedCid == category.cid) {
+            holder.tvTitle.setTextColor(holder.tvTitle.getResources().getColor(R.color.white));
             holder.container.setBackgroundResource(R.color.colorPrimaryDark);
         } else {
+            holder.tvTitle.setTextColor(holder.tvTitle.getResources().getColor(R.color.black));
             holder.container.setBackground(null);
         }
     }

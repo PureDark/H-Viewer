@@ -287,6 +287,8 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
     }
 
     private void loadPicture(final Picture picture, final String path) {
+        if(site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
+            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
         ImageLoader.loadResourceFromUrl(activity, picture.pic, site.cookie, picture.referer,
                 new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
 

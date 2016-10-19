@@ -9,7 +9,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.View;
 
 import com.jayway.jsonpath.JsonPath;
@@ -232,7 +231,7 @@ public class RuleParser {
                     } catch (Exception e) {
                         pid = 0;
                     }
-                    pid = (pid == 0) ? pictures.size() + 1 : pid;
+                    pid = (pid != 0) ? pid : (pictures.size() > 0) ? pictures.get(pictures.size() - 1).pid + 1 : pictures.size() + 1;
                     String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true);
                     String PictureHighRes = parseSingleProperty(pictureElement, rule.pictureHighRes, sourceUrl, true);
                     String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true);
@@ -411,8 +410,7 @@ public class RuleParser {
                     } catch (Exception e) {
                         pid = 0;
                     }
-
-                    pid = (pid == 0) ? pictures.size() + 1 : pid;
+                    pid = (pid != 0) ? pid : (pictures.size() > 0) ? pictures.get(pictures.size() - 1).pid + 1 : pictures.size() + 1;
                     String pictureUrl = parseSingleProperty(pictureItem, rule.pictureUrl, sourceUrl, true);
                     String PictureHighRes = parseSingleProperty(pictureItem, rule.pictureHighRes, sourceUrl, true);
                     String pictureThumbnail = parseSingleProperty(pictureItem, rule.pictureThumbnail, sourceUrl, true);

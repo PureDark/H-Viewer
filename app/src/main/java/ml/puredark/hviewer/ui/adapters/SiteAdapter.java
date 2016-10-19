@@ -79,21 +79,15 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
             boolean animateIndicator = ((expandState & ExpandableItemConstants.STATE_FLAG_HAS_EXPANDED_STATE_CHANGED) != 0);
             holder.indicator.setExpandedState(isExpanded, animateIndicator);
         }
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mItemClickListener != null && groupPosition >= 0)
-                    mItemClickListener.onGroupClick(v, groupPosition);
-            }
+        holder.container.setOnClickListener(v -> {
+            if (mItemClickListener != null && groupPosition >= 0)
+                mItemClickListener.onGroupClick(v, groupPosition);
         });
-        holder.container.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (mItemClickListener != null && groupPosition >= 0 && groupPosition < getGroupCount() - 1)
-                    return mItemClickListener.onGroupLongClick(v, groupPosition);
-                else
-                    return false;
-            }
+        holder.container.setOnLongClickListener(v -> {
+            if (mItemClickListener != null && groupPosition >= 0 && groupPosition < getGroupCount() - 1)
+                return mItemClickListener.onGroupLongClick(v, groupPosition);
+            else
+                return false;
         });
     }
 

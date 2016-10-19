@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.helpers;
 
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -7,7 +8,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gc.materialdesign.views.CheckBox;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.ArrayList;
@@ -54,9 +54,9 @@ public class SitePropViewHolder {
     @BindView(R.id.btn_waterfall_as_grid)
     LinearLayout btnWaterfallAsGrid;
     @BindView(R.id.checkbox_waterfall_as_list)
-    CheckBox checkBoxWaterfallAsList;
+    AppCompatCheckBox checkBoxWaterfallAsList;
     @BindView(R.id.checkbox_waterfall_as_grid)
-    CheckBox checkBoxWaterfallAsGrid;
+    AppCompatCheckBox checkBoxWaterfallAsGrid;
 
     @BindView(R.id.btn_category)
     TextView btnCategory;
@@ -301,6 +301,12 @@ public class SitePropViewHolder {
     MaterialEditText inputExtraRuleItemRegex;
     @BindView(R.id.input_extraRule_item_replacement)
     MaterialEditText inputExtraRuleItemReplacement;
+    @BindView(R.id.input_extraRule_idCode_selector)
+    MaterialEditText inputExtraRuleIdCodeSelector;
+    @BindView(R.id.input_extraRule_idCode_regex)
+    MaterialEditText inputExtraRuleIdCodeRegex;
+    @BindView(R.id.input_extraRule_idCode_replacement)
+    MaterialEditText inputExtraRuleIdCodeReplacement;
     @BindView(R.id.input_extraRule_title_selector)
     MaterialEditText inputExtraRuleTitleSelector;
     @BindView(R.id.input_extraRule_title_regex)
@@ -406,7 +412,7 @@ public class SitePropViewHolder {
         if (lastSite == null)
             lastSite = new Site();
         btnWaterfallAsList.setOnClickListener(v -> {
-            if (checkBoxWaterfallAsList.isCheck()) {
+            if (checkBoxWaterfallAsList.isChecked()) {
                 checkBoxWaterfallAsList.setChecked(false);
                 String newFlags = removeFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_LIST);
                 inputFlag.setText(newFlags);
@@ -417,7 +423,7 @@ public class SitePropViewHolder {
             }
         });
         btnWaterfallAsGrid.setOnClickListener(v -> {
-            if (checkBoxWaterfallAsGrid.isCheck()) {
+            if (checkBoxWaterfallAsGrid.isChecked()) {
                 checkBoxWaterfallAsGrid.setChecked(false);
                 String newFlags = removeFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_GRID);
                 inputFlag.setText(newFlags);
@@ -427,8 +433,8 @@ public class SitePropViewHolder {
                 inputFlag.setText(newFlags);
             }
         });
-        checkBoxWaterfallAsList.setOncheckListener((checkBox, checked) -> {
-            if (checked) {
+        checkBoxWaterfallAsList.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
                 String newFlags = addFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_LIST);
                 inputFlag.setText(newFlags);
             } else {
@@ -436,8 +442,8 @@ public class SitePropViewHolder {
                 inputFlag.setText(newFlags);
             }
         });
-        checkBoxWaterfallAsGrid.setOncheckListener((checkBox, checked) -> {
-            if (checked) {
+        checkBoxWaterfallAsGrid.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
                 String newFlags = addFlag(inputFlag.getText().toString(), Site.FLAG_WATERFALL_AS_GRID);
                 inputFlag.setText(newFlags);
             } else {
@@ -552,8 +558,8 @@ public class SitePropViewHolder {
         inputLoginUrl.setText(site.loginUrl);
         inputCookie.setText(site.cookie);
         inputFlag.setText(site.flag);
-        checkBoxWaterfallAsList.setChecked(site.hasFlag(Site.FLAG_WATERFALL_AS_LIST));
-        checkBoxWaterfallAsGrid.setChecked(site.hasFlag(Site.FLAG_WATERFALL_AS_GRID));
+        checkBoxWaterfallAsList.post(() -> checkBoxWaterfallAsList.setChecked(site.hasFlag(Site.FLAG_WATERFALL_AS_LIST)));
+        checkBoxWaterfallAsGrid.post(() -> checkBoxWaterfallAsGrid.setChecked(site.hasFlag(Site.FLAG_WATERFALL_AS_GRID)));
 
         if (site.categories != null) {
             categoryInputAdapter.getDataProvider().addAll(site.categories);
@@ -777,6 +783,11 @@ public class SitePropViewHolder {
                     inputExtraRuleItemRegex.setText(site.extraRule.item.regex);
                     inputExtraRuleItemReplacement.setText(site.extraRule.item.replacement);
                 }
+                if (site.extraRule.idCode != null) {
+                    inputExtraRuleIdCodeSelector.setText(joinSelector(site.extraRule.idCode));
+                    inputExtraRuleIdCodeRegex.setText(site.extraRule.idCode.regex);
+                    inputExtraRuleIdCodeReplacement.setText(site.extraRule.idCode.replacement);
+                }
                 if (site.extraRule.title != null) {
                     inputExtraRuleTitleSelector.setText(joinSelector(site.extraRule.title));
                     inputExtraRuleTitleRegex.setText(site.extraRule.title.regex);
@@ -887,7 +898,7 @@ public class SitePropViewHolder {
             lastSite.categories = categories;
 
         //index rule
-        lastSite.indexRule = new Rule();
+        lastSite.indexRule = (lastSite.indexRule == null) ? new Rule() : lastSite.indexRule;
         lastSite.indexRule.item = loadSelector(inputIndexRuleItemSelector, inputIndexRuleItemRegex, inputIndexRuleItemReplacement);
         lastSite.indexRule.idCode = loadSelector(inputIndexRuleIdCodeSelector, inputIndexRuleIdCodeRegex, inputIndexRuleIdCodeReplacement);
         lastSite.indexRule.title = loadSelector(inputIndexRuleTitleSelector, inputIndexRuleTitleRegex, inputIndexRuleTitleReplacement);
@@ -899,7 +910,7 @@ public class SitePropViewHolder {
         lastSite.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
 
         //search rule
-        lastSite.searchRule = new Rule();
+        lastSite.searchRule = (lastSite.searchRule == null) ? new Rule() : lastSite.searchRule;
         lastSite.searchRule.item = loadSelector(inputSearchRuleItemSelector, inputSearchRuleItemRegex, inputSearchRuleItemReplacement);
         lastSite.searchRule.idCode = loadSelector(inputSearchRuleIdCodeSelector, inputSearchRuleIdCodeRegex, inputSearchRuleIdCodeReplacement);
         lastSite.searchRule.title = loadSelector(inputSearchRuleTitleSelector, inputSearchRuleTitleRegex, inputSearchRuleTitleReplacement);
@@ -914,7 +925,7 @@ public class SitePropViewHolder {
             lastSite.searchRule = null;
 
         //gallery rule
-        lastSite.galleryRule = new Rule();
+        lastSite.galleryRule = (lastSite.galleryRule == null) ? new Rule() : lastSite.galleryRule;
         lastSite.galleryRule.item = loadSelector(inputGalleryRuleItemSelector, inputGalleryRuleItemRegex, inputGalleryRuleItemReplacement);
         lastSite.galleryRule.title = loadSelector(inputGalleryRuleTitleSelector, inputGalleryRuleTitleRegex, inputGalleryRuleTitleReplacement);
         lastSite.galleryRule.uploader = loadSelector(inputGalleryRuleUploaderSelector, inputGalleryRuleUploaderRegex, inputGalleryRuleUploaderReplacement);
@@ -937,7 +948,7 @@ public class SitePropViewHolder {
             lastSite.galleryRule.commentRule = null;
 
         //extra rule
-        lastSite.extraRule = new Rule();
+        lastSite.extraRule = (lastSite.extraRule == null) ? new Rule() : lastSite.extraRule;
         lastSite.extraRule.item = loadSelector(inputExtraRuleItemSelector, inputExtraRuleItemRegex, inputExtraRuleItemReplacement);
         lastSite.extraRule.title = loadSelector(inputExtraRuleTitleSelector, inputExtraRuleTitleRegex, inputExtraRuleTitleReplacement);
         lastSite.extraRule.uploader = loadSelector(inputExtraRuleUploaderSelector, inputExtraRuleUploaderRegex, inputExtraRuleUploaderReplacement);

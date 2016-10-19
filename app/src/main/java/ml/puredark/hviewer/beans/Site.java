@@ -31,6 +31,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_JS_NEEDED_INDEX = "jsNeededIndex";
     public final static String FLAG_JS_NEEDED_GALLERY = "jsNeededGallery";
     public final static String FLAG_JS_NEEDED_PICTURE = "jsNeededPicture";
+    public final static String FLAG_JS_SCROLL = "jsScroll";
 
     public int sid, gid;
     public String title = "";

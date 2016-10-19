@@ -346,17 +346,16 @@ public class MarketActivity extends BaseActivity {
             showSnackBar("正在更新站点，请等待更新完毕后再返回");
             return;
         }
-        if(updated) {
-            Intent intent = new Intent();
-            setResult(RESULT_OK, intent);
-            finish();
-        }else
-            super.onBackPressed();
+        super.onBackPressed();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(updated) {
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+        }
         siteHolder.onDestroy();
     }
 

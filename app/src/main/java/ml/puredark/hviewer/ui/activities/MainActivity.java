@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -20,6 +21,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,6 +72,7 @@ import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteTagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
+import ml.puredark.hviewer.ui.customs.DragMarginDrawerLayout;
 import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
@@ -92,7 +96,7 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.drawer_layout)
-    DrawerLayout drawer;
+    DragMarginDrawerLayout drawer;
     @BindView(R.id.app_bar)
     AppBarLayout appBar;
     @BindView(R.id.backdrop)
@@ -158,8 +162,6 @@ public class MainActivity extends BaseActivity {
         // 关闭边缘滑动返回
         setSwipeBackEnable(false);
 
-        // 设定侧边栏滑动边距
-        setDrawerLeftEdgeSize(drawer, 0.5f);
 
         siteHolder = new SiteHolder(this);
         siteTagHolder = new SiteTagHolder(this);
@@ -171,6 +173,26 @@ public class MainActivity extends BaseActivity {
             searchView.setLayoutParams(lp);
         }
 
+
+        initDrawer();
+
+        initSearchSuggestions();
+
+        initSearchView();
+
+        initNavCategories();
+
+        initNavSites();
+
+        initBottomSheet();
+
+        HViewerApplication.checkUpdate(this);
+    }
+
+    private void initDrawer(){
+        // 设定侧边栏滑动边距
+        drawer.setDrawerLeftEdgeSize(0.5f);
+        drawer.setDrawerRightEdgeSize(0.5f);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -194,18 +216,6 @@ public class MainActivity extends BaseActivity {
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
             }
         });
-
-        initSearchSuggestions();
-
-        initSearchView();
-
-        initNavCategories();
-
-        initNavSites();
-
-        initBottomSheet();
-
-        HViewerApplication.checkUpdate(this);
     }
 
     private void initNavSites() {
@@ -213,9 +223,9 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-//        List<Site> sites = ExampleSites.get();
-//        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
-//        siteGroups.get(0).second.addAll(sites);
+        List<Site> sites = ExampleSites.get();
+        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+        siteGroups.get(0).second.addAll(sites);
 //        siteGroups.get(0).second.add(sites.get(sites.size()-2));
 //        siteGroups.get(0).second.add(sites.get(sites.size()-1));
 //        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
@@ -224,8 +234,6 @@ public class MainActivity extends BaseActivity {
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
         mRecyclerViewExpandableItemManager.setOnGroupExpandListener((groupPosition, fromUser) -> {
             if (fromUser) {
-                int childItemHeight = getResources().getDimensionPixelSize(R.dimen.item_site_height);
-                mRecyclerViewExpandableItemManager.scrollToGroup(groupPosition, childItemHeight, 0, 0);
             }
         });
         mRecyclerViewExpandableItemManager.setOnGroupCollapseListener((groupPosition, fromUser) -> {
@@ -647,6 +655,26 @@ public class MainActivity extends BaseActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch(newState){
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        setDrawerEnabled(true);
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        setDrawerEnabled(false);
+                        break;
+                }
+                Log.d("MainActivity", "newState:" + newState);
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
     }
 
     class TagTabViewHolder {
@@ -778,28 +806,6 @@ public class MainActivity extends BaseActivity {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }
-    }
-
-    public void setDrawerLeftEdgeSize(DrawerLayout drawerLayout, float displayWidthPercentage) {
-        if (drawerLayout == null) return;
-        try {
-            Field leftDraggerField = drawerLayout.getClass().getDeclaredField("mLeftDragger");
-            leftDraggerField.setAccessible(true);
-            ViewDragHelper leftDragger = (ViewDragHelper) leftDraggerField.get(drawerLayout);
-            Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
-            edgeSizeField.setAccessible(true);
-            int edgeSize = edgeSizeField.getInt(leftDragger);
-            int ScreenWidth = DensityUtil.getScreenWidth(this);
-            edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int) (ScreenWidth * displayWidthPercentage)));
-            Field rightDraggerField = drawerLayout.getClass().getDeclaredField("mRightDragger");
-            rightDraggerField.setAccessible(true);
-            ViewDragHelper rightDragger = (ViewDragHelper) rightDraggerField.get(drawerLayout);
-            edgeSizeField = rightDragger.getClass().getDeclaredField("mEdgeSize");
-            edgeSizeField.setAccessible(true);
-            edgeSizeField.setInt(rightDragger, Math.max(edgeSize, (int) (ScreenWidth * displayWidthPercentage)));
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

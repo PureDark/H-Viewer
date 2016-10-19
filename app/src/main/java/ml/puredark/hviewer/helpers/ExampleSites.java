@@ -37,6 +37,8 @@ public class ExampleSites {
         galleryRule.pictureUrl = new Selector("a", "attr", "href", null, null);
         galleryRule.pictureThumbnail = new Selector("a img", "attr", "src", null, null);
 
+        Rule searchRule = new Rule();
+
         Rule extraRule = new Rule();
         extraRule.pictureUrl = new Selector("img#sm", "attr", "src", null, null);
 
@@ -1239,7 +1241,7 @@ public class ExampleSites {
 
         // 花瓣网
         indexRule = new Rule();
-        indexRule.item = new Selector("#waterfall>div:not(.google), #recommend_container .recommend-imgbox", null, null, null, null);
+        indexRule.item = new Selector("#waterfall>div:not(.google):not(.ad), #recommend_container .recommend-imgbox", null, null, null, null);
         indexRule.idCode = new Selector("a.img,a.link", "attr", "href", "/(.*)/", null);
         indexRule.cover = new Selector("a>img", "attr", "src", null, null);
         indexRule.title = new Selector("p.description,div.over>h3", "html", null, "([^<>]*)", null);
@@ -1267,8 +1269,8 @@ public class ExampleSites {
         sites.add(new Site(66, "花瓣网",
                 "http://huaban.com/?page={page:1}",
                 "http://huaban.com/{idCode:}/{pageStr:?max={page:minid}&limit=20&wfl=1}",
-                null,
-                null,
+                "http://huaban.com/search/?q={keyword:}&page={page:1}&per_page=20&wfl=1",
+                "http://huaban.com/login",
                 indexRule, galleryRule, null, extraRule,
                 Site.FLAG_NO_RATING + "|" + Site.FLAG_JS_NEEDED_ALL + "|" + Site.FLAG_EXTRA_INDEX_INFO
                         + "|" + Site.FLAG_SINGLE_PAGE_BIG_PICTURE + "|" + Site.FLAG_WATERFALL_AS_LIST));
@@ -1340,6 +1342,70 @@ public class ExampleSites {
         categories.add(new Category(categories.size() + 1, "运动-画板", "http://huaban.com/boards/favorite/sports/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
         categories.add(new Category(categories.size() + 1, "搞笑-采集", "http://huaban.com/favorite/funny/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
         categories.add(new Category(categories.size() + 1, "搞笑-画板", "http://huaban.com/boards/favorite/funny/{pageStr:?max={page:minid}&limit=20&wfl=1}"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
+        // Pinterest
+        indexRule = new Rule();
+        indexRule.item = new Selector(".GridItems > .item", null, null, null, null);
+        indexRule.idCode = new Selector(".pinHolder > a", "attr", "href", "/(.*)/", null);
+        indexRule.cover = new Selector("div.Image img", "attr", "src", null, null);
+        indexRule.title = new Selector("h3.richPinGridTitle,.pinMeta>.pinDescription", "html", null, null, null);
+        indexRule.uploader = new Selector("div.pinCreditNameTitleWrapper>.creditName", "html", null, null, null);
+        indexRule.category = new Selector("div.pinCreditNameTitleWrapper>.creditTitle", "html", null, null, null);
+        indexRule.datetime = new Selector("em.repinCountSmall", "html", null, "(\\d+)", "$1 \uD83D\uDCCC");
+
+        galleryRule = new Rule();
+        galleryRule.description = new Selector(".userActivity .userNote", "html", null, null, null);
+        galleryRule.item = new Selector(".imageContainer", null, null, null, null);
+        galleryRule.pictureThumbnail = new Selector("img.pinImage", "attr", "src", null, null);
+        galleryRule.pictureUrl = new Selector("img.pinImage", "attr", "src", null, null);
+
+        sites.add(new Site(67, "Pinterest",
+                "https://www.pinterest.com/",
+                "https://www.pinterest.com/{idCode:}",
+                "http://huaban.com/search/?q={keyword:}&page={page:1}&per_page=20&wfl=1",
+                "https://www.pinterest.com/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_JS_NEEDED_ALL + "|" + Site.FLAG_WATERFALL_AS_LIST+ "|" + Site.FLAG_JS_SCROLL));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(categories.size() + 1, "HomePage", "https://www.pinterest.com/"));
+        categories.add(new Category(categories.size() + 1, "Popular", "https://www.pinterest.com/categories/popular/"));
+        categories.add(new Category(categories.size() + 1, "Everything", "https://www.pinterest.com/categories/everything/"));
+        categories.add(new Category(categories.size() + 1, "Gifts", "https://www.pinterest.com/categories/gifts/"));
+        categories.add(new Category(categories.size() + 1, "Videos", "https://www.pinterest.com/categories/videos/"));
+        categories.add(new Category(categories.size() + 1, "Animals and pets", "https://www.pinterest.com/categories/animals/"));
+        categories.add(new Category(categories.size() + 1, "Architecture", "https://www.pinterest.com/categories/architecture/"));
+        categories.add(new Category(categories.size() + 1, "Art", "https://www.pinterest.com/categories/art/"));
+        categories.add(new Category(categories.size() + 1, "Cars and motorcycles", "https://www.pinterest.com/categories/cars_motorcycles/"));
+        categories.add(new Category(categories.size() + 1, "Celebrities", "https://www.pinterest.com/categories/celebrities/"));
+        categories.add(new Category(categories.size() + 1, "DIY and crafts", "https://www.pinterest.com/categories/diy_crafts/"));
+        categories.add(new Category(categories.size() + 1, "Design", "https://www.pinterest.com/categories/design/"));
+        categories.add(new Category(categories.size() + 1, "Education", "https://www.pinterest.com/categories/education/"));
+        categories.add(new Category(categories.size() + 1, "Film, music and books", "https://www.pinterest.com/categories/film_music_books/"));
+        categories.add(new Category(categories.size() + 1, "Food and drink", "https://www.pinterest.com/categories/food_drink/"));
+        categories.add(new Category(categories.size() + 1, "Gardening", "https://www.pinterest.com/categories/gardening/"));
+        categories.add(new Category(categories.size() + 1, "Geek", "https://www.pinterest.com/categories/geek/"));
+        categories.add(new Category(categories.size() + 1, "Hair and beauty", "https://www.pinterest.com/categories/hair_beauty/"));
+        categories.add(new Category(categories.size() + 1, "Health and fitness", "https://www.pinterest.com/categories/health_fitness/"));
+        categories.add(new Category(categories.size() + 1, "History", "https://www.pinterest.com/categories/history/"));
+        categories.add(new Category(categories.size() + 1, "Holidays and events", "https://www.pinterest.com/categories/holidays_events/"));
+        categories.add(new Category(categories.size() + 1, "Home decor", "https://www.pinterest.com/categories/home_decor/"));
+        categories.add(new Category(categories.size() + 1, "Humor", "https://www.pinterest.com/categories/humor/"));
+        categories.add(new Category(categories.size() + 1, "Illustrations and posters", "https://www.pinterest.com/categories/illustrations_posters/"));
+        categories.add(new Category(categories.size() + 1, "Kids and parenting", "https://www.pinterest.com/categories/kids/"));
+        categories.add(new Category(categories.size() + 1, "Men's fashion", "https://www.pinterest.com/categories/mens_fashion/"));
+        categories.add(new Category(categories.size() + 1, "Outdoors", "https://www.pinterest.com/categories/outdoors/"));
+        categories.add(new Category(categories.size() + 1, "Photography", "https://www.pinterest.com/categories/photography/"));
+        categories.add(new Category(categories.size() + 1, "Products", "https://www.pinterest.com/categories/products/"));
+        categories.add(new Category(categories.size() + 1, "Quotes", "https://www.pinterest.com/categories/quotes/"));
+        categories.add(new Category(categories.size() + 1, "Science and nature", "https://www.pinterest.com/categories/science_nature/"));
+        categories.add(new Category(categories.size() + 1, "Sports", "https://www.pinterest.com/categories/sports/"));
+        categories.add(new Category(categories.size() + 1, "Tattoos", "https://www.pinterest.com/categories/tattoos/"));
+        categories.add(new Category(categories.size() + 1, "Technology", "https://www.pinterest.com/categories/technology/"));
+        categories.add(new Category(categories.size() + 1, "Travel", "https://www.pinterest.com/categories/travel/"));
+        categories.add(new Category(categories.size() + 1, "Weddings", "https://www.pinterest.com/categories/weddings/"));
+        categories.add(new Category(categories.size() + 1, "Women's fashion", "https://www.pinterest.com/categories/womens_fashion/"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;

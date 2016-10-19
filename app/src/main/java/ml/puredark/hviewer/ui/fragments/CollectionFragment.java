@@ -8,7 +8,6 @@ import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,7 @@ import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 public class CollectionFragment extends MyFragment {
 
@@ -51,6 +51,8 @@ public class CollectionFragment extends MyFragment {
     PullLoadMoreRecyclerView rvCollection;
 
     CollectionAdapter adapter;
+
+    private WebView mWebView;
 
     private RecyclerView.LayoutManager mLinearLayoutManager, mGridLayoutManager;
 
@@ -89,14 +91,25 @@ public class CollectionFragment extends MyFragment {
         if (getActivity() instanceof BaseActivity)
             activity = (BaseActivity) getActivity();
 
-        if(site!=null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
+        if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
             mLinearLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
             mLinearLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
-        if(site!=null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
+        if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
             mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
             mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
+
+        if (site != null && (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_INDEX))) {
+            mWebView = new WebView(getContext());
+            WebSettings mWebSettings = mWebView.getSettings();
+            mWebSettings.setJavaScriptEnabled(true);
+            mWebSettings.setBlockNetworkImage(true);
+            mWebSettings.setDomStorageEnabled(false);
+            mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
+            mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+            mWebView.addJavascriptInterface(this, "HtmlParser");
+        }
 
         List<Collection> collections = new ArrayList<>();
         ListDataProvider<Collection> dataProvider = new ListDataProvider<>(collections);
@@ -169,7 +182,7 @@ public class CollectionFragment extends MyFragment {
     }
 
     private void getCollections(String keyword, final int page) {
-        if (onePage && page > startPage) {
+        if (onePage && page > startPage && !site.hasFlag(Site.FLAG_JS_SCROLL)) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
             getActivity().runOnUiThread(() -> rvCollection.setPullLoadMoreCompleted());
             return;
@@ -183,25 +196,33 @@ public class CollectionFragment extends MyFragment {
         Logger.d("CollectionFragment", url);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
         if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_INDEX)) {
-            WebView webView = new WebView(getContext());
-            WebSettings mWebSettings = webView.getSettings();
-            mWebSettings.setJavaScriptEnabled(true);
-            mWebSettings.setBlockNetworkImage(true);
-            mWebSettings.setDomStorageEnabled(false);
-            mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
-            mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-            webView.addJavascriptInterface(this, "HtmlParser");
-
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    //Load HTML
-                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
-                    Logger.d("CollectionFragment", "onPageFinished");
-                }
-            });
-            webView.loadUrl(url);
-            new Handler().postDelayed(() -> webView.stopLoading(), 30000);
+            if (site.hasFlag(Site.FLAG_JS_SCROLL) && page != startPage && mWebView.getUrl().equals(url)) {
+                Logger.d("CollectionFragment", "FLAG_JS_SCROLL");
+                mWebView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        //Load HTML
+                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                        Logger.d("CollectionFragment", "onPageFinished");
+                    }
+                });
+                mWebView.loadUrl("javascript:document.body.scrollTop = document.body.scrollHeight;");
+                new Handler().postDelayed(() -> {
+                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    Logger.d("CollectionFragment", "onAjaxFinished");
+                }, 5000);
+            } else {
+                mWebView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        //Load HTML
+                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                        Logger.d("CollectionFragment", "onPageFinished");
+                    }
+                });
+                mWebView.loadUrl(url);
+                new Handler().postDelayed(() -> mWebView.stopLoading(), 30000);
+            }
             Logger.d("CollectionFragment", "WebView");
         } else
             HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
@@ -226,26 +247,33 @@ public class CollectionFragment extends MyFragment {
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
         new Thread(() -> {
+            SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             if (page == startPage)
                 adapter.getDataProvider().clear();
             final Rule rule;
             if (keyword == null)
                 rule = site.indexRule;
             else
-                rule = (site.searchRule != null) ? site.searchRule : site.indexRule;
-            List<Collection> collections = adapter.getDataProvider().getItems();
-            int oldSize = collections.size();
-            collections = RuleParser.getCollections(collections, html, rule, url);
-            int newSize = collections.size();
+                rule = (site.searchRule != null && site.searchRule.item != null) ? site.searchRule : site.indexRule;
 
+            List<Collection> newCollections = RuleParser.getCollections(new ArrayList<>(), html, rule, url);
+
+            List<Collection> collections = adapter.getDataProvider().getItems();
             if (site.hasFlag(Site.FLAG_EXTRA_INDEX_INFO) && site.extraRule != null) {
                 List<Collection> extraCollections = RuleParser.getCollections(new ArrayList<>(), html, site.extraRule, url);
-                for (int i = 0; i < extraCollections.size() && oldSize + i < collections.size(); i++) {
-                    collections.get(oldSize + i).fillEmpty(extraCollections.get(i));
+                for (int i = 0; i < extraCollections.size() && i < newCollections.size(); i++) {
+                    newCollections.get(i).fillEmpty(extraCollections.get(i));
+                }
+            }
+            int oldSize = collections.size();
+            for (Collection newCollection : newCollections) {
+                if (!collections.contains(newCollection)){
+                    newCollection.cid = collections.size() + 1;
+                    collections.add(newCollection);
                 }
             }
 
-            if (newSize > oldSize) {
+            if (collections.size() > oldSize) {
                 currPage = page;
                 addSearchSuggestions(collections, oldSize);
             }

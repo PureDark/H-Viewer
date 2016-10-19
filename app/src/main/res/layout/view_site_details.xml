@@ -75,12 +75,10 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-                <com.gc.materialdesign.views.CheckBox
+                <android.support.v7.widget.AppCompatCheckBox
                     android:id="@+id/checkbox_waterfall_as_list"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    app:check="false" />
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -96,12 +94,10 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-                <com.gc.materialdesign.views.CheckBox
+                <android.support.v7.widget.AppCompatCheckBox
                     android:id="@+id/checkbox_waterfall_as_grid"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    app:check="false" />
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1570,6 +1566,84 @@
                 android:layout_marginTop="@dimen/half_padding"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="14sp"
+                android:text="ITEM"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/half_padding"
+                android:orientation="horizontal">
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/input_extraRule_item_selector"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
+                    style="@style/EditTextAddSite"
+                    app:met_floatingLabelText="选择器"/>
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/input_extraRule_item_regex"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    style="@style/EditTextAddSite"
+                    app:met_floatingLabelText="截取正则式"/>
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/input_extraRule_item_replacement"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    style="@style/EditTextAddSite"
+                    app:met_floatingLabelText="替换式"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/half_padding"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="14sp"
+                android:text="特征码"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/half_padding"
+                android:orientation="horizontal">
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/input_extraRule_idCode_selector"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
+                    style="@style/EditTextAddSite"
+                    app:met_floatingLabelText="选择器"/>
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/input_extraRule_idCode_regex"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    style="@style/EditTextAddSite"
+                    app:met_floatingLabelText="截取正则式"/>
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/input_extraRule_idCode_replacement"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    style="@style/EditTextAddSite"
+                    app:met_floatingLabelText="替换式"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/half_padding"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="14sp"
                 android:text="标题（可选）"/>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -1868,45 +1942,6 @@
                     app:met_floatingLabelText="截取正则式"/>
                 <com.rengwuxian.materialedittext.MaterialEditText
                     android:id="@+id/input_extraRule_tags_replacement"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="2dp"
-                    style="@style/EditTextAddSite"
-                    app:met_floatingLabelText="替换式"/>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/half_padding"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14sp"
-                android:text="ITEM"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/half_padding"
-                android:orientation="horizontal">
-                <com.rengwuxian.materialedittext.MaterialEditText
-                    android:id="@+id/input_extraRule_item_selector"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="2dp"
-                    style="@style/EditTextAddSite"
-                    app:met_floatingLabelText="选择器"/>
-                <com.rengwuxian.materialedittext.MaterialEditText
-                    android:id="@+id/input_extraRule_item_regex"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="2dp"
-                    style="@style/EditTextAddSite"
-                    app:met_floatingLabelText="截取正则式"/>
-                <com.rengwuxian.materialedittext.MaterialEditText
-                    android:id="@+id/input_extraRule_item_replacement"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
