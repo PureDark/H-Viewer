@@ -47,6 +47,7 @@ import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+import static ml.puredark.hviewer.R.id.container;
 
 public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdapter.PictureViewerViewHolder> {
     private BaseActivity activity;
@@ -75,8 +76,11 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
         Picture picture = (Picture) mProvider.getItem(position);
         if (picture.pic != null) {
             loadImage(activity, picture, viewHolder);
-        } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-            getPictureUrl(activity, viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+        } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
+            if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
+                getPictureUrl(activity, viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
+            else if(site.extraRule.pictureUrl != null)
+                getPictureUrl(activity, viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
         } else if (site.picUrlSelector != null) {
             getPictureUrl(activity, viewHolder, picture, site, site.picUrlSelector, null);
         } else {
@@ -86,8 +90,11 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
         viewHolder.btnRefresh.setOnClickListener(v -> {
             if (picture.pic != null) {
                 loadImage(activity, picture, viewHolder);
-            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-                getPictureUrl(activity, viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
+                if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
+                    getPictureUrl(activity, viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
+                else if(site.extraRule.pictureUrl != null)
+                    getPictureUrl(activity, viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
             } else if (site.picUrlSelector == null) {
                 picture.pic = picture.url;
                 loadImage(activity, picture, viewHolder);

@@ -1,16 +1,21 @@
 package ml.puredark.hviewer.ui.adapters;
 
+import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.balysv.materialripple.MaterialRippleLayout;
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.dpizarro.autolabel.library.Label;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +24,7 @@ import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 import static android.R.attr.tag;
+import static ml.puredark.hviewer.R.id.container;
 
 public class SiteTagAdapter {
     private AutoLabelUI labelView;
@@ -42,7 +48,14 @@ public class SiteTagAdapter {
             labelView.setLayoutTransition(null);
             int position = labelView.getLabelsCounter()-1;
             Label label = labelView.getLabel(position);
-            label.setOnLabelClickListener(v -> {
+            View view = LayoutInflater.from(labelView.getContext()).inflate(R.layout.item_site_tag, null);
+            MaterialRippleLayout rippleLayout = (MaterialRippleLayout) view.findViewById(R.id.ripple_layout);
+            LinearLayout child = (LinearLayout) label.getChildAt(0);
+            child.setBackgroundResource(android.R.color.transparent);
+            label.removeView(child);
+            rippleLayout.addView(child);
+            label.addView(view);
+            rippleLayout.setOnClickListener(v->{
                 if (position >= 0 && mProvider != null) {
                     tag.selected = !tag.selected;
                     notifyItemChanged(position);
@@ -50,10 +63,6 @@ public class SiteTagAdapter {
                         mItemClickListener.onItemClick(v, position);
                 }
             });
-            if (tag.selected)
-                label.getChildAt(0).setBackgroundResource(R.color.colorPrimary);
-            else
-                label.getChildAt(0).setBackgroundResource(R.color.dimgray);
         }
     }
 
@@ -61,10 +70,15 @@ public class SiteTagAdapter {
         Tag tag = (Tag) mProvider.getItem(position);
         Label label = labelView.getLabel(position);
         label.setText(tag.title);
-        if (tag.selected)
-            label.getChildAt(0).setBackgroundResource(R.color.colorPrimary);
-        else
-            label.getChildAt(0).setBackgroundResource(R.color.dimgray);
+        MaterialRippleLayout rippleLayout = (MaterialRippleLayout) label.findViewById(R.id.ripple_layout);
+        if (tag.selected) {
+            rippleLayout.setRippleBackground(label.getContext().getResources().getColor(R.color.colorPrimary));
+            rippleLayout.setRippleColor(label.getContext().getResources().getColor(R.color.dimgray));
+        }else {
+            rippleLayout.setRippleBackground(label.getContext().getResources().getColor(R.color.dimgray));
+            rippleLayout.setRippleColor(label.getContext().getResources().getColor(R.color.colorPrimary));
+        }
+        rippleLayout.setRadius(0);
     }
 
     public void notifyDataSetChanged(){

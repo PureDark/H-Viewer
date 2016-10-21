@@ -174,8 +174,11 @@ public class PicturePagerAdapter extends PagerAdapter {
             final Picture picture = pictures.get(getPicturePostion(position));
             if (picture.pic != null) {
                 loadImage(container.getContext(), picture, viewHolder);
-            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-                getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
+                if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
+                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
+                else if(site.extraRule.pictureUrl != null)
+                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
             } else if (site.picUrlSelector != null) {
                 getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
             } else {
@@ -185,8 +188,11 @@ public class PicturePagerAdapter extends PagerAdapter {
             viewHolder.btnRefresh.setOnClickListener(v -> {
                 if (picture.pic != null) {
                     loadImage(container.getContext(), picture, viewHolder);
-                } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null && site.extraRule.pictureUrl != null) {
-                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+                } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
+                    if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
+                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
+                    else if(site.extraRule.pictureUrl != null)
+                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
                 } else if (site.picUrlSelector == null) {
                     picture.pic = picture.url;
                     loadImage(container.getContext(), picture, viewHolder);

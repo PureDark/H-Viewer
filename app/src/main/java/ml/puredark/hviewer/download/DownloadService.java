@@ -143,9 +143,11 @@ public class DownloadService extends Service {
             picture.retries = 0;
             loadPicture(picture, task, null, false);
         } else if (task.collection.site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE)
-                && task.collection.site.extraRule != null
-                && task.collection.site.extraRule.pictureUrl != null) {
-            getPictureUrl(picture, task, task.collection.site.extraRule.pictureUrl, task.collection.site.extraRule.pictureHighRes);
+                && task.collection.site.extraRule != null) {
+            if(task.collection.site.extraRule.pictureRule != null && task.collection.site.extraRule.pictureRule.url != null)
+                getPictureUrl(picture, task, task.collection.site.extraRule.pictureRule.url, task.collection.site.extraRule.pictureRule.highRes);
+            else if(task.collection.site.extraRule.pictureUrl != null)
+                getPictureUrl(picture, task, task.collection.site.extraRule.pictureUrl, task.collection.site.extraRule.pictureHighRes);
         } else if (task.collection.site.picUrlSelector != null) {
             getPictureUrl(picture, task, task.collection.site.picUrlSelector, null);
         } else {
@@ -163,7 +165,7 @@ public class DownloadService extends Service {
         } else
             //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
             if (task.collection.site.hasFlag(Site.FLAG_JS_NEEDED_ALL)) {
-                new Handler(Looper.getMainLooper()).post(()->{
+                new Handler(Looper.getMainLooper()).post(() -> {
                     WebView webView = new WebView(HViewerApplication.mContext);
                     WebSettings mWebSettings = webView.getSettings();
                     mWebSettings.setJavaScriptEnabled(true);

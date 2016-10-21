@@ -344,7 +344,7 @@ public class CollectionFragment extends MyFragment {
         if (site == null || site.searchUrl == null || "".equals(site.searchUrl)) {
             BaseActivity activity = (BaseActivity) getActivity();
             if (activity != null)
-                activity.showSnackBar("该站点不支持搜索");
+                activity.showSnackBar("该站点不支持搜索，试试单选TAG");
             return;
         }
         try {
