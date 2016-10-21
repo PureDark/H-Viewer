@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.View;
 
 import com.jayway.jsonpath.JsonPath;
@@ -47,6 +48,8 @@ public class RuleParser {
 
     public static Map<String, String> parseUrl(String url) {
         Map<String, String> map = new HashMap<>();
+        if (TextUtils.isEmpty(url))
+            return map;
         Pattern pattern = Pattern.compile("\\{([^{}]*?):([^{}]*?)\\}", DOTALL);
         Matcher matcher = pattern.matcher(url);
         while (matcher.find()) {
@@ -123,8 +126,8 @@ public class RuleParser {
 
                     Collection collection = new Collection(collections.size() + 1);
                     collection = getCollectionDetail(collection, element, rule, sourceUrl);
-
-                    collections.add(collection);
+                    if (!TextUtils.isEmpty(collection.idCode))
+                        collections.add(collection);
                 }
             } else {
                 ReadContext ctx = JsonPath.parse(text);
@@ -141,8 +144,8 @@ public class RuleParser {
 
                     Collection collection = new Collection(collections.size() + 1);
                     collection = getCollectionDetail(collection, item, rule, sourceUrl);
-
-                    collections.add(collection);
+                    if (!TextUtils.isEmpty(collection.idCode))
+                        collections.add(collection);
                 }
             }
         } catch (Exception e) {
@@ -205,6 +208,13 @@ public class RuleParser {
         if (rule.tagRule != null && rule.tagRule.item != null) {
             temp = element.select(rule.tagRule.item.selector);
             for (Element tagElement : temp) {
+                if (rule.tagRule.item.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.tagRule.item.regex);
+                    Matcher matcher = pattern.matcher(tagElement.toString());
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                }
                 String tagTitle = parseSingleProperty(tagElement, rule.tagRule.title, sourceUrl, false);
                 String tagUrl = parseSingleProperty(tagElement, rule.tagRule.url, sourceUrl, true);
                 if (TextUtils.isEmpty(tagUrl))
@@ -224,6 +234,14 @@ public class RuleParser {
             if (rule.item != null) {
                 temp = element.select(rule.item.selector);
                 for (Element pictureElement : temp) {
+                    if (rule.item.regex != null) {
+                        Pattern pattern = Pattern.compile(rule.item.regex);
+                        Matcher matcher = pattern.matcher(pictureElement.toString());
+                        if (!matcher.find()) {
+                            continue;
+                        }
+                        Log.d("RuleParser", " pictureElement.toString():" + pictureElement.toString());
+                    }
                     String pictureId = parseSingleProperty(pictureElement, rule.pictureId, sourceUrl, false);
                     int pid;
                     try {
@@ -250,6 +268,7 @@ public class RuleParser {
                     } catch (Exception e) {
                         pid = 0;
                     }
+                    pid = (pid != 0) ? pid : (pictures.size() > 0) ? pictures.get(pictures.size() - 1).pid + 1 : pictures.size() + 1;
                     String url = urls.get(i);
                     String thumbnail = (i < thumbnails.size()) ? thumbnails.get(i) : "";
                     String highRes = (i < highReses.size()) ? highReses.get(i) : "";
@@ -262,6 +281,13 @@ public class RuleParser {
         if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null) {
             temp = element.select(rule.commentRule.item.selector);
             for (Element commentElement : temp) {
+                if (rule.commentRule.item.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.commentRule.item.regex);
+                    Matcher matcher = pattern.matcher(commentElement.toString());
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                }
                 String commentAvatar = parseSingleProperty(commentElement, rule.commentRule.avatar, sourceUrl, false);
                 String commentAuthor = parseSingleProperty(commentElement, rule.commentRule.author, sourceUrl, false);
                 String commentDatetime = parseSingleProperty(commentElement, rule.commentRule.datetime, sourceUrl, false);
@@ -271,6 +297,13 @@ public class RuleParser {
         } else if (rule.commentItem != null && rule.commentContent != null) {
             temp = element.select(rule.commentItem.selector);
             for (Element commentElement : temp) {
+                if (rule.commentItem.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.commentItem.regex);
+                    Matcher matcher = pattern.matcher(commentElement.toString());
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                }
                 String commentAvatar = parseSingleProperty(commentElement, rule.commentAvatar, sourceUrl, false);
                 String commentAuthor = parseSingleProperty(commentElement, rule.commentAuthor, sourceUrl, false);
                 String commentDatetime = parseSingleProperty(commentElement, rule.commentDatetime, sourceUrl, false);
@@ -403,6 +436,13 @@ public class RuleParser {
             if (rule.item != null) {
                 temp = jsonRoot.read(rule.item.path);
                 for (ReadContext pictureItem : temp) {
+                    if (rule.item.regex != null) {
+                        Pattern pattern = Pattern.compile(rule.item.regex);
+                        Matcher matcher = pattern.matcher(pictureItem.toString());
+                        if (!matcher.find()) {
+                            continue;
+                        }
+                    }
                     String pictureId = parseSingleProperty(pictureItem, rule.pictureId, sourceUrl, false);
                     int pid;
                     try {

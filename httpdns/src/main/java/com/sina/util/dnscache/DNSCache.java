@@ -366,7 +366,11 @@ public class DNSCache {
                     }
                 }
                 scoreManager.serverIpScore(domainModel);
-                dnsCacheManager.setSpeedInfo(ipArray);
+                try {
+                    dnsCacheManager.setSpeedInfo(ipArray);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
     }

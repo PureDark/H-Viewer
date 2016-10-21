@@ -78,10 +78,14 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
 
     @Override
     public void removeChildItem(int groupPosition, int childPosition) {
-        mData.get(groupPosition).second.remove(childPosition);
+        try {
+            mData.get(groupPosition).second.remove(childPosition);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public Pair<G, List<C>> getItem(int position){
+    public Pair<G, List<C>> getItem(int position) {
         return mData.get(position);
     }
 

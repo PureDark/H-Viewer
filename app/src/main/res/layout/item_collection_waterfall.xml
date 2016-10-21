@@ -8,7 +8,7 @@
     android:layout_marginTop="4dp"
     android:layout_marginLeft="4dp"
     android:layout_marginRight="4dp"
-    tools:layout_width="180dp"
+    tools:layout_width="174dp"
     android:gravity="center"
     android:elevation="2dp"
     app:cardBackgroundColor="@color/white"
@@ -39,6 +39,15 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="300dp"
+                    android:ellipsize="end"
+                    android:textSize="12sp"
+                    android:padding="4dp"/>
 
                 <ImageView
                     android:id="@+id/iv_icon"

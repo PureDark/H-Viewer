@@ -62,11 +62,12 @@ import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
-import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
+import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 
@@ -324,9 +325,9 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private boolean commentEnabled() {
         return (site.galleryRule.commentRule != null &&
                 site.galleryRule.commentRule.item != null &&
-                site.galleryRule.commentRule.author != null&&
+                site.galleryRule.commentRule.author != null &&
                 site.galleryRule.commentRule.content != null)
-                ||(site.galleryRule.commentItem != null &&
+                || (site.galleryRule.commentItem != null &&
                 site.galleryRule.commentAuthor != null &&
                 site.galleryRule.commentContent != null);
     }
@@ -363,6 +364,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             isIndexComplete = true;
             return;
         }
+        Log.d("CollectionActivity", "myCollection.idCode:" + myCollection.idCode);
         final String url = site.getGalleryUrl(myCollection.idCode, page, pictureAdapter.getDataProvider().getItems());
         Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
         Logger.d("CollectionActivity", "starPage:" + startPage + " page:" + page);
@@ -381,6 +383,18 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //Load HTML
+                    if (site.hasFlag(Site.FLAG_IFRAME_GALLERY)) {
+                        String js = "javascript:" +
+                                "var iframes =document.querySelectorAll(\"iframe\");" +
+                                "var host = window.location.protocol + \"//\" + window.location.host;" +
+                                "for (i = 0; i < iframes.length; i++) {" +
+                                "var iframe = iframes[i];" +
+                                "if(iframe.src.startsWith(host))" +
+                                "iframe.outerHTML = iframe.contentWindow.document.body.innerHTML;" +
+                                "} ";
+                        webView.loadUrl(js);
+                        Logger.d("CollectionActivity", "FLAG_IFRAME_GALLERY");
+                    }
                     webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
                     Logger.d("CollectionActivity", "onPageFinished");
                 }
@@ -416,6 +430,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
+        if (HViewerApplication.DEBUG)
+            SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
         myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
 
         if (myCollection.tags != null) {
@@ -423,7 +439,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
                 siteTagHolder.addTag(site.sid, tag);
             }
-            HViewerApplication.searchSuggestionHolder.removeDuplicate();
         }
 
         /************
@@ -458,21 +473,21 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     pictureAdapter.getDataProvider().clear();
                     pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                     currPage = page;
-                    new Handler(Looper.getMainLooper()).post(()->getCollectionDetail(currPage + pageStep));
+                    new Handler(Looper.getMainLooper()).post(() -> getCollectionDetail(currPage + pageStep));
                 } else if (!pictureAdapter.getDataProvider().getItems().contains(picture)) {
                     // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
                     int currPid = pictureAdapter.getItemCount() + 1;
                     for (int i = 0; i < myCollection.pictures.size(); i++) {
-                        if(myCollection.pictures.get(i).pid < currPid + i)
+                        if (myCollection.pictures.get(i).pid < currPid + i)
                             myCollection.pictures.get(i).pid = currPid + i;
                     }
                     pictureAdapter.getDataProvider().addAll(myCollection.pictures);
                     currPage = page;
                     refreshing = true;
-                    new Handler(Looper.getMainLooper()).post(()->getCollectionDetail(currPage + pageStep));
+                    new Handler(Looper.getMainLooper()).post(() -> getCollectionDetail(currPage + pageStep));
                 } else {
                     // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
-                    isIndexComplete = true;;
+                    isIndexComplete = true;
                     refreshing = false;
                     myCollection.pictures = pictureAdapter.getDataProvider().getItems();
                     if (commentAdapter != null)
@@ -499,7 +514,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 commentAdapter.getDataProvider().addAll(myCollection.comments);
             }
         }
-        new Handler(Looper.getMainLooper()).post(()->{
+        new Handler(Looper.getMainLooper()).post(() -> {
             if (!refreshing)
                 rvIndex.setPullLoadMoreCompleted();
             refreshDescription(url);
@@ -555,7 +570,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     @Override
     public void onResume() {
         super.onResume();
-        if(pictureViewerActivity != null ) {
+        if (pictureViewerActivity != null) {
             if (onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY))
                 finish();
             else if (refreshing)

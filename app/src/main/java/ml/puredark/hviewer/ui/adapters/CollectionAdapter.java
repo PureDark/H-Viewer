@@ -2,10 +2,12 @@ package ml.puredark.hviewer.ui.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,11 +33,14 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.SiteFlagHandler;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
+
+import static android.R.attr.factor;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
@@ -136,48 +141,68 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 int originHeight = storedHeights.get(collection);
                 holder.ivCover.getLayoutParams().height = originHeight;
                 holder.ivIcon.getLayoutParams().height = originHeight;
+                holder.tvDescription.getLayoutParams().height = originHeight;
                 holder.ivCover.requestLayout();
                 holder.ivIcon.requestLayout();
+                holder.tvDescription.requestLayout();
             }
-            ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer, new BaseControllerListener<ImageInfo>() {
-                @Override
-                public void onSubmit(String id, Object callerContext) {
-                    super.onSubmit(id, callerContext);
+            if (TextUtils.isEmpty(collection.cover)) {
+                holder.ivIcon.setVisibility(View.GONE);
+                holder.ivCover.setVisibility(View.GONE);
+                holder.tvDescription.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                if (TextUtils.isEmpty(collection.description))
+                    holder.tvDescription.setVisibility(View.GONE);
+                else {
+                    holder.tvDescription.setVisibility(View.VISIBLE);
+                    holder.tvDescription.setText(Html.fromHtml(collection.description, source -> new BitmapDrawable(), null));
                 }
-
-                @Override
-                public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
-                    super.onFinalImageSet(id, imageInfo, anim);
-                    if (imageInfo == null) {
-                        return;
+                holder.tvDescription.requestLayout();
+                int originHeight = holder.tvDescription.getHeight();
+                storedHeights.put(collection, originHeight);
+            } else {
+                holder.ivIcon.setVisibility(View.VISIBLE);
+                holder.ivCover.setVisibility(View.VISIBLE);
+                holder.tvDescription.setVisibility(View.GONE);
+                ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer, new BaseControllerListener<ImageInfo>() {
+                    @Override
+                    public void onSubmit(String id, Object callerContext) {
+                        super.onSubmit(id, callerContext);
                     }
-                    holder.ivCover.post(() -> {
-                        final float factor = (float) imageInfo.getHeight() / imageInfo.getWidth();
-                        final int originWidth = holder.ivCover.getWidth();
-                        final int originHeight = (int) (factor * originWidth);
-                        holder.ivCover.getLayoutParams().height = originHeight;
-                        holder.ivIcon.getLayoutParams().height = originHeight;
-                        holder.ivCover.requestLayout();
-                        holder.ivIcon.requestLayout();
-                        storedHeights.put(collection, originHeight);
-                    });
-                }
 
-                @Override
-                public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
-                }
+                    @Override
+                    public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
+                        super.onFinalImageSet(id, imageInfo, anim);
+                        if (imageInfo == null) {
+                            return;
+                        }
+                        holder.ivCover.post(() -> {
+                            final float factor = (float) imageInfo.getHeight() / imageInfo.getWidth();
+                            final int originWidth = holder.ivCover.getWidth();
+                            final int originHeight = (int) (factor * originWidth);
+                            holder.ivCover.getLayoutParams().height = originHeight;
+                            holder.ivIcon.getLayoutParams().height = originHeight;
+                            holder.ivCover.requestLayout();
+                            holder.ivIcon.requestLayout();
+                            storedHeights.put(collection, originHeight);
+                        });
+                    }
 
-                @Override
-                public void onFailure(String id, Throwable throwable) {
-                    FLog.e(getClass(), throwable, "Error loading %s", id);
+                    @Override
+                    public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+                    }
+
+                    @Override
+                    public void onFailure(String id, Throwable throwable) {
+                        FLog.e(getClass(), throwable, "Error loading %s", id);
+                    }
+                });
+                if (site != null) {
+                    checkSiteFlags(position, site, collection);
+                } else if (collection instanceof LocalCollection) {
+                    holder.tvTitle.setVisibility(View.VISIBLE);
+                    checkSiteFlags(holder, ((LocalCollection) collection).site);
+                    checkSiteFlags(position, ((LocalCollection) collection).site, collection);
                 }
-            });
-            if (site != null) {
-                checkSiteFlags(position, site, collection);
-            } else if (collection instanceof LocalCollection) {
-                holder.tvTitle.setVisibility(View.VISIBLE);
-                checkSiteFlags(holder, ((LocalCollection) collection).site);
-                checkSiteFlags(position, ((LocalCollection) collection).site, collection);
             }
         }
     }
@@ -241,7 +266,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return (isGrid) ? (waterfallAsGrid ? TYPE_WATERFALL: TYPE_GRID) : (waterfallAsList ? TYPE_WATERFALL : TYPE_LIST);
+        return (isGrid) ? (waterfallAsGrid ? TYPE_WATERFALL : TYPE_GRID) : (waterfallAsList ? TYPE_WATERFALL : TYPE_LIST);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -361,6 +386,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ImageView ivIcon;
         @BindView(R.id.iv_cover)
         SimpleDraweeView ivCover;
+        @BindView(R.id.tv_description)
+        TextView tvDescription;
         @BindView(R.id.tv_title)
         TextView tvTitle;
         @BindView(R.id.tv_submittime)

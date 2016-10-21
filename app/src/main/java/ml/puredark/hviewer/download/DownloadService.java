@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
@@ -162,27 +163,29 @@ public class DownloadService extends Service {
         } else
             //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
             if (task.collection.site.hasFlag(Site.FLAG_JS_NEEDED_ALL)) {
-                WebView webView = new WebView(HViewerApplication.mContext);
-                WebSettings mWebSettings = webView.getSettings();
-                mWebSettings.setJavaScriptEnabled(true);
-                mWebSettings.setBlockNetworkImage(true);
-                mWebSettings.setDomStorageEnabled(true);
-                mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
-                mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
-                webView.addJavascriptInterface(this, "HtmlParser");
+                new Handler(Looper.getMainLooper()).post(()->{
+                    WebView webView = new WebView(HViewerApplication.mContext);
+                    WebSettings mWebSettings = webView.getSettings();
+                    mWebSettings.setJavaScriptEnabled(true);
+                    mWebSettings.setBlockNetworkImage(true);
+                    mWebSettings.setDomStorageEnabled(true);
+                    mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
+                    mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+                    webView.addJavascriptInterface(this, "HtmlParser");
 
-                webView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        //Load HTML
-                        pictureInQueue.put(picture.pid, picture);
-                        boolean extra = !selector.equals(task.collection.site.picUrlSelector);
-                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
-                        Logger.d("DownloadService", "onPageFinished");
-                    }
+                    webView.setWebViewClient(new WebViewClient() {
+                        @Override
+                        public void onPageFinished(WebView view, String url) {
+                            //Load HTML
+                            pictureInQueue.put(picture.pid, picture);
+                            boolean extra = !selector.equals(task.collection.site.picUrlSelector);
+                            webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
+                            Logger.d("DownloadService", "onPageFinished");
+                        }
+                    });
+                    webView.loadUrl(picture.url);
+                    new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 });
-                webView.loadUrl(picture.url);
-                new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("DownloadService", "WebView");
             } else
                 HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {

@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.CollectionActivity;
 import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
+import ml.puredark.hviewer.ui.customs.MyLinearLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
@@ -94,7 +96,7 @@ public class CollectionFragment extends MyFragment {
         if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
             mLinearLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
-            mLinearLayoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
+            mLinearLayoutManager = new MyLinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
             mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
@@ -109,6 +111,11 @@ public class CollectionFragment extends MyFragment {
             mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
             mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
             mWebView.addJavascriptInterface(this, "HtmlParser");
+            ((ViewGroup)rootView.findViewById(R.id.content)).addView(mWebView);
+            mWebView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            mWebView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+            mWebView.requestLayout();
+            mWebView.setVisibility(View.INVISIBLE);
         }
 
         List<Collection> collections = new ArrayList<>();

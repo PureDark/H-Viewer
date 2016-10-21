@@ -1408,6 +1408,40 @@ public class ExampleSites {
         categories.add(new Category(categories.size() + 1, "Women's fashion", "https://www.pinterest.com/categories/womens_fashion/"));
         sites.get(sites.size() - 1).setCategories(categories);
 
+
+        // Tumblr
+        indexRule = new Rule();
+        indexRule.item = new Selector(".is_photo,.is_photoset", null, null, null, null);
+        indexRule.idCode = new Selector(".post_header", "html", null, "(http[^\"]*?tumblr.com/post/[^\"]*)", null);
+        indexRule.cover = new Selector(".post_media img", "attr", "src", null, null);
+        indexRule.title = new Selector(".post_header", "html", null, "tumblr.com/[^\"]*?/[^\"]*?/([^\"/]*)", null);
+        indexRule.uploader = new Selector(".post_header a.post_info_link, .post_header .post-info-tumblelog>a", "html", null, null, null);
+        indexRule.datetime = new Selector("span.note_link_current", "html", null, null, null);
+        indexRule.tags = new Selector(".post_tags .post_tag", "html", null, "([^#]+)", null);
+        indexRule.description = new Selector(".post_content", "html", null, null, null);
+
+        galleryRule = new Rule();
+        galleryRule.item = new Selector(":not(.related-posts-wrapper)>*>*>*>*>.post-content img,.posts img,.photo-slideshow img,#posts img,.photo-stage img,.stat-photo img,#content img,.photo > img,.photo > a > img", null, null, "\"http[^\"]*?_\\d{3,4}\\.(?:jpg|jpeg|png|gif|bmp)\"", null);
+        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_400$2");
+        galleryRule.pictureUrl = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_1280$2");
+
+        sites.add(new Site(68, "Tumblr",
+                "https://www.tumblr.com/dashboard",
+                "{idCode:}",
+                "https://www.tumblr.com/search/{keyword:}",
+                "https://www.tumblr.com/login",
+                indexRule, galleryRule, null, null,
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_JS_NEEDED_ALL + "|" + Site.FLAG_WATERFALL_AS_LIST
+                        + "|" + Site.FLAG_JS_SCROLL+ "|" + Site.FLAG_IFRAME_GALLERY));
+
+        categories = new ArrayList<>();
+        categories.add(new Category(categories.size() + 1, "主页", "https://www.tumblr.com/dashboard"));
+        categories.add(new Category(categories.size() + 1, "发现-热门", "https://www.tumblr.com/explore/trending"));
+        categories.add(new Category(categories.size() + 1, "发现-官博精选", "https://www.tumblr.com/explore/staff-picks"));
+        categories.add(new Category(categories.size() + 1, "发现-图片", "https://www.tumblr.com/explore/photos"));
+        categories.add(new Category(categories.size() + 1, "发现-动图", "https://www.tumblr.com/explore/gifs"));
+        sites.get(sites.size() - 1).setCategories(categories);
+
         return sites;
     }
 }

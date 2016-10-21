@@ -67,7 +67,6 @@ public class MarketActivity extends BaseActivity {
     private List<MarketSiteAdapter> siteAdapters;
 
     private boolean getting = false;
-    private boolean updated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,7 +173,8 @@ public class MarketActivity extends BaseActivity {
                     currSite.versionCode = versionCode;
                     siteHolder.updateSite(currSite);
                     showSnackBar("站点更新成功！");
-                    updated = true;
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
                     for (MarketSiteAdapter adapter : siteAdapters) {
                         adapter.notifyDataSetChanged();
                     }
@@ -183,7 +183,8 @@ public class MarketActivity extends BaseActivity {
                     newSite.gid = currSite.gid;
                     siteHolder.addSite(newSite);
                     showSnackBar("站点添加成功！");
-                    updated = true;
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
                     for (MarketSiteAdapter adapter : siteAdapters) {
                         adapter.notifyDataSetChanged();
                     }
@@ -282,7 +283,8 @@ public class MarketActivity extends BaseActivity {
                         }
                         newSite.versionCode = versionCode;
                         siteHolder.addSite(newSite);
-                        updated = true;
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
                         if (!silent) {
                             showSnackBar("站点添加成功！");
                             for (MarketSiteAdapter adapter : siteAdapters) {
@@ -296,7 +298,8 @@ public class MarketActivity extends BaseActivity {
                         currSite.replace(newSite);
                         currSite.versionCode = versionCode;
                         siteHolder.updateSite(currSite);
-                        updated = true;
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
                         if (!silent) {
                             showSnackBar("站点更新成功！");
                             for (MarketSiteAdapter adapter : siteAdapters) {
@@ -352,10 +355,6 @@ public class MarketActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(updated) {
-            Intent intent = new Intent();
-            setResult(RESULT_OK, intent);
-        }
         siteHolder.onDestroy();
     }
 
