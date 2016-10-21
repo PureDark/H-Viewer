@@ -33,14 +33,14 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.SiteFlagHandler;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.utils.DensityUtil;
 
-import static android.R.attr.factor;
+import static com.umeng.analytics.a.p;
 
 public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int TYPE_LIST = 1;
@@ -137,15 +137,15 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             waterfallCheckTextView(holder.tvUploader, collection.uploader);
             waterfallCheckTextView(holder.tvCategory, collection.category);
             waterfallCheckTextView(holder.tvSubmittime, collection.datetime);
-            if (storedHeights.get(collection) != null) {
-                int originHeight = storedHeights.get(collection);
-                holder.ivCover.getLayoutParams().height = originHeight;
-                holder.ivIcon.getLayoutParams().height = originHeight;
-                holder.tvDescription.getLayoutParams().height = originHeight;
-                holder.ivCover.requestLayout();
-                holder.ivIcon.requestLayout();
-                holder.tvDescription.requestLayout();
-            }
+            int originHeight = (storedHeights.get(collection) != null)
+                    ? storedHeights.get(collection)
+                    : DensityUtil.dp2px(context, 215);
+            holder.ivCover.getLayoutParams().height = originHeight;
+            holder.ivIcon.getLayoutParams().height = originHeight;
+            holder.tvDescription.getLayoutParams().height = originHeight;
+            holder.ivCover.requestLayout();
+            holder.ivIcon.requestLayout();
+            holder.tvDescription.requestLayout();
             if (TextUtils.isEmpty(collection.cover)) {
                 holder.ivIcon.setVisibility(View.GONE);
                 holder.ivCover.setVisibility(View.GONE);
@@ -157,7 +157,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     holder.tvDescription.setText(Html.fromHtml(collection.description, source -> new BitmapDrawable(), null));
                 }
                 holder.tvDescription.requestLayout();
-                int originHeight = holder.tvDescription.getHeight();
+                originHeight = holder.tvDescription.getHeight();
                 storedHeights.put(collection, originHeight);
             } else {
                 holder.ivIcon.setVisibility(View.VISIBLE);

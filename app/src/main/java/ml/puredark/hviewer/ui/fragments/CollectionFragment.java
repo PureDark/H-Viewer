@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -255,18 +256,19 @@ public class CollectionFragment extends MyFragment {
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
         new Thread(() -> {
-            SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
+            if(HViewerApplication.DEBUG)
+                SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             if (page == startPage)
                 adapter.getDataProvider().clear();
             final Rule rule;
-            if (keyword == null)
-                rule = site.indexRule;
-            else
-                rule = (site.searchRule != null && site.searchRule.item != null) ? site.searchRule : site.indexRule;
+
+            rule = (keyword != null && site.searchRule != null && site.searchRule.item != null) ? site.searchRule : site.indexRule;
 
             List<Collection> newCollections = RuleParser.getCollections(new ArrayList<>(), html, rule, url);
+            Logger.d("CollectionFragment", "newCollections.size():" + newCollections.size());
 
             List<Collection> collections = adapter.getDataProvider().getItems();
+            Logger.d("CollectionFragment", "collections.size():" + collections.size());
             if (site.hasFlag(Site.FLAG_EXTRA_INDEX_INFO) && site.extraRule != null) {
                 List<Collection> extraCollections = RuleParser.getCollections(new ArrayList<>(), html, site.extraRule, url);
                 for (int i = 0; i < extraCollections.size() && i < newCollections.size(); i++) {
@@ -274,12 +276,14 @@ public class CollectionFragment extends MyFragment {
                 }
             }
             int oldSize = collections.size();
+            Logger.d("CollectionFragment", "oldSize():" + oldSize);
             for (Collection newCollection : newCollections) {
-                if (!collections.contains(newCollection)){
+                if (!TextUtils.isEmpty(newCollection.idCode) && !collections.contains(newCollection)){
                     newCollection.cid = collections.size() + 1;
                     collections.add(newCollection);
                 }
             }
+            Logger.d("CollectionFragment", "newSize():" + collections.size());
 
             if (collections.size() > oldSize) {
                 currPage = page;

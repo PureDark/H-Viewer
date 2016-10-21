@@ -95,8 +95,12 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
                 getPictureUrl(activity, viewHolder, picture, site, site.picUrlSelector, null);
             }
         });
-        if (mOnItemLongClickListener != null)
-            viewHolder.ivPicture.setOnLongClickListener(v -> mOnItemLongClickListener.onItemLongClick(v, position));
+        viewHolder.ivPicture.setOnLongClickListener(v -> {
+            if (mOnItemLongClickListener != null)
+                return mOnItemLongClickListener.onItemLongClick(v, position);
+            else
+                return false;
+        });
     }
 
     @Override

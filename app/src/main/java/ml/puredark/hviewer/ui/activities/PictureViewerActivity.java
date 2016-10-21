@@ -281,6 +281,8 @@ public class PictureViewerActivity extends BaseActivity {
 
         @Override
         public boolean onItemLongClick(View view, int position) {
+            if (!(position > 0 && position < pictures.size()))
+                return false;
             pictureToBeSaved = pictures.get(position);
             new AlertDialog.Builder(PictureViewerActivity.this)
                     .setTitle("操作")
@@ -327,6 +329,15 @@ public class PictureViewerActivity extends BaseActivity {
 
 
     private void loadPicture(final Picture picture, final String path, boolean share) {
+        if(share && picture.pic !=null && picture.pic.startsWith("file://")) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(picture.pic));
+            shareIntent.setType("image/*");
+            startActivity(Intent.createChooser(shareIntent, "将图片分享到"));
+            MobclickAgent.onEvent(this, "ShareSinglePicture");
+            return;
+        }
         if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
             picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
         ImageLoader.loadResourceFromUrl(PictureViewerActivity.this, picture.pic, site.cookie, picture.referer,
@@ -375,7 +386,7 @@ public class PictureViewerActivity extends BaseActivity {
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, documentFile.getUri());
-                    shareIntent.setType("image/jpeg");
+                    shareIntent.setType("image/*");
                     startActivity(Intent.createChooser(shareIntent, "将图片分享到"));
                     MobclickAgent.onEvent(this, "ShareSinglePicture");
                 } else {

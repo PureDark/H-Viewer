@@ -194,8 +194,12 @@ public class PicturePagerAdapter extends PagerAdapter {
                     getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
                 }
             });
-            if (mOnItemLongClickListener != null)
-                viewHolder.ivPicture.setOnLongClickListener(v -> mOnItemLongClickListener.onItemLongClick(v, getPicturePostion(position)));
+            viewHolder.ivPicture.setOnLongClickListener(v -> {
+                if (mOnItemLongClickListener != null)
+                    return mOnItemLongClickListener.onItemLongClick(v, getPicturePostion(position));
+                else
+                    return false;
+            });
             viewHolder.ivPicture.setOnViewTapListener((v, x, y) -> {
                 if (viewHolder.ivPicture.getScale() <= 1) {
                     areaClickHelper.onClick(x, y);

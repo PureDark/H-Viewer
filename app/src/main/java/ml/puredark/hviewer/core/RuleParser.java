@@ -128,8 +128,7 @@ public class RuleParser {
 
                     Collection collection = new Collection(collections.size() + 1);
                     collection = getCollectionDetail(collection, element, rule, sourceUrl);
-                    if (!TextUtils.isEmpty(collection.idCode))
-                        collections.add(collection);
+                    collections.add(collection);
                 }
             } else {
                 ReadContext ctx = JsonPath.parse(text);
