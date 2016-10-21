@@ -5,6 +5,7 @@ import java.util.List;
 
 import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.CommentRule;
+import ml.puredark.hviewer.beans.PictureRule;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
@@ -1258,13 +1259,15 @@ public class ExampleSites {
         extraRule.datetime = new Selector("p > span:nth-child(1)", "html", null, null, null);
 
         galleryRule = new Rule();
-        galleryRule.item = new Selector("#waterfall>.pin,.main-image", null, null, null, null);
-        galleryRule.pictureId = new Selector("this", "attr", "data-id", null, null);
-        galleryRule.pictureThumbnail = new Selector("a.img>img,.main-image img", "attr", "src", null, null);
-        galleryRule.pictureUrl = new Selector("a.img,.main-image img", null, null, "(?:href|src)=\"(.*?)\"", null);
+        galleryRule.pictureRule = new PictureRule();
+        galleryRule.pictureRule.item = new Selector("#waterfall>.pin,.main-image", null, null, null, null);
+        galleryRule.pictureRule.id = new Selector("this", "attr", "data-id", null, null);
+        galleryRule.pictureRule.thumbnail = new Selector("a.img>img,.main-image img", "attr", "src", null, null);
+        galleryRule.pictureRule.url = new Selector("a.img,.main-image img", null, null, "(?:href|src)=\"(.*?)\"", null);
 
-        extraRule.pictureUrl = new Selector(".main-image img, body>img", "attr", "src", null, null);
-        extraRule.pictureHighRes = new Selector(".main-image img, body>img", "attr", "src", "(.*)_fw\\d{3}$", null);
+        extraRule.pictureRule = new PictureRule();
+        extraRule.pictureRule.url = new Selector(".main-image img, body>img", "attr", "src", null, null);
+        extraRule.pictureRule.highRes = new Selector(".main-image img, body>img", "attr", "src", "(.*)_fw\\d{3}$", null);
 
         sites.add(new Site(66, "花瓣网",
                 "http://huaban.com/?page={page:1}",
@@ -1356,9 +1359,10 @@ public class ExampleSites {
 
         galleryRule = new Rule();
         galleryRule.description = new Selector(".userActivity .userNote", "html", null, null, null);
-        galleryRule.item = new Selector(".imageContainer", null, null, null, null);
-        galleryRule.pictureThumbnail = new Selector("img.pinImage", "attr", "src", null, null);
-        galleryRule.pictureUrl = new Selector("img.pinImage", "attr", "src", null, null);
+        galleryRule.pictureRule = new PictureRule();
+        galleryRule.pictureRule.item = new Selector(".imageContainer", null, null, null, null);
+        galleryRule.pictureRule.thumbnail = new Selector("img.pinImage", "attr", "src", null, null);
+        galleryRule.pictureRule.url = new Selector("img.pinImage", "attr", "src", null, null);
 
         sites.add(new Site(67, "Pinterest",
                 "https://www.pinterest.com/",
@@ -1421,9 +1425,10 @@ public class ExampleSites {
         indexRule.description = new Selector(".post_content", "html", null, null, null);
 
         galleryRule = new Rule();
-        galleryRule.item = new Selector(":not(.related-posts-wrapper)>*>*>*>*>.post-content img,.posts img,.photo-slideshow img,#posts img,.photo-stage img,.stat-photo img,#content img,.photo > img,.photo > a > img", null, null, "\"http[^\"]*?_\\d{3,4}\\.(?:jpg|jpeg|png|gif|bmp)\"", null);
-        galleryRule.pictureThumbnail = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_400$2");
-        galleryRule.pictureUrl = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_1280$2");
+        galleryRule.pictureRule = new PictureRule();
+        galleryRule.pictureRule.item = new Selector(":not(.related-posts-wrapper)>*>*>*>*>.post-content img,.posts img,.photo-slideshow img,#posts img,.photo-stage img,.stat-photo img,#content img,.photo > img,.photo > a > img", null, null, "\"http[^\"]*?_\\d{3,4}\\.(?:jpg|jpeg|png|gif|bmp)\"", null);
+        galleryRule.pictureRule.thumbnail = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_400$2");
+        galleryRule.pictureRule.url = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_1280$2");
 
         sites.add(new Site(68, "Tumblr",
                 "https://www.tumblr.com/dashboard",

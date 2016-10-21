@@ -1,20 +1,13 @@
 package ml.puredark.hviewer.ui.adapters;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.PagerAdapter;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,17 +21,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.BaseDataSubscriber;
-import com.facebook.datasource.DataSource;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
-import com.umeng.analytics.MobclickAgent;
-
-import net.rdrei.android.dirchooser.DirectoryChooserConfig;
-import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,21 +34,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.core.RuleParser;
-import ml.puredark.hviewer.download.DownloadManager;
-import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
-import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
 import ml.puredark.hviewer.ui.customs.AreaClickHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
-import ml.puredark.hviewer.utils.FileType;
+import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -76,29 +57,25 @@ import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_
  */
 
 
-public class PicturePagerAdapter extends PagerAdapter implements DirectoryChooserFragment.OnFragmentInteractionListener {
+public class PicturePagerAdapter extends PagerAdapter {
 
     private String viewDirection = DIREACTION_LEFT_TO_RIGHT;
 
     private BaseActivity activity;
 
     private Site site;
-    private Collection collection;
 
     public List<Picture> pictures;
     private List<PictureViewHolder> viewHolders = new ArrayList<>();
 
-    private DirectoryChooserFragment mDialog;
-    private String lastPath = DownloadManager.getDownloadPath();
-    private Picture pictureToBeSaved;
+    private OnItemLongClickListener mOnItemLongClickListener;
     private boolean firstTime = true;
 
     private AreaClickHelper areaClickHelper;
 
-    public PicturePagerAdapter(BaseActivity activity, Site site, Collection collection, List<Picture> pictures) {
+    public PicturePagerAdapter(BaseActivity activity, Site site, List<Picture> pictures) {
         this.activity = activity;
         this.site = site;
-        this.collection = collection;
         this.pictures = pictures;
         for (int i = 0; i < getCount(); i++)
             viewHolders.add(null);
@@ -127,6 +104,10 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
 
     public String getViewDirection() {
         return viewDirection;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
+        mOnItemLongClickListener = onItemLongClickListener;
     }
 
     public void setAreaClickListener(AreaClickHelper.OnAreaClickListener onAreaClickListener) {
@@ -213,41 +194,8 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
                     getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
                 }
             });
-            viewHolder.ivPicture.setOnLongClickListener(v -> {
-                if (activity != null) {
-                    new AlertDialog.Builder(activity).setTitle("保存图片？")
-                            .setMessage("是否保存当前图片")
-                            .setPositiveButton("确定", (dialog, which) -> new AlertDialog.Builder(activity).setTitle("是否直接保存到下载目录？")
-                                    .setMessage("否则另存到其他目录")
-                                    .setPositiveButton("是", (dialog1, which1) -> {
-                                        pictureToBeSaved = picture;
-                                        onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath()));
-                                    })
-                                    .setNegativeButton("否", (dialog12, which12) -> {
-                                        pictureToBeSaved = picture;
-                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                                .initialDirectory(lastPath)
-                                                .newDirectoryName("download")
-                                                .allowNewDirectoryNameModification(true)
-                                                .build();
-                                        mDialog = DirectoryChooserFragment.newInstance(config);
-                                        mDialog.setDirectoryChooserListener(PicturePagerAdapter.this);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                                            try {
-                                                activity.startActivityForResult(intent, PictureViewerActivity.RESULT_CHOOSE_DIRECTORY);
-                                            } catch (ActivityNotFoundException e) {
-                                                e.printStackTrace();
-                                                mDialog.show(activity.getFragmentManager(), null);
-                                            }
-                                        } else {
-                                            mDialog.show(activity.getFragmentManager(), null);
-                                        }
-                                    }).show()).setNegativeButton("取消", null).show();
-                }
-                return true;
-            });
+            if (mOnItemLongClickListener != null)
+                viewHolder.ivPicture.setOnLongClickListener(v -> mOnItemLongClickListener.onItemLongClick(v, getPicturePostion(position)));
             viewHolder.ivPicture.setOnViewTapListener((v, x, y) -> {
                 if (viewHolder.ivPicture.getScale() <= 1) {
                     areaClickHelper.onClick(x, y);
@@ -259,89 +207,15 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         return viewHolder.view;
     }
 
-    @Override
-    public void onSelectDirectory(@NonNull String path) {
-        if (pictureToBeSaved == null)
-            return;
-        lastPath = path;
-        loadPicture(pictureToBeSaved, path);
-        mDialog.dismiss();
-    }
-
-    @Override
-    public void onCancelChooser() {
-        mDialog.dismiss();
-    }
-
-    public void onSelectDirectory(Uri rootUri) {
-        String path = rootUri.toString();
-        if (pictureToBeSaved == null)
-            return;
-        lastPath = path;
-        loadPicture(pictureToBeSaved, path);
-    }
-
     public boolean viewHighRes() {
         return (boolean) SharedPreferencesUtil.getData(activity,
                 SettingFragment.KEY_PREF_VIEW_HIGH_RES, false);
     }
 
-    private void loadPicture(final Picture picture, final String path) {
-        if(site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
-            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
-        ImageLoader.loadResourceFromUrl(activity, picture.pic, site.cookie, picture.referer,
-                new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
-
-                    @Override
-                    protected void onNewResultImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
-                        if (!dataSource.isFinished()) {
-                            return;
-                        }
-                        CloseableReference<PooledByteBuffer> ref = dataSource.getResult();
-                        if (ref != null) {
-                            try {
-                                PooledByteBuffer imageBuffer = ref.get();
-                                savePicture(path, imageBuffer);
-                            } finally {
-                                CloseableReference.closeSafely(ref);
-                            }
-                        }
-                    }
-
-                    @Override
-                    protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
-
-                    }
-                });
-    }
-
-    private void savePicture(String path, PooledByteBuffer buffer) {
-        try {
-            byte[] bytes = new byte[buffer.size()];
-            buffer.read(0, bytes, 0, buffer.size());
-            String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
-            String fileName;
-            int i = 1;
-            do {
-                fileName = Uri.encode(site.title + "_" + FileHelper.filenameFilter(collection.idCode) + "_" + (i++) + "." + postfix);
-            } while (FileHelper.isFileExist(fileName, path));
-            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
-            if (FileHelper.writeBytes(bytes, documentFile)) {
-                activity.showSnackBar("保存成功");
-                // 统计保存单图次数
-                MobclickAgent.onEvent(activity, "SaveSinglePicture");
-            } else {
-                activity.showSnackBar("保存失败，请重新设置下载目录");
-            }
-        } catch (OutOfMemoryError error) {
-            activity.showSnackBar("保存失败，内存不足");
-        }
-    }
-
 
     private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
         String url = (viewHighRes() && !TextUtils.isEmpty(picture.highRes)) ? picture.highRes : picture.pic;
-        if(site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
+        if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
             picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
         Logger.d("PicturePagerAdapter", "url:" + url + "\n picture.referer:" + picture.referer);
         if (site == null) return;
@@ -473,9 +347,9 @@ public class PicturePagerAdapter extends PagerAdapter implements DirectoryChoose
         if (picture.pic != null) {
             picture.retries = 0;
             picture.referer = picture.url;
-            new Handler(Looper.getMainLooper()).post(()->loadImage(activity, picture, viewHolder));
+            new Handler(Looper.getMainLooper()).post(() -> loadImage(activity, picture, viewHolder));
         } else {
-            new Handler(Looper.getMainLooper()).post(()->{
+            new Handler(Looper.getMainLooper()).post(() -> {
                 if (picture.retries < 15) {
                     picture.retries++;
                     getPictureUrl(activity, viewHolder, picture, site, selector, highResSelector);

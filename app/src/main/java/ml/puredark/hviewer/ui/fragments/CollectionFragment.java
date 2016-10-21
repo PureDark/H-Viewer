@@ -43,6 +43,7 @@ import ml.puredark.hviewer.ui.activities.CollectionActivity;
 import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.MyLinearLayoutManager;
+import ml.puredark.hviewer.ui.customs.MyStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
@@ -94,11 +95,11 @@ public class CollectionFragment extends MyFragment {
             activity = (BaseActivity) getActivity();
 
         if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
-            mLinearLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mLinearLayoutManager = new MyStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
             mLinearLayoutManager = new MyLinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
-            mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mGridLayoutManager = new MyStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
             mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
 

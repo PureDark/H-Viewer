@@ -99,7 +99,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/half_margin"
                     android:text="设置"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
@@ -139,7 +138,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/half_margin"
                     android:text="退出"
                     android:textColor="@color/black"
                     android:textSize="18sp" />

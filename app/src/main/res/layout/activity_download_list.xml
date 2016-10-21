@@ -7,48 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.CollectionActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:elevation="0dp">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="-16dp"
-            app:contentInsetStart="0dp"
-            app:layout_collapseMode="pin"
-            android:fitsSystemWindows="true"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <ImageView
-                    android:id="@+id/btn_return"
-                    android:layout_width="@dimen/tool_bar_height"
-                    android:layout_height="@dimen/tool_bar_height"
-                    android:background="@drawable/bg_button"
-                    android:padding="16dp"
-                    android:scaleType="fitXY" />
-
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text=""
-                    android:textAppearance="@style/ActionBar.Title" />
-            </LinearLayout>
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -84,6 +42,48 @@
             android:layout_below="@id/tab_layout"
             android:background="@drawable/shadow_bottom" />
     </RelativeLayout>
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="-16dp"
+            app:contentInsetStart="0dp"
+            app:layout_collapseMode="pin"
+            android:fitsSystemWindows="true"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <ImageView
+                    android:id="@+id/btn_return"
+                    android:layout_width="48dp"
+                    android:layout_height="@dimen/tool_bar_height"
+                    android:background="@drawable/bg_button"
+                    android:padding="16dp"
+                    android:scaleType="fitXY" />
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text=""
+                    android:textAppearance="@style/ActionBar.Title" />
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

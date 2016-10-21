@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.jayway.jsonpath.TypeRef;
 
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,23 +171,23 @@ public class RuleParser {
         return collection;
     }
 
-    public static Collection getCollectionDetail(Collection collection, Element element, Rule rule, String sourceUrl) throws Exception {
+    public static Collection getCollectionDetail(Collection collection, Object source, Rule rule, String sourceUrl) throws Exception {
 
-        String idCode = parseSingleProperty(element, rule.idCode, sourceUrl, false);
+        String idCode = parseSingleProperty(source, rule.idCode, sourceUrl, false);
 
-        String title = parseSingleProperty(element, rule.title, sourceUrl, false);
+        String title = parseSingleProperty(source, rule.title, sourceUrl, false);
 
-        String uploader = parseSingleProperty(element, rule.uploader, sourceUrl, false);
+        String uploader = parseSingleProperty(source, rule.uploader, sourceUrl, false);
 
-        String cover = parseSingleProperty(element, rule.cover, sourceUrl, true);
+        String cover = parseSingleProperty(source, rule.cover, sourceUrl, true);
 
-        String category = parseSingleProperty(element, rule.category, sourceUrl, false);
+        String category = parseSingleProperty(source, rule.category, sourceUrl, false);
 
-        String datetime = parseSingleProperty(element, rule.datetime, sourceUrl, false);
+        String datetime = parseSingleProperty(source, rule.datetime, sourceUrl, false);
 
-        String description = parseSingleProperty(element, rule.description, sourceUrl, false);
+        String description = parseSingleProperty(source, rule.description, sourceUrl, false);
 
-        String ratingStr = parseSingleProperty(element, rule.rating, sourceUrl, false);
+        String ratingStr = parseSingleProperty(source, rule.rating, sourceUrl, false);
 
         float rating;
 
@@ -202,27 +204,32 @@ public class RuleParser {
             }
         }
 
-        Elements temp;
+        List temp;
 
         List<Tag> tags = new ArrayList<>();
         if (rule.tagRule != null && rule.tagRule.item != null) {
-            temp = element.select(rule.tagRule.item.selector);
-            for (Element tagElement : temp) {
+            if(source instanceof Element)
+                temp = ((Element) source).select(rule.tagRule.item.selector);
+            else if(source instanceof ReadContext)
+                temp = ((ReadContext) source).read(rule.tagRule.item.path, new TypeRef<List<ReadContext>>() {});
+            else
+                return collection;
+            for (Object element : temp) {
                 if (rule.tagRule.item.regex != null) {
                     Pattern pattern = Pattern.compile(rule.tagRule.item.regex);
-                    Matcher matcher = pattern.matcher(tagElement.toString());
+                    Matcher matcher = pattern.matcher(element.toString());
                     if (!matcher.find()) {
                         continue;
                     }
                 }
-                String tagTitle = parseSingleProperty(tagElement, rule.tagRule.title, sourceUrl, false);
-                String tagUrl = parseSingleProperty(tagElement, rule.tagRule.url, sourceUrl, true);
+                String tagTitle = parseSingleProperty(element, rule.tagRule.title, sourceUrl, false);
+                String tagUrl = parseSingleProperty(element, rule.tagRule.url, sourceUrl, true);
                 if (TextUtils.isEmpty(tagUrl))
                     tagUrl = null;
                 tags.add(new Tag(tags.size() + 1, tagTitle, tagUrl));
             }
         } else if (rule.tags != null) {
-            List<String> tagStrs = parseSinglePropertyMatchAll(element, rule.tags, sourceUrl, false);
+            List<String> tagStrs = parseSinglePropertyMatchAll(source, rule.tags, sourceUrl, false);
             for (String tagStr : tagStrs) {
                 if (!TextUtils.isEmpty(tagStr))
                     tags.add(new Tag(tags.size() + 1, tagStr));
@@ -230,41 +237,61 @@ public class RuleParser {
         }
 
         List<Picture> pictures = new ArrayList<>();
-        if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
-            if (rule.item != null) {
-                temp = element.select(rule.item.selector);
-                for (Element pictureElement : temp) {
-                    if (rule.item.regex != null) {
-                        Pattern pattern = Pattern.compile(rule.item.regex);
-                        Matcher matcher = pattern.matcher(pictureElement.toString());
+
+        Selector pictureId = null, pictureItem = null, pictureThumbnail = null, pictureUrl = null, pictureHighRes = null;
+        if (rule.pictureRule != null && rule.pictureRule.url != null && rule.pictureRule.thumbnail != null) {
+            pictureId = rule.pictureRule.id;
+            pictureItem = rule.pictureRule.item;
+            pictureThumbnail = rule.pictureRule.thumbnail;
+            pictureUrl = rule.pictureRule.url;
+            pictureHighRes = rule.pictureRule.highRes;
+        }else if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
+            pictureId = rule.pictureId;
+            pictureItem = rule.item;
+            pictureThumbnail = rule.pictureThumbnail;
+            pictureUrl = rule.pictureUrl;
+            pictureHighRes = rule.pictureHighRes;
+        }
+
+        if (pictureUrl != null && pictureThumbnail != null) {
+            if (pictureItem != null) {
+                if(source instanceof Element)
+                    temp = ((Element) source).select(pictureItem.selector);
+                else if(source instanceof ReadContext)
+                    temp = ((ReadContext) source).read(pictureItem.path, new TypeRef<List<ReadContext>>() {});
+                else
+                    return collection;
+                for (Object element : temp) {
+                    if (pictureItem.regex != null) {
+                        Pattern pattern = Pattern.compile(pictureItem.regex);
+                        Matcher matcher = pattern.matcher(element.toString());
                         if (!matcher.find()) {
                             continue;
                         }
-                        Log.d("RuleParser", " pictureElement.toString():" + pictureElement.toString());
                     }
-                    String pictureId = parseSingleProperty(pictureElement, rule.pictureId, sourceUrl, false);
+                    String pId = parseSingleProperty(element, pictureId, sourceUrl, false);
                     int pid;
                     try {
-                        pid = Integer.parseInt(pictureId);
+                        pid = Integer.parseInt(pId);
                     } catch (Exception e) {
                         pid = 0;
                     }
                     pid = (pid != 0) ? pid : (pictures.size() > 0) ? pictures.get(pictures.size() - 1).pid + 1 : pictures.size() + 1;
-                    String pictureUrl = parseSingleProperty(pictureElement, rule.pictureUrl, sourceUrl, true);
-                    String PictureHighRes = parseSingleProperty(pictureElement, rule.pictureHighRes, sourceUrl, true);
-                    String pictureThumbnail = parseSingleProperty(pictureElement, rule.pictureThumbnail, sourceUrl, true);
-                    pictures.add(new Picture(pid, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
+                    String pUrl = parseSingleProperty(element, pictureUrl, sourceUrl, true);
+                    String PHighRes = parseSingleProperty(element, pictureHighRes, sourceUrl, true);
+                    String pThumbnail = parseSingleProperty(element, pictureThumbnail, sourceUrl, true);
+                    pictures.add(new Picture(pid, pUrl, pThumbnail, PHighRes, sourceUrl));
                 }
             } else {
-                List<String> pids = parseSinglePropertyMatchAll(element, rule.pictureId, sourceUrl, false);
-                List<String> urls = parseSinglePropertyMatchAll(element, rule.pictureUrl, sourceUrl, true);
-                List<String> thumbnails = parseSinglePropertyMatchAll(element, rule.pictureThumbnail, sourceUrl, true);
-                List<String> highReses = parseSinglePropertyMatchAll(element, rule.pictureHighRes, sourceUrl, true);
+                List<String> pids = parseSinglePropertyMatchAll(source, pictureId, sourceUrl, false);
+                List<String> urls = parseSinglePropertyMatchAll(source, pictureUrl, sourceUrl, true);
+                List<String> thumbnails = parseSinglePropertyMatchAll(source, pictureThumbnail, sourceUrl, true);
+                List<String> highReses = parseSinglePropertyMatchAll(source, pictureHighRes, sourceUrl, true);
                 for (int i = 0; i < urls.size(); i++) {
-                    String pictureId = (i < pids.size()) ? pids.get(i) : "";
+                    String pId = (i < pids.size()) ? pids.get(i) : "";
                     int pid;
                     try {
-                        pid = Integer.parseInt(pictureId);
+                        pid = Integer.parseInt(pId);
                     } catch (Exception e) {
                         pid = 0;
                     }
@@ -277,275 +304,107 @@ public class RuleParser {
             }
         }
 
+        Selector commentItem = null, commentAvatar = null, commentAuthor = null, commentDatetime = null, commentContent = null;
         List<Comment> comments = new ArrayList<>();
         if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null) {
-            temp = element.select(rule.commentRule.item.selector);
-            for (Element commentElement : temp) {
-                if (rule.commentRule.item.regex != null) {
-                    Pattern pattern = Pattern.compile(rule.commentRule.item.regex);
-                    Matcher matcher = pattern.matcher(commentElement.toString());
-                    if (!matcher.find()) {
-                        continue;
-                    }
-                }
-                String commentAvatar = parseSingleProperty(commentElement, rule.commentRule.avatar, sourceUrl, false);
-                String commentAuthor = parseSingleProperty(commentElement, rule.commentRule.author, sourceUrl, false);
-                String commentDatetime = parseSingleProperty(commentElement, rule.commentRule.datetime, sourceUrl, false);
-                String commentContent = parseSingleProperty(commentElement, rule.commentRule.content, sourceUrl, false);
-                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
-            }
+            commentItem = rule.commentRule.item;
+            commentAvatar = rule.commentRule.avatar;
+            commentAuthor = rule.commentRule.author;
+            commentDatetime = rule.commentRule.datetime;
+            commentContent = rule.commentRule.content;
         } else if (rule.commentItem != null && rule.commentContent != null) {
-            temp = element.select(rule.commentItem.selector);
-            for (Element commentElement : temp) {
-                if (rule.commentItem.regex != null) {
-                    Pattern pattern = Pattern.compile(rule.commentItem.regex);
-                    Matcher matcher = pattern.matcher(commentElement.toString());
-                    if (!matcher.find()) {
-                        continue;
-                    }
-                }
-                String commentAvatar = parseSingleProperty(commentElement, rule.commentAvatar, sourceUrl, false);
-                String commentAuthor = parseSingleProperty(commentElement, rule.commentAuthor, sourceUrl, false);
-                String commentDatetime = parseSingleProperty(commentElement, rule.commentDatetime, sourceUrl, false);
-                String commentContent = parseSingleProperty(commentElement, rule.commentContent, sourceUrl, false);
-                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
-            }
+            commentItem = rule.commentItem;
+            commentAvatar = rule.commentAvatar;
+            commentAuthor = rule.commentAuthor;
+            commentDatetime = rule.commentDatetime;
+            commentContent = rule.commentContent;
         }
-
-        if (!TextUtils.isEmpty(idCode))
-            collection.idCode = idCode;
-        if (!TextUtils.isEmpty(title))
-            collection.title = title;
-        if (!TextUtils.isEmpty(uploader))
-            collection.uploader = uploader;
-        if (!TextUtils.isEmpty(cover))
-            collection.cover = cover;
-        if (!TextUtils.isEmpty(category))
-            collection.category = category;
-        if (!TextUtils.isEmpty(datetime))
-            collection.datetime = datetime;
-        if (!TextUtils.isEmpty(description))
-            collection.description = description;
-        if (rating > 0)
-            collection.rating = rating;
-        if (!TextUtils.isEmpty(sourceUrl))
-            collection.referer = sourceUrl;
-        if (tags != null && tags.size() > 0)
-            collection.tags = tags;
-        if (pictures != null && pictures.size() > 0)
-            collection.pictures = pictures;
-        if (comments != null && comments.size() > 0)
-            collection.comments = comments;
-        return collection;
-    }
-
-    public static String parseSingleProperty(Element element, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
-        List<String> props = parseSinglePropertyMatchAll(element, selector, sourceUrl, isUrl);
-        return (props.size() > 0) ? props.get(0) : "";
-    }
-
-    public static List<String> parseSinglePropertyMatchAll(Element element, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
-        List<String> props = new ArrayList<>();
-
-        if (selector != null) {
-            String prop;
-            Elements temp = ("this".equals(selector.selector)) ? new Elements(element) : element.select(selector.selector);
-            if (temp != null) {
-                for (Element elem : temp) {
-                    if ("attr".equals(selector.fun)) {
-                        prop = elem.attr(selector.param);
-                    } else if ("html".equals(selector.fun)) {
-                        prop = elem.html();
-                    } else {
-                        prop = elem.toString();
-                    }
-                    props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
-                }
-            }
-        }
-        if (props.size() == 0)
-            props.add("");
-        return props;
-    }
-
-    public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
-        try {
-            Document doc = Jsoup.parse(html);
-            return parseSingleProperty(doc, selector, sourceUrl, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static Collection getCollectionDetail(Collection collection, ReadContext jsonRoot, Rule rule, String sourceUrl) throws Exception {
-
-        String idCode = parseSingleProperty(jsonRoot, rule.idCode, sourceUrl, false);
-
-        String title = parseSingleProperty(jsonRoot, rule.title, sourceUrl, false);
-
-        String uploader = parseSingleProperty(jsonRoot, rule.uploader, sourceUrl, false);
-
-        String cover = parseSingleProperty(jsonRoot, rule.cover, sourceUrl, true);
-
-        String category = parseSingleProperty(jsonRoot, rule.category, sourceUrl, false);
-
-        String datetime = parseSingleProperty(jsonRoot, rule.datetime, sourceUrl, false);
-
-        String description = parseSingleProperty(jsonRoot, rule.description, sourceUrl, false);
-
-        String ratingStr = parseSingleProperty(jsonRoot, rule.rating, sourceUrl, false);
-
-        float rating;
-
-        if (ratingStr.matches("\\d+(.\\d+)?") && ratingStr.indexOf(".") > 0) {
-            rating = Float.parseFloat(ratingStr);
-        } else if (StringUtil.isNumeric(ratingStr)) {
-            rating = Float.parseFloat(ratingStr);
-        } else {
-            String result = MathUtil.computeString(ratingStr);
-            try {
-                rating = result.contains("NaN") ? 0 : Float.parseFloat(result);
-            } catch (NumberFormatException e) {
-                rating = Math.min(ratingStr.replace(" ", "").length(), 5);
-            }
-        }
-
-        List<ReadContext> temp;
-
-        List<Tag> tags = new ArrayList<>();
-        if (rule.tagRule != null && rule.tagRule.item != null) {
-            temp = jsonRoot.read(rule.tagRule.item.path);
-            for (ReadContext tagItem : temp) {
-                String tagTitle = parseSingleProperty(tagItem, rule.tagRule.title, sourceUrl, false);
-                String tagUrl = parseSingleProperty(tagItem, rule.tagRule.url, sourceUrl, true);
-                if (TextUtils.isEmpty(tagUrl))
-                    tagUrl = null;
-                tags.add(new Tag(tags.size() + 1, tagTitle, tagUrl));
-            }
-        } else if (rule.tags != null) {
-            List<String> tagStrs = parseSinglePropertyMatchAll(jsonRoot, rule.tags, sourceUrl, false);
-            for (String tagStr : tagStrs) {
-                if (!TextUtils.isEmpty(tagStr))
-                    tags.add(new Tag(tags.size() + 1, tagStr));
-            }
-        }
-
-        List<Picture> pictures = new ArrayList<>();
-        if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
-            if (rule.item != null) {
-                temp = jsonRoot.read(rule.item.path);
-                for (ReadContext pictureItem : temp) {
-                    if (rule.item.regex != null) {
-                        Pattern pattern = Pattern.compile(rule.item.regex);
-                        Matcher matcher = pattern.matcher(pictureItem.toString());
-                        if (!matcher.find()) {
-                            continue;
-                        }
-                    }
-                    String pictureId = parseSingleProperty(pictureItem, rule.pictureId, sourceUrl, false);
-                    int pid;
-                    try {
-                        pid = Integer.parseInt(pictureId);
-                    } catch (Exception e) {
-                        pid = 0;
-                    }
-                    pid = (pid != 0) ? pid : (pictures.size() > 0) ? pictures.get(pictures.size() - 1).pid + 1 : pictures.size() + 1;
-                    String pictureUrl = parseSingleProperty(pictureItem, rule.pictureUrl, sourceUrl, true);
-                    String PictureHighRes = parseSingleProperty(pictureItem, rule.pictureHighRes, sourceUrl, true);
-                    String pictureThumbnail = parseSingleProperty(pictureItem, rule.pictureThumbnail, sourceUrl, true);
-                    pictures.add(new Picture(pid, pictureUrl, pictureThumbnail, PictureHighRes, sourceUrl));
-                }
-            } else {
-                List<String> pids = parseSinglePropertyMatchAll(jsonRoot, rule.pictureId, sourceUrl, false);
-                List<String> urls = parseSinglePropertyMatchAll(jsonRoot, rule.pictureUrl, sourceUrl, true);
-                List<String> thumbnails = parseSinglePropertyMatchAll(jsonRoot, rule.pictureThumbnail, sourceUrl, true);
-                List<String> highReses = parseSinglePropertyMatchAll(jsonRoot, rule.pictureHighRes, sourceUrl, true);
-                for (int i = 0; i < urls.size(); i++) {
-                    String pictureId = (i < pids.size()) ? pids.get(i) : "";
-                    int pid;
-                    try {
-                        pid = Integer.parseInt(pictureId);
-                    } catch (Exception e) {
-                        pid = 0;
-                    }
-                    String url = urls.get(i);
-                    String thumbnail = (i < thumbnails.size()) ? thumbnails.get(i) : "";
-                    String highRes = (i < highReses.size()) ? highReses.get(i) : "";
-                    pictures.add(new Picture(pid, url, thumbnail, highRes, sourceUrl));
-                }
-            }
-        }
-
-        List<Comment> comments = new ArrayList<>();
-        if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null) {
-            temp = jsonRoot.read(rule.commentRule.item.path);
-            for (ReadContext commentItem : temp) {
-                String commentAvatar = parseSingleProperty(commentItem, rule.commentRule.avatar, sourceUrl, false);
-                String commentAuthor = parseSingleProperty(commentItem, rule.commentRule.author, sourceUrl, false);
-                String commentDatetime = parseSingleProperty(commentItem, rule.commentRule.datetime, sourceUrl, false);
-                String commentContent = parseSingleProperty(commentItem, rule.commentRule.content, sourceUrl, false);
-                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
-            }
-        } else if (rule.commentItem != null && rule.commentContent != null) {
-            temp = jsonRoot.read(rule.commentItem.selector);
-            for (ReadContext commentItem : temp) {
-                String commentAvatar = parseSingleProperty(commentItem, rule.commentAvatar, sourceUrl, false);
-                String commentAuthor = parseSingleProperty(commentItem, rule.commentAuthor, sourceUrl, false);
-                String commentDatetime = parseSingleProperty(commentItem, rule.commentDatetime, sourceUrl, false);
-                String commentContent = parseSingleProperty(commentItem, rule.commentContent, sourceUrl, false);
-                comments.add(new Comment(comments.size() + 1, commentAvatar, commentAuthor, commentDatetime, commentContent, sourceUrl));
-            }
-        }
-
-        if (!TextUtils.isEmpty(idCode))
-            collection.idCode = idCode;
-        if (!TextUtils.isEmpty(title))
-            collection.title = title;
-        if (!TextUtils.isEmpty(uploader))
-            collection.uploader = uploader;
-        if (!TextUtils.isEmpty(cover))
-            collection.cover = cover;
-        if (!TextUtils.isEmpty(category))
-            collection.category = category;
-        if (!TextUtils.isEmpty(datetime))
-            collection.datetime = datetime;
-        if (!TextUtils.isEmpty(description))
-            collection.description = description;
-        if (rating > 0)
-            collection.rating = rating;
-        if (!TextUtils.isEmpty(sourceUrl))
-            collection.referer = sourceUrl;
-        if (tags != null && tags.size() > 0)
-            collection.tags = tags;
-        if (pictures != null && pictures.size() > 0)
-            collection.pictures = pictures;
-        if (comments != null && comments.size() > 0)
-            collection.comments = comments;
-        return collection;
-    }
-
-
-    public static String parseSingleProperty(ReadContext jsonRoot, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
-        List<String> props = parseSinglePropertyMatchAll(jsonRoot, selector, sourceUrl, isUrl);
-        return (props.size() > 0) ? props.get(0) : "";
-    }
-
-    public static List<String> parseSinglePropertyMatchAll(ReadContext jsonRoot, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
-        List<String> props = new ArrayList<>();
-
-        if (selector != null) {
-            String prop;
-            List<ReadContext> temp = new ArrayList<>();
-            if ("this".equals(selector.path))
-                temp.add(jsonRoot);
+        if (commentItem != null && commentContent != null) {
+            if(source instanceof Element)
+                temp = ((Element) source).select(commentItem.selector);
+            else if(source instanceof ReadContext)
+                temp = ((ReadContext) source).read(commentItem.path, new TypeRef<List<ReadContext>>() {});
             else
-                temp = jsonRoot.read(selector.path);
+                return collection;
+            for (Object element : temp) {
+                if (commentItem.regex != null) {
+                    Pattern pattern = Pattern.compile(commentItem.regex);
+                    Matcher matcher = pattern.matcher(element.toString());
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                }
+                String cAvatar = parseSingleProperty(element, commentAvatar, sourceUrl, false);
+                String cAuthor = parseSingleProperty(element, commentAuthor, sourceUrl, false);
+                String cDatetime = parseSingleProperty(element, commentDatetime, sourceUrl, false);
+                String cContent = parseSingleProperty(element, commentContent, sourceUrl, false);
+                comments.add(new Comment(comments.size() + 1, cAvatar, cAuthor, cDatetime, cContent, sourceUrl));
+            }
+        }
 
-            if (temp != null) {
-                for (ReadContext item : temp) {
-                    prop = item.toString();
-                    props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
+        if (!TextUtils.isEmpty(idCode))
+            collection.idCode = idCode;
+        if (!TextUtils.isEmpty(title))
+            collection.title = title;
+        if (!TextUtils.isEmpty(uploader))
+            collection.uploader = uploader;
+        if (!TextUtils.isEmpty(cover))
+            collection.cover = cover;
+        if (!TextUtils.isEmpty(category))
+            collection.category = category;
+        if (!TextUtils.isEmpty(datetime))
+            collection.datetime = datetime;
+        if (!TextUtils.isEmpty(description))
+            collection.description = description;
+        if (rating > 0)
+            collection.rating = rating;
+        if (!TextUtils.isEmpty(sourceUrl))
+            collection.referer = sourceUrl;
+        if (tags != null && tags.size() > 0)
+            collection.tags = tags;
+        if (pictures != null && pictures.size() > 0)
+            collection.pictures = pictures;
+        if (comments != null && comments.size() > 0)
+            collection.comments = comments;
+        return collection;
+    }
+
+    public static String parseSingleProperty(Object source, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
+        List<String> props = parseSinglePropertyMatchAll(source, selector, sourceUrl, isUrl);
+        return (props.size() > 0) ? props.get(0) : "";
+    }
+
+    public static List<String> parseSinglePropertyMatchAll(Object source, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
+        List<String> props = new ArrayList<>();
+
+        if (selector != null) {
+            String prop;
+            if (source instanceof Element) {
+                Elements temp = ("this".equals(selector.selector)) ? new Elements((Element) source) : ((Element) source).select(selector.selector);
+                if (temp != null) {
+                    for (Element elem : temp) {
+                        if ("attr".equals(selector.fun)) {
+                            prop = elem.attr(selector.param);
+                        } else if ("html".equals(selector.fun)) {
+                            prop = elem.html();
+                        } else {
+                            prop = elem.toString();
+                        }
+                        props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
+                    }
+                }
+            } else if(source instanceof ReadContext){
+                List<ReadContext> temp = new ArrayList<>();
+                if ("this".equals(selector.path))
+                    temp.add((ReadContext) source);
+                else
+                    temp = ((ReadContext) source).read(selector.path);
+
+                if (temp != null) {
+                    for (ReadContext item : temp) {
+                        prop = item.toString();
+                        props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
+                    }
                 }
             }
         }
@@ -587,5 +446,14 @@ public class RuleParser {
         return props;
     }
 
+    public static String getPictureUrl(String html, Selector selector, String sourceUrl) {
+        try {
+            Document doc = Jsoup.parse(html);
+            return parseSingleProperty(doc, selector, sourceUrl, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
 }

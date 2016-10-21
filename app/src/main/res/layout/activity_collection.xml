@@ -67,7 +67,7 @@
 
                     <ImageView
                         android:id="@+id/btn_return"
-                        android:layout_width="@dimen/tool_bar_height"
+                        android:layout_width="48dp"
                         android:layout_height="@dimen/tool_bar_height"
                         android:background="@drawable/bg_button"
                         android:padding="16dp"

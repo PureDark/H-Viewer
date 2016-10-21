@@ -1,10 +1,14 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -12,6 +16,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.BaseDataSubscriber;
+import com.facebook.datasource.DataSource;
+import com.facebook.imagepipeline.memory.PooledByteBuffer;
+import com.umeng.analytics.MobclickAgent;
+
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
+import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
 import java.util.List;
 
@@ -22,13 +35,19 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureViewerAdapter;
 import ml.puredark.hviewer.ui.customs.AreaClickHelper;
 import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
+import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
+import ml.puredark.hviewer.utils.FileType;
+import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
@@ -56,6 +75,12 @@ public class PictureViewerActivity extends BaseActivity {
     private PicturePagerAdapter picturePagerAdapter;
     private PictureViewerAdapter pictureViewerAdapter;
 
+    private Site site = null;
+    private Collection collection = null;
+    private List<Picture> pictures = null;
+
+    private MyOnItemLongClickListener onItemLongClickListener;
+
     private int currPos = 0;
 
     @Override
@@ -72,13 +97,10 @@ public class PictureViewerActivity extends BaseActivity {
         if (HViewerApplication.temp instanceof CollectionActivity)
             collectionActivity = (CollectionActivity) HViewerApplication.temp;
 
-        Site site = null;
         if (HViewerApplication.temp2 instanceof Site)
             site = (Site) HViewerApplication.temp2;
-        Collection collection = null;
         if (HViewerApplication.temp3 instanceof Collection)
             collection = (Collection) HViewerApplication.temp3;
-        List<Picture> pictures = null;
         if (HViewerApplication.temp4 instanceof List)
             pictures = (List<Picture>) HViewerApplication.temp4;
 
@@ -103,11 +125,15 @@ public class PictureViewerActivity extends BaseActivity {
 
         currPos = getIntent().getIntExtra("position", 0);
 
+        onItemLongClickListener = new MyOnItemLongClickListener();
+
+
         if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection) || DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)) {
             viewPager.setVisibility(View.VISIBLE);
             rvPicture.setVisibility(View.GONE);
-            picturePagerAdapter = new PicturePagerAdapter(this, site, collection, pictures);
+            picturePagerAdapter = new PicturePagerAdapter(this, site, pictures);
             picturePagerAdapter.setViewDirection(viewDirection);
+            picturePagerAdapter.setOnItemLongClickListener(onItemLongClickListener);
             picturePagerAdapter.setAreaClickListener(new AreaClickHelper.OnLeftRightClickListener() {
                 @Override
                 public void left() {
@@ -145,7 +171,7 @@ public class PictureViewerActivity extends BaseActivity {
                 }
             };
             viewPager.addOnPageChangeListener(listener);
-            int limit = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
+            int limit = (int) SharedPreferencesUtil.getData(this,
                     SettingFragment.KEY_PREF_VIEW_PRELOAD_PAGES, 2);
             viewPager.setOffscreenPageLimit(limit);
             viewPager.setCurrentItem(position);
@@ -153,7 +179,8 @@ public class PictureViewerActivity extends BaseActivity {
             viewPager.setVisibility(View.GONE);
             rvPicture.setVisibility(View.VISIBLE);
             ListDataProvider<Picture> dataProvider = new ListDataProvider<>(pictures);
-            pictureViewerAdapter = new PictureViewerAdapter(this, site, collection, dataProvider);
+            pictureViewerAdapter = new PictureViewerAdapter(this, site, dataProvider);
+            pictureViewerAdapter.setOnItemLongClickListener(onItemLongClickListener);
             rvPicture.setAdapter(pictureViewerAdapter);
             rvPicture.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -221,6 +248,149 @@ public class PictureViewerActivity extends BaseActivity {
         }
     }
 
+    private class MyOnItemLongClickListener implements OnItemLongClickListener {
+        private DirectoryChooserFragment mDialog;
+        private String lastPath = DownloadManager.getDownloadPath();
+        private Picture pictureToBeSaved;
+
+        private DirectoryChooserFragment.OnFragmentInteractionListener onFragmentInteractionListener =
+                new DirectoryChooserFragment.OnFragmentInteractionListener() {
+                    @Override
+                    public void onSelectDirectory(@NonNull String path) {
+                        if (pictureToBeSaved == null)
+                            return;
+                        lastPath = path;
+                        loadPicture(pictureToBeSaved, path, false);
+                        mDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCancelChooser() {
+                        mDialog.dismiss();
+                    }
+                };
+
+
+        public void onSelectDirectory(Uri rootUri) {
+            String path = rootUri.toString();
+            if (pictureToBeSaved == null)
+                return;
+            lastPath = path;
+            loadPicture(pictureToBeSaved, path, false);
+        }
+
+        @Override
+        public boolean onItemLongClick(View view, int position) {
+            pictureToBeSaved = pictures.get(position);
+            new AlertDialog.Builder(PictureViewerActivity.this)
+                    .setTitle("操作")
+                    .setItems(new String[]{"保存", "分享"}, (dialogInterface, i) -> {
+                        if (i == 0) {
+                            new AlertDialog.Builder(PictureViewerActivity.this).setTitle("保存图片？")
+                                    .setMessage("是否保存当前图片")
+                                    .setPositiveButton("确定", (dialog, which) -> new AlertDialog.Builder(PictureViewerActivity.this).setTitle("是否直接保存到下载目录？")
+                                            .setMessage("否则另存到其他目录")
+                                            .setPositiveButton("是", (dialog1, which1) ->
+                                                    onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath())))
+                                            .setNegativeButton("否", (dialog12, which12) -> {
+                                                final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                        .initialDirectory(lastPath)
+                                                        .newDirectoryName("download")
+                                                        .allowNewDirectoryNameModification(true)
+                                                        .build();
+                                                mDialog = DirectoryChooserFragment.newInstance(config);
+                                                mDialog.setDirectoryChooserListener(onFragmentInteractionListener);
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                                    intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                                                    try {
+                                                        startActivityForResult(intent, PictureViewerActivity.RESULT_CHOOSE_DIRECTORY);
+                                                    } catch (ActivityNotFoundException e) {
+                                                        e.printStackTrace();
+                                                        mDialog.show(getFragmentManager(), null);
+                                                    }
+                                                } else {
+                                                    mDialog.show(getFragmentManager(), null);
+                                                }
+                                            }).show())
+                                    .setNegativeButton("取消", null)
+                                    .show();
+                        } else if (i == 1) {
+                            loadPicture(pictureToBeSaved, DownloadManager.getDownloadPath(), true);
+                        }
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+            return true;
+        }
+    }
+
+
+    private void loadPicture(final Picture picture, final String path, boolean share) {
+        if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
+            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
+        ImageLoader.loadResourceFromUrl(PictureViewerActivity.this, picture.pic, site.cookie, picture.referer,
+                new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
+
+                    @Override
+                    protected void onNewResultImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+                        if (!dataSource.isFinished()) {
+                            return;
+                        }
+                        CloseableReference<PooledByteBuffer> ref = dataSource.getResult();
+                        if (ref != null) {
+                            try {
+                                PooledByteBuffer imageBuffer = ref.get();
+                                savePicture(path, imageBuffer, share);
+                            } finally {
+                                CloseableReference.closeSafely(ref);
+                            }
+                        }
+                    }
+
+                    @Override
+                    protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+
+                    }
+                });
+    }
+
+    private void savePicture(String path, PooledByteBuffer buffer, boolean share) {
+        try {
+            byte[] bytes = new byte[buffer.size()];
+            buffer.read(0, bytes, 0, buffer.size());
+            String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
+            String fileName;
+            if (share) {
+                fileName = "tempImage";
+            } else {
+                int i = 1;
+                do {
+                    fileName = Uri.encode(site.title + "_" + FileHelper.filenameFilter(collection.idCode) + "_" + (i++) + "." + postfix);
+                } while (FileHelper.isFileExist(fileName, path));
+            }
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
+            if (FileHelper.writeBytes(bytes, documentFile)) {
+                if (share) {
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, documentFile.getUri());
+                    shareIntent.setType("image/jpeg");
+                    startActivity(Intent.createChooser(shareIntent, "将图片分享到"));
+                    MobclickAgent.onEvent(this, "ShareSinglePicture");
+                } else {
+                    showSnackBar("保存成功");
+                    // 统计保存单图次数
+                    MobclickAgent.onEvent(this, "SaveSinglePicture");
+                }
+            } else {
+                showSnackBar("保存失败，请重新设置下载目录");
+            }
+        } catch (OutOfMemoryError error) {
+            showSnackBar("保存失败，内存不足");
+        }
+    }
+
     // 监听音量键，实现翻页
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -263,10 +433,7 @@ public class PictureViewerActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                 }
-                if (picturePagerAdapter != null)
-                    picturePagerAdapter.onSelectDirectory(uriTree);
-                else if (pictureViewerAdapter != null)
-                    pictureViewerAdapter.onSelectDirectory(uriTree);
+                onItemLongClickListener.onSelectDirectory(uriTree);
             }
         }
     }
