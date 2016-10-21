@@ -22,8 +22,8 @@
 
         <ImageView
             android:id="@+id/iv_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="@dimen/item_site_icon_size"
+            android:layout_height="@dimen/item_site_icon_size"
             android:layout_marginTop="@dimen/half_padding"
             android:layout_marginBottom="@dimen/half_padding"
             android:layout_marginLeft="32dp"
@@ -41,7 +41,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="@dimen/item_site_text_size"
             tools:text="E-hentai" />
         <com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch
             android:id="@+id/switch_list_grid"

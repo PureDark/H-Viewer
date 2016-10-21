@@ -10,9 +10,12 @@
 
     <dimen name="status_bar_height">25dp</dimen>
 
-    <dimen name="nav_header_height">185dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
     <dimen name="nav_header_height_plus_margin">193dp</dimen>
     <dimen name="nav_category_header_height">120dp</dimen>
+    <dimen name="item_site_icon_size">32dp</dimen>
+    <dimen name="item_site_height">40dp</dimen>
+    <dimen name="item_site_text_size">16sp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">205dp</dimen>
     <dimen name="tool_bar_height">56dp</dimen>
