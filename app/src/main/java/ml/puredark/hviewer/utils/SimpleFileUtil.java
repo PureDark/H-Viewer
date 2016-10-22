@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -148,6 +149,26 @@ public class SimpleFileUtil {
         while ((line = bufReader.readLine()) != null)
             Result += "\n"+line;
         return Result;
+    }
+
+    /**
+     * 获取指定文件大小
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    public static long getFileSize(File file){
+        long size = 0;
+        if (file.exists()){
+            FileInputStream fis;
+            try {
+                fis = new FileInputStream(file);
+                size = fis.available();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return size;
     }
 
 }

@@ -114,6 +114,10 @@ public class PicturePagerAdapter extends PagerAdapter {
         areaClickHelper.setAreaClickListener(onAreaClickListener);
     }
 
+    public void onConfigurationChanged(){
+        areaClickHelper = new AreaClickHelper(activity);
+    }
+
     @Override
     public int getItemPosition(Object object) {
         if (firstTime)

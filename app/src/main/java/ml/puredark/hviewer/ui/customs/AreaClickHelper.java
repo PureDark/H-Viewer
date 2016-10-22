@@ -31,14 +31,26 @@ public class AreaClickHelper {
         if (onAreaClickListener == null)
             return;
         if (x < xOffset) {
-            onAreaClickListener.left();
+            if (y < yOffset)
+                onAreaClickListener.grid1();
+            else if (y > height - yOffset)
+                onAreaClickListener.grid7();
+            else
+                onAreaClickListener.grid4();
         } else if (x > width - xOffset){
-            onAreaClickListener.right();
-        }
-        if (y < yOffset) {
-            onAreaClickListener.top();
-        } else if (y > height - yOffset){
-            onAreaClickListener.bottom();
+            if (y < yOffset)
+                onAreaClickListener.grid3();
+            else if (y > height - yOffset)
+                onAreaClickListener.grid9();
+            else
+                onAreaClickListener.grid6();
+        }else{
+            if (y < yOffset)
+                onAreaClickListener.grid2();
+            else if (y > height - yOffset)
+                onAreaClickListener.grid8();
+            else
+                onAreaClickListener.grid5();
         }
 
     }
@@ -48,41 +60,117 @@ public class AreaClickHelper {
     }
 
     public interface OnAreaClickListener {
-        void left();
-
-        void right();
-
-        void top();
-
-        void bottom();
+        void grid1();
+        void grid2();
+        void grid3();
+        void grid4();
+        void grid5();
+        void grid6();
+        void grid7();
+        void grid8();
+        void grid9();
     }
 
     public static abstract class OnLeftRightClickListener implements OnAreaClickListener {
         public abstract void left();
-
         public abstract void right();
+        public abstract void center();
 
         @Override
-        public void top() {
+        public void grid1() {
+            left();
         }
 
         @Override
-        public void bottom() {
+        public void grid2() {
+            center();
+        }
+
+        @Override
+        public void grid3() {
+            right();
+        }
+
+        @Override
+        public void grid4() {
+            left();
+        }
+
+        @Override
+        public void grid5() {
+            center();
+        }
+
+        @Override
+        public void grid6() {
+            right();
+        }
+
+        @Override
+        public void grid7() {
+            left();
+        }
+
+        @Override
+        public void grid8() {
+            center();
+        }
+
+        @Override
+        public void grid9() {
+            right();
         }
     }
 
     public static abstract class OnTopBottomClickListener implements OnAreaClickListener {
-        @Override
-        public void left() {
-        }
-
-        @Override
-        public void right() {
-        }
-
         public abstract void top();
-
         public abstract void bottom();
+        public abstract void center();
+
+        @Override
+        public void grid1() {
+            top();
+        }
+
+        @Override
+        public void grid2() {
+            top();
+        }
+
+        @Override
+        public void grid3() {
+            top();
+        }
+
+        @Override
+        public void grid4() {
+            center();
+        }
+
+        @Override
+        public void grid5() {
+            center();
+        }
+
+        @Override
+        public void grid6() {
+            center();
+        }
+
+        @Override
+        public void grid7() {
+            bottom();
+        }
+
+        @Override
+        public void grid8() {
+            bottom();
+        }
+
+        @Override
+        public void grid9() {
+            bottom();
+        }
     }
 
 }

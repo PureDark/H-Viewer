@@ -32,6 +32,7 @@
             tools:listitem="@layout/item_picture_viewer"/>
 
         <LinearLayout
+            android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -52,6 +53,17 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 tools:text="10/12" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/btn_picture_info"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/ic_info_outline_white"/>
         </LinearLayout>
     </RelativeLayout>
 

@@ -1,7 +1,11 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +16,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +36,7 @@ import com.umeng.analytics.MobclickAgent;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,9 +57,12 @@ import ml.puredark.hviewer.ui.customs.MultiTouchViewPager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
+import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.FileType;
+import ml.puredark.hviewer.utils.FileUtils;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
@@ -65,6 +79,10 @@ public class PictureViewerActivity extends BaseActivity {
     MultiTouchViewPager viewPager;
     @BindView(R.id.rv_picture)
     RecyclerView rvPicture;
+    @BindView(R.id.bottom_bar)
+    LinearLayout bottomBar;
+    @BindView(R.id.btn_picture_info)
+    ImageView btnPictureInfo;
 
     public final static int RESULT_CHOOSE_DIRECTORY = 1;
 
@@ -80,6 +98,9 @@ public class PictureViewerActivity extends BaseActivity {
     private List<Picture> pictures = null;
 
     private MyOnItemLongClickListener onItemLongClickListener;
+
+    private boolean statusEnabled = true;
+    InfoDialogViewHolder viewHolder;
 
     private int currPos = 0;
 
@@ -150,6 +171,12 @@ public class PictureViewerActivity extends BaseActivity {
                     else
                         prevPage(false);
                 }
+
+                @Override
+                public void center() {
+                    showStatus(!statusEnabled);
+                    statusEnabled = !statusEnabled;
+                }
             });
 
             int position = picturePagerAdapter.getPicturePostion(currPos);
@@ -208,6 +235,49 @@ public class PictureViewerActivity extends BaseActivity {
             currPos = linearLayoutManager.findLastVisibleItemPosition();
             tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
         }
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_picture_exif, null);
+        viewHolder = new InfoDialogViewHolder(view);
+        Dialog dialog = new AlertDialog.Builder(PictureViewerActivity.this)
+                .setView(view)
+                .create();
+        dialog.setCanceledOnTouchOutside(true);
+        viewHolder.btnConfirm.setOnClickListener(v -> dialog.dismiss());
+
+        btnPictureInfo.setOnClickListener(v -> {
+            viewHolder.tvImageType.setText("");
+            viewHolder.tvFileSize.setText("");
+            viewHolder.tvImageSize.setText("");
+            if (pictures != null && currPos >= 0 && currPos <= pictures.size()) {
+                Picture picture = null;
+                if (picturePagerAdapter != null) {
+                    int position = picturePagerAdapter.getPicturePostion(currPos);
+                    picture = pictures.get(position);
+                } else if (pictureViewerAdapter != null) {
+                    picture = pictures.get(currPos);
+                }
+                loadPicture(picture, "", ACTION_SHOW_INFO);
+                dialog.show();
+                //设置对话框位置
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.width = DensityUtil.getScreenWidth(this) - DensityUtil.dp2px(this, 64);
+                dialog.getWindow().setAttributes(lp);
+            }
+        });
+    }
+
+    public static class InfoDialogViewHolder {
+        @BindView(R.id.tv_image_type)
+        TextView tvImageType;
+        @BindView(R.id.tv_file_size)
+        TextView tvFileSize;
+        @BindView(R.id.tv_image_size)
+        TextView tvImageSize;
+        @BindView(R.id.btn_confirm)
+        TextView btnConfirm;
+
+        InfoDialogViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     private boolean move;
@@ -248,6 +318,27 @@ public class PictureViewerActivity extends BaseActivity {
         }
     }
 
+    //控制显示/隐藏系统状态栏和底部计数栏
+    private void showStatus(boolean enabled) {
+        if (enabled) {
+            WindowManager.LayoutParams attr = getWindow().getAttributes();
+            attr.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(attr);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.bottom_bar_show_from_bottom);
+            animation.setFillAfter(true);
+            bottomBar.startAnimation(animation);
+        } else {
+            WindowManager.LayoutParams attr = getWindow().getAttributes();
+            attr.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(attr);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.bottom_bar_hide_to_bottom);
+            animation.setFillAfter(true);
+            bottomBar.startAnimation(animation);
+        }
+    }
+
     private class MyOnItemLongClickListener implements OnItemLongClickListener {
         private DirectoryChooserFragment mDialog;
         private String lastPath = DownloadManager.getDownloadPath();
@@ -260,7 +351,7 @@ public class PictureViewerActivity extends BaseActivity {
                         if (pictureToBeSaved == null)
                             return;
                         lastPath = path;
-                        loadPicture(pictureToBeSaved, path, false);
+                        loadPicture(pictureToBeSaved, path, ACTION_SAVE);
                         mDialog.dismiss();
                     }
 
@@ -276,12 +367,12 @@ public class PictureViewerActivity extends BaseActivity {
             if (pictureToBeSaved == null)
                 return;
             lastPath = path;
-            loadPicture(pictureToBeSaved, path, false);
+            loadPicture(pictureToBeSaved, path, ACTION_SAVE);
         }
 
         @Override
         public boolean onItemLongClick(View view, int position) {
-            if (!(position > 0 && position < pictures.size()))
+            if (!(position >= 0 && position < pictures.size()))
                 return false;
             pictureToBeSaved = pictures.get(position);
             new AlertDialog.Builder(PictureViewerActivity.this)
@@ -318,7 +409,7 @@ public class PictureViewerActivity extends BaseActivity {
                                     .setNegativeButton("取消", null)
                                     .show();
                         } else if (i == 1) {
-                            loadPicture(pictureToBeSaved, DownloadManager.getDownloadPath(), true);
+                            loadPicture(pictureToBeSaved, DownloadManager.getDownloadPath(), ACTION_SHARE);
                         }
                     })
                     .setNegativeButton("取消", null)
@@ -327,16 +418,32 @@ public class PictureViewerActivity extends BaseActivity {
         }
     }
 
+    private static int ACTION_SAVE = 0;
+    private static int ACTION_SHARE = 1;
+    private static int ACTION_SHOW_INFO = 2;
 
-    private void loadPicture(final Picture picture, final String path, boolean share) {
-        if(share && picture.pic !=null && picture.pic.startsWith("file://")) {
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(picture.pic));
-            shareIntent.setType("image/*");
-            startActivity(Intent.createChooser(shareIntent, "将图片分享到"));
-            MobclickAgent.onEvent(this, "ShareSinglePicture");
-            return;
+    private void loadPicture(final Picture picture, final String path, int action) {
+        if (picture.pic != null && picture.pic.startsWith("file://")) {
+            if (action == ACTION_SHARE) {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(picture.pic));
+                shareIntent.setType("image/*");
+                startActivity(Intent.createChooser(shareIntent, "将图片分享到"));
+                MobclickAgent.onEvent(this, "ShareSinglePicture");
+                return;
+            } else if (action == ACTION_SHOW_INFO) {
+                Uri uri = Uri.parse(picture.pic);
+                viewHolder.tvImageType.setText(FileUtils.getMimeType(this, uri));
+                viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize((int) SimpleFileUtil.getFileSize(new File(uri.getPath()))));
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                opts.inJustDecodeBounds = true;
+                opts.inSampleSize = 1;
+                BitmapFactory.decodeFile(uri.getPath(), opts);
+                int width = opts.outWidth;
+                int height = opts.outHeight;
+                viewHolder.tvImageSize.setText(width + " × " + height);
+            }
         }
         if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
             picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
@@ -352,7 +459,21 @@ public class PictureViewerActivity extends BaseActivity {
                         if (ref != null) {
                             try {
                                 PooledByteBuffer imageBuffer = ref.get();
-                                savePicture(path, imageBuffer, share);
+                                if (action == ACTION_SAVE)
+                                    savePicture(path, imageBuffer, false);
+                                else if (action == ACTION_SHARE)
+                                    savePicture(path, imageBuffer, true);
+                                else if (action == ACTION_SHOW_INFO) {
+                                    byte[] bytes = new byte[imageBuffer.size()];
+                                    imageBuffer.read(0, bytes, 0, imageBuffer.size());
+                                    String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
+                                    viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
+                                    viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                    int width = bitmap.getWidth();
+                                    int height = bitmap.getHeight();
+                                    viewHolder.tvImageSize.setText(width + " × " + height);
+                                }
                             } finally {
                                 CloseableReference.closeSafely(ref);
                             }
@@ -361,7 +482,6 @@ public class PictureViewerActivity extends BaseActivity {
 
                     @Override
                     protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
-
                     }
                 });
     }
@@ -430,6 +550,15 @@ public class PictureViewerActivity extends BaseActivity {
         return super.onKeyUp(keyCode, event);
     }
 
+    /**
+     * 屏幕旋转时调用此方法
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (picturePagerAdapter != null)
+            picturePagerAdapter.onConfigurationChanged();
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
