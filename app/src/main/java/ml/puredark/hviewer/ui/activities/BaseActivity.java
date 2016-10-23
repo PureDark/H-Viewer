@@ -46,6 +46,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
 
     private DownloadReceiver receiver;
 
+    protected boolean isCategoryEnable = false;
 
     //是否动画中
     private boolean animating = false;
@@ -106,10 +107,12 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         if (drawerLayout != null) {
             if (enabled) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
+                if (isCategoryEnable)
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             } else {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
+                if (isCategoryEnable)
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
             }
         }
     }
@@ -158,7 +161,12 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (animating) return false;
-        return super.dispatchTouchEvent(event);
+        try {
+            return super.dispatchTouchEvent(event);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

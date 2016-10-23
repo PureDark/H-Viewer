@@ -159,11 +159,13 @@ public class CollectionFragment extends MyFragment {
                 keyword = null;
                 currPage = startPage;
                 rvCollection.setRefreshing(true);
+                activity.setDrawerEnabled(true);
                 getCollections(keyword, currPage);
             }
 
             @Override
             public void onLoadMore() {
+                activity.setDrawerEnabled(true);
                 getCollections(keyword, currPage + pageStep);
             }
         });

@@ -8,8 +8,8 @@
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/uni_padding"
     android:paddingRight="@dimen/uni_padding"
-    android:paddingTop="@dimen/half_margin"
-    android:paddingBottom="@dimen/half_margin"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
     app:mrl_rippleOverlay="true"
     app:mrl_rippleColor="@color/black"
     app:mrl_rippleAlpha="0.1"
@@ -31,7 +31,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="@dimen/item_site_text_size"
             tools:text="E-hentai" />
     </LinearLayout>
 

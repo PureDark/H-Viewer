@@ -202,17 +202,19 @@ public class MainActivity extends BaseActivity {
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
-                if (drawerView.getId() == R.id.nav_main)
-                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
-                else
+                if (drawerView.getId() == R.id.nav_main) {
+                    if (isCategoryEnable)
+                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
+                }else
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                if (drawerView.getId() == R.id.nav_main)
-                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
-                else
+                if (drawerView.getId() == R.id.nav_main) {
+                    if (isCategoryEnable)
+                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
+                }else
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
             }
         });
@@ -223,19 +225,16 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-//        List<Site> sites = ExampleSites.get();
-//        siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+        List<Site> sites = ExampleSites.get();
+        if(siteGroups.size()==0)
+            siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
 //        siteGroups.get(0).second.addAll(sites);
-//        siteGroups.get(0).second.add(sites.get(sites.size()-2));
-//        siteGroups.get(0).second.add(sites.get(sites.size()-1));
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
+//        siteGroups.get(0).second.add(0, sites.get(sites.size()-2));
+        siteGroups.get(0).second.add(0, sites.get(sites.size()-1));
+        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
-        mRecyclerViewExpandableItemManager.setOnGroupExpandListener((groupPosition, fromUser) -> {
-        });
-        mRecyclerViewExpandableItemManager.setOnGroupCollapseListener((groupPosition, fromUser) -> {
-        });
 
         // drag & drop manager
         mRecyclerViewDragDropManager = new RecyclerViewDragDropManager();
@@ -814,11 +813,16 @@ public class MainActivity extends BaseActivity {
 
 
     public void replaceFragment(MyFragment fragment, String tag) {
-        getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                .replace(R.id.fragment_container, fragment, tag)
-                .commit();
-        currFragment = fragment;
+        try {
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                    .replace(R.id.fragment_container, fragment, tag)
+                    .commit();
+            currFragment = fragment;
+        } catch (Exception e){
+            e.printStackTrace();
+            showSnackBar("载入站点出错，请重试");
+        }
     }
 
     public void selectSite(Site site) {
@@ -836,7 +840,7 @@ public class MainActivity extends BaseActivity {
             ListDataProvider<Category> dataProvider = new ListDataProvider<>(site.categories);
             categoryAdapter.setDataProvider(dataProvider);
             categoryAdapter.notifyDataSetChanged();
-
+            isCategoryEnable = true;
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             Category category = site.categories.get(0);
             categoryAdapter.selectedCid = category.cid;
@@ -845,6 +849,7 @@ public class MainActivity extends BaseActivity {
         } else {
             categoryAdapter.getDataProvider().clear();
             categoryAdapter.notifyDataSetChanged();
+            isCategoryEnable = false;
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
             currFragment.onLoadUrl(site.indexUrl);
         }

@@ -45,6 +45,7 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.HistoryHolder;
@@ -347,7 +348,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         Logger.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
         if (myCollection.description != null)
-            holder.tvDescription.setText(RuleParser.getClickableHtml(this, myCollection.description, url, source -> new BitmapDrawable()));
+            holder.tvDescription.setText(HtmlContentParser.getClickableHtml(this, myCollection.description, url, source -> new BitmapDrawable()));
         collection.title = myCollection.title;
         collection.uploader = myCollection.uploader;
         collection.category = myCollection.category;
@@ -377,6 +378,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             mWebSettings.setDomStorageEnabled(true);
             mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
             mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+            mWebSettings.setAllowUniversalAccessFromFileURLs(true);
             webView.addJavascriptInterface(this, "HtmlParser");
 
             webView.setWebViewClient(new WebViewClient() {
@@ -433,6 +435,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         if (HViewerApplication.DEBUG)
             SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
         myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
+        if (myCollection.videos != null && myCollection.videos.size() > 0) {
+            Log.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
+            Log.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
+        }
 
         if (myCollection.tags != null) {
             for (Tag tag : myCollection.tags) {

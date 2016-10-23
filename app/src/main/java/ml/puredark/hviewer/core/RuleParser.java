@@ -1,16 +1,6 @@
 package ml.puredark.hviewer.core;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ClickableSpan;
-import android.text.style.URLSpan;
-import android.util.Log;
-import android.view.View;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
@@ -26,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +25,7 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.utils.MathUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
@@ -65,38 +55,6 @@ public class RuleParser {
         return map;
     }
 
-    public static CharSequence getClickableHtml(Context context, String html, String sourceUrl, Html.ImageGetter imageGetter) {
-        return getClickableHtml(context, html, sourceUrl, imageGetter, null);
-    }
-
-    public static CharSequence getClickableHtml(Context context, String html, String sourceUrl, Html.ImageGetter imageGetter, Html.TagHandler tagHandler) {
-        Spanned spannedHtml = Html.fromHtml(html, imageGetter, tagHandler);
-        SpannableStringBuilder clickableHtmlBuilder = new SpannableStringBuilder(spannedHtml);
-        URLSpan[] urls = clickableHtmlBuilder.getSpans(0, spannedHtml.length(), URLSpan.class);
-        for (final URLSpan span : urls) {
-            setLinkClickable(context, clickableHtmlBuilder, span, sourceUrl);
-        }
-        return clickableHtmlBuilder;
-    }
-
-    private static void setLinkClickable(Context context, final SpannableStringBuilder clickableHtmlBuilder,
-                                         final URLSpan urlSpan, String sourceUrl) {
-        int start = clickableHtmlBuilder.getSpanStart(urlSpan);
-        int end = clickableHtmlBuilder.getSpanEnd(urlSpan);
-        int flags = clickableHtmlBuilder.getSpanFlags(urlSpan);
-        ClickableSpan clickableSpan = new ClickableSpan() {
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setAction("android.intent.action.VIEW");
-                String url = urlSpan.getURL();
-                url = TextUtils.isEmpty(url) ? "" : RegexValidateUtil.getAbsoluteUrlFromRelative(url, sourceUrl);
-                intent.setData(Uri.parse(url));
-                context.startActivity(intent);
-            }
-        };
-        clickableHtmlBuilder.setSpan(clickableSpan, start, end, flags);
-    }
-
     public static boolean isJson(String string) {
         if (string == null)
             return false;
@@ -106,48 +64,38 @@ public class RuleParser {
 
     public static List<Collection> getCollections(List<Collection> collections, String text, Rule rule, String sourceUrl) {
         try {
+            List items;
             if (!isJson(text)) {
                 Document doc = Jsoup.parse(text);
-                Elements elements = doc.select(rule.item.selector);
-                for (Element element : elements) {
-                    String itemStr;
-                    if ("attr".equals(rule.item.fun)) {
-                        itemStr = element.attr(rule.title.param);
-                    } else if ("html".equals(rule.item.fun)) {
-                        itemStr = element.html();
-                    } else {
-                        itemStr = element.toString();
-                    }
-                    if (rule.item.regex != null) {
-                        Pattern pattern = Pattern.compile(rule.item.regex);
-                        Matcher matcher = pattern.matcher(itemStr);
-                        if (!matcher.find()) {
-                            continue;
-                        }
-                    }
-
-                    Collection collection = new Collection(collections.size() + 1);
-                    collection = getCollectionDetail(collection, element, rule, sourceUrl);
-                    collections.add(collection);
-                }
+                items = doc.select(rule.item.selector);
             } else {
                 ReadContext ctx = JsonPath.parse(text);
-                List<ReadContext> items = ctx.read(rule.item.path);
-                for (ReadContext item : items) {
-                    String itemStr = item.jsonString();
-                    if (rule.item.regex != null) {
-                        Pattern pattern = Pattern.compile(rule.item.regex);
-                        Matcher matcher = pattern.matcher(itemStr);
-                        if (!matcher.find()) {
-                            continue;
-                        }
+                items = ctx.read(rule.item.path, new TypeRef<List<ReadContext>>() {
+                });
+            }
+            for (Object item : items) {
+                String itemStr;
+                if (item instanceof Element)
+                    if ("attr".equals(rule.item.fun))
+                        itemStr = ((Element) item).attr(rule.title.param);
+                    else if ("html".equals(rule.item.fun))
+                        itemStr = ((Element) item).html();
+                    else
+                        itemStr = item.toString();
+                else if (item instanceof ReadContext)
+                    itemStr = ((ReadContext) item).jsonString();
+                else
+                    continue;
+                if (rule.item.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.item.regex);
+                    Matcher matcher = pattern.matcher(itemStr);
+                    if (!matcher.find()) {
+                        continue;
                     }
-
-                    Collection collection = new Collection(collections.size() + 1);
-                    collection = getCollectionDetail(collection, item, rule, sourceUrl);
-                    if (!TextUtils.isEmpty(collection.idCode))
-                        collections.add(collection);
                 }
+                Collection collection = new Collection(collections.size() + 1);
+                collection = getCollectionDetail(collection, item, rule, sourceUrl);
+                collections.add(collection);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,6 +133,16 @@ public class RuleParser {
         String datetime = parseSingleProperty(source, rule.datetime, sourceUrl, false);
 
         String description = parseSingleProperty(source, rule.description, sourceUrl, false);
+        if(source instanceof Element){
+            try{
+                Element element = Jsoup.parse(description);
+                element.select("iframe").remove();
+                element.select("script").remove();
+                description = element.toString();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
         String ratingStr = parseSingleProperty(source, rule.rating, sourceUrl, false);
 
@@ -207,10 +165,11 @@ public class RuleParser {
 
         List<Tag> tags = new ArrayList<>();
         if (rule.tagRule != null && rule.tagRule.item != null) {
-            if(source instanceof Element)
+            if (source instanceof Element)
                 temp = ((Element) source).select(rule.tagRule.item.selector);
-            else if(source instanceof ReadContext)
-                temp = ((ReadContext) source).read(rule.tagRule.item.path, new TypeRef<List<ReadContext>>() {});
+            else if (source instanceof ReadContext)
+                temp = ((ReadContext) source).read(rule.tagRule.item.path, new TypeRef<List<ReadContext>>() {
+                });
             else
                 return collection;
             for (Object element : temp) {
@@ -244,7 +203,7 @@ public class RuleParser {
             pictureThumbnail = rule.pictureRule.thumbnail;
             pictureUrl = rule.pictureRule.url;
             pictureHighRes = rule.pictureRule.highRes;
-        }else if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
+        } else if (rule.pictureUrl != null && rule.pictureThumbnail != null) {
             pictureId = rule.pictureId;
             pictureItem = rule.item;
             pictureThumbnail = rule.pictureThumbnail;
@@ -254,9 +213,9 @@ public class RuleParser {
 
         if (pictureUrl != null && pictureThumbnail != null) {
             if (pictureItem != null) {
-                if(source instanceof Element)
+                if (source instanceof Element)
                     temp = ((Element) source).select(pictureItem.selector);
-                else if(source instanceof ReadContext)
+                else if (source instanceof ReadContext)
                     temp = ((ReadContext) source).read(pictureItem.path, new TypeRef<List<ReadContext>>() {});
                 else
                     return collection;
@@ -303,6 +262,39 @@ public class RuleParser {
             }
         }
 
+
+        List<Video> videos = new ArrayList<>();
+        if (rule.videoRule != null && rule.videoRule.item != null) {
+            if (source instanceof Element)
+                temp = ((Element) source).select(rule.videoRule.item.selector);
+            else if (source instanceof ReadContext)
+                temp = ((ReadContext) source).read(rule.videoRule.item.path, new TypeRef<List<ReadContext>>() {});
+            else
+                return collection;
+            for (Object element : temp) {
+                if (rule.videoRule.item.regex != null) {
+                    Pattern pattern = Pattern.compile(rule.videoRule.item.regex);
+                    Matcher matcher = pattern.matcher(element.toString());
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                }
+                String vId = parseSingleProperty(element, rule.videoRule.id, sourceUrl, false);
+                int vid;
+                try {
+                    vid = Integer.parseInt(vId);
+                } catch (Exception e) {
+                    vid = 0;
+                }
+                vid = (vid != 0) ? vid : (videos.size() > 0) ? videos.get(videos.size() - 1).vid + 1 : videos.size() + 1;
+                String vThumbnail = parseSingleProperty(element, rule.videoRule.thumbnail, sourceUrl, true);
+                if(TextUtils.isEmpty(vThumbnail))
+                    vThumbnail = cover;
+                String vContent = parseSingleProperty(element, rule.videoRule.content, sourceUrl, true);
+                videos.add(new Video(vid, vThumbnail, vContent));
+            }
+        }
+
         Selector commentItem = null, commentAvatar = null, commentAuthor = null, commentDatetime = null, commentContent = null;
         List<Comment> comments = new ArrayList<>();
         if (rule.commentRule != null && rule.commentRule.item != null && rule.commentRule.content != null) {
@@ -319,10 +311,11 @@ public class RuleParser {
             commentContent = rule.commentContent;
         }
         if (commentItem != null && commentContent != null) {
-            if(source instanceof Element)
+            if (source instanceof Element)
                 temp = ((Element) source).select(commentItem.selector);
-            else if(source instanceof ReadContext)
-                temp = ((ReadContext) source).read(commentItem.path, new TypeRef<List<ReadContext>>() {});
+            else if (source instanceof ReadContext)
+                temp = ((ReadContext) source).read(commentItem.path, new TypeRef<List<ReadContext>>() {
+                });
             else
                 return collection;
             for (Object element : temp) {
@@ -363,6 +356,8 @@ public class RuleParser {
             collection.tags = tags;
         if (pictures != null && pictures.size() > 0)
             collection.pictures = pictures;
+        if (videos != null && videos.size() > 0)
+            collection.videos = videos;
         if (comments != null && comments.size() > 0)
             collection.comments = comments;
         return collection;
@@ -392,7 +387,7 @@ public class RuleParser {
                         props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
                     }
                 }
-            } else if(source instanceof ReadContext){
+            } else if (source instanceof ReadContext) {
                 List<ReadContext> temp = new ArrayList<>();
                 if ("this".equals(selector.path))
                     temp.add((ReadContext) source);

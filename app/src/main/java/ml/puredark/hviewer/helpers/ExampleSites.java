@@ -10,6 +10,7 @@ import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.TagRule;
+import ml.puredark.hviewer.beans.VideoRule;
 
 /**
  * Created by PureDark on 2016/9/21.
@@ -1415,9 +1416,9 @@ public class ExampleSites {
 
         // Tumblr
         indexRule = new Rule();
-        indexRule.item = new Selector(".is_photo,.is_photoset", null, null, null, null);
+        indexRule.item = new Selector(".is_photo,.is_photoset,.is_video", null, null, null, null);
         indexRule.idCode = new Selector(".post_header", "html", null, "(http[^\"]*?tumblr.com/post/[^\"]*)", null);
-        indexRule.cover = new Selector(".post_media img", "attr", "src", null, null);
+        indexRule.cover = new Selector(".post_media img,.post_media div.video_poster", null, null, "(?:background-image.*?\\((http.*?)\\)|(http[^\"]*?_\\d{3,4}\\.(?:jpg|jpeg|png|gif|bmp)))", "$1$2");
         indexRule.title = new Selector(".post_header", "html", null, "tumblr.com/[^\"]*?/[^\"]*?/([^\"/]*)", null);
         indexRule.uploader = new Selector(".post_header a.post_info_link, .post_header .post-info-tumblelog>a", "html", null, null, null);
         indexRule.datetime = new Selector("span.note_link_current", "html", null, null, null);
@@ -1429,6 +1430,9 @@ public class ExampleSites {
         galleryRule.pictureRule.item = new Selector(":not(.related-posts-wrapper)>*>*>*>*>.post-content img,.posts img,.photo-slideshow img,#posts img,.photo-stage img,.stat-photo img,#content img,.photo > img,.photo > a > img", null, null, "\"http[^\"]*?_\\d{3,4}\\.(?:jpg|jpeg|png|gif|bmp)\"", null);
         galleryRule.pictureRule.thumbnail = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_400$2");
         galleryRule.pictureRule.url = new Selector("this", "attr", "src", "(http[^\"]*?)_\\d{3,4}(\\.(?:jpg|jpeg|png|gif|bmp))", "$1_1280$2");
+        galleryRule.videoRule = new VideoRule();
+        galleryRule.videoRule.item = new Selector("#posts", null, null, null, null);
+        galleryRule.videoRule.content = new Selector("iframe", "attr", "src", null, null);
 
         sites.add(new Site(68, "Tumblr",
                 "https://www.tumblr.com/dashboard",
@@ -1445,6 +1449,7 @@ public class ExampleSites {
         categories.add(new Category(categories.size() + 1, "发现-官博精选", "https://www.tumblr.com/explore/staff-picks"));
         categories.add(new Category(categories.size() + 1, "发现-图片", "https://www.tumblr.com/explore/photos"));
         categories.add(new Category(categories.size() + 1, "发现-动图", "https://www.tumblr.com/explore/gifs"));
+        categories.add(new Category(categories.size() + 1, "发现-视频", "https://www.tumblr.com/explore/video"));
         sites.get(sites.size() - 1).setCategories(categories);
 
         return sites;

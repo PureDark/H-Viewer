@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.view.ViewPager;
@@ -30,12 +32,15 @@ import android.widget.Toast;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.umeng.analytics.MobclickAgent;
 
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.List;
 
@@ -48,6 +53,7 @@ import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.PicturePagerAdapter;
@@ -64,6 +70,7 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
+import static android.R.attr.bitmap;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_TOP_TO_BOTTOM;
@@ -241,6 +248,11 @@ public class PictureViewerActivity extends BaseActivity {
                 .setView(view)
                 .create();
         dialog.setCanceledOnTouchOutside(true);
+        //设置对话框位置
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.width = DensityUtil.getScreenWidth(this) - DensityUtil.dp2px(this, 64);
+        dialog.getWindow().setAttributes(lp);
+
         viewHolder.btnConfirm.setOnClickListener(v -> dialog.dismiss());
 
         btnPictureInfo.setOnClickListener(v -> {
@@ -251,16 +263,22 @@ public class PictureViewerActivity extends BaseActivity {
                 Picture picture = null;
                 if (picturePagerAdapter != null) {
                     int position = picturePagerAdapter.getPicturePostion(currPos);
-                    picture = pictures.get(position);
+                    if(position < pictures.size())
+                        picture = pictures.get(position);
+                    else{
+                        showSnackBar("图片未加载，请等待");
+                        return;
+                    }
                 } else if (pictureViewerAdapter != null) {
-                    picture = pictures.get(currPos);
+                    if(currPos < pictures.size())
+                        picture = pictures.get(currPos);
+                    else{
+                        showSnackBar("图片未加载，请等待");
+                        return;
+                    }
                 }
                 loadPicture(picture, "", ACTION_SHOW_INFO);
-                dialog.show();
-                //设置对话框位置
-                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-                lp.width = DensityUtil.getScreenWidth(this) - DensityUtil.dp2px(this, 64);
-                dialog.getWindow().setAttributes(lp);
+                new Handler().postDelayed(()->dialog.show(),200);
             }
         });
     }
@@ -423,11 +441,12 @@ public class PictureViewerActivity extends BaseActivity {
     private static int ACTION_SHOW_INFO = 2;
 
     private void loadPicture(final Picture picture, final String path, int action) {
-        if (picture.pic != null && picture.pic.startsWith("file://")) {
+        if (picture.pic != null && (picture.pic.startsWith("file://"))) {
             if (action == ACTION_SHARE) {
+                Uri uri = Uri.parse(picture.pic);
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(picture.pic));
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                 shareIntent.setType("image/*");
                 startActivity(Intent.createChooser(shareIntent, "将图片分享到"));
                 MobclickAgent.onEvent(this, "ShareSinglePicture");
@@ -443,15 +462,46 @@ public class PictureViewerActivity extends BaseActivity {
                 int width = opts.outWidth;
                 int height = opts.outHeight;
                 viewHolder.tvImageSize.setText(width + " × " + height);
+                return;
             }
+        }else if(picture.pic != null && picture.pic.startsWith("content://")){
+            ImageLoader.loadBitmapFromUrl(this, picture.pic, site.cookie, picture.referer, new BaseBitmapDataSubscriber() {
+                @Override
+                protected void onNewResultImpl(Bitmap bitmap) {
+                    Logger.d("PictureViewerActivity", "onNewResultImpl");
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] bytes = baos.toByteArray();
+                    if (action == ACTION_SAVE)
+                        savePicture(path, bytes, false);
+                    else if (action == ACTION_SHARE)
+                        savePicture(path, bytes, true);
+                    else if (action == ACTION_SHOW_INFO) {
+                        runOnUiThread(()->{
+                            String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
+                            viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
+                            viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));
+                            int width = bitmap.getWidth();
+                            int height = bitmap.getHeight();
+                            viewHolder.tvImageSize.setText(width + " × " + height);
+                        });
+                    }
+                }
+
+                @Override
+                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                    Logger.d("PictureViewerActivity", "onFailureImpl");
+                }
+            });
         }
         if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
             picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
-        ImageLoader.loadResourceFromUrl(PictureViewerActivity.this, picture.pic, site.cookie, picture.referer,
+        ImageLoader.loadResourceFromUrl(this, picture.pic, site.cookie, picture.referer,
                 new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
 
                     @Override
                     protected void onNewResultImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+                        Logger.d("PictureViewerActivity", "onNewResultImpl");
                         if (!dataSource.isFinished()) {
                             return;
                         }
@@ -459,20 +509,22 @@ public class PictureViewerActivity extends BaseActivity {
                         if (ref != null) {
                             try {
                                 PooledByteBuffer imageBuffer = ref.get();
+                                byte[] bytes = new byte[imageBuffer.size()];
+                                imageBuffer.read(0, bytes, 0, imageBuffer.size());
                                 if (action == ACTION_SAVE)
-                                    savePicture(path, imageBuffer, false);
+                                    savePicture(path, bytes, false);
                                 else if (action == ACTION_SHARE)
-                                    savePicture(path, imageBuffer, true);
+                                    savePicture(path, bytes, true);
                                 else if (action == ACTION_SHOW_INFO) {
-                                    byte[] bytes = new byte[imageBuffer.size()];
-                                    imageBuffer.read(0, bytes, 0, imageBuffer.size());
-                                    String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
-                                    viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
-                                    viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    int width = bitmap.getWidth();
-                                    int height = bitmap.getHeight();
-                                    viewHolder.tvImageSize.setText(width + " × " + height);
+                                    runOnUiThread(()->{
+                                        String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
+                                        viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
+                                        viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));
+                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                        int width = bitmap.getWidth();
+                                        int height = bitmap.getHeight();
+                                        viewHolder.tvImageSize.setText(width + " × " + height);
+                                    });
                                 }
                             } finally {
                                 CloseableReference.closeSafely(ref);
@@ -482,17 +534,18 @@ public class PictureViewerActivity extends BaseActivity {
 
                     @Override
                     protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
+                        Logger.d("PictureViewerActivity", "onFailureImpl");
                     }
                 });
     }
 
-    private void savePicture(String path, PooledByteBuffer buffer, boolean share) {
+    private void savePicture(String path, byte[] bytes, boolean share) {
         try {
-            byte[] bytes = new byte[buffer.size()];
-            buffer.read(0, bytes, 0, buffer.size());
             String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
             String fileName;
             if (share) {
+                if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+                    path = Environment.getExternalStorageDirectory().getAbsolutePath();
                 fileName = "tempImage";
             } else {
                 int i = 1;

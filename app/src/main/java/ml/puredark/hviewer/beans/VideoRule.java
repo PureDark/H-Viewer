@@ -2,21 +2,12 @@ package ml.puredark.hviewer.beans;
 
 import java.lang.reflect.Field;
 
-public class Rule {
-    public Selector item, idCode, title, uploader, cover, category, datetime, rating, tags, description;
+/**
+ * Created by PureDark on 2016/10/11.
+ */
 
-    @Deprecated
-    public Selector pictureId, pictureUrl, pictureThumbnail, pictureHighRes;
-    @Deprecated
-    public Selector commentItem, commentAvatar, commentAuthor, commentDatetime, commentContent;
-
-    public PictureRule pictureRule;
-    public VideoRule videoRule;
-    public TagRule tagRule;
-    public CommentRule commentRule;
-
-    public Rule() {
-    }
+public class VideoRule {
+    public Selector id, item, thumbnail, content;
 
     public boolean isEmpty() {
         boolean notEmpty = false;
@@ -32,5 +23,4 @@ public class Rule {
         }
         return !notEmpty;
     }
-
 }

@@ -23,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Comment;
+import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.URLImageParser;
@@ -72,7 +73,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 comment.content = content.toString();
             }catch(Exception e){
             }finally {
-                holder.tvContent.setText(RuleParser.getClickableHtml(context, comment.content, comment.referer, new URLImageParser(context, holder.tvContent, cookie, comment.referer), null));
+                holder.tvContent.setText(HtmlContentParser.getClickableHtml(context, comment.content, comment.referer, new URLImageParser(context, holder.tvContent, cookie, comment.referer), null));
             }
         }
     }

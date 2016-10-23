@@ -67,13 +67,17 @@ public class SiteTagHolder extends AbstractTagHolder {
 
     @Override
     public boolean tagExist(int sid, Tag item) {
-        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `sid` = " + sid + " AND `title` = ?",
-                new String[]{item.title});
+        Cursor cursor = null;
         try {
+            cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `sid` = " + sid + " AND `title` = ?",
+                    new String[]{item.title});
             if (cursor == null || !cursor.moveToNext())
                 return false;
             else
                 return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
         } finally {
             if (cursor != null)
                 cursor.close();

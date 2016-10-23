@@ -138,7 +138,7 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
                 if(holder.switchListGrid.isChecked() != site.isGrid)
                     new Handler().postDelayed(()->holder.switchListGrid.toggle(), 100);
             } else {
-                holder.container.setBackground(null);
+                holder.container.setBackgroundDrawable(null);
                 holder.switchListGrid.setVisibility(View.GONE);
             }
         }

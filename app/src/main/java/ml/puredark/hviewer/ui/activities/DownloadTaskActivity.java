@@ -37,6 +37,7 @@ import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -268,7 +269,7 @@ public class DownloadTaskActivity extends BaseActivity {
         holder.tvSubmittime.setText(task.collection.datetime);
         String url = task.collection.site.getGalleryUrl(task.collection.idCode, 0, task.collection.pictures);
         if(task.collection.description!=null)
-            holder.tvDescription.setText(RuleParser.getClickableHtml(this, task.collection.description, url, source -> new BitmapDrawable()));
+            holder.tvDescription.setText(HtmlContentParser.getClickableHtml(this, task.collection.description, url, source -> new BitmapDrawable()));
     }
 
     @OnClick(R.id.btn_return)
