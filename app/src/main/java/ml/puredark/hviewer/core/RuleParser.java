@@ -399,6 +399,19 @@ public class RuleParser {
                 if (temp != null) {
                     for (ReadContext item : temp) {
                         prop = item.toString();
+                        if(!TextUtils.isEmpty(selector.selector)){
+                            Elements element = Jsoup.parse(prop).select(selector.selector);
+                            String newProp = "";
+                            if ("attr".equals(selector.fun)) {
+                                prop = element.attr(selector.param);
+                            } else if ("html".equals(selector.fun)) {
+                                prop = element.html();
+                            } else {
+                                prop = element.toString();
+                            }
+                            if(!TextUtils.isEmpty(newProp))
+                                prop = newProp;
+                        }
                         props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
                     }
                 }
