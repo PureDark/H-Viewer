@@ -133,13 +133,13 @@ public class RuleParser {
         String datetime = parseSingleProperty(source, rule.datetime, sourceUrl, false);
 
         String description = parseSingleProperty(source, rule.description, sourceUrl, false);
-        if(source instanceof Element){
-            try{
+        if (source instanceof Element) {
+            try {
                 Element element = Jsoup.parse(description);
                 element.select("iframe").remove();
                 element.select("script").remove();
                 description = element.toString();
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -216,7 +216,8 @@ public class RuleParser {
                 if (source instanceof Element)
                     temp = ((Element) source).select(pictureItem.selector);
                 else if (source instanceof ReadContext)
-                    temp = ((ReadContext) source).read(pictureItem.path, new TypeRef<List<ReadContext>>() {});
+                    temp = ((ReadContext) source).read(pictureItem.path, new TypeRef<List<ReadContext>>() {
+                    });
                 else
                     return collection;
                 for (Object element : temp) {
@@ -268,7 +269,8 @@ public class RuleParser {
             if (source instanceof Element)
                 temp = ((Element) source).select(rule.videoRule.item.selector);
             else if (source instanceof ReadContext)
-                temp = ((ReadContext) source).read(rule.videoRule.item.path, new TypeRef<List<ReadContext>>() {});
+                temp = ((ReadContext) source).read(rule.videoRule.item.path, new TypeRef<List<ReadContext>>() {
+                });
             else
                 return collection;
             for (Object element : temp) {
@@ -288,8 +290,8 @@ public class RuleParser {
                 }
                 vid = (vid != 0) ? vid : (videos.size() > 0) ? videos.get(videos.size() - 1).vid + 1 : videos.size() + 1;
                 String vThumbnail = parseSingleProperty(element, rule.videoRule.thumbnail, sourceUrl, true);
-                if(TextUtils.isEmpty(vThumbnail))
-                    vThumbnail = cover;
+                if (TextUtils.isEmpty(vThumbnail))
+                    vThumbnail = (TextUtils.isEmpty(cover)) ? collection.cover : cover;
                 String vContent = parseSingleProperty(element, rule.videoRule.content, sourceUrl, true);
                 videos.add(new Video(vid, vThumbnail, vContent));
             }

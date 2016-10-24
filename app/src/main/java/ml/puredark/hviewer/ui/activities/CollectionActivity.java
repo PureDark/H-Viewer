@@ -45,6 +45,7 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
@@ -57,9 +58,8 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.CollectionTagAdapter;
 import ml.puredark.hviewer.ui.adapters.CommentAdapter;
-import ml.puredark.hviewer.ui.adapters.PictureAdapter;
+import ml.puredark.hviewer.ui.adapters.PictureVideoAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
-import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
@@ -100,7 +100,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private PullLoadMoreRecyclerView rvIndex;
     private RecyclerView rvComment;
 
-    private PictureAdapter pictureAdapter;
+    private PictureVideoAdapter pictureVideoAdapter;
     private CommentAdapter commentAdapter;
 
     private boolean flagSetNull = false;
@@ -246,12 +246,13 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
         List<Picture> pictures = new ArrayList<>();
-        pictureAdapter = new PictureAdapter(this, new ListDataProvider(pictures));
-        pictureAdapter.setCookie(site.cookie);
-        pictureAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
-        rvIndex.setAdapter(pictureAdapter);
+        List<Video> videos = new ArrayList<>();
+        pictureVideoAdapter = new PictureVideoAdapter(this, new ListDataProvider(pictures), new ListDataProvider(videos));
+        pictureVideoAdapter.setCookie(site.cookie);
+        pictureVideoAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
+        rvIndex.setAdapter(pictureVideoAdapter);
 
-        rvIndex.getRecyclerView().addOnScrollListener(new PictureAdapter.ScrollDetector() {
+        rvIndex.getRecyclerView().addOnScrollListener(new PictureVideoAdapter.ScrollDetector() {
             @Override
             public void onScrollUp() {
                 fabMenu.showMenu(true);
@@ -270,13 +271,17 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 DensityUtil.dp2px(this, 8),
                 DensityUtil.dp2px(this, 16));
 
-        pictureAdapter.setOnItemClickListener((v, position) -> {
-            openPictureViewerActivity(position);
+        pictureVideoAdapter.setOnItemClickListener((v, position) -> {
+            if(position<pictureVideoAdapter.getPictureSize())
+                openPictureViewerActivity(position);
+            else
+                openVideoViewerActivity(position);
         });
 
         //根据item宽度自动设置spanCount
-        GridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, DensityUtil.dp2px(this, 100));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 6);
         rvIndex.getRecyclerView().setLayoutManager(layoutManager);
+        pictureVideoAdapter.setLayoutManager(layoutManager);
         rvIndex.setPullRefreshEnable(true);
         rvIndex.setPushRefreshEnable(false);
 
@@ -312,10 +317,16 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         HViewerApplication.temp2 = site;
         HViewerApplication.temp3 = collection;
         List<Picture> pictures = new ArrayList<>();
-        pictures.addAll(pictureAdapter.getDataProvider().getItems());
+        pictures.addAll(pictureVideoAdapter.getPictureDataProvider().getItems());
         HViewerApplication.temp4 = pictures;
         Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
         intent.putExtra("position", position);
+        startActivity(intent);
+    }
+
+    private void openVideoViewerActivity(int position) {
+        HViewerApplication.temp = pictureVideoAdapter.getVideoDataProvider().getItem(position - pictureVideoAdapter.getPictureSize());
+        Intent intent = new Intent(CollectionActivity.this, VideoViewerActivity.class);
         startActivity(intent);
     }
 
@@ -366,7 +377,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             return;
         }
         Log.d("CollectionActivity", "myCollection.idCode:" + myCollection.idCode);
-        final String url = site.getGalleryUrl(myCollection.idCode, page, pictureAdapter.getDataProvider().getItems());
+        final String url = site.getGalleryUrl(myCollection.idCode, page, pictureVideoAdapter.getPictureDataProvider().getItems());
         Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
         Logger.d("CollectionActivity", "starPage:" + startPage + " page:" + page);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
@@ -460,10 +471,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     @Override
                     public void onSuccess(String contentType, Object result) {
                         myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
-                        pictureAdapter.getDataProvider().clear();
-                        pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                        pictureVideoAdapter.getPictureDataProvider().clear();
+                        pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
                         isIndexComplete = true;
-                        myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                        myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
                     }
 
                     @Override
@@ -476,18 +487,18 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 // 没有flag的话
                 if (page == startPage) {
                     // 当前获取的是第一页，则清空原目录中所有图片，再添加当前获取到的所有图片进入目录中
-                    pictureAdapter.getDataProvider().clear();
-                    pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                    pictureVideoAdapter.getPictureDataProvider().clear();
+                    pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
                     currPage = page;
                     new Handler(Looper.getMainLooper()).post(() -> getCollectionDetail(currPage + pageStep));
-                } else if (!pictureAdapter.getDataProvider().getItems().contains(picture)) {
+                } else if (!pictureVideoAdapter.getPictureDataProvider().getItems().contains(picture)) {
                     // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
-                    int currPid = pictureAdapter.getItemCount() + 1;
+                    int currPid = pictureVideoAdapter.getItemCount() + 1;
                     for (int i = 0; i < myCollection.pictures.size(); i++) {
                         if (myCollection.pictures.get(i).pid < currPid + i)
                             myCollection.pictures.get(i).pid = currPid + i;
                     }
-                    pictureAdapter.getDataProvider().addAll(myCollection.pictures);
+                    pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
                     currPage = page;
                     refreshing = true;
                     new Handler(Looper.getMainLooper()).post(() -> getCollectionDetail(currPage + pageStep));
@@ -495,7 +506,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
                     isIndexComplete = true;
                     refreshing = false;
-                    myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+                    myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
                     if (commentAdapter != null)
                         myCollection.comments = commentAdapter.getDataProvider().getItems();
                 }
@@ -504,9 +515,21 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             // 获取到的图片数量为0，则直接判定已达到末尾
             isIndexComplete = true;
             refreshing = false;
-            myCollection.pictures = pictureAdapter.getDataProvider().getItems();
+            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
             if (commentAdapter != null)
                 myCollection.comments = commentAdapter.getDataProvider().getItems();
+        }
+
+        /************
+         * 视频处理
+         ************/
+
+        if (myCollection.videos != null && myCollection.videos.size() > 0) {
+            // 当前页获取到的第一个似乎品
+            final Video firstVideo = myCollection.videos.get(0);
+            if (!pictureVideoAdapter.getVideoDataProvider().getItems().contains(firstVideo)) {
+                pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
+            }
         }
 
         /************
@@ -524,11 +547,11 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (!refreshing)
                 rvIndex.setPullLoadMoreCompleted();
             refreshDescription(url);
-            if (pictureAdapter != null)
-                pictureAdapter.notifyDataSetChanged();
+            if (pictureVideoAdapter != null)
+                pictureVideoAdapter.notifyDataSetChanged();
             if (pictureViewerActivity != null) {
                 List<Picture> pictures = new ArrayList<>();
-                pictures.addAll(pictureAdapter.getDataProvider().getItems());
+                pictures.addAll(pictureVideoAdapter.getPictureDataProvider().getItems());
                 pictureViewerActivity.notifyDataSetChanged(pictures);
             }
             if (commentAdapter != null)
@@ -543,7 +566,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @OnClick(R.id.fab_browser)
     void fab_browser() {
-        final String url = site.getGalleryUrl(myCollection.idCode, startPage, pictureAdapter.getDataProvider().getItems());
+        final String url = site.getGalleryUrl(myCollection.idCode, startPage, pictureVideoAdapter.getPictureDataProvider().getItems());
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);

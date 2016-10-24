@@ -43,7 +43,7 @@ import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.CollectionTagAdapter;
 import ml.puredark.hviewer.ui.adapters.CommentAdapter;
-import ml.puredark.hviewer.ui.adapters.PictureAdapter;
+import ml.puredark.hviewer.ui.adapters.PictureVideoAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
@@ -83,7 +83,7 @@ public class DownloadTaskActivity extends BaseActivity {
     private PullLoadMoreRecyclerView rvIndex;
     private RecyclerView rvComment;
 
-    private PictureAdapter pictureAdapter;
+    private PictureVideoAdapter pictureVideoAdapter;
     private CommentAdapter commentAdapter;
 
     private CollectionViewHolder holder;
@@ -195,11 +195,11 @@ public class DownloadTaskActivity extends BaseActivity {
 
         //初始化相册目录
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
-        pictureAdapter = new PictureAdapter(this, new ListDataProvider(task.collection.pictures));
-        pictureAdapter.setCookie(task.collection.site.cookie);
-        rvIndex.setAdapter(pictureAdapter);
+        pictureVideoAdapter = new PictureVideoAdapter(this, new ListDataProvider(task.collection.pictures), new ListDataProvider(task.collection.videos));
+        pictureVideoAdapter.setCookie(task.collection.site.cookie);
+        rvIndex.setAdapter(pictureVideoAdapter);
 
-        rvIndex.getRecyclerView().addOnScrollListener(new PictureAdapter.ScrollDetector(){
+        rvIndex.getRecyclerView().addOnScrollListener(new PictureVideoAdapter.ScrollDetector(){
             @Override
             public void onScrollUp() {
                 fabMenu.hideMenu(true);
@@ -218,7 +218,7 @@ public class DownloadTaskActivity extends BaseActivity {
                 DensityUtil.dp2px(this, 8),
                 DensityUtil.dp2px(this, 16));
 
-        pictureAdapter.setOnItemClickListener((v, position) -> {
+        pictureVideoAdapter.setOnItemClickListener((v, position) -> {
             HViewerApplication.temp = DownloadTaskActivity.this;
             HViewerApplication.temp2 = task.collection.site;
             HViewerApplication.temp3 = task.collection;
@@ -279,7 +279,7 @@ public class DownloadTaskActivity extends BaseActivity {
 
     @OnClick(R.id.fab_browser)
     void fab_browser() {
-        final String url = task.collection.site.getGalleryUrl(task.collection.idCode, startPage, pictureAdapter.getDataProvider().getItems());
+        final String url = task.collection.site.getGalleryUrl(task.collection.idCode, startPage, pictureVideoAdapter.getPictureDataProvider().getItems());
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);

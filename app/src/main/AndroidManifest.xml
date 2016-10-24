@@ -19,9 +19,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
-
-        <meta-data android:value="57ea5bcd67e58e5bdf0022af" android:name="UMENG_APPKEY"></meta-data>
-        <meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="57ea5bcd67e58e5bdf0022af" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
 
         <activity
             android:name=".ui.activities.MainActivity"
@@ -81,7 +84,9 @@
         <activity
             android:name=".ui.activities.LoginActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".ui.activities.MarketActivity"></activity>
+        <activity android:name=".ui.activities.MarketActivity" />
+        <activity android:name=".ui.activities.VideoViewerActivity"
+            android:hardwareAccelerated="true"></activity>
     </application>
 
 </manifest>

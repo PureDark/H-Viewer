@@ -23,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Comment;
+import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.Logger;
@@ -32,11 +33,11 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
     private Context context;
-    private ListDataProvider mProvider;
+    private ListDataProvider<Comment> mProvider;
     private OnItemClickListener mItemClickListener;
     private String cookie;
 
-    public CommentAdapter(Context context, ListDataProvider mProvider) {
+    public CommentAdapter(Context context, ListDataProvider<Comment> mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
         this.context = context;
@@ -52,7 +53,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
-        Comment comment = (Comment) mProvider.getItem(position);
+        Comment comment = mProvider.getItem(position);
         Logger.d("CommentAdapter", "comment.avatar:" + comment.avatar);
         if (!TextUtils.isEmpty(comment.avatar))
             ImageLoader.loadImageFromUrl(context, holder.ivAvatar, comment.avatar, cookie, comment.referer);

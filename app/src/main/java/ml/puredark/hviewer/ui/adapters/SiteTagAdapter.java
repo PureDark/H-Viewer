@@ -28,10 +28,10 @@ import static ml.puredark.hviewer.R.id.container;
 
 public class SiteTagAdapter {
     private AutoLabelUI labelView;
-    private ListDataProvider mProvider;
+    private ListDataProvider<Tag> mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public SiteTagAdapter(ListDataProvider provider) {
+    public SiteTagAdapter(ListDataProvider<Tag> provider) {
         this.mProvider = provider;
     }
 

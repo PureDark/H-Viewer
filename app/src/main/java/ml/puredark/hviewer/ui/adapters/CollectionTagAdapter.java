@@ -13,9 +13,9 @@ import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class CollectionTagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ListDataProvider mProvider;
+    private ListDataProvider<Tag> mProvider;
 
-    public CollectionTagAdapter(ListDataProvider mProvider) {
+    public CollectionTagAdapter(ListDataProvider<Tag> mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -32,7 +32,7 @@ public class CollectionTagAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        Tag tag = (Tag) mProvider.getItem(position);
+        Tag tag = mProvider.getItem(position);
         TagViewHolder holder = (TagViewHolder) viewHolder;
         holder.tvTag.setText(tag.title);
     }

@@ -21,9 +21,9 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static int VIEW_TYPE_ADD_CATEGORY = 1;
     private final static int VIEW_TYPE_CATEGORY_INPUT = 2;
-    private ListDataProvider mProvider;
+    private ListDataProvider<Category> mProvider;
 
-    public CategoryInputAdapter(ListDataProvider mProvider) {
+    public CategoryInputAdapter(ListDataProvider<Category> mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -55,7 +55,7 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         }else if(viewHolder instanceof CategoryInputViewHolder){
             CategoryInputViewHolder holder = (CategoryInputViewHolder) viewHolder;
-            Category category = (Category) mProvider.getItem(position);
+            Category category = mProvider.getItem(position);
             if(category==null){
                 category = new Category(0, "", "");
             }
@@ -115,7 +115,7 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
                 public void afterTextChanged(Editable editable) {
                     int position = getAdapterPosition();
                     if(position<mProvider.getCount()){
-                        Category category = (Category) mProvider.getItem(position);
+                        Category category = mProvider.getItem(position);
                         category.title = editable.toString();
                     }
                 }
@@ -133,7 +133,7 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
                 public void afterTextChanged(Editable editable) {
                     int position = getAdapterPosition();
                     if(position<mProvider.getCount()){
-                        Category category = (Category) mProvider.getItem(position);
+                        Category category = mProvider.getItem(position);
                         category.url = editable.toString();
                     }
                 }
@@ -152,12 +152,9 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
         public BtnAddViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mProvider.addItem(new Category(0, "", ""));
-                    notifyDataSetChanged();
-                }
+            container.setOnClickListener(view1 -> {
+                mProvider.addItem(new Category(0, "", ""));
+                notifyDataSetChanged();
             });
         }
     }

@@ -52,10 +52,10 @@ import static ml.puredark.hviewer.R.id.container;
 public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdapter.PictureViewerViewHolder> {
     private BaseActivity activity;
     private Site site;
-    private ListDataProvider mProvider;
+    private ListDataProvider<Picture> mProvider;
     private OnItemLongClickListener mOnItemLongClickListener;
 
-    public PictureViewerAdapter(BaseActivity activity, Site site, ListDataProvider provider) {
+    public PictureViewerAdapter(BaseActivity activity, Site site, ListDataProvider<Picture> provider) {
         setHasStableIds(true);
         this.activity = activity;
         this.site = site;
@@ -73,7 +73,7 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
 
     @Override
     public void onBindViewHolder(PictureViewerViewHolder viewHolder, int position) {
-        Picture picture = (Picture) mProvider.getItem(position);
+        Picture picture = mProvider.getItem(position);
         if (picture.pic != null) {
             loadImage(activity, picture, viewHolder);
         } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {

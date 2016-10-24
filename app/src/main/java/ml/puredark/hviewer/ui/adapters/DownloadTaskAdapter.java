@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
@@ -31,10 +32,10 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
     private final static int VIEW_TYPE_DOWNLOADING = 1;
     private final static int VIEW_TYPE_DOWNLOADED = 2;
     private Context context;
-    private ListDataProvider mProvider;
+    private ListDataProvider<DownloadTask> mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public DownloadTaskAdapter(Context context, ListDataProvider mProvider) {
+    public DownloadTaskAdapter(Context context, ListDataProvider<DownloadTask> mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
         this.context = context;
@@ -56,7 +57,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
 
     @Override
     public void onBindViewHolder(DownloadTaskViewHolder viewHolder, int position) {
-        DownloadTask task = (DownloadTask) mProvider.getItem(position);
+        DownloadTask task = mProvider.getItem(position);
         checkSiteFlags(viewHolder, task.collection.site);
         if (viewHolder instanceof DownloadingTaskViewHolder) {
             DownloadingTaskViewHolder holder = (DownloadingTaskViewHolder) viewHolder;
@@ -134,7 +135,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
 
     @Override
     public int getItemViewType(int position) {
-        DownloadTask task = (DownloadTask) mProvider.getItem(position);
+        DownloadTask task = mProvider.getItem(position);
         return (task.status == DownloadTask.STATUS_COMPLETED) ? VIEW_TYPE_DOWNLOADED : VIEW_TYPE_DOWNLOADING;
     }
 

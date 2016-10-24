@@ -21,11 +21,11 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 
 public class MarketSiteAdapter extends RecyclerView.Adapter<MarketSiteAdapter.MarketSiteViewHolder> {
     private Context context;
-    private ListDataProvider mProvider;
+    private ListDataProvider<MarketSiteCategory.MarketSite> mProvider;
     private ItemListener mItemListener;
     private String categoryTitle;
 
-    public MarketSiteAdapter(Context context, ListDataProvider mProvider, String categoryTitle) {
+    public MarketSiteAdapter(Context context, ListDataProvider<MarketSiteCategory.MarketSite> mProvider, String categoryTitle) {
         this.mProvider = mProvider;
         setHasStableIds(false);
         this.context = context;
@@ -42,7 +42,7 @@ public class MarketSiteAdapter extends RecyclerView.Adapter<MarketSiteAdapter.Ma
 
     @Override
     public void onBindViewHolder(final MarketSiteViewHolder holder, int position) {
-        MarketSiteCategory.MarketSite marketSite = (MarketSiteCategory.MarketSite) mProvider.getItem(position);
+        MarketSiteCategory.MarketSite marketSite = mProvider.getItem(position);
         if (!TextUtils.isEmpty(marketSite.icon))
             ImageLoader.loadImageFromUrl(context, holder.ivFavicon, marketSite.icon, null, RegexValidateUtil.getHostFromUrl(marketSite.icon));
         holder.tvTitle.setText(marketSite.title);
@@ -106,13 +106,10 @@ public class MarketSiteAdapter extends RecyclerView.Adapter<MarketSiteAdapter.Ma
         public MarketSiteViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemListener != null && getAdapterPosition() >= 0) {
-                        MarketSiteCategory.MarketSite marketSite = (MarketSiteCategory.MarketSite) mProvider.getItem(getAdapterPosition());
-                        mItemListener.onItemBtnAddClick(v, getAdapterPosition(), marketSite, categoryTitle);
-                    }
+            btnAdd.setOnClickListener(v -> {
+                if (mItemListener != null && getAdapterPosition() >= 0) {
+                    MarketSiteCategory.MarketSite marketSite = mProvider.getItem(getAdapterPosition());
+                    mItemListener.onItemBtnAddClick(v, getAdapterPosition(), marketSite, categoryTitle);
                 }
             });
         }

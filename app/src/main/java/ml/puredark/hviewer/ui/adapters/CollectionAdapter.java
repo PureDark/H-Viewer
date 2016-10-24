@@ -30,6 +30,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
@@ -47,7 +48,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public final static int TYPE_GRID = 2;
     public final static int TYPE_WATERFALL = 3;
     private Context context;
-    private ListDataProvider mProvider;
+    private ListDataProvider<Collection> mProvider;
     private OnItemClickListener mItemClickListener;
     private Site site;
     private boolean isGrid = false;
@@ -56,7 +57,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private SiteTagHolder siteTagHolder;
     private Map<Collection, Integer> storedHeights = new HashMap<>();
 
-    public CollectionAdapter(Context context, ListDataProvider mProvider, SiteTagHolder siteTagHolder) {
+    public CollectionAdapter(Context context, ListDataProvider<Collection> mProvider, SiteTagHolder siteTagHolder) {
         this.mProvider = mProvider;
         setHasStableIds(false);
         this.context = context;
@@ -85,7 +86,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        Collection collection = (Collection) mProvider.getItem(position);
+        Collection collection = mProvider.getItem(position);
         Logger.d("CollectionAdapter", "collection.cover:" + collection.cover);
         if (viewHolder instanceof CollectionViewHolder) {
             CollectionViewHolder holder = (CollectionViewHolder) viewHolder;

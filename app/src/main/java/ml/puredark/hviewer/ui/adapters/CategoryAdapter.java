@@ -16,10 +16,10 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int selectedCid = 0;
-    private ListDataProvider mProvider;
+    private ListDataProvider<Category> mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public CategoryAdapter(ListDataProvider mProvider) {
+    public CategoryAdapter(ListDataProvider<Category> mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
     }
@@ -36,7 +36,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         CategoryViewHolder holder = (CategoryViewHolder) viewHolder;
-        Category category = (Category) mProvider.getItem(position);
+        Category category = mProvider.getItem(position);
         holder.tvTitle.setText(category.title);
         if (selectedCid == category.cid) {
             holder.tvTitle.setTextColor(holder.tvTitle.getResources().getColor(R.color.white));
@@ -87,12 +87,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public CategoryViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mItemClickListener != null && getAdapterPosition() >= 0)
-                        mItemClickListener.onItemClick(v, getAdapterPosition());
-                }
+            container.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
             });
         }
     }

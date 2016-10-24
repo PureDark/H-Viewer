@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.facebook.datasource.DataSource;
@@ -22,7 +21,7 @@ import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.ui.adapters.PictureAdapter.PictureViewHolder;
+import ml.puredark.hviewer.ui.adapters.PictureVideoAdapter.PictureViewHolder;
 
 /**
  * Created by PureDark on 2016/9/5.
