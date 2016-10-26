@@ -16,7 +16,7 @@
         app:mrl_rippleDimension="10dp"
         app:mrl_rippleDuration="250"
         app:mrl_rippleFadeDuration="75"
-        app:mrl_rippleHover="true"
+        app:mrl_rippleHover="false"
         app:mrl_rippleDelayClick="true"
         app:mrl_ripplePersistent="true">
     </com.balysv.materialripple.MaterialRippleLayout>

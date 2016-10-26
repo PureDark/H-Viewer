@@ -243,7 +243,7 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
                 new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("PictureViewerAdapter", "WebView");
             } else
-                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                HViewerHttpClient.get(picture.url, site.getCookies(), site.hasFlag(Site.FLAG_POST_PICTURE), new HViewerHttpClient.OnResponseListener() {
 
                     @Override
                     public void onSuccess(String contentType, Object result) {
@@ -295,8 +295,8 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
         if (picture == null || viewHolder == null)
             return;
         pictureInQueue.remove(pid);
-        Selector selector = (extra) ? site.extraRule.pictureUrl : site.picUrlSelector;
-        Selector highResSelector = (extra) ? site.extraRule.pictureHighRes : null;
+        Selector selector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.url : site.extraRule.pictureUrl : site.picUrlSelector;
+        Selector highResSelector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.highRes : site.extraRule.pictureHighRes : null;
         picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
         picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
         Logger.d("PictureViewerAdapter", "getPictureUrl: picture.pic: " + picture.pic);

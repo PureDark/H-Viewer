@@ -3,7 +3,6 @@ package ml.puredark.hviewer.http;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,14 +30,14 @@ import okhttp3.Response;
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static OkHttpClient mClient = new OkHttpClient.Builder()
-                                                .connectTimeout(30, TimeUnit.SECONDS)
-                                                .readTimeout(60, TimeUnit.SECONDS)
-                                                .dns(new HttpDns())
-                                                .build();
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .dns(new HttpDns())
+            .build();
 
-    public static Object get(String url, List<Cookie> cookies){
+    public static Object get(String url, List<Cookie> cookies) {
         if (url == null || !url.startsWith("http")) {
-            Logger.d("HViewerHttpClient", "url = "+url);
+            Logger.d("HViewerHttpClient", "url = " + url);
             return null;
         }
         if (HViewerApplication.isNetworkAvailable()) {
@@ -74,8 +73,21 @@ public class HViewerHttpClient {
     }
 
     public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
+        get(url, cookies, false, null, callback);
+    }
+
+    public static void get(String url, List<Cookie> cookies, boolean post, final OnResponseListener callback) {
+        if (!post)
+            get(url, cookies, false, null, callback);
+        else {
+            String params = (url == null) ? "" : url.substring(url.indexOf('?'));
+            post(url, params, cookies, callback);
+        }
+    }
+
+    public static void get(String url, List<Cookie> cookies, boolean post, RequestBody body, final OnResponseListener callback) {
         if (url == null || !url.startsWith("http")) {
-            Logger.d("HViewerHttpClient", "url = "+url);
+            Logger.d("HViewerHttpClient", "url = " + url);
             callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
             return;
         }
@@ -88,9 +100,10 @@ public class HViewerHttpClient {
                 }
                 builder.addHeader("cookie", cookieString);
             }
-            Request request = builder
-                    .url(url)
-                    .build();
+            if (post)
+                builder.post(body);
+            builder.url(url);
+            Request request = builder.build();
             mClient.newCall(request).enqueue(new HCallback() {
                 @Override
                 void onFailure(IOException e) {
@@ -116,41 +129,7 @@ public class HViewerHttpClient {
             formBody.add(pram[0], pram[1]);
         }
         RequestBody requestBody = formBody.build();
-        post(url, requestBody, cookies, callback);
-    }
-
-    public static void post(String url, RequestBody body, List<Cookie> cookies, final OnResponseListener callback) {
-        if (url == null || !url.startsWith("http")) {
-            callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
-            return;
-        }
-        if (HViewerApplication.isNetworkAvailable()) {
-            HRequestBuilder builder = new HRequestBuilder();
-            if (cookies != null) {
-                String cookieString = "";
-                for (Cookie cookie : cookies) {
-                    cookieString += cookie.name() + "=" + cookie.value() + "; ";
-                }
-                builder.addHeader("cookie", cookieString);
-            }
-            Request request = builder
-                    .url(url)
-                    .post(body)
-                    .build();
-            mClient.newCall(request).enqueue(new HCallback() {
-                @Override
-                void onFailure(IOException e) {
-                    callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
-                }
-
-                @Override
-                void onResponse(String contentType, Object body) {
-                    callback.onSuccess(contentType, body);
-                }
-            });
-        } else {
-            callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
-        }
+        get(url, cookies, true, requestBody, callback);
     }
 
     public interface OnResponseListener {
@@ -215,9 +194,9 @@ public class HViewerHttpClient {
     // Pre-define error code
     public static class HttpError {
         // Error code constants
-        public static final int ERROR_UNKNOWN   = 1000;  //未知错误
-        public static final int ERROR_JSON      = 1001;  //JSON解析错误
-        public static final int ERROR_NETWORK   = 1009;  //网络错误
+        public static final int ERROR_UNKNOWN = 1000;  //未知错误
+        public static final int ERROR_JSON = 1001;  //JSON解析错误
+        public static final int ERROR_NETWORK = 1009;  //网络错误
         public static final int ERROR_WRONG_URL = 1011;  //URL格式错误
 
         private int errorCode;

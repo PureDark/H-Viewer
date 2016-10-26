@@ -86,7 +86,9 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ui.activities.MarketActivity" />
         <activity android:name=".ui.activities.VideoViewerActivity"
-            android:hardwareAccelerated="true"></activity>
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="user" ></activity>
     </application>
 
 </manifest>

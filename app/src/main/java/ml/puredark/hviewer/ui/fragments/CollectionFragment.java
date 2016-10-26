@@ -195,7 +195,7 @@ public class CollectionFragment extends MyFragment {
     private void getCollections(String keyword, final int page) {
         if (onePage && page > startPage && !site.hasFlag(Site.FLAG_JS_SCROLL)) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
-            getActivity().runOnUiThread(() -> rvCollection.setPullLoadMoreCompleted());
+            new Handler().postDelayed(()->rvCollection.setPullLoadMoreCompleted(), 250);
             return;
         }
         this.keyword = keyword;
@@ -236,7 +236,7 @@ public class CollectionFragment extends MyFragment {
             }
             Logger.d("CollectionFragment", "WebView");
         } else
-            HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+            HViewerHttpClient.get(url, site.getCookies(), site.hasFlag(Site.FLAG_POST_INDEX), new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, final Object result) {
                     if (!(result instanceof String))

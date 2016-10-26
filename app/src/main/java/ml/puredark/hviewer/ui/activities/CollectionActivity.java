@@ -18,6 +18,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -117,6 +118,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private boolean isIndexComplete = false;
     private boolean refreshing = true;
 
+    private WebView mWebView;
+
     private DownloadManager manager;
 
     private HistoryHolder historyHolder;
@@ -171,6 +174,23 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         initTabAndViewPager();
         refreshDescription(site.galleryUrl);
         rvIndex.setRefreshing(true);
+
+        if (site != null && (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_GALLERY))){
+            mWebView = new WebView(this);
+            WebSettings mWebSettings = mWebView.getSettings();
+            mWebSettings.setJavaScriptEnabled(true);
+            mWebSettings.setBlockNetworkImage(true);
+            mWebSettings.setDomStorageEnabled(true);
+            mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
+            mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+            mWebSettings.setAllowUniversalAccessFromFileURLs(true);
+            mWebView.addJavascriptInterface(this, "HtmlParser");
+            coordinatorLayout.addView(mWebView);
+            mWebView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            mWebView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+            mWebView.requestLayout();
+            mWebView.setVisibility(View.INVISIBLE);
+        }
         getCollectionDetail(startPage);
 
         historyHolder = new HistoryHolder(this);
@@ -182,6 +202,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         if (onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY)) {
             openPictureViewerActivity(0);
         }
+
+
     }
 
     private void parseUrl(String url) {
@@ -382,17 +404,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         Logger.d("CollectionActivity", "starPage:" + startPage + " page:" + page);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
         if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_GALLERY)) {
-            WebView webView = new WebView(this);
-            WebSettings mWebSettings = webView.getSettings();
-            mWebSettings.setJavaScriptEnabled(true);
-            mWebSettings.setBlockNetworkImage(true);
-            mWebSettings.setDomStorageEnabled(true);
-            mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
-            mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
-            mWebSettings.setAllowUniversalAccessFromFileURLs(true);
-            webView.addJavascriptInterface(this, "HtmlParser");
-
-            webView.setWebViewClient(new WebViewClient() {
+            mWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //Load HTML
@@ -405,18 +417,18 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                                 "if(iframe.src.startsWith(host))" +
                                 "iframe.outerHTML = iframe.contentWindow.document.body.innerHTML;" +
                                 "} ";
-                        webView.loadUrl(js);
+                        mWebView.loadUrl(js);
                         Logger.d("CollectionActivity", "FLAG_IFRAME_GALLERY");
                     }
-                    webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
                     Logger.d("CollectionActivity", "onPageFinished");
                 }
             });
-            webView.loadUrl(url);
-            new Handler().postDelayed(() -> webView.stopLoading(), 30000);
+            mWebView.loadUrl(url);
+            new Handler().postDelayed(() -> mWebView.stopLoading(), 30000);
             Logger.d("CollectionActivity", "WebView");
         } else
-            HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+            HViewerHttpClient.get(url, site.getCookies(), site.hasFlag(Site.FLAG_POST_GALLERY), new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, final Object result) {
                     if (result == null) {
@@ -449,6 +461,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         if (myCollection.videos != null && myCollection.videos.size() > 0) {
             Log.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
             Log.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
+        }else{
+            Log.d("CollectionActivity", "myCollection.videos.size(): 0");
         }
 
         if (myCollection.tags != null) {

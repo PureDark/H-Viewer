@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,6 +75,8 @@ public class PictureVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             public int getSpanSize(int position) {
                 if (position < getPictureSize())
                     return 2;
+                else if (position == getPictureSize() && getPictureSize() % 3 == 1)
+                    return 4;
                 else
                     return 3;
             }

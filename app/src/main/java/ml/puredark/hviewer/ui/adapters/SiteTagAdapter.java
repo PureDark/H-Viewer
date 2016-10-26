@@ -67,7 +67,7 @@ public class SiteTagAdapter {
     }
 
     public void notifyItemChanged(int position){
-        Tag tag = (Tag) mProvider.getItem(position);
+        Tag tag = mProvider.getItem(position);
         Label label = labelView.getLabel(position);
         label.setText(tag.title);
         MaterialRippleLayout rippleLayout = (MaterialRippleLayout) label.findViewById(R.id.ripple_layout);

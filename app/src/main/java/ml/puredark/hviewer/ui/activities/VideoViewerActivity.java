@@ -1,25 +1,26 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Video;
-import ml.puredark.hviewer.helpers.Logger;
+import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
 public class VideoViewerActivity extends BaseActivity {
 
@@ -27,6 +28,8 @@ public class VideoViewerActivity extends BaseActivity {
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.web_view)
     WebView webView;
+    @BindView(R.id.progress_bar)
+    ProgressBarCircularIndeterminate progressBar;
 
     private Video video;
 
@@ -36,6 +39,10 @@ public class VideoViewerActivity extends BaseActivity {
         setContentView(R.layout.activity_video_viewer);
         ButterKnife.bind(this);
         setContainer(coordinatorLayout);
+        MDStatusBarCompat.setImageTransparent(this);
+
+        // 开启按两次返回退出
+        setDoubleBackExitEnabled(true);
 
         //获取传递过来的Video实例
         if (HViewerApplication.temp instanceof Video)
@@ -59,7 +66,28 @@ public class VideoViewerActivity extends BaseActivity {
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
-        webView.setWebChromeClient(new WebChromeClient(){
+        webView.setBackgroundColor(0); // 设置背景色
+        webView.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                webView.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                progressBar.setVisibility(View.VISIBLE);
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                progressBar.setVisibility(View.GONE);
+                super.onPageFinished(view, url);
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient() {
             private View myView = null;
             private CustomViewCallback myCallback = null;
 
@@ -67,48 +95,59 @@ public class VideoViewerActivity extends BaseActivity {
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 if (myCallback != null) {
                     myCallback.onCustomViewHidden();
-                    myCallback = null ;
+                    myCallback = null;
                     return;
                 }
-
-                long id = Thread.currentThread().getId();
-                Logger.d("WidgetChromeClient", "rong debug in showCustomView Ex: " + id);
-
                 ViewGroup parent = (ViewGroup) webView.getParent();
-                String s = parent.getClass().getName();
-                Logger.d("WidgetChromeClient", "rong debug Ex: " + s);
-                parent.removeView( webView);
+                parent.removeView(webView);
                 parent.addView(view);
                 myView = view;
+                view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
                 myCallback = callback;
+                showStatus(false);
+                //设置横屏
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
 
             public void onHideCustomView() {
-
-                long id = Thread.currentThread().getId();
-                Logger.d("WidgetChromeClient", "rong debug in hideCustom Ex: " + id);
-
-
                 if (myView != null) {
-
                     if (myCallback != null) {
                         myCallback.onCustomViewHidden();
-                        myCallback = null ;
+                        myCallback = null;
                     }
-
                     ViewGroup parent = (ViewGroup) myView.getParent();
                     parent.removeView(myView);
                     parent.addView(webView);
                     myView = null;
                 }
+                showStatus(true);
+                // 设置竖屏
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         });
-        webView.loadUrl(video.content);
+        if (video.content.startsWith("http"))
+            webView.loadUrl(video.content);
+        else
+            webView.loadData(video.content, "text/html", "utf-8");
     }
 
     @Override
-    public void onDestroy(){
+    public void onResume() {
+        webView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        webView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
         webView.loadUrl("");
+        webView.destroy();
         super.onDestroy();
     }
 

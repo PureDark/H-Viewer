@@ -33,6 +33,10 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_JS_NEEDED_PICTURE = "jsNeededPicture";
     public final static String FLAG_JS_SCROLL = "jsScroll";
     public final static String FLAG_IFRAME_GALLERY = "iframeGallery";
+    public final static String FLAG_POST_ALL = "postAll";
+    public final static String FLAG_POST_INDEX = "postIndex";
+    public final static String FLAG_POST_GALLERY = "postGallery";
+    public final static String FLAG_POST_PICTURE = "postPicture";
 
     public int sid, gid;
     public String title = "";

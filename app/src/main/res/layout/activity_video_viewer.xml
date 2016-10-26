@@ -5,13 +5,21 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black_70"
     tools:context=".ui.activities.CollectionActivity">
 
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black_90">
+        android:background="@color/transparent">
     </WebView>
+
+    <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
+        android:id="@+id/progress_bar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:background="@color/white_80"/>
 
 </android.support.design.widget.CoordinatorLayout>

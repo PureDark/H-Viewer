@@ -141,9 +141,6 @@ public class MainActivity extends BaseActivity {
     private SiteTagHolder siteTagHolder;
     private FavorTagHolder favorTagHolder;
 
-    //按下返回键次数
-    private int backCount = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,6 +158,9 @@ public class MainActivity extends BaseActivity {
 
         // 关闭边缘滑动返回
         setSwipeBackEnable(false);
+
+        // 开启按两次返回退出
+        setDoubleBackExitEnabled(true);
 
 
         siteHolder = new SiteHolder(this);
@@ -229,7 +229,7 @@ public class MainActivity extends BaseActivity {
         if(siteGroups.size()==0)
             siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
 //        siteGroups.get(0).second.addAll(sites);
-//        siteGroups.get(0).second.add(0, sites.get(sites.size()-2));
+        siteGroups.get(0).second.add(0, sites.get(sites.size()-2));
         siteGroups.get(0).second.add(0, sites.get(sites.size()-1));
         SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
 
@@ -958,14 +958,8 @@ public class MainActivity extends BaseActivity {
             drawer.closeDrawer(GravityCompat.START);
         } else if (searchView.isSearchOpen()) {
             searchView.closeSearch();
-        } else {
-            backCount++;
-            if (backCount == 1)
-                showSnackBar("再按一次退出应用！");
-            else if (backCount >= 2)
-                super.onBackPressed();
-            new Handler().postDelayed(() -> backCount = 0, 1000);
-        }
+        } else
+            super.onBackPressed();
     }
 
     @Override

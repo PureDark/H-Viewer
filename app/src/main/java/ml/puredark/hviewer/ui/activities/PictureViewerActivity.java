@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -106,7 +107,6 @@ public class PictureViewerActivity extends BaseActivity {
 
     private MyOnItemLongClickListener onItemLongClickListener;
 
-    private boolean statusEnabled = true;
     InfoDialogViewHolder viewHolder;
 
     private int currPos = 0;
@@ -181,8 +181,16 @@ public class PictureViewerActivity extends BaseActivity {
 
                 @Override
                 public void center() {
-                    showStatus(!statusEnabled);
-                    statusEnabled = !statusEnabled;
+                    toogleStatus();
+                    if(isStatusBarEnabled()){
+                        Animation animation = AnimationUtils.loadAnimation(PictureViewerActivity.this, R.anim.bottom_bar_show_from_bottom);
+                        animation.setFillAfter(true);
+                        bottomBar.startAnimation(animation);
+                    }else{
+                        Animation animation = AnimationUtils.loadAnimation(PictureViewerActivity.this, R.anim.bottom_bar_hide_to_bottom);
+                        animation.setFillAfter(true);
+                        bottomBar.startAnimation(animation);
+                    }
                 }
             });
 
@@ -333,27 +341,6 @@ public class PictureViewerActivity extends BaseActivity {
             pictureViewerAdapter.getDataProvider().setDataSet(pictures);
             pictureViewerAdapter.notifyDataSetChanged();
             tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
-        }
-    }
-
-    //控制显示/隐藏系统状态栏和底部计数栏
-    private void showStatus(boolean enabled) {
-        if (enabled) {
-            WindowManager.LayoutParams attr = getWindow().getAttributes();
-            attr.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getWindow().setAttributes(attr);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            Animation animation = AnimationUtils.loadAnimation(this, R.anim.bottom_bar_show_from_bottom);
-            animation.setFillAfter(true);
-            bottomBar.startAnimation(animation);
-        } else {
-            WindowManager.LayoutParams attr = getWindow().getAttributes();
-            attr.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            getWindow().setAttributes(attr);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            Animation animation = AnimationUtils.loadAnimation(this, R.anim.bottom_bar_hide_to_bottom);
-            animation.setFillAfter(true);
-            bottomBar.startAnimation(animation);
         }
     }
 

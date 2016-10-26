@@ -114,7 +114,7 @@ public class PicturePagerAdapter extends PagerAdapter {
         areaClickHelper.setAreaClickListener(onAreaClickListener);
     }
 
-    public void onConfigurationChanged(){
+    public void onConfigurationChanged() {
         areaClickHelper = new AreaClickHelper(activity);
     }
 
@@ -179,9 +179,9 @@ public class PicturePagerAdapter extends PagerAdapter {
             if (picture.pic != null) {
                 loadImage(container.getContext(), picture, viewHolder);
             } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
-                if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
+                if (site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
                     getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
-                else if(site.extraRule.pictureUrl != null)
+                else if (site.extraRule.pictureUrl != null)
                     getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
             } else if (site.picUrlSelector != null) {
                 getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
@@ -193,9 +193,9 @@ public class PicturePagerAdapter extends PagerAdapter {
                 if (picture.pic != null) {
                     loadImage(container.getContext(), picture, viewHolder);
                 } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
-                    if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
+                    if (site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
                         getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
-                    else if(site.extraRule.pictureUrl != null)
+                    else if (site.extraRule.pictureUrl != null)
                         getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
                 } else if (site.picUrlSelector == null) {
                     picture.pic = picture.url;
@@ -298,7 +298,7 @@ public class PicturePagerAdapter extends PagerAdapter {
                 new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("PicturePagerAdapter", "WebView");
             } else
-                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                HViewerHttpClient.get(picture.url, site.getCookies(), site.hasFlag(Site.FLAG_POST_PICTURE), new HViewerHttpClient.OnResponseListener() {
 
                     @Override
                     public void onSuccess(String contentType, Object result) {
@@ -346,14 +346,13 @@ public class PicturePagerAdapter extends PagerAdapter {
         Pair<Picture, PictureViewHolder> pair = pictureInQueue.get(pid);
         if (pair == null)
             return;
-        Log.d("PicturePagerAdapter", html);
         Picture picture = pair.first;
         PictureViewHolder viewHolder = pair.second;
         if (picture == null || viewHolder == null)
             return;
         pictureInQueue.remove(pid);
-        Selector selector = (extra) ? site.extraRule.pictureUrl : site.picUrlSelector;
-        Selector highResSelector = (extra) ? site.extraRule.pictureHighRes : null;
+        Selector selector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.url : site.extraRule.pictureUrl : site.picUrlSelector;
+        Selector highResSelector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.highRes : site.extraRule.pictureHighRes : null;
         picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
         picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
         Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);

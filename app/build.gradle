@@ -90,6 +90,7 @@ dependencies {
     compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
 
+
     //Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9') {
         exclude group: 'com.android.support'

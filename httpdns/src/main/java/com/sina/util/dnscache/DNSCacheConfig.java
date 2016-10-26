@@ -282,7 +282,7 @@ public class DNSCacheConfig {
         /**
          * 是否启用dnspod服务器 默认不启用 | 1启用 0不启用
          */
-        public String IS_DNSPOD_SERVER = null;
+        public String IS_DNSPOD_SERVER = "1";
         /**
          * DNSPOD HTTP_DNS 服务器API地址 | 默认（http://119.29.29.29/d?ttl=1&dn=）
          */

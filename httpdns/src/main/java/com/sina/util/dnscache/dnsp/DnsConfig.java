@@ -21,7 +21,7 @@ public class DnsConfig {
 	/**
 	 * 是否使用 自己的httpdns 服务器
 	 */
-	public static boolean enableSinaHttpDns = true ; 
+	public static boolean enableSinaHttpDns = false ;
 	
 	/**
 	 * DNSPOD http dns 开端
@@ -31,7 +31,7 @@ public class DnsConfig {
 	/**
 	 * DNSPOD http dns 开端
 	 */
-	public static boolean enableUdpDns = true ; 
+	public static boolean enableUdpDns = true ;
 	
     /**
      * httpdns 服务器地址
@@ -41,12 +41,12 @@ public class DnsConfig {
     /**
      * DNSPOD 服务器地址
      */
-    public static String DNSPOD_SERVER_API = "" ;
+    public static String DNSPOD_SERVER_API = "http://119.29.29.29/d?dn=" ;
     
     /**
      * dns 服务器地址
      */
-    public static String UDPDNS_SERVER_API = "" ;
+    public static String UDPDNS_SERVER_API = "119.29.29.29" ;
     
     
 }

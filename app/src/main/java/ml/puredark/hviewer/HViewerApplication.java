@@ -15,8 +15,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.GsonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.sina.util.dnscache.DNSCache;
 import com.umeng.analytics.MobclickAgent;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 import ml.puredark.hviewer.configs.ImagePipelineConfigBuilder;
 import ml.puredark.hviewer.configs.UrlConfig;
@@ -133,6 +142,29 @@ public class HViewerApplication extends SwipeBackApplication {
         CrashHandler crashHandler = CrashHandler.getInstance();
         //注册crashHandler
         crashHandler.init(getApplicationContext());
+
+        // 设置Json默认配置
+        Configuration.setDefaults(new Configuration.Defaults() {
+            private final JsonProvider jsonProvider = new GsonJsonProvider();
+            private final MappingProvider mappingProvider = new GsonMappingProvider();
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                Set<Option> options = EnumSet.noneOf(Option.class);
+                options.add(Option.DEFAULT_PATH_LEAF_TO_NULL);
+                return options;
+            }
+        });
     }
 
 

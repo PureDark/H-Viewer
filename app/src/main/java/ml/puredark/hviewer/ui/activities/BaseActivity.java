@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.github.clans.fab.FloatingActionMenu;
@@ -47,6 +49,11 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     private DownloadReceiver receiver;
 
     protected boolean isCategoryEnable = false;
+    protected boolean isStatusBarEnabled = true;
+
+    protected boolean isDoubleBackExitEnabled = false;
+    //按下返回键次数
+    private int backCount = 0;
 
     //是否动画中
     private boolean animating = false;
@@ -117,6 +124,10 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         }
     }
 
+    public void setDoubleBackExitEnabled(boolean doubleBackExitEnabled) {
+        isDoubleBackExitEnabled = doubleBackExitEnabled;
+    }
+
     public void showSnackBar(String content) {
         if (container == null) return;
         Snackbar snackbar = Snackbar.make(
@@ -127,35 +138,69 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         snackbar.show();
     }
 
+    protected boolean isStatusBarEnabled() {
+        return isStatusBarEnabled;
+    }
+
+    protected void toogleStatus() {
+        showStatus(!isStatusBarEnabled);
+    }
+
+    //控制显示/隐藏系统状态栏和底部计数栏
+    protected void showStatus(boolean enabled) {
+        isStatusBarEnabled = enabled;
+        if (enabled) {
+            WindowManager.LayoutParams attr = getWindow().getAttributes();
+            attr.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(attr);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            WindowManager.LayoutParams attr = getWindow().getAttributes();
+            attr.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(attr);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (animating)
             return;
-        else if (btnReturnIcon != null)
-            AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    animating = true;
-                }
+        if(isDoubleBackExitEnabled){
+            backCount++;
+            if (backCount == 1)
+                showSnackBar("再按一次退出");
+            else if (backCount >= 2) {
+                if (btnReturnIcon != null)
+                    AnimationOnActivity.reverse(btnReturnIcon, new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            animating = true;
+                        }
 
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animating = false;
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            animating = false;
+                            finish();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            animating = false;
+                            finish();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                        }
+                    });
+                else
                     finish();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animating = false;
-                    finish();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
+            }
+            new Handler().postDelayed(() -> backCount = 0, 1000);
+        }
         else
-            super.onBackPressed();
+            finish();
     }
 
     @Override
