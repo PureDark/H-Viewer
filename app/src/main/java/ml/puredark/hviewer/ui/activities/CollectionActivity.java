@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
@@ -92,6 +93,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     AppBarLayout appBar;
     @BindView(R.id.fab_menu)
     FloatingActionMenu fabMenu;
+    @BindView(R.id.fab_download)
+    FloatingActionButton fabDownload;
 
     private Site site;
 
@@ -202,8 +205,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         if (onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY)) {
             openPictureViewerActivity(0);
         }
-
-
+        fabDownload.setVisibility(View.GONE);
     }
 
     private void parseUrl(String url) {
@@ -396,6 +398,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         collection.rating = myCollection.rating;
         collection.datetime = myCollection.datetime;
         collection.description = myCollection.description;
+        if(myCollection.videos==null||myCollection.videos.size()==0)
+            fabDownload.setVisibility(View.VISIBLE);
+        else
+            fabDownload.setVisibility(View.GONE);
     }
 
     private void getCollectionDetail(final int page) {
