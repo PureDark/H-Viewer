@@ -473,12 +473,14 @@ public class MainActivity extends BaseActivity {
     private void initSearchSuggestions() {
         List<String> histories = HViewerApplication.searchHistoryHolder.getSearchHistory();
         List<String> suggestions = HViewerApplication.searchSuggestionHolder.getSearchSuggestion();
-        suggestions.addAll(histories);
-        suggestions = new ArrayList(new HashSet(suggestions));
-        Collections.sort(suggestions, String.CASE_INSENSITIVE_ORDER);
-        int size = suggestions.size();
+        List<String> mySuggestions = new ArrayList<>();
+        mySuggestions.addAll(histories);
+        mySuggestions.addAll(suggestions);
+        mySuggestions = new ArrayList(new HashSet(mySuggestions));
+        Collections.sort(mySuggestions, String.CASE_INSENSITIVE_ORDER);
+        int size = mySuggestions.size();
         String[] kwStrings = new String[size];
-        kwStrings = suggestions.toArray(kwStrings);
+        kwStrings = mySuggestions.toArray(kwStrings);
         final MySearchAdapter adapter = new MySearchAdapter(this, kwStrings);
         searchView.setAdapter(adapter);
 

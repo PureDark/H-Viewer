@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.ui.dataproviders;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class ListDataProvider<T extends AbstractDataProvider.Data> extends Abstr
 
     @Override
     public int getCount() {
-        return items.size();
+        return (items == null) ? 0 : items.size();
     }
 
     @Override

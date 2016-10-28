@@ -93,7 +93,6 @@ import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_TOP_TO_BOTTOM;
-import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 
 public class PictureViewerActivity extends BaseActivity {
@@ -376,7 +375,7 @@ public class PictureViewerActivity extends BaseActivity {
         DraweeView draweeView;
         if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
             draweeView = ((PicturePagerAdapter.PictureViewHolder) viewHolder).ivPicture;
-        } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+        } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
             draweeView = ((PictureViewerAdapter.PictureViewHolder) viewHolder).ivPicture;
         } else
             return;
@@ -388,7 +387,7 @@ public class PictureViewerActivity extends BaseActivity {
                     PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
                     pictureViewHolder.progressBar.setVisibility(View.VISIBLE);
                     pictureViewHolder.btnRefresh.setVisibility(View.GONE);
-                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
                     PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
                     pictureViewHolder.progressBar.setVisibility(View.VISIBLE);
                     pictureViewHolder.btnRefresh.setVisibility(View.GONE);
@@ -406,7 +405,7 @@ public class PictureViewerActivity extends BaseActivity {
                     pictureViewHolder.progressBar.setVisibility(View.GONE);
                     pictureViewHolder.btnRefresh.setVisibility(View.GONE);
                     pictureViewHolder.ivPicture.update(imageInfo.getWidth(), imageInfo.getHeight());
-                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
                     PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
                     pictureViewHolder.progressBar.setVisibility(View.GONE);
                     pictureViewHolder.btnRefresh.setVisibility(View.GONE);
@@ -420,9 +419,9 @@ public class PictureViewerActivity extends BaseActivity {
 
                     pictureViewHolder.ivPicture.setOnScaleChangeListener((scaleFactor, focusX, focusY) -> {
                         float scale = pictureViewHolder.ivPicture.getScale();
-                        if(scale>1) {
+                        if (scale > 1) {
                             pictureViewHolder.ivPicture.getLayoutParams().height = (int) (scale * originHeight) + 1;
-                        }else{
+                        } else {
                             pictureViewHolder.ivPicture.getLayoutParams().height = originHeight;
                         }
                         pictureViewHolder.ivPicture.requestLayout();
@@ -442,7 +441,7 @@ public class PictureViewerActivity extends BaseActivity {
                     PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
                     pictureViewHolder.progressBar.setVisibility(View.GONE);
                     pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
                     PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
                     pictureViewHolder.progressBar.setVisibility(View.GONE);
                     pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
@@ -452,6 +451,7 @@ public class PictureViewerActivity extends BaseActivity {
     }
 
     private Map<Integer, Pair<Picture, Object>> pictureInQueue = new HashMap<>();
+
     public void getPictureUrl(final Object viewHolder, final Picture picture, final Selector selector, final Selector highResSelector) {
         Logger.d("PictureViewerActivity", "picture.url = " + picture.url);
         if (Picture.hasPicPosfix(picture.url)) {
@@ -496,7 +496,7 @@ public class PictureViewerActivity extends BaseActivity {
                                     PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
                                     pictureViewHolder.ivPicture.setImageBitmap((Bitmap) result);
                                     pictureViewHolder.progressBar.setVisibility(View.GONE);
-                                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                                } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
                                     PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
                                     pictureViewHolder.ivPicture.setImageBitmap((Bitmap) result);
                                     pictureViewHolder.progressBar.setVisibility(View.GONE);
@@ -530,7 +530,7 @@ public class PictureViewerActivity extends BaseActivity {
                                 PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
                                 pictureViewHolder.progressBar.setVisibility(View.GONE);
                                 pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                            } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                            } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
                                 PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
                                 pictureViewHolder.progressBar.setVisibility(View.GONE);
                                 pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
@@ -571,7 +571,7 @@ public class PictureViewerActivity extends BaseActivity {
                         PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
                         pictureViewHolder.progressBar.setVisibility(View.GONE);
                         pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                    } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                    } else if (viewHolder instanceof PictureViewerAdapter.PictureViewHolder) {
                         PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
                         pictureViewHolder.progressBar.setVisibility(View.GONE);
                         pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
@@ -747,9 +747,11 @@ public class PictureViewerActivity extends BaseActivity {
                                         viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
                                         viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                        int width = bitmap.getWidth();
-                                        int height = bitmap.getHeight();
-                                        viewHolder.tvImageSize.setText(width + " × " + height);
+                                        if (bitmap != null) {
+                                            int width = bitmap.getWidth();
+                                            int height = bitmap.getHeight();
+                                            viewHolder.tvImageSize.setText(width + " × " + height);
+                                        }
                                     });
                                 }
                             } finally {

@@ -326,21 +326,21 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (site != null)
                 checkSiteFlags(this, site);
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             view.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
             });
             rippleLayout.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             rippleLayout.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
