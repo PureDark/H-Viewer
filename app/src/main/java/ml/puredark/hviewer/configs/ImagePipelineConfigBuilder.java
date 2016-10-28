@@ -15,6 +15,7 @@ import com.facebook.imagepipeline.cache.MemoryCacheParams;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import ml.puredark.hviewer.HViewerApplication;
@@ -82,7 +83,8 @@ public class ImagePipelineConfigBuilder {
         };
 
         //小图片的磁盘配置
-        DiskCacheConfig diskSmallCacheConfig = DiskCacheConfig.newBuilder(context).setBaseDirectoryPath(context.getApplicationContext().getCacheDir())//缓存图片基路径
+        DiskCacheConfig diskSmallCacheConfig = DiskCacheConfig.newBuilder(context)
+                .setBaseDirectoryPath(getDiskCacheDir(context))                         //缓存图片基路径
                 .setBaseDirectoryName(IMAGE_PIPELINE_SMALL_CACHE_DIR)                   //文件夹名
                 .setMaxCacheSize(MAX_DISK_CACHE_SIZE)                                   //默认缓存的最大大小。
                 .setMaxCacheSizeOnLowDiskSpace(MAX_SMALL_DISK_LOW_CACHE_SIZE)           //缓存的最大大小,使用设备时低磁盘空间。
@@ -91,8 +93,9 @@ public class ImagePipelineConfigBuilder {
                 .build();
 
         //默认图片的磁盘配置
-        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context).setBaseDirectoryPath(Environment.getExternalStorageDirectory().getAbsoluteFile())//缓存图片基路径
-                .setBaseDirectoryName(IMAGE_PIPELINE_CACHE_DIR)                             //文件夹名
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context)
+                .setBaseDirectoryPath(getDiskCacheDir(context))//缓存图片基路径
+                .setBaseDirectoryName(IMAGE_PIPELINE_CACHE_DIR)                         //文件夹名
                 .setMaxCacheSize(MAX_DISK_CACHE_SIZE)                                   //默认缓存的最大大小。
                 .setMaxCacheSizeOnLowDiskSpace(MAX_DISK_CACHE_LOW_SIZE)                 //缓存的最大大小,使用设备时低磁盘空间。
                 .setMaxCacheSizeOnVeryLowDiskSpace(MAX_DISK_CACHE_VERYLOW_SIZE)         //缓存的最大大小,当设备极低磁盘空间
@@ -134,5 +137,15 @@ public class ImagePipelineConfigBuilder {
         });
 
         return configBuilder.build();
+    }
+    public static File getDiskCacheDir(Context context) {
+        File cacheDir;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cacheDir = context.getExternalCacheDir();
+        } else {
+            cacheDir = context.getCacheDir();
+        }
+        return cacheDir;
     }
 }

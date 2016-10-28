@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Video;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 
 public class VideoViewerActivity extends BaseActivity {
@@ -33,6 +34,9 @@ public class VideoViewerActivity extends BaseActivity {
     ProgressBarCircularIndeterminate progressBar;
 
     private Video video;
+
+    // 表示页面加载完毕，允许第一次重定向，加载完毕后阻止用户点击广告的跳转
+    private boolean mLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +78,13 @@ public class VideoViewerActivity extends BaseActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.contains(".mp4") || url.contains(".webm") || url.contains(".ogg"))
+                Logger.d("VideoViewerActivity", "shouldOverrideUrlLoading:" + url);
+                if (!mLoaded || url.contains("mp4") || url.contains("webm")) {
+                    Logger.d("VideoViewerActivity", "shouldOverrideUrlLoading: true");
                     webView.loadUrl(url);
+                }else{
+                    Logger.d("VideoViewerActivity", "shouldOverrideUrlLoading: false");
+                }
                 return true;
             }
 
@@ -88,6 +97,7 @@ public class VideoViewerActivity extends BaseActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
+                mLoaded = true;
                 super.onPageFinished(view, url);
             }
         });

@@ -412,7 +412,8 @@ public class SwipeWindowHelper extends Handler {
             final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                     SHADOW_WIDTH, FrameLayout.LayoutParams.MATCH_PARENT);
             final FrameLayout contentView = mCurrentContentView;
-            contentView.addView(mShadowView, 1, layoutParams);
+            if(mShadowView.getParent()==null)
+                contentView.addView(mShadowView, 1, layoutParams);
         }
 
         private void removeShadowView() {
