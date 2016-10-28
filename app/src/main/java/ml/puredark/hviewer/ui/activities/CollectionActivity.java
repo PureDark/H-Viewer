@@ -175,7 +175,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         refreshDescription(site.galleryUrl);
         rvIndex.setRefreshing(true);
 
-        if (site != null && (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_GALLERY))){
+        if (site != null && (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_GALLERY))) {
             mWebView = new WebView(this);
             WebSettings mWebSettings = mWebView.getSettings();
             mWebSettings.setJavaScriptEnabled(true);
@@ -269,6 +269,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         rvIndex = (PullLoadMoreRecyclerView) viewIndex.findViewById(R.id.rv_index);
         List<Picture> pictures = new ArrayList<>();
         List<Video> videos = new ArrayList<>();
+        if (collection.pictures != null)
+            pictures.addAll(collection.pictures);
+        if (collection.videos != null)
+            videos.addAll(collection.videos);
         pictureVideoAdapter = new PictureVideoAdapter(this, new ListDataProvider(pictures), new ListDataProvider(videos));
         pictureVideoAdapter.setCookie(site.cookie);
         pictureVideoAdapter.setRepeatedThumbnail(site.hasFlag(Site.FLAG_REPEATED_THUMBNAIL));
@@ -294,7 +298,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 DensityUtil.dp2px(this, 16));
 
         pictureVideoAdapter.setOnItemClickListener((v, position) -> {
-            if(position<pictureVideoAdapter.getPictureSize())
+            if (position < pictureVideoAdapter.getPictureSize())
                 openPictureViewerActivity(position);
             else
                 openVideoViewerActivity(position);
@@ -357,13 +361,16 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     private boolean commentEnabled() {
-        return (site.galleryRule.commentRule != null &&
-                site.galleryRule.commentRule.item != null &&
-                site.galleryRule.commentRule.author != null &&
-                site.galleryRule.commentRule.content != null)
-                || (site.galleryRule.commentItem != null &&
-                site.galleryRule.commentAuthor != null &&
-                site.galleryRule.commentContent != null);
+        if (site.galleryRule == null)
+            return false;
+        else
+            return (site.galleryRule.commentRule != null &&
+                    site.galleryRule.commentRule.item != null &&
+                    site.galleryRule.commentRule.author != null &&
+                    site.galleryRule.commentRule.content != null)
+                    || (site.galleryRule.commentItem != null &&
+                    site.galleryRule.commentAuthor != null &&
+                    site.galleryRule.commentContent != null);
     }
 
     private void refreshDescription(String url) {
@@ -392,8 +399,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     private void getCollectionDetail(final int page) {
-        if (onePage && page > startPage) {
-            // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
+        if (site.galleryRule == null || (onePage && page > startPage)) {
+            // 如果没有galleryRule，或者URL中根本没有page参数的位置，肯定只有1页，则不继续加载
             rvIndex.setPullLoadMoreCompleted();
             isIndexComplete = true;
             return;
@@ -455,15 +462,18 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
+        boolean flagNextPage = false, emptyPicture = false, emptyVideo = false;
+
         if (HViewerApplication.DEBUG)
             SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
         myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
         if (myCollection.videos != null && myCollection.videos.size() > 0) {
-            Log.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
-            Log.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
-        }else{
-            Log.d("CollectionActivity", "myCollection.videos.size(): 0");
+            Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
+            Logger.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
+        } else {
+            Logger.d("CollectionActivity", "myCollection.videos.size(): 0");
         }
+        Logger.d("CollectionActivity", "myCollection.comments:" + ((myCollection.comments != null) ? myCollection.comments.size() : myCollection.comments));
 
         if (myCollection.tags != null) {
             for (Tag tag : myCollection.tags) {
@@ -504,7 +514,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     pictureVideoAdapter.getPictureDataProvider().clear();
                     pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
                     currPage = page;
-                    new Handler(Looper.getMainLooper()).post(() -> getCollectionDetail(currPage + pageStep));
+                    refreshing = true;
+                    flagNextPage = true;
                 } else if (!pictureVideoAdapter.getPictureDataProvider().getItems().contains(picture)) {
                     // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
                     int currPid = pictureVideoAdapter.getItemCount() + 1;
@@ -515,23 +526,15 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                     pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
                     currPage = page;
                     refreshing = true;
-                    new Handler(Looper.getMainLooper()).post(() -> getCollectionDetail(currPage + pageStep));
+                    flagNextPage = true;
                 } else {
-                    // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定已经达到末尾
-                    isIndexComplete = true;
-                    refreshing = false;
-                    myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
-                    if (commentAdapter != null)
-                        myCollection.comments = commentAdapter.getDataProvider().getItems();
+                    // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定此次获取到的图片数量为0
+                    emptyPicture = true;
                 }
             }
         } else {
-            // 获取到的图片数量为0，则直接判定已达到末尾
-            isIndexComplete = true;
-            refreshing = false;
-            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
-            if (commentAdapter != null)
-                myCollection.comments = commentAdapter.getDataProvider().getItems();
+            // 获取到的图片数量为0
+            emptyPicture = true;
         }
 
         /************
@@ -539,11 +542,27 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
          ************/
 
         if (myCollection.videos != null && myCollection.videos.size() > 0) {
-            // 当前页获取到的第一个似乎品
             final Video firstVideo = myCollection.videos.get(0);
-            if (!pictureVideoAdapter.getVideoDataProvider().getItems().contains(firstVideo)) {
+            if (page == startPage) {
+                // 当前获取的是第一页，则清空原目录中所有视频，再添加当前获取到的所有视频进入目录中
+                pictureVideoAdapter.getVideoDataProvider().clear();
                 pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
+                currPage = page;
+                refreshing = true;
+                flagNextPage = true;
+            } else if (!pictureVideoAdapter.getVideoDataProvider().getItems().contains(firstVideo)) {
+                // 如果当前获取的不是第一页，且当前第一个视频不在于视频目录中，则添加当前获取到的所有视频到视频目录中
+                pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
+                currPage = page;
+                refreshing = true;
+                flagNextPage = true;
+            } else {
+                // 如果当前获取的不是第一页，且当前第一个视频已存在于视频目录中，则判定此次获取到的视频数量为0
+                emptyVideo = true;
             }
+        } else {
+            // 获取到的视频数量为0
+            emptyVideo = true;
         }
 
         /************
@@ -557,6 +576,17 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 commentAdapter.getDataProvider().addAll(myCollection.comments);
             }
         }
+
+        if (emptyPicture && emptyVideo) {
+            // 获取到的图片和视频数量都为0，则直接判定已达到末尾
+            isIndexComplete = true;
+            refreshing = false;
+            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
+            myCollection.videos = pictureVideoAdapter.getVideoDataProvider().getItems();
+            if (commentAdapter != null)
+                myCollection.comments = commentAdapter.getDataProvider().getItems();
+        }
+        boolean finalFlagNextPage = flagNextPage;
         new Handler(Looper.getMainLooper()).post(() -> {
             if (!refreshing)
                 rvIndex.setPullLoadMoreCompleted();
@@ -570,6 +600,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             }
             if (commentAdapter != null)
                 commentAdapter.notifyDataSetChanged();
+            if (finalFlagNextPage)
+                getCollectionDetail(currPage + pageStep);
         });
     }
 

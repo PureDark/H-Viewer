@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.Picture;
@@ -33,6 +34,7 @@ import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.utils.MathUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
@@ -159,6 +161,8 @@ public class RuleParser {
     }
 
     public static Collection getCollectionDetail(Collection collection, String text, Rule rule, String sourceUrl) {
+        if(rule == null)
+            return collection;
         try {
             if (rule.item != null && rule.pictureRule != null && rule.pictureRule.item != null) {
                 Log.d("RuleParser", "rule.item != null");
@@ -375,9 +379,9 @@ public class RuleParser {
             commentContent = rule.commentContent;
         }
         if (commentItem != null && commentContent != null) {
-            if (source instanceof Element)
+            if (source instanceof Element) {
                 temp = ((Element) source).select(commentItem.selector);
-            else if (source instanceof JsonElement) {
+            }else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
                 temp = ctx.read(commentItem.path, JsonArray.class);
             } else
@@ -440,6 +444,7 @@ public class RuleParser {
             if (source instanceof Element) {
                 Elements temp = ("this".equals(selector.selector)) ? new Elements((Element) source) : ((Element) source).select(selector.selector);
                 if (temp != null) {
+                    boolean doJsonParse = !TextUtils.isEmpty(selector.path);
                     for (Element elem : temp) {
                         if ("attr".equals(selector.fun)) {
                             prop = elem.attr(selector.param);
@@ -448,13 +453,20 @@ public class RuleParser {
                         } else {
                             prop = elem.toString();
                         }
-                        props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
+                        if(doJsonParse)
+                            props = getPropertyAfterRegex(props, prop, selector, sourceUrl, false);
+                        else
+                            props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
                     }
-                    if (!TextUtils.isEmpty(selector.path)) {
+                    if (doJsonParse) {
                         try {
                             for (int i = 0; i < props.size(); i++) {
                                 prop = props.get(i);
-                                prop = JsonPath.parse(prop).read(selector.path);
+                                Object tempItem = JsonPath.parse(prop).read(selector.path);
+                                if (tempItem instanceof JsonPrimitive)
+                                    prop = ((JsonPrimitive)tempItem).getAsString();
+                                else
+                                    prop = tempItem.toString();
                                 if (!TextUtils.isEmpty(prop)) {
                                     if (isUrl)
                                         prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);

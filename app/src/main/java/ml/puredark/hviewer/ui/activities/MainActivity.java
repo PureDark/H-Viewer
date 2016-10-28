@@ -14,7 +14,6 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +21,6 @@ import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,7 +38,6 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.umeng.analytics.MobclickAgent;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -78,11 +75,9 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
 import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
-import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
-import static android.R.attr.category;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -162,6 +157,17 @@ public class MainActivity extends BaseActivity {
         // 开启按两次返回退出
         setDoubleBackExitEnabled(true);
 
+        if (HViewerApplication.DEBUG)
+            toolbar.setOnLongClickListener(v -> {
+                if (currFragment != null && currFragment.getCurrSite() != null
+                        && (currFragment.getCurrSite().hasFlag(Site.FLAG_JS_NEEDED_ALL)
+                        || currFragment.getCurrSite().hasFlag(Site.FLAG_JS_NEEDED_INDEX))) {
+                    if (currFragment instanceof CollectionFragment)
+                        ((CollectionFragment) currFragment).toggleWebView();
+                    return true;
+                }
+                return false;
+            });
 
         siteHolder = new SiteHolder(this);
         siteTagHolder = new SiteTagHolder(this);
@@ -189,7 +195,7 @@ public class MainActivity extends BaseActivity {
         HViewerApplication.checkUpdate(this);
     }
 
-    private void initDrawer(){
+    private void initDrawer() {
         // 设定侧边栏滑动边距
         drawer.setDrawerLeftEdgeSize(0.5f);
         drawer.setDrawerRightEdgeSize(0.5f);
@@ -205,7 +211,7 @@ public class MainActivity extends BaseActivity {
                 if (drawerView.getId() == R.id.nav_main) {
                     if (isCategoryEnable)
                         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
-                }else
+                } else
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
             }
 
@@ -214,7 +220,7 @@ public class MainActivity extends BaseActivity {
                 if (drawerView.getId() == R.id.nav_main) {
                     if (isCategoryEnable)
                         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
-                }else
+                } else
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
             }
         });
@@ -225,13 +231,16 @@ public class MainActivity extends BaseActivity {
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
         // 测试新站点用
-        List<Site> sites = ExampleSites.get();
-        if(siteGroups.size()==0)
-            siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+//        List<Site> sites = ExampleSites.get();
+//        if (siteGroups.size() == 0)
+//            siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
 //        siteGroups.get(0).second.addAll(sites);
-        siteGroups.get(0).second.add(0, sites.get(sites.size()-2));
-        siteGroups.get(0).second.add(0, sites.get(sites.size()-1));
-        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites.get(sites.size()-1)), "utf-8");
+//        siteGroups.get(0).second.add(0, sites.get(sites.size() - 2));
+//        siteGroups.get(0).second.add(0, sites.get(sites.size()-1));
+//        SimpleFileUtil.writeString("/sdcard/sites1.txt", new Gson().toJson(sites.get(sites.size() - 1)), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites2.txt", new Gson().toJson(sites.get(sites.size() - 2)), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites3.txt", new Gson().toJson(sites.get(sites.size() - 3)), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
@@ -336,7 +345,7 @@ public class MainActivity extends BaseActivity {
                 } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                     setTitle(site.title);
-                    new Handler().postDelayed(()->selectSite(site), 300);
+                    new Handler().postDelayed(() -> selectSite(site), 300);
                     notifyChildItemChanged(groupPosition, childPosition);
                     drawer.closeDrawer(GravityCompat.START);
                 }
@@ -656,7 +665,7 @@ public class MainActivity extends BaseActivity {
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch(newState){
+                switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         setDrawerEnabled(true);
@@ -819,7 +828,7 @@ public class MainActivity extends BaseActivity {
                     .replace(R.id.fragment_container, fragment, tag)
                     .commit();
             currFragment = fragment;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             showSnackBar("载入站点出错，请重试");
         }

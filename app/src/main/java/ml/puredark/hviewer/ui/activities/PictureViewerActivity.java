@@ -2,39 +2,52 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.provider.DocumentFile;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.JavascriptInterface;
 import android.webkit.MimeTypeMap;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.view.DraweeView;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.umeng.analytics.MobclickAgent;
 
@@ -43,7 +56,9 @@ import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,11 +66,14 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.PicturePagerAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureViewerAdapter;
@@ -71,10 +89,11 @@ import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
-import static android.R.attr.bitmap;
+import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_TOP_TO_BOTTOM;
+import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 
 public class PictureViewerActivity extends BaseActivity {
@@ -182,11 +201,11 @@ public class PictureViewerActivity extends BaseActivity {
                 @Override
                 public void center() {
                     toogleStatus();
-                    if(isStatusBarEnabled()){
+                    if (isStatusBarEnabled()) {
                         Animation animation = AnimationUtils.loadAnimation(PictureViewerActivity.this, R.anim.bottom_bar_show_from_bottom);
                         animation.setFillAfter(true);
                         bottomBar.startAnimation(animation);
-                    }else{
+                    } else {
                         Animation animation = AnimationUtils.loadAnimation(PictureViewerActivity.this, R.anim.bottom_bar_hide_to_bottom);
                         animation.setFillAfter(true);
                         bottomBar.startAnimation(animation);
@@ -271,22 +290,22 @@ public class PictureViewerActivity extends BaseActivity {
                 Picture picture = null;
                 if (picturePagerAdapter != null) {
                     int position = picturePagerAdapter.getPicturePostion(currPos);
-                    if(position < pictures.size())
+                    if (position < pictures.size())
                         picture = pictures.get(position);
-                    else{
+                    else {
                         showSnackBar("图片未加载，请等待");
                         return;
                     }
                 } else if (pictureViewerAdapter != null) {
-                    if(currPos < pictures.size())
+                    if (currPos < pictures.size())
                         picture = pictures.get(currPos);
-                    else{
+                    else {
                         showSnackBar("图片未加载，请等待");
                         return;
                     }
                 }
                 loadPicture(picture, "", ACTION_SHOW_INFO);
-                new Handler().postDelayed(()->dialog.show(),200);
+                dialog.show();
             }
         });
     }
@@ -341,6 +360,225 @@ public class PictureViewerActivity extends BaseActivity {
             pictureViewerAdapter.getDataProvider().setDataSet(pictures);
             pictureViewerAdapter.notifyDataSetChanged();
             tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
+        }
+    }
+
+    private boolean viewHighRes() {
+        return (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_HIGH_RES, false);
+    }
+
+    public void loadImage(Picture picture, final Object viewHolder) {
+        String url = (viewHighRes() && !TextUtils.isEmpty(picture.highRes)) ? picture.highRes : picture.pic;
+        if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
+            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
+        Logger.d("PictureViewerActivity", "url:" + url + "\n picture.referer:" + picture.referer);
+        if (site == null) return;
+        DraweeView draweeView;
+        if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+            draweeView = ((PicturePagerAdapter.PictureViewHolder) viewHolder).ivPicture;
+        } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+            draweeView = ((PictureViewerAdapter.PictureViewHolder) viewHolder).ivPicture;
+        } else
+            return;
+        ImageLoader.loadImageFromUrl(this, draweeView, url, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
+            @Override
+            public void onSubmit(String id, Object callerContext) {
+                super.onSubmit(id, callerContext);
+                if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+                    PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
+                    pictureViewHolder.progressBar.setVisibility(View.VISIBLE);
+                    pictureViewHolder.btnRefresh.setVisibility(View.GONE);
+                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                    PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
+                    pictureViewHolder.progressBar.setVisibility(View.VISIBLE);
+                    pictureViewHolder.btnRefresh.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
+                super.onFinalImageSet(id, imageInfo, anim);
+                if (imageInfo == null) {
+                    return;
+                }
+                if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+                    PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
+                    pictureViewHolder.progressBar.setVisibility(View.GONE);
+                    pictureViewHolder.btnRefresh.setVisibility(View.GONE);
+                    pictureViewHolder.ivPicture.update(imageInfo.getWidth(), imageInfo.getHeight());
+                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                    PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
+                    pictureViewHolder.progressBar.setVisibility(View.GONE);
+                    pictureViewHolder.btnRefresh.setVisibility(View.GONE);
+                    WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                    final float factor = (float) imageInfo.getHeight() / imageInfo.getWidth();
+                    final int originWidth = wm.getDefaultDisplay().getWidth();
+                    final int originHeight = (int) (factor * originWidth);
+                    pictureViewHolder.ivPicture.getLayoutParams().height = originHeight;
+                    pictureViewHolder.ivPicture.requestLayout();
+                    pictureViewHolder.ivPicture.update(imageInfo.getWidth(), imageInfo.getHeight());
+
+                    pictureViewHolder.ivPicture.setOnScaleChangeListener((scaleFactor, focusX, focusY) -> {
+                        float scale = pictureViewHolder.ivPicture.getScale();
+                        if(scale>1) {
+                            pictureViewHolder.ivPicture.getLayoutParams().height = (int) (scale * originHeight) + 1;
+                        }else{
+                            pictureViewHolder.ivPicture.getLayoutParams().height = originHeight;
+                        }
+                        pictureViewHolder.ivPicture.requestLayout();
+                    });
+                    pictureViewHolder.ivPicture.setAllowParentInterceptOnEdge(true);
+                }
+            }
+
+            @Override
+            public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+            }
+
+            @Override
+            public void onFailure(String id, Throwable throwable) {
+                FLog.e(getClass(), throwable, "Error loading %s", id);
+                if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+                    PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
+                    pictureViewHolder.progressBar.setVisibility(View.GONE);
+                    pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
+                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                    PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
+                    pictureViewHolder.progressBar.setVisibility(View.GONE);
+                    pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private Map<Integer, Pair<Picture, Object>> pictureInQueue = new HashMap<>();
+    public void getPictureUrl(final Object viewHolder, final Picture picture, final Selector selector, final Selector highResSelector) {
+        Logger.d("PictureViewerActivity", "picture.url = " + picture.url);
+        if (Picture.hasPicPosfix(picture.url)) {
+            picture.pic = picture.url;
+            loadImage(picture, viewHolder);
+        } else
+            //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
+            if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_PICTURE)) {
+                WebView webView = new WebView(this);
+                WebSettings mWebSettings = webView.getSettings();
+                mWebSettings.setJavaScriptEnabled(true);
+                mWebSettings.setBlockNetworkImage(true);
+                mWebSettings.setDomStorageEnabled(true);
+                mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
+                mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
+                webView.addJavascriptInterface(this, "HtmlParser");
+
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        //Load HTML
+                        pictureInQueue.put(picture.pid, new Pair<>(picture, viewHolder));
+                        boolean extra = !selector.equals(site.picUrlSelector);
+                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
+                        Logger.d("PictureViewerActivity", "onPageFinished");
+                    }
+                });
+                webView.loadUrl(picture.url);
+                new Handler().postDelayed(() -> webView.stopLoading(), 30000);
+                Logger.d("PictureViewerActivity", "WebView");
+            } else
+                HViewerHttpClient.get(picture.url, site.getCookies(), site.hasFlag(Site.FLAG_POST_PICTURE), new HViewerHttpClient.OnResponseListener() {
+
+                    @Override
+                    public void onSuccess(String contentType, Object result) {
+                        if (result == null || result.equals(""))
+                            return;
+                        if (contentType.contains("image")) {
+                            picture.pic = picture.url;
+                            if (result instanceof Bitmap) {
+                                if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+                                    PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
+                                    pictureViewHolder.ivPicture.setImageBitmap((Bitmap) result);
+                                    pictureViewHolder.progressBar.setVisibility(View.GONE);
+                                } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                                    PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
+                                    pictureViewHolder.ivPicture.setImageBitmap((Bitmap) result);
+                                    pictureViewHolder.progressBar.setVisibility(View.GONE);
+                                }
+                            } else {
+                                loadImage(picture, viewHolder);
+                            }
+                        } else {
+                            picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
+                            picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
+                            Logger.d("PictureViewerActivity", "getPictureUrl: picture.pic: " + picture.pic);
+                            Logger.d("PictureViewerActivity", "getPictureUrl: picture.highRes: " + picture.highRes);
+                            if (picture.pic != null) {
+                                picture.retries = 0;
+                                picture.referer = picture.url;
+                                loadImage(picture, viewHolder);
+                            } else {
+                                onFailure(null);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HViewerHttpClient.HttpError error) {
+                        if (picture.retries < 15) {
+                            picture.retries++;
+                            getPictureUrl(viewHolder, picture, selector, highResSelector);
+                        } else {
+                            picture.retries = 0;
+                            if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+                                PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
+                                pictureViewHolder.progressBar.setVisibility(View.GONE);
+                                pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
+                            } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                                PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
+                                pictureViewHolder.progressBar.setVisibility(View.GONE);
+                                pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                });
+    }
+
+    @JavascriptInterface
+    public void onResultGot(String html, int pid, boolean extra) {
+        Pair<Picture, Object> pair = pictureInQueue.get(pid);
+        if (pair == null)
+            return;
+        Picture picture = pair.first;
+        Object viewHolder = pair.second;
+        if (picture == null || viewHolder == null)
+            return;
+        pictureInQueue.remove(pid);
+        Selector selector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.url : site.extraRule.pictureUrl : site.picUrlSelector;
+        Selector highResSelector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.highRes : site.extraRule.pictureHighRes : null;
+        picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
+        picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
+        Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
+        Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
+        if (picture.pic != null) {
+            picture.retries = 0;
+            picture.referer = picture.url;
+            new Handler(Looper.getMainLooper()).post(() -> loadImage(picture, viewHolder));
+        } else {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (picture.retries < 15) {
+                    picture.retries++;
+                    getPictureUrl(viewHolder, picture, selector, highResSelector);
+                } else {
+                    picture.retries = 0;
+                    if (viewHolder instanceof PicturePagerAdapter.PictureViewHolder) {
+                        PicturePagerAdapter.PictureViewHolder pictureViewHolder = (PicturePagerAdapter.PictureViewHolder) viewHolder;
+                        pictureViewHolder.progressBar.setVisibility(View.GONE);
+                        pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
+                    } else if(viewHolder instanceof PictureViewerAdapter.PictureViewHolder){
+                        PictureViewerAdapter.PictureViewHolder pictureViewHolder = (PictureViewerAdapter.PictureViewHolder) viewHolder;
+                        pictureViewHolder.progressBar.setVisibility(View.GONE);
+                        pictureViewHolder.btnRefresh.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
         }
     }
 
@@ -451,7 +689,7 @@ public class PictureViewerActivity extends BaseActivity {
                 viewHolder.tvImageSize.setText(width + " × " + height);
                 return;
             }
-        }else if(picture.pic != null && picture.pic.startsWith("content://")){
+        } else if (picture.pic != null && picture.pic.startsWith("content://")) {
             ImageLoader.loadBitmapFromUrl(this, picture.pic, site.cookie, picture.referer, new BaseBitmapDataSubscriber() {
                 @Override
                 protected void onNewResultImpl(Bitmap bitmap) {
@@ -464,7 +702,7 @@ public class PictureViewerActivity extends BaseActivity {
                     else if (action == ACTION_SHARE)
                         savePicture(path, bytes, true);
                     else if (action == ACTION_SHOW_INFO) {
-                        runOnUiThread(()->{
+                        runOnUiThread(() -> {
                             String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                             viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
                             viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));
@@ -480,6 +718,7 @@ public class PictureViewerActivity extends BaseActivity {
                     Logger.d("PictureViewerActivity", "onFailureImpl");
                 }
             });
+            return;
         }
         if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
             picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
@@ -503,7 +742,7 @@ public class PictureViewerActivity extends BaseActivity {
                                 else if (action == ACTION_SHARE)
                                     savePicture(path, bytes, true);
                                 else if (action == ACTION_SHOW_INFO) {
-                                    runOnUiThread(()->{
+                                    runOnUiThread(() -> {
                                         String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                                         viewHolder.tvImageType.setText(MimeTypeMap.getSingleton().getMimeTypeFromExtension(postfix));
                                         viewHolder.tvFileSize.setText(FileUtils.getReadableFileSize(bytes.length));

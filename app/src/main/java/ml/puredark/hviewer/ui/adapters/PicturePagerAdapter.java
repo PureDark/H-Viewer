@@ -42,6 +42,7 @@ import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
+import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
 import ml.puredark.hviewer.ui.customs.AreaClickHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
@@ -61,7 +62,7 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     private String viewDirection = DIREACTION_LEFT_TO_RIGHT;
 
-    private BaseActivity activity;
+    private PictureViewerActivity activity;
 
     private Site site;
 
@@ -73,7 +74,7 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     private AreaClickHelper areaClickHelper;
 
-    public PicturePagerAdapter(BaseActivity activity, Site site, List<Picture> pictures) {
+    public PicturePagerAdapter(PictureViewerActivity activity, Site site, List<Picture> pictures) {
         this.activity = activity;
         this.site = site;
         this.pictures = pictures;
@@ -85,11 +86,11 @@ public class PicturePagerAdapter extends PagerAdapter {
     public class PictureViewHolder {
         View view;
         @BindView(R.id.iv_picture)
-        PhotoDraweeView ivPicture;
+        public PhotoDraweeView ivPicture;
         @BindView(R.id.progress_bar)
-        ProgressBarCircularIndeterminate progressBar;
+        public ProgressBarCircularIndeterminate progressBar;
         @BindView(R.id.btn_refresh)
-        ImageView btnRefresh;
+        public ImageView btnRefresh;
 
         public PictureViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -177,31 +178,31 @@ public class PicturePagerAdapter extends PagerAdapter {
         if (pictures != null && position < pictures.size()) {
             final Picture picture = pictures.get(getPicturePostion(position));
             if (picture.pic != null) {
-                loadImage(container.getContext(), picture, viewHolder);
+                activity.loadImage(picture, viewHolder);
             } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
                 if (site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
-                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
+                    activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
                 else if (site.extraRule.pictureUrl != null)
-                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+                    activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
             } else if (site.picUrlSelector != null) {
-                getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
+                activity.getPictureUrl(viewHolder, picture, site.picUrlSelector, null);
             } else {
                 picture.pic = picture.url;
-                loadImage(container.getContext(), picture, viewHolder);
+                activity.loadImage(picture, viewHolder);
             }
             viewHolder.btnRefresh.setOnClickListener(v -> {
                 if (picture.pic != null) {
-                    loadImage(container.getContext(), picture, viewHolder);
+                    activity.loadImage(picture, viewHolder);
                 } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
                     if (site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
-                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
+                        activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
                     else if (site.extraRule.pictureUrl != null)
-                        getPictureUrl(container.getContext(), viewHolder, picture, site, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
+                        activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
                 } else if (site.picUrlSelector == null) {
                     picture.pic = picture.url;
-                    loadImage(container.getContext(), picture, viewHolder);
+                    activity.loadImage(picture, viewHolder);
                 } else {
-                    getPictureUrl(container.getContext(), viewHolder, picture, site, site.picUrlSelector, null);
+                    activity.getPictureUrl(viewHolder, picture, site.picUrlSelector, null);
                 }
             });
             viewHolder.ivPicture.setOnLongClickListener(v -> {
@@ -221,158 +222,5 @@ public class PicturePagerAdapter extends PagerAdapter {
         return viewHolder.view;
     }
 
-    public boolean viewHighRes() {
-        return (boolean) SharedPreferencesUtil.getData(activity,
-                SettingFragment.KEY_PREF_VIEW_HIGH_RES, false);
-    }
 
-
-    private void loadImage(Context context, Picture picture, final PictureViewHolder viewHolder) {
-        String url = (viewHighRes() && !TextUtils.isEmpty(picture.highRes)) ? picture.highRes : picture.pic;
-        if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
-            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
-        Logger.d("PicturePagerAdapter", "url:" + url + "\n picture.referer:" + picture.referer);
-        if (site == null) return;
-        ImageLoader.loadImageFromUrl(context, viewHolder.ivPicture, url, site.cookie, picture.referer, new BaseControllerListener<ImageInfo>() {
-            @Override
-            public void onSubmit(String id, Object callerContext) {
-                super.onSubmit(id, callerContext);
-                viewHolder.progressBar.setVisibility(View.VISIBLE);
-                viewHolder.btnRefresh.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
-                super.onFinalImageSet(id, imageInfo, anim);
-                if (imageInfo == null) {
-                    return;
-                }
-                viewHolder.progressBar.setVisibility(View.GONE);
-                viewHolder.btnRefresh.setVisibility(View.GONE);
-                viewHolder.ivPicture.update(imageInfo.getWidth(), imageInfo.getHeight());
-            }
-
-            @Override
-            public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
-            }
-
-            @Override
-            public void onFailure(String id, Throwable throwable) {
-                FLog.e(getClass(), throwable, "Error loading %s", id);
-                viewHolder.progressBar.setVisibility(View.GONE);
-                viewHolder.btnRefresh.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    private Map<Integer, Pair<Picture, PictureViewHolder>> pictureInQueue = new HashMap<>();
-
-    private void getPictureUrl(final Context context, final PictureViewHolder viewHolder, final Picture picture, final Site site, final Selector selector, final Selector highResSelector) {
-        Logger.d("PicturePagerAdapter", "picture.url = " + picture.url);
-        if (Picture.hasPicPosfix(picture.url)) {
-            picture.pic = picture.url;
-            loadImage(context, picture, viewHolder);
-        } else
-            //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
-            if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_PICTURE)) {
-                WebView webView = new WebView(context);
-                WebSettings mWebSettings = webView.getSettings();
-                mWebSettings.setJavaScriptEnabled(true);
-                mWebSettings.setBlockNetworkImage(true);
-                mWebSettings.setDomStorageEnabled(true);
-                mWebSettings.setUserAgentString(context.getResources().getString(R.string.UA));
-                mWebSettings.setCacheMode(LOAD_CACHE_ELSE_NETWORK);
-                webView.addJavascriptInterface(this, "HtmlParser");
-
-                webView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        //Load HTML
-                        pictureInQueue.put(picture.pid, new Pair<>(picture, viewHolder));
-                        boolean extra = !selector.equals(site.picUrlSelector);
-                        webView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, " + picture.pid + ", " + extra + ");");
-                        Logger.d("PicturePagerAdapter", "onPageFinished");
-                    }
-                });
-                webView.loadUrl(picture.url);
-                new Handler().postDelayed(() -> webView.stopLoading(), 30000);
-                Logger.d("PicturePagerAdapter", "WebView");
-            } else
-                HViewerHttpClient.get(picture.url, site.getCookies(), site.hasFlag(Site.FLAG_POST_PICTURE), new HViewerHttpClient.OnResponseListener() {
-
-                    @Override
-                    public void onSuccess(String contentType, Object result) {
-                        if (result == null || result.equals(""))
-                            return;
-                        if (contentType.contains("image")) {
-                            picture.pic = picture.url;
-                            if (result instanceof Bitmap) {
-                                viewHolder.ivPicture.setImageBitmap((Bitmap) result);
-                                viewHolder.progressBar.setVisibility(View.GONE);
-                            } else {
-                                loadImage(context, picture, viewHolder);
-                            }
-                        } else {
-                            picture.pic = RuleParser.getPictureUrl((String) result, selector, picture.url);
-                            picture.highRes = RuleParser.getPictureUrl((String) result, highResSelector, picture.url);
-                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
-                            Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
-                            if (picture.pic != null) {
-                                picture.retries = 0;
-                                picture.referer = picture.url;
-                                loadImage(context, picture, viewHolder);
-                            } else {
-                                onFailure(null);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HViewerHttpClient.HttpError error) {
-                        if (picture.retries < 15) {
-                            picture.retries++;
-                            getPictureUrl(context, viewHolder, picture, site, selector, highResSelector);
-                        } else {
-                            picture.retries = 0;
-                            viewHolder.progressBar.setVisibility(View.GONE);
-                            viewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
-    }
-
-    @JavascriptInterface
-    public void onResultGot(String html, int pid, boolean extra) {
-        Pair<Picture, PictureViewHolder> pair = pictureInQueue.get(pid);
-        if (pair == null)
-            return;
-        Picture picture = pair.first;
-        PictureViewHolder viewHolder = pair.second;
-        if (picture == null || viewHolder == null)
-            return;
-        pictureInQueue.remove(pid);
-        Selector selector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.url : site.extraRule.pictureUrl : site.picUrlSelector;
-        Selector highResSelector = (extra) ? (site.extraRule.pictureRule != null) ? site.extraRule.pictureRule.highRes : site.extraRule.pictureHighRes : null;
-        picture.pic = RuleParser.getPictureUrl(html, selector, picture.url);
-        picture.highRes = RuleParser.getPictureUrl(html, highResSelector, picture.url);
-        Logger.d("PicturePagerAdapter", "getPictureUrl: picture.pic: " + picture.pic);
-        Logger.d("PicturePagerAdapter", "getPictureUrl: picture.highRes: " + picture.highRes);
-        if (picture.pic != null) {
-            picture.retries = 0;
-            picture.referer = picture.url;
-            new Handler(Looper.getMainLooper()).post(() -> loadImage(activity, picture, viewHolder));
-        } else {
-            new Handler(Looper.getMainLooper()).post(() -> {
-                if (picture.retries < 15) {
-                    picture.retries++;
-                    getPictureUrl(activity, viewHolder, picture, site, selector, highResSelector);
-                } else {
-                    picture.retries = 0;
-                    viewHolder.progressBar.setVisibility(View.GONE);
-                    viewHolder.btnRefresh.setVisibility(View.VISIBLE);
-                }
-            });
-
-        }
-    }
 }

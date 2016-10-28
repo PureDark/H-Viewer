@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,10 +109,12 @@ public class CollectionFragment extends MyFragment {
             mWebSettings.setJavaScriptEnabled(true);
             mWebSettings.setBlockNetworkImage(true);
             mWebSettings.setDomStorageEnabled(false);
+            mWebSettings.setUseWideViewPort(true);
+            mWebSettings.setLoadWithOverviewMode(true);
             mWebSettings.setUserAgentString(getResources().getString(R.string.UA));
             mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
             mWebView.addJavascriptInterface(this, "HtmlParser");
-            ((ViewGroup)rootView.findViewById(R.id.content)).addView(mWebView);
+            ((ViewGroup) rootView.findViewById(R.id.content)).addView(mWebView);
             mWebView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
             mWebView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
             mWebView.requestLayout();
@@ -192,10 +193,25 @@ public class CollectionFragment extends MyFragment {
         return rootView;
     }
 
+    public void toggleWebView() {
+        if (mWebView != null) {
+            if (mWebView.getVisibility() == View.VISIBLE) {
+                mWebView.setVisibility(View.INVISIBLE);
+                activity.setDrawerEnabled(true);
+            } else {
+                mWebView.setVisibility(View.VISIBLE);
+                activity.setDrawerEnabled(false);
+            }
+        }
+    }
+
+    // 记录使用js进行scroll的次数，每5秒检测一次，如果没有获得新item，则+1，达到3次判定已获取完毕
+    private int scrollTimes = 0;
+
     private void getCollections(String keyword, final int page) {
         if (onePage && page > startPage && !site.hasFlag(Site.FLAG_JS_SCROLL)) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
-            new Handler().postDelayed(()->rvCollection.setPullLoadMoreCompleted(), 250);
+            new Handler().postDelayed(() -> rvCollection.setPullLoadMoreCompleted(), 250);
             return;
         }
         this.keyword = keyword;
@@ -207,30 +223,24 @@ public class CollectionFragment extends MyFragment {
         Logger.d("CollectionFragment", url);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
         if (site.hasFlag(Site.FLAG_JS_NEEDED_ALL) || site.hasFlag(Site.FLAG_JS_NEEDED_INDEX)) {
+            mWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    //Load HTML
+                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    Logger.d("CollectionFragment", "onPageFinished");
+                }
+            });
             if (site.hasFlag(Site.FLAG_JS_SCROLL) && page != startPage && mWebView.getUrl().equals(url)) {
                 Logger.d("CollectionFragment", "FLAG_JS_SCROLL");
-                mWebView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        //Load HTML
-                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
-                        Logger.d("CollectionFragment", "onPageFinished");
-                    }
-                });
-                mWebView.loadUrl("javascript:document.body.scrollTop = document.body.scrollHeight;");
+                mWebView.loadUrl("javascript:document.body.scrollTop = 0;");
+                new Handler().postDelayed(() -> mWebView.loadUrl("javascript:document.body.scrollTop = document.body.scrollHeight;"), 100);
                 new Handler().postDelayed(() -> {
+                    scrollTimes++;
                     mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
                     Logger.d("CollectionFragment", "onAjaxFinished");
                 }, 5000);
             } else {
-                mWebView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        //Load HTML
-                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
-                        Logger.d("CollectionFragment", "onPageFinished");
-                    }
-                });
                 mWebView.loadUrl(url);
                 new Handler().postDelayed(() -> mWebView.stopLoading(), 30000);
             }
@@ -258,7 +268,7 @@ public class CollectionFragment extends MyFragment {
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
         new Thread(() -> {
-            if(HViewerApplication.DEBUG)
+            if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             if (page == startPage)
                 adapter.getDataProvider().clear();
@@ -280,21 +290,34 @@ public class CollectionFragment extends MyFragment {
             int oldSize = collections.size();
             Logger.d("CollectionFragment", "oldSize():" + oldSize);
             for (Collection newCollection : newCollections) {
-                if (!TextUtils.isEmpty(newCollection.idCode) && !collections.contains(newCollection)){
+                if (!TextUtils.isEmpty(newCollection.idCode) && !collections.contains(newCollection)) {
                     newCollection.cid = collections.size() + 1;
                     collections.add(newCollection);
                 }
             }
             Logger.d("CollectionFragment", "newSize():" + collections.size());
 
-            if (collections.size() > oldSize) {
+            if (collections.size() > oldSize || scrollTimes == 3) {
                 currPage = page;
+                scrollTimes = 0;
                 addSearchSuggestions(collections, oldSize);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    adapter.notifyDataSetChanged();
+                    rvCollection.setPullLoadMoreCompleted();
+                });
+            } else if (site.hasFlag(Site.FLAG_JS_SCROLL) && mWebView != null) {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    scrollTimes++;
+                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    Logger.d("CollectionFragment", "onAjaxFinished");
+                }, 5000);
+            } else {
+                scrollTimes = 0;
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    adapter.notifyDataSetChanged();
+                    rvCollection.setPullLoadMoreCompleted();
+                });
             }
-            new Handler(Looper.getMainLooper()).post(() -> {
-                adapter.notifyDataSetChanged();
-                rvCollection.setPullLoadMoreCompleted();
-            });
         }).start();
     }
 

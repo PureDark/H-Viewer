@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
@@ -56,12 +57,14 @@ public class VideoViewerActivity extends BaseActivity {
         }
         HViewerApplication.temp = null;
 
+        Log.d("VideoViewerActivity", "video:" + video);
+
         WebSettings settings = webView.getSettings();
         settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
+//        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+//        settings.setLoadWithOverviewMode(true);
+//        settings.setUseWideViewPort(true);
         settings.setUserAgentString(getResources().getString(R.string.UA));
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
@@ -71,7 +74,8 @@ public class VideoViewerActivity extends BaseActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                webView.loadUrl(url);
+                if (url.contains(".mp4") || url.contains(".webm") || url.contains(".ogg"))
+                    webView.loadUrl(url);
                 return true;
             }
 

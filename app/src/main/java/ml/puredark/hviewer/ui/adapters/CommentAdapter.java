@@ -6,6 +6,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
+        Logger.d("CommentAdapter", "mProvider.getCount():" + mProvider.getCount());
         Comment comment = mProvider.getItem(position);
         Logger.d("CommentAdapter", "comment.avatar:" + comment.avatar);
         if (!TextUtils.isEmpty(comment.avatar))
@@ -73,9 +75,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 }
                 comment.content = content.toString();
             }catch(Exception e){
-            }finally {
-                holder.tvContent.setText(HtmlContentParser.getClickableHtml(context, comment.content, comment.referer, new URLImageParser(context, holder.tvContent, cookie, comment.referer), null));
+                e.printStackTrace();
             }
+            holder.tvContent.setText(HtmlContentParser.getClickableHtml(context, comment.content, comment.referer, new URLImageParser(context, holder.tvContent, cookie, comment.referer), null));
         }
     }
 
