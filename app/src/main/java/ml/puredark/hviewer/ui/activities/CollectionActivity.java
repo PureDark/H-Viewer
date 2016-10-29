@@ -65,6 +65,7 @@ import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
+import ml.puredark.hviewer.ui.customs.WrappedGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
@@ -306,7 +307,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         });
 
         //根据item宽度自动设置spanCount
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 6);
+        GridLayoutManager layoutManager = new WrappedGridLayoutManager(this, 6);
         rvIndex.getRecyclerView().setLayoutManager(layoutManager);
         pictureVideoAdapter.setLayoutManager(layoutManager);
         rvIndex.setPullRefreshEnable(true);

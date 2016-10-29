@@ -32,6 +32,8 @@
     <string name="settings_view_volume_flick_summary">是否开启音量键翻页</string>
     <string name="settings_view_open_one_pic_gallery">单图直接浏览</string>
     <string name="settings_view_open_one_pic_gallery_summary">画册只有一张图时点击直接浏览</string>
+    <string name="settings_view_one_hand">单手模式（下次生效）</string>
+    <string name="settings_view_one_hand_summary">是否允许从屏幕中间拉出左右抽屉</string>
 
     <string-array name="settings_view_direction_option">
         <item>从左到右</item>

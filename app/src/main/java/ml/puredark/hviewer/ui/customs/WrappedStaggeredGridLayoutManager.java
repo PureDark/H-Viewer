@@ -4,14 +4,15 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 
-public class MyStaggeredGridLayoutManager extends StaggeredGridLayoutManager {
+public class WrappedStaggeredGridLayoutManager extends StaggeredGridLayoutManager {
 
-    public MyStaggeredGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public WrappedStaggeredGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public MyStaggeredGridLayoutManager(int spanCount, int orientation) {
+    public WrappedStaggeredGridLayoutManager(int spanCount, int orientation) {
         super(spanCount, orientation);
     }
 
@@ -34,8 +35,8 @@ public class MyStaggeredGridLayoutManager extends StaggeredGridLayoutManager {
         //override this method and implement code as below
         try {
             super.onLayoutChildren(recycler, state);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("probe", "meet a IOOBE in RecyclerView");
         }
     }
 }

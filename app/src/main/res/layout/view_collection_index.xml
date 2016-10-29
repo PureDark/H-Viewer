@@ -7,7 +7,7 @@
     android:background="@color/bgcolor"
     android:orientation="horizontal">
 
-    <ml.puredark.hviewer.ui.customs.MyPullLoadMoreRecyclerView
+    <ml.puredark.hviewer.ui.customs.WrappedPullLoadMoreRecyclerView
         android:id="@+id/rv_index"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

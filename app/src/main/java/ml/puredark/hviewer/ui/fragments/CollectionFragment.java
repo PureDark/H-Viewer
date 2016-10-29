@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +42,8 @@ import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.CollectionActivity;
 import ml.puredark.hviewer.ui.adapters.CollectionAdapter;
 import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
-import ml.puredark.hviewer.ui.customs.MyLinearLayoutManager;
-import ml.puredark.hviewer.ui.customs.MyStaggeredGridLayoutManager;
+import ml.puredark.hviewer.ui.customs.WrappedLinearLayoutManager;
+import ml.puredark.hviewer.ui.customs.WrappedStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
@@ -98,11 +97,11 @@ public class CollectionFragment extends MyFragment {
             activity = (BaseActivity) getActivity();
 
         if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_LIST))
-            mLinearLayoutManager = new MyStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mLinearLayoutManager = new WrappedStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
-            mLinearLayoutManager = new MyLinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
+            mLinearLayoutManager = new WrappedLinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         if (site != null && site.hasFlag(Site.FLAG_WATERFALL_AS_GRID))
-            mGridLayoutManager = new MyStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mGridLayoutManager = new WrappedStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         else
             mGridLayoutManager = new AutoFitGridLayoutManager(this.getContext(), DensityUtil.dp2px(this.getContext(), 100));
 
@@ -143,7 +142,7 @@ public class CollectionFragment extends MyFragment {
         rvCollection.getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (activity == null) return;
+                if (activity == null || !activity.isInOneHandMode()) return;
                 switch (newState) {
                     case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                         activity.setDrawerEnabled(false);

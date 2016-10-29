@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 
 public class AutoFitGridLayoutManager extends GridLayoutManager {
@@ -59,6 +60,10 @@ public class AutoFitGridLayoutManager extends GridLayoutManager {
             setSpanCount(spanCount);
             mColumnWidthChanged = false;
         }
-        super.onLayoutChildren(recycler, state);
+        try {
+            super.onLayoutChildren(recycler, state);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("probe", "meet a IOOBE in RecyclerView");
+        }
     }
 }

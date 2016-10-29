@@ -9,13 +9,13 @@ import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
  * Created by PureDark on 2016/9/29.
  */
 
-public class MyPullLoadMoreRecyclerView extends PullLoadMoreRecyclerView {
+public class WrappedPullLoadMoreRecyclerView extends PullLoadMoreRecyclerView {
 
-    public MyPullLoadMoreRecyclerView(Context context) {
+    public WrappedPullLoadMoreRecyclerView(Context context) {
         super(context);
     }
 
-    public MyPullLoadMoreRecyclerView(Context context, AttributeSet attrs) {
+    public WrappedPullLoadMoreRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

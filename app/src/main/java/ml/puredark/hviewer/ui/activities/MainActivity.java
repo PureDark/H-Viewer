@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.gc.materialdesign.views.ButtonFlat;
-import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -62,7 +61,6 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
-import ml.puredark.hviewer.helpers.ExampleSites;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -74,9 +72,10 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
@@ -196,9 +195,11 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initDrawer() {
-        // 设定侧边栏滑动边距
-        drawer.setDrawerLeftEdgeSize(0.5f);
-        drawer.setDrawerRightEdgeSize(0.5f);
+        if (isInOneHandMode()) {
+            // 设定侧边栏滑动边距
+            drawer.setDrawerLeftEdgeSize(0.5f);
+            drawer.setDrawerRightEdgeSize(0.5f);
+        }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

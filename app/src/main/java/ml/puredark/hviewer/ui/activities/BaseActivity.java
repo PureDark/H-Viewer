@@ -31,6 +31,8 @@ import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.libraries.swipeback.dispatchactivity.SwipeBackActivity;
 import ml.puredark.hviewer.ui.customs.AnimationOnActivity;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
  * Created by PureDark on 2016/8/13.
@@ -108,6 +110,10 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
 
     protected void setAnalyze(boolean analyze) {
         this.analyze = analyze;
+    }
+
+    public boolean isInOneHandMode(){
+        return (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_ONE_HAND, false);
     }
 
     public void setDrawerEnabled(boolean enabled) {
