@@ -1045,11 +1045,7 @@ public class SitePropViewHolder {
         if (lastSite.extraRule.isEmpty())
             lastSite.extraRule = null;
 
-        if (lastSite.indexUrl == null || lastSite.galleryUrl == null ||
-                lastSite.indexRule.item == null || lastSite.indexRule.idCode == null)
-            return null;
-        else
-            return lastSite;
+        return lastSite;
     }
 
     private String loadString(EditText editText) {

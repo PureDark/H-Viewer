@@ -199,16 +199,16 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             ButterKnife.bind(this, view);
 
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+            view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
                     &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
             rippleLayout.setOnClickListener(v -> {
                 if (mItemClickListener != null && getAdapterPosition() >= 0)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+            rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
                     &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
         }
 
@@ -226,16 +226,16 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
                     )
             );
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+            view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
                     &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
             rippleLayout.setOnClickListener(v -> {
                 if (mItemClickListener != null  && getAdapterPosition() >= 0)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0
+            rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
                     && mItemClickListener.onItemLongClick(v, getAdapterPosition()));
         }
 

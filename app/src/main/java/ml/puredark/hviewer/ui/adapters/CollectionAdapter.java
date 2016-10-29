@@ -326,21 +326,21 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (site != null)
                 checkSiteFlags(this, site);
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             view.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
             });
             rippleLayout.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             rippleLayout.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < mProvider.getCount())
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
@@ -359,21 +359,21 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             view.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
             });
             rippleLayout.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             rippleLayout.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
@@ -406,21 +406,21 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (site != null)
                 checkSiteFlags(this, site);
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             view.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;
             });
             rippleLayout.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             rippleLayout.setOnLongClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     return mItemClickListener.onItemLongClick(v, getAdapterPosition());
                 else
                     return false;

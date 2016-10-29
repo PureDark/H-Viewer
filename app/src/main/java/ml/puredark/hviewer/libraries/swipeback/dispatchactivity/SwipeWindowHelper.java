@@ -370,12 +370,15 @@ public class SwipeWindowHelper extends Handler {
             }
 
             ViewGroup previousActivityContainer = getContentView(mPreviousActivity.getWindow());
-            if(previousActivityContainer == null || previousActivityContainer.getChildCount() == 0) {
+            if(previousActivityContainer.getChildAt(0) instanceof ShadowView){
+                previousActivityContainer.removeViewAt(0);
+            }
+            if(previousActivityContainer == null || previousActivityContainer.getChildCount() == 0
+                    || !(previousActivityContainer.getChildAt(0) instanceof ViewGroup)) {
                 mPreviousActivity = null;
                 mPreviousContentView = null;
                 return false;
             }
-
             mPreviousContentView = (ViewGroup) previousActivityContainer.getChildAt(0);
             previousActivityContainer.removeView(mPreviousContentView);
             mCurrentContentView.addView(mPreviousContentView, 0);

@@ -55,7 +55,7 @@ public class DnsManager implements IDns {
                     }
 
                     dnsPack.localhostSp = NetworkManager.getInstance().getSPID();
-                    if (!dnsPack.device_sp.equals(dnsPack.localhostSp)) {
+                    if (dnsPack.device_sp == null || !dnsPack.device_sp.equals(dnsPack.localhostSp)) {
                         HttpDnsLogManager.getInstance().writeLog(HttpDnsLogManager.TYPE_ERROR, HttpDnsLogManager.ACTION_ERR_SPINFO, dnsPack.toJson());
                     }
 

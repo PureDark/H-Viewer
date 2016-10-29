@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,8 @@ public class CollectionFragment extends MyFragment {
 
     private String currUrl = null;
     private String keyword = null;
+
+    private int clickPos = 0;
 
     private boolean onePage = false;
     private int startPage;
@@ -182,6 +185,7 @@ public class CollectionFragment extends MyFragment {
                 HViewerApplication.temp2 = collection;
                 Intent intent = new Intent(CollectionFragment.this.getContext(), CollectionActivity.class);
                 startActivity(intent);
+                clickPos = position;
             }
 
             @Override
@@ -233,8 +237,7 @@ public class CollectionFragment extends MyFragment {
             });
             if (site.hasFlag(Site.FLAG_JS_SCROLL) && page != startPage && mWebView.getUrl().equals(url)) {
                 Logger.d("CollectionFragment", "FLAG_JS_SCROLL");
-                mWebView.loadUrl("javascript:document.body.scrollTop = 0;");
-                new Handler().postDelayed(() -> mWebView.loadUrl("javascript:document.body.scrollTop = document.body.scrollHeight;"), 100);
+                mWebView.loadUrl("javascript:document.body.scrollTop = document.body.scrollHeight;");
                 new Handler().postDelayed(() -> {
                     scrollTimes++;
                     mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
@@ -267,11 +270,16 @@ public class CollectionFragment extends MyFragment {
 
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
+        if (page == startPage) {
+            int preSize = adapter.getItemCount();
+            if (preSize > 0) {
+                adapter.getDataProvider().clear();
+                adapter.notifyItemRangeRemoved(0, preSize);
+            }
+        }
         new Thread(() -> {
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
-            if (page == startPage)
-                adapter.getDataProvider().clear();
             final Rule rule;
 
             rule = (keyword != null && site.searchRule != null && site.searchRule.item != null) ? site.searchRule : site.indexRule;
@@ -302,7 +310,7 @@ public class CollectionFragment extends MyFragment {
                 scrollTimes = 0;
                 addSearchSuggestions(collections, oldSize);
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemRangeInserted(oldSize, collections.size() - oldSize);
                     rvCollection.setPullLoadMoreCompleted();
                 });
             } else if (site.hasFlag(Site.FLAG_JS_SCROLL) && mWebView != null) {
@@ -314,7 +322,6 @@ public class CollectionFragment extends MyFragment {
             } else {
                 scrollTimes = 0;
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    adapter.notifyDataSetChanged();
                     rvCollection.setPullLoadMoreCompleted();
                 });
             }
@@ -336,7 +343,8 @@ public class CollectionFragment extends MyFragment {
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+        if (clickPos >= 0 && clickPos < adapter.getItemCount())
+            adapter.notifyItemChanged(clickPos);
         if (site != null)
             MobclickAgent.onPageStart(site.title);
     }
@@ -344,7 +352,8 @@ public class CollectionFragment extends MyFragment {
     @Override
     public void onPause() {
         super.onPause();
-        adapter.notifyDataSetChanged();
+        if (clickPos >= 0 && clickPos < adapter.getItemCount())
+            adapter.notifyItemChanged(clickPos);
         if (site != null)
             MobclickAgent.onPageEnd(site.title);
     }

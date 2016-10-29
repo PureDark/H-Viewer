@@ -88,7 +88,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(view);
             ButterKnife.bind(this, view);
             container.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
         }

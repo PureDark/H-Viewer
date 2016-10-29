@@ -152,7 +152,7 @@ public class PictureVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
         }
@@ -166,7 +166,7 @@ public class PictureVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(v -> {
-                if (mItemClickListener != null && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
         }

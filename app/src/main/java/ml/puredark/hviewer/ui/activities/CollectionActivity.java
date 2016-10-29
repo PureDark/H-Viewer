@@ -205,7 +205,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         if (onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY)) {
             openPictureViewerActivity(0);
         }
-        fabDownload.setVisibility(View.GONE);
     }
 
     private void parseUrl(String url) {
@@ -382,10 +381,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         holder.tvCategory.setText(myCollection.category);
         CollectionTagAdapter adapter = (CollectionTagAdapter) holder.rvTags.getAdapter();
         if (myCollection.tags != null) {
-            adapter.getDataProvider().clear();
+            int preSize = adapter.getItemCount();
+            if(preSize > 0) {
+                adapter.getDataProvider().clear();
+                adapter.notifyItemRangeChanged(0, preSize);
+            }
             adapter.getDataProvider().addAll(myCollection.tags);
+            adapter.notifyItemRangeChanged(0, myCollection.tags.size());
         }
-        adapter.notifyDataSetChanged();
         holder.rbRating.setRating(myCollection.rating);
         Logger.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
         holder.tvSubmittime.setText(myCollection.datetime);
@@ -398,9 +401,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         collection.rating = myCollection.rating;
         collection.datetime = myCollection.datetime;
         collection.description = myCollection.description;
-        if(myCollection.videos==null||myCollection.videos.size()==0)
-            fabDownload.setVisibility(View.VISIBLE);
-        else
+        if (myCollection.videos != null && myCollection.videos.size() > 0)
             fabDownload.setVisibility(View.GONE);
     }
 
@@ -468,144 +469,160 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
-        boolean flagNextPage = false, emptyPicture = false, emptyVideo = false;
+        new Handler(Looper.getMainLooper()).post(()->{
+            boolean flagNextPage = false, emptyPicture = false, emptyVideo = false;
 
-        if (HViewerApplication.DEBUG)
-            SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
-        myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
-        if (myCollection.videos != null && myCollection.videos.size() > 0) {
-            Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
-            Logger.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
-        } else {
-            Logger.d("CollectionActivity", "myCollection.videos.size(): 0");
-        }
-        Logger.d("CollectionActivity", "myCollection.comments:" + ((myCollection.comments != null) ? myCollection.comments.size() : myCollection.comments));
-
-        if (myCollection.tags != null) {
-            for (Tag tag : myCollection.tags) {
-                HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
-                siteTagHolder.addTag(site.sid, tag);
-            }
-        }
-
-        /************
-         * 图片处理
-         ************/
-        // 如果当前页获取到的图片数量不为0，则进行后续判断是否添加进图片目录中
-        if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
-            // 当前页获取到的第一个图片
-            final Picture picture = myCollection.pictures.get(0);
-            // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
-            if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
-                HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
-                    @Override
-                    public void onSuccess(String contentType, Object result) {
-                        myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
-                        pictureVideoAdapter.getPictureDataProvider().clear();
-                        pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
-                        isIndexComplete = true;
-                        myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
-                    }
-
-                    @Override
-                    public void onFailure(HViewerHttpClient.HttpError error) {
-                        showSnackBar(error.getErrorString());
-                        rvIndex.setPullLoadMoreCompleted();
-                    }
-                });
+            if (HViewerApplication.DEBUG)
+                SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
+            myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
+            if (myCollection.videos != null && myCollection.videos.size() > 0) {
+                Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
+                Logger.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
             } else {
-                // 没有flag的话
+                Logger.d("CollectionActivity", "myCollection.videos.size(): 0");
+            }
+            Logger.d("CollectionActivity", "myCollection.comments:" + ((myCollection.comments != null) ? myCollection.comments.size() : myCollection.comments));
+
+            if (myCollection.tags != null) {
+                for (Tag tag : myCollection.tags) {
+                    HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                    siteTagHolder.addTag(site.sid, tag);
+                }
+            }
+
+            /************
+             * 图片处理
+             ************/
+            // 如果当前页获取到的图片数量不为0，则进行后续判断是否添加进图片目录中
+            if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
+                // 当前页获取到的第一个图片
+                final Picture picture = myCollection.pictures.get(0);
+                // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
+                if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
+                    HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                        @Override
+                        public void onSuccess(String contentType, Object result) {
+                            myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
+                            int preSize = pictureVideoAdapter.getPictureSize();
+                            if (preSize > 0) {
+                                pictureVideoAdapter.getPictureDataProvider().clear();
+                                pictureVideoAdapter.notifyItemRangeRemoved(0, preSize);
+                            }
+                            pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
+                            pictureVideoAdapter.notifyItemRangeInserted(0, myCollection.pictures.size());
+                            isIndexComplete = true;
+                            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
+                        }
+
+                        @Override
+                        public void onFailure(HViewerHttpClient.HttpError error) {
+                            showSnackBar(error.getErrorString());
+                            rvIndex.setPullLoadMoreCompleted();
+                        }
+                    });
+                } else {
+                    // 没有flag的话
+                    if (page == startPage) {
+                        // 当前获取的是第一页，则清空原目录中所有图片，再添加当前获取到的所有图片进入目录中
+                        int preSize = pictureVideoAdapter.getPictureSize();
+                        if (preSize > 0) {
+                            pictureVideoAdapter.getPictureDataProvider().clear();
+                            pictureVideoAdapter.notifyItemRangeRemoved(0, preSize);
+                        }
+                        pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
+                        pictureVideoAdapter.notifyItemRangeInserted(0, myCollection.pictures.size());
+                        currPage = page;
+                        refreshing = true;
+                        flagNextPage = true;
+                    } else if (!pictureVideoAdapter.getPictureDataProvider().getItems().contains(picture)) {
+                        // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
+                        int currPid = pictureVideoAdapter.getItemCount() + 1;
+                        for (int i = 0; i < myCollection.pictures.size(); i++) {
+                            if (myCollection.pictures.get(i).pid < currPid + i)
+                                myCollection.pictures.get(i).pid = currPid + i;
+                        }
+                        int preSize = pictureVideoAdapter.getPictureSize();
+                        pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
+                        pictureVideoAdapter.notifyItemRangeInserted(preSize, myCollection.pictures.size());
+                        currPage = page;
+                        refreshing = true;
+                        flagNextPage = true;
+                    } else {
+                        // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定此次获取到的图片数量为0
+                        emptyPicture = true;
+                    }
+                }
+            } else {
+                // 获取到的图片数量为0
+                emptyPicture = true;
+            }
+
+            /************
+             * 视频处理
+             ************/
+
+            if (myCollection.videos != null && myCollection.videos.size() > 0) {
+                final Video firstVideo = myCollection.videos.get(0);
                 if (page == startPage) {
-                    // 当前获取的是第一页，则清空原目录中所有图片，再添加当前获取到的所有图片进入目录中
-                    pictureVideoAdapter.getPictureDataProvider().clear();
-                    pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
+                    // 当前获取的是第一页，则清空原目录中所有视频，再添加当前获取到的所有视频进入目录中
+                    int preSize = pictureVideoAdapter.getVideoSize();
+                    if (preSize > 0) {
+                        pictureVideoAdapter.getVideoDataProvider().clear();
+                        pictureVideoAdapter.notifyItemRangeRemoved(pictureVideoAdapter.getPictureSize(), preSize);
+                    }
+                    pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
+                    pictureVideoAdapter.notifyItemRangeInserted(pictureVideoAdapter.getPictureSize(), myCollection.videos.size());
                     currPage = page;
                     refreshing = true;
                     flagNextPage = true;
-                } else if (!pictureVideoAdapter.getPictureDataProvider().getItems().contains(picture)) {
-                    // 如果当前获取的不是第一页，且当前第一张图片不在于图片目录中，则添加当前获取到的所有图片到图片目录中
-                    int currPid = pictureVideoAdapter.getItemCount() + 1;
-                    for (int i = 0; i < myCollection.pictures.size(); i++) {
-                        if (myCollection.pictures.get(i).pid < currPid + i)
-                            myCollection.pictures.get(i).pid = currPid + i;
-                    }
-                    pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
+                } else if (!pictureVideoAdapter.getVideoDataProvider().getItems().contains(firstVideo)) {
+                    // 如果当前获取的不是第一页，且当前第一个视频不在于视频目录中，则添加当前获取到的所有视频到视频目录中
+                    pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
+                    pictureVideoAdapter.notifyItemRangeInserted(pictureVideoAdapter.getPictureSize(), myCollection.videos.size());
                     currPage = page;
                     refreshing = true;
                     flagNextPage = true;
                 } else {
-                    // 如果当前获取的不是第一页，且当前第一张图片已存在于图片目录中，则判定此次获取到的图片数量为0
-                    emptyPicture = true;
+                    // 如果当前获取的不是第一页，且当前第一个视频已存在于视频目录中，则判定此次获取到的视频数量为0
+                    emptyVideo = true;
                 }
-            }
-        } else {
-            // 获取到的图片数量为0
-            emptyPicture = true;
-        }
-
-        /************
-         * 视频处理
-         ************/
-
-        if (myCollection.videos != null && myCollection.videos.size() > 0) {
-            final Video firstVideo = myCollection.videos.get(0);
-            if (page == startPage) {
-                // 当前获取的是第一页，则清空原目录中所有视频，再添加当前获取到的所有视频进入目录中
-                pictureVideoAdapter.getVideoDataProvider().clear();
-                pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
-                currPage = page;
-                refreshing = true;
-                flagNextPage = true;
-            } else if (!pictureVideoAdapter.getVideoDataProvider().getItems().contains(firstVideo)) {
-                // 如果当前获取的不是第一页，且当前第一个视频不在于视频目录中，则添加当前获取到的所有视频到视频目录中
-                pictureVideoAdapter.getVideoDataProvider().addAll(myCollection.videos);
-                currPage = page;
-                refreshing = true;
-                flagNextPage = true;
             } else {
-                // 如果当前获取的不是第一页，且当前第一个视频已存在于视频目录中，则判定此次获取到的视频数量为0
+                // 获取到的视频数量为0
                 emptyVideo = true;
             }
-        } else {
-            // 获取到的视频数量为0
-            emptyVideo = true;
-        }
 
-        /************
-         * 评论处理
-         ************/
+            /************
+             * 评论处理
+             ************/
 
-        if (rvComment != null && commentAdapter != null && myCollection.comments != null && myCollection.comments.size() > 0) {
-            // 当前页获取到的第一个评论
-            final Comment firstComment = myCollection.comments.get(0);
-            if (!commentAdapter.getDataProvider().getItems().contains(firstComment)) {
-                commentAdapter.getDataProvider().addAll(myCollection.comments);
+            if (rvComment != null && commentAdapter != null && myCollection.comments != null && myCollection.comments.size() > 0) {
+                // 当前页获取到的第一个评论
+                final Comment firstComment = myCollection.comments.get(0);
+                if (!commentAdapter.getDataProvider().getItems().contains(firstComment)) {
+                    int preSize = commentAdapter.getItemCount();
+                    commentAdapter.getDataProvider().addAll(myCollection.comments);
+                    pictureVideoAdapter.notifyItemRangeInserted(preSize, myCollection.comments.size());
+                }
             }
-        }
 
-        if (emptyPicture && emptyVideo) {
-            // 获取到的图片和视频数量都为0，则直接判定已达到末尾
-            isIndexComplete = true;
-            refreshing = false;
-            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
-            myCollection.videos = pictureVideoAdapter.getVideoDataProvider().getItems();
-            if (commentAdapter != null)
-                myCollection.comments = commentAdapter.getDataProvider().getItems();
-        }
-        boolean finalFlagNextPage = flagNextPage;
-        new Handler(Looper.getMainLooper()).post(() -> {
+            if (emptyPicture && emptyVideo) {
+                // 获取到的图片和视频数量都为0，则直接判定已达到末尾
+                isIndexComplete = true;
+                refreshing = false;
+                myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
+                myCollection.videos = pictureVideoAdapter.getVideoDataProvider().getItems();
+                if (commentAdapter != null)
+                    myCollection.comments = commentAdapter.getDataProvider().getItems();
+            }
+            boolean finalFlagNextPage = flagNextPage;
             if (!refreshing)
                 rvIndex.setPullLoadMoreCompleted();
             refreshDescription(url);
-            if (pictureVideoAdapter != null)
-                pictureVideoAdapter.notifyDataSetChanged();
             if (pictureViewerActivity != null) {
                 List<Picture> pictures = new ArrayList<>();
                 pictures.addAll(pictureVideoAdapter.getPictureDataProvider().getItems());
                 pictureViewerActivity.notifyDataSetChanged(pictures);
             }
-            if (commentAdapter != null)
-                commentAdapter.notifyDataSetChanged();
             if (finalFlagNextPage)
                 getCollectionDetail(currPage + pageStep);
         });
