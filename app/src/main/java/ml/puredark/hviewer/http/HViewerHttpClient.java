@@ -3,6 +3,7 @@ package ml.puredark.hviewer.http;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.util.Pair;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,7 +21,6 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.helpers.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Cookie;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,19 +35,17 @@ public class HViewerHttpClient {
             .dns(new HttpDns())
             .build();
 
-    public static Object get(String url, List<Cookie> cookies) {
+    public static Object get(String url, List<Pair<String, String>> headers) {
         if (url == null || !url.startsWith("http")) {
             Logger.d("HViewerHttpClient", "url = " + url);
             return null;
         }
         if (HViewerApplication.isNetworkAvailable()) {
             HRequestBuilder builder = new HRequestBuilder();
-            if (cookies != null) {
-                String cookieString = "";
-                for (Cookie cookie : cookies) {
-                    cookieString += cookie.name() + "=" + cookie.value() + "; ";
+            if (headers != null) {
+                for (Pair<String, String> header : headers) {
+                    builder.addHeader(header.first, header.second);
                 }
-                builder.addHeader("cookie", cookieString);
             }
             Request request = builder
                     .url(url)
@@ -72,33 +70,31 @@ public class HViewerHttpClient {
         return null;
     }
 
-    public static void get(String url, List<Cookie> cookies, final OnResponseListener callback) {
-        get(url, cookies, false, null, callback);
+    public static void get(String url, List<Pair<String, String>> headers, final OnResponseListener callback) {
+        get(url, true, headers, false, null, callback);
     }
 
-    public static void get(String url, List<Cookie> cookies, boolean post, final OnResponseListener callback) {
+    public static void get(String url, boolean disableHProxy, List<Pair<String, String>> headers, boolean post, final OnResponseListener callback) {
         if (!post)
-            get(url, cookies, false, null, callback);
+            get(url, disableHProxy, headers, false, null, callback);
         else {
             String params = (url == null) ? "" : url.substring(url.indexOf('?'));
-            post(url, params, cookies, callback);
+            post(url, disableHProxy, params, headers, callback);
         }
     }
 
-    public static void get(String url, List<Cookie> cookies, boolean post, RequestBody body, final OnResponseListener callback) {
+    public static void get(String url, boolean disableHProxy, List<Pair<String, String>> headers, boolean post, RequestBody body, final OnResponseListener callback) {
         if (url == null || !url.startsWith("http")) {
             Logger.d("HViewerHttpClient", "url = " + url);
             callback.onFailure(new HttpError(HttpError.ERROR_WRONG_URL));
             return;
         }
         if (HViewerApplication.isNetworkAvailable()) {
-            HRequestBuilder builder = new HRequestBuilder();
-            if (cookies != null) {
-                String cookieString = "";
-                for (Cookie cookie : cookies) {
-                    cookieString += cookie.name() + "=" + cookie.value() + "; ";
+            HRequestBuilder builder = new HRequestBuilder(disableHProxy);
+            if (headers != null) {
+                for (Pair<String, String> header : headers) {
+                    builder.addHeader(header.first, header.second);
                 }
-                builder.addHeader("cookie", cookieString);
             }
             if (post)
                 builder.post(body);
@@ -120,7 +116,7 @@ public class HViewerHttpClient {
         }
     }
 
-    public static void post(String url, String paramsString, List<Cookie> cookies, final OnResponseListener callback) {
+    public static void post(String url, boolean disableHProxy, String paramsString, List<Pair<String, String>> headers, final OnResponseListener callback) {
         String[] paramStrings = paramsString.split("&");
         FormBody.Builder formBody = new FormBody.Builder();
         for (String paramString : paramStrings) {
@@ -129,7 +125,7 @@ public class HViewerHttpClient {
             formBody.add(pram[0], pram[1]);
         }
         RequestBody requestBody = formBody.build();
-        get(url, cookies, true, requestBody, callback);
+        get(url, disableHProxy, headers, true, requestBody, callback);
     }
 
     public interface OnResponseListener {

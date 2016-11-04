@@ -77,6 +77,7 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static android.R.id.list;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -197,6 +198,7 @@ public class MainActivity extends BaseActivity {
     private void initDrawer() {
         if (isInOneHandMode()) {
             // 设定侧边栏滑动边距
+            drawer.setDrawerLeftEdgeSize(0.5f);
             drawer.setDrawerLeftEdgeSize(0.5f);
             drawer.setDrawerRightEdgeSize(0.5f);
         }
@@ -478,6 +480,7 @@ public class MainActivity extends BaseActivity {
         mySuggestions.addAll(histories);
         mySuggestions.addAll(suggestions);
         mySuggestions = new ArrayList(new HashSet(mySuggestions));
+        mySuggestions.removeAll(Collections.singleton(null));
         Collections.sort(mySuggestions, String.CASE_INSENSITIVE_ORDER);
         int size = mySuggestions.size();
         String[] kwStrings = new String[size];

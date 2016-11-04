@@ -483,7 +483,7 @@ public class PictureViewerActivity extends BaseActivity {
                 new Handler().postDelayed(() -> webView.stopLoading(), 30000);
                 Logger.d("PictureViewerActivity", "WebView");
             } else
-                HViewerHttpClient.get(picture.url, site.getCookies(), site.hasFlag(Site.FLAG_POST_PICTURE), new HViewerHttpClient.OnResponseListener() {
+                HViewerHttpClient.get(picture.url, site.disableHProxy, site.getHeaders(), site.hasFlag(Site.FLAG_POST_PICTURE), new HViewerHttpClient.OnResponseListener() {
 
                     @Override
                     public void onSuccess(String contentType, Object result) {

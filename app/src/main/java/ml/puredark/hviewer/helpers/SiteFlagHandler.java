@@ -104,7 +104,7 @@ public class SiteFlagHandler {
             startPage = 0;
         }
         final String url = site.getGalleryUrl(collection.idCode, startPage, null);
-        HViewerHttpClient.get(url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+        HViewerHttpClient.get(url, site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
                 if (result == null)

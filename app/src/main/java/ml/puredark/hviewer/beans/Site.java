@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.beans;
 
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import java.lang.reflect.Field;
@@ -43,17 +44,17 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
     public Rule indexRule, galleryRule, searchRule, extraRule;
-    public List<String> tagSource;
-    public TagRule tagRule;
     public int versionCode;
 
     @Deprecated
     public Selector picUrlSelector;
 
     public String cookie = "";
+    public String header = "";
     public String flag = "";
     public int index;
     public boolean isGrid = false;
+    public boolean disableHProxy = false;
 
     public Site() {
     }
@@ -92,21 +93,18 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     }
 
 
-    public List<Cookie> getCookies() {
-        List<Cookie> cookies = new ArrayList<>();
-        if (cookie == null || "".equals(cookie))
-            return cookies;
-        Pattern pattern = Pattern.compile("(.*?)=([^;]*)", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(cookie);
-        while (matcher.find()) {
-            cookies.add(new Cookie.Builder()
-                    .name(matcher.group(1).trim())
-                    .value(matcher.group(2).trim())
-                    .domain(RegexValidateUtil.getDominFromUrl(indexUrl))
-                    .build()
-            );
+    public List<Pair<String, String>> getHeaders() {
+        List<Pair<String, String>> headers = new ArrayList<>();
+        if(!TextUtils.isEmpty(cookie))
+            headers.add(new Pair<>("cookie", cookie));
+        if(!TextUtils.isEmpty(header)) {
+            Pattern pattern = Pattern.compile("([^\\r\\n]*?):([^\\r\\n]*)", Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(header);
+            while (matcher.find() && matcher.groupCount() == 2) {
+                headers.add(new Pair<>(matcher.group(1), matcher.group(2)));
+            }
         }
-        return cookies;
+        return headers;
     }
 
     public boolean hasFlag(String flag) {
@@ -181,6 +179,8 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     }
 
     public void replace(Site site) {
+        if (site == null)
+            return;
         Field[] fs = Site.class.getDeclaredFields();
         try {
             for (Field f : fs) {
@@ -206,6 +206,22 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
                         }
                     }
                     f.set(this, categories);
+                } else if (f.getType() == Selector.class) {
+                    Selector oldProp = (Selector) f.get(this);
+                    Selector newProp = (Selector) f.get(site);
+                    if (oldProp == null)
+                        oldProp = newProp;
+                    else
+                        oldProp.replace(newProp);
+                    f.set(this, oldProp);
+                } else if (f.getType() == Rule.class) {
+                    Rule oldProp = (Rule) f.get(this);
+                    Rule newProp = (Rule) f.get(site);
+                    if (oldProp == null)
+                        oldProp = newProp;
+                    else
+                        oldProp.replace(newProp);
+                    f.set(this, oldProp);
                 } else {
                     f.set(this, f.get(site));
                 }

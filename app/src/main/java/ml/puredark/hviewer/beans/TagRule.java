@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
  * Created by PureDark on 2016/10/11.
  */
 
-public class TagRule {
+public class TagRule extends SubRule{
     public Selector item, title, url;
 
     public boolean isEmpty() {

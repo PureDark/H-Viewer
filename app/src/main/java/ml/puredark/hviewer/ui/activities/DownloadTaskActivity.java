@@ -39,6 +39,7 @@ import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.CollectionTagAdapter;
@@ -71,10 +72,6 @@ public class DownloadTaskActivity extends BaseActivity {
     AppBarLayout appBar;
     @BindView(R.id.fab_menu)
     FloatingActionMenu fabMenu;
-    @BindView(R.id.fab_browser)
-    FloatingActionButton fabBorwser;
-    @BindView(R.id.fab_favor)
-    FloatingActionButton fabFavor;
     @BindView(R.id.fab_download)
     FloatingActionButton fabDownload;
 
@@ -87,6 +84,7 @@ public class DownloadTaskActivity extends BaseActivity {
     private CommentAdapter commentAdapter;
 
     private CollectionViewHolder holder;
+    private FavouriteHolder favouriteHolder;
 
     private int startPage;
 
@@ -121,6 +119,8 @@ public class DownloadTaskActivity extends BaseActivity {
             return;
         }
 
+        favouriteHolder = new FavouriteHolder(this);
+
         //解析URL模板
         parseUrl(task.collection.site.galleryUrl);
 
@@ -132,7 +132,6 @@ public class DownloadTaskActivity extends BaseActivity {
         initCover(task.collection.cover);
         initTabAndViewPager();
         refreshDescription();
-        fabFavor.setVisibility(View.GONE);
         fabDownload.setVisibility(View.GONE);
     }
 
@@ -289,6 +288,14 @@ public class DownloadTaskActivity extends BaseActivity {
         MobclickAgent.onEvent(HViewerApplication.mContext, "SwitchToBrowser");
     }
 
+    @OnClick(R.id.fab_favor)
+    void favor() {
+        favouriteHolder.addFavourite(task.collection);
+        showSnackBar("收藏成功！");
+        // 统计收藏次数
+        MobclickAgent.onEvent(HViewerApplication.mContext, "FavorCollection");
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -297,6 +304,8 @@ public class DownloadTaskActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (favouriteHolder != null)
+            favouriteHolder.onDestroy();
     }
 
     public class CollectionViewHolder {
@@ -320,7 +329,7 @@ public class DownloadTaskActivity extends BaseActivity {
             rvTags.setAdapter(
                     new CollectionTagAdapter(
                             new ListDataProvider<>(
-                                    new ArrayList<Tag>()
+                                    new ArrayList<>()
                             )
                     )
             );

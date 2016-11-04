@@ -33,4 +33,34 @@ public class Rule {
         return !notEmpty;
     }
 
+    public void replace(Rule rule){
+        if (rule == null)
+            return;
+        Field[] fs = Rule.class.getDeclaredFields();
+        try {
+            for (Field f : fs) {
+                f.setAccessible(true);
+                if (f.getType() == Selector.class) {
+                    Selector oldProp = (Selector) f.get(this);
+                    Selector newProp = (Selector) f.get(rule);
+                    if (oldProp == null)
+                        oldProp = newProp;
+                    else
+                        oldProp.replace(newProp);
+                    f.set(this, oldProp);
+                }else if(f.get(rule) instanceof SubRule){
+                    SubRule oldProp = (SubRule) f.get(this);
+                    SubRule newProp = (SubRule) f.get(rule);
+                    if (oldProp == null)
+                        oldProp = newProp;
+                    else
+                        oldProp.replace(newProp);
+                    f.set(this, oldProp);
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

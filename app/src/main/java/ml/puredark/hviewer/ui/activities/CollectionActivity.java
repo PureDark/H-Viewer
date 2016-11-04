@@ -383,7 +383,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         CollectionTagAdapter adapter = (CollectionTagAdapter) holder.rvTags.getAdapter();
         if (myCollection.tags != null) {
             int preSize = adapter.getItemCount();
-            if(preSize > 0) {
+            if (preSize > 0) {
                 adapter.getDataProvider().clear();
                 adapter.notifyItemRangeChanged(0, preSize);
             }
@@ -407,7 +407,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     private void getCollectionDetail(final int page) {
-        if (site.galleryRule == null || (onePage && page > startPage)) {
+        if (site.galleryRule == null || (onePage && page > startPage) || (onePage && collection.pictures != null && collection.pictures.size() > 0)) {
             // 如果没有galleryRule，或者URL中根本没有page参数的位置，肯定只有1页，则不继续加载
             rvIndex.setPullLoadMoreCompleted();
             isIndexComplete = true;
@@ -443,7 +443,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             new Handler().postDelayed(() -> mWebView.stopLoading(), 30000);
             Logger.d("CollectionActivity", "WebView");
         } else
-            HViewerHttpClient.get(url, site.getCookies(), site.hasFlag(Site.FLAG_POST_GALLERY), new HViewerHttpClient.OnResponseListener() {
+            HViewerHttpClient.get(url, site.disableHProxy, site.getHeaders(), site.hasFlag(Site.FLAG_POST_GALLERY), new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, final Object result) {
                     if (result == null) {
@@ -470,7 +470,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @JavascriptInterface
     public void onResultGot(String html, String url, int page) {
-        new Handler(Looper.getMainLooper()).post(()->{
+        new Handler(Looper.getMainLooper()).post(() -> {
             boolean flagNextPage = false, emptyPicture = false, emptyVideo = false;
 
             if (HViewerApplication.DEBUG)
@@ -500,7 +500,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 final Picture picture = myCollection.pictures.get(0);
                 // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
                 if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
-                    HViewerHttpClient.get(picture.url, site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                    HViewerHttpClient.get(picture.url, site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
                         @Override
                         public void onSuccess(String contentType, Object result) {
                             myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);

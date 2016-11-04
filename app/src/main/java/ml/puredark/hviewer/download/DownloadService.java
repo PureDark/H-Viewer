@@ -190,7 +190,7 @@ public class DownloadService extends Service {
                 });
                 Logger.d("DownloadService", "WebView");
             } else
-                HViewerHttpClient.get(picture.url, task.collection.site.getCookies(), new HViewerHttpClient.OnResponseListener() {
+                HViewerHttpClient.get(picture.url, task.collection.site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
 
                     @Override
                     public void onSuccess(String contentType, Object result) {
