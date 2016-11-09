@@ -350,6 +350,7 @@ public class PictureViewerActivity extends BaseActivity {
     }
 
     public void notifyDataSetChanged(List<Picture> pictures) {
+        this.pictures = pictures;
         if (picturePagerAdapter != null) {
             picturePagerAdapter.pictures = pictures;
             picturePagerAdapter.notifyDataSetChanged();

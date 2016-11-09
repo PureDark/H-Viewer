@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.Picture;
@@ -34,7 +33,6 @@ import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.utils.MathUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
 import static java.util.regex.Pattern.DOTALL;
@@ -69,7 +67,7 @@ public class RuleParser {
         return string.startsWith("{") || string.startsWith("[");
     }
 
-    public static List<Collection> getCollections(List<Collection> collections, String text, Rule rule, String sourceUrl){
+    public static List<Collection> getCollections(List<Collection> collections, String text, Rule rule, String sourceUrl) {
         return getCollections(collections, text, rule, sourceUrl, false);
     }
 
@@ -120,7 +118,13 @@ public class RuleParser {
                 }
             } else {
                 ReadContext ctx = JsonPath.parse(text);
-                items = ctx.read(rule.item.path, JsonArray.class);
+                JsonElement element = ctx.read(rule.item.path, JsonElement.class);
+                if (element instanceof JsonArray)
+                    items = element.getAsJsonArray();
+                else {
+                    items = new JsonArray();
+                    ((JsonArray) items).add(element);
+                }
                 Logger.d("RuleParser", items.toString());
                 for (Object item : items) {
                     String itemStr;
@@ -161,7 +165,7 @@ public class RuleParser {
     }
 
     public static Collection getCollectionDetail(Collection collection, String text, Rule rule, String sourceUrl) {
-        if(rule == null)
+        if (rule == null)
             return collection;
         try {
             if (rule.item != null && rule.pictureRule != null && rule.pictureRule.item != null) {
@@ -235,7 +239,13 @@ public class RuleParser {
                 temp = ((Element) source).select(rule.tagRule.item.selector);
             else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                temp = ctx.read(rule.tagRule.item.path, JsonArray.class);
+                JsonElement element = ctx.read(rule.tagRule.item.path, JsonElement.class);
+                if (element instanceof JsonArray)
+                    temp = element.getAsJsonArray();
+                else {
+                    temp = new JsonArray();
+                    ((JsonArray) temp).add(element);
+                }
             } else
                 return collection;
             for (Object element : temp) {
@@ -283,7 +293,13 @@ public class RuleParser {
                     temp = ((Element) source).select(pictureItem.selector);
                 else if (source instanceof JsonElement) {
                     ReadContext ctx = JsonPath.parse(source.toString());
-                    temp = ctx.read(pictureItem.path, JsonArray.class);
+                    JsonElement element = ctx.read(pictureItem.path, JsonElement.class);
+                    if (element instanceof JsonArray)
+                        temp = element.getAsJsonArray();
+                    else {
+                        temp = new JsonArray();
+                        ((JsonArray) temp).add(element);
+                    }
                 } else
                     return collection;
                 for (Object element : temp) {
@@ -336,7 +352,13 @@ public class RuleParser {
                 temp = ((Element) source).select(rule.videoRule.item.selector);
             else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                temp = ctx.read(rule.videoRule.item.path, JsonArray.class);
+                JsonElement element = ctx.read(rule.videoRule.item.path, JsonElement.class);
+                if (element instanceof JsonArray)
+                    temp = element.getAsJsonArray();
+                else {
+                    temp = new JsonArray();
+                    ((JsonArray) temp).add(element);
+                }
             } else
                 return collection;
             for (Object element : temp) {
@@ -381,9 +403,15 @@ public class RuleParser {
         if (commentItem != null && commentContent != null) {
             if (source instanceof Element) {
                 temp = ((Element) source).select(commentItem.selector);
-            }else if (source instanceof JsonElement) {
+            } else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                temp = ctx.read(commentItem.path, JsonArray.class);
+                JsonElement element = ctx.read(commentItem.path, JsonElement.class);
+                if (element instanceof JsonArray)
+                    temp = element.getAsJsonArray();
+                else {
+                    temp = new JsonArray();
+                    ((JsonArray) temp).add(element);
+                }
             } else
                 return collection;
             for (Object element : temp) {
@@ -453,7 +481,7 @@ public class RuleParser {
                         } else {
                             prop = elem.toString();
                         }
-                        if(doJsonParse)
+                        if (doJsonParse)
                             props = getPropertyAfterRegex(props, prop, selector, sourceUrl, false);
                         else
                             props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
@@ -464,7 +492,7 @@ public class RuleParser {
                                 prop = props.get(i);
                                 Object tempItem = JsonPath.parse(prop).read(selector.path);
                                 if (tempItem instanceof JsonPrimitive)
-                                    prop = ((JsonPrimitive)tempItem).getAsString();
+                                    prop = ((JsonPrimitive) tempItem).getAsString();
                                 else
                                     prop = tempItem.toString();
                                 if (!TextUtils.isEmpty(prop)) {
@@ -487,7 +515,7 @@ public class RuleParser {
                         temp = (JsonArray) elem;
                     else
                         ((List) temp).add(elem);
-                } catch (PathNotFoundException e){
+                } catch (PathNotFoundException e) {
                 }
 
                 if (temp != null) {
