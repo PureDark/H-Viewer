@@ -25,5 +25,40 @@ public class MarketSiteCategory {
         public int getId() {
             return sid;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if ((obj instanceof MarketSite)) {
+                MarketSite item = (MarketSite) obj;
+                return MarketSiteCategory.equals(item.title, title)
+                        && MarketSiteCategory.equals(item.author, author);
+            }
+            return false;
+        }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ((obj instanceof MarketSiteCategory)) {
+            MarketSiteCategory item = (MarketSiteCategory) obj;
+            return equals(item.title, title);
+        }
+        return false;
+    }
+
+    public static boolean equals(Object obj1, Object obj2) {
+        if (obj1 == obj2) {
+            return true;
+        }
+        if (obj1 == null || obj2 == null) {
+            return false;
+        }
+        return obj1.equals(obj2);
+    }
+    @Override
+    public int hashCode() {
+        int ret = String.valueOf(title).hashCode();
+        return ret;
+    }
+
 }

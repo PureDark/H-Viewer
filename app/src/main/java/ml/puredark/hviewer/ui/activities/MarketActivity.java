@@ -19,7 +19,9 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,8 +38,8 @@ import ml.puredark.hviewer.ui.adapters.MarketSiteAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
-import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
+import ml.puredark.hviewer.ui.listeners.SwipeBackOnPageChangeListener;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_MODE_R18_ENABLED;
@@ -63,7 +65,7 @@ public class MarketActivity extends BaseActivity {
 
     private SiteHolder siteHolder;
 
-    private List<MarketSiteCategory> siteCategories;
+    private LinkedHashMap<MarketSiteCategory, List<MarketSiteCategory.MarketSite>> siteCategories;
     private List<MarketSiteAdapter> siteAdapters;
 
     private boolean getting = false;
@@ -81,31 +83,14 @@ public class MarketActivity extends BaseActivity {
 
         siteHolder = new SiteHolder(this);
 
-        tabLayout.setVisibility(View.GONE);
-        getAllSites(new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, Object result) {
-                try {
-                    siteCategories = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
-                    }.getType());
-                    initTabAndViewPager(siteCategories);
-                    progressBar.setVisibility(View.GONE);
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
-                }
-            }
+        siteCategories = new LinkedHashMap<>();
 
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-                progressBar.setVisibility(View.GONE);
-                showSnackBar(error.getErrorString());
-            }
-        });
+        tabLayout.setVisibility(View.GONE);
+        getAllSites();
     }
 
 
-    private void initTabAndViewPager(List<MarketSiteCategory> siteCategories) {
+    private void initTabAndViewPager(Set<MarketSiteCategory> siteCategories) {
         //初始化Tab和ViewPager
         tabLayout.setVisibility(View.VISIBLE);
         List<View> views = new ArrayList<>();
@@ -191,7 +176,9 @@ public class MarketActivity extends BaseActivity {
                 }).show();
     }
 
-    public void getAllSites(final HViewerHttpClient.OnResponseListener listener) {
+    private int sourceCount = 0;
+
+    public void getAllSites() {
         HViewerHttpClient.get(UrlConfig.siteSourceUrl, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
@@ -200,7 +187,49 @@ public class MarketActivity extends BaseActivity {
                 try {
                     JsonArray siteSources = new JsonParser().parse((String) result).getAsJsonArray();
                     if (siteSources.size() > 0) {
-                        HViewerHttpClient.get(siteSources.get(0).getAsString(), null, listener);
+                        sourceCount = siteSources.size();
+                        final List<MarketSiteCategory>[] categories = new List[sourceCount];
+                        for (int i = 0; i < siteSources.size(); i++) {
+                            final int j = i;
+                            HViewerHttpClient.get(siteSources.get(i).getAsString(), null, new HViewerHttpClient.OnResponseListener() {
+                                @Override
+                                public void onSuccess(String contentType, Object result) {
+                                    try {
+                                        categories[j] = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
+                                        }.getType());
+                                        if ((--sourceCount) == 0) {
+                                            for(List<MarketSiteCategory> categoryList : categories) {
+                                                if(categoryList==null)
+                                                    continue;
+                                                for (MarketSiteCategory category : categoryList) {
+                                                    if (!siteCategories.containsKey(category))
+                                                        siteCategories.put(category, category.sites);
+                                                    else {
+                                                        List<MarketSiteCategory.MarketSite> sites = siteCategories.get(category);
+                                                        for (MarketSiteCategory.MarketSite site : category.sites) {
+                                                            if (!sites.contains(site))
+                                                                sites.add(site);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            initTabAndViewPager(siteCategories.keySet());
+                                            progressBar.setVisibility(View.GONE);
+                                        }
+                                    } catch (JsonSyntaxException e) {
+                                        e.printStackTrace();
+                                        onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(HViewerHttpClient.HttpError error) {
+                                    sourceCount = 0;
+                                    progressBar.setVisibility(View.GONE);
+                                    showSnackBar(error.getErrorString());
+                                }
+                            });
+                        }
                     } else {
                         throw new Exception();
                     }
@@ -233,35 +262,37 @@ public class MarketActivity extends BaseActivity {
         if (silent) {
             int cPos = -1, sPos = -1;
             int size = 0;
-            for (int i = 0; i < siteCategories.size(); i++) {
-                MarketSiteCategory category = siteCategories.get(i);
+            Set<MarketSiteCategory> categories = siteCategories.keySet();
+            int i = 0;
+            for (MarketSiteCategory category : categories) {
                 if (category.sites != null) {
                     if (size + category.sites.size() > flatPos) {
                         cPos = i;
                         sPos = flatPos - size;
                         categoryTitle = category.title;
+                        marketSite = category.sites.get(sPos);
                         break;
                     } else
                         size += category.sites.size();
                 }
+                i++;
             }
-            if (cPos == -1 || sPos == -1) {
+            if (cPos == -1 || sPos == -1 || marketSite == null) {
                 showSnackBar("站点全部更新完成！");
                 for (MarketSiteAdapter adapter : siteAdapters) {
                     adapter.notifyDataSetChanged();
                 }
                 return;
             }
-            marketSite = siteCategories.get(cPos).sites.get(sPos);
             Site currSite = siteHolder.getSiteByTitle(marketSite.title);
             if (currSite == null || currSite.versionCode >= marketSite.versionCode) {
-                updateSite(flatPos+1);
+                updateSite(flatPos + 1);
                 return;
             }
         }
-        if(marketSite==null)
+        if (marketSite == null)
             return;
-        if(categoryTitle==null)
+        if (categoryTitle == null)
             categoryTitle = "未分类";
         final String title = categoryTitle;
         final int versionCode = marketSite.versionCode;
@@ -278,7 +309,7 @@ public class MarketActivity extends BaseActivity {
                         SiteGroup siteGroup = siteHolder.getGroupByTitle(title);
                         if (siteGroup == null) {
                             newSite.gid = siteHolder.addSiteGroup(new SiteGroup(1, title));
-                        }else{
+                        } else {
                             newSite.gid = siteGroup.gid;
                         }
                         newSite.versionCode = versionCode;
@@ -290,8 +321,8 @@ public class MarketActivity extends BaseActivity {
                             for (MarketSiteAdapter adapter : siteAdapters) {
                                 adapter.notifyDataSetChanged();
                             }
-                        }else
-                            updateSite(flatPos+1);
+                        } else
+                            updateSite(flatPos + 1);
                     } else if (!silent) {
                         showReplaceDialog(currSite, newSite, versionCode);
                     } else {
@@ -305,8 +336,8 @@ public class MarketActivity extends BaseActivity {
                             for (MarketSiteAdapter adapter : siteAdapters) {
                                 adapter.notifyDataSetChanged();
                             }
-                        }else
-                            updateSite(flatPos+1);
+                        } else
+                            updateSite(flatPos + 1);
                     }
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
@@ -345,7 +376,7 @@ public class MarketActivity extends BaseActivity {
 
     @OnClick(R.id.btn_return)
     void back() {
-        if(getting){
+        if (getting) {
             showSnackBar("正在更新站点，请等待更新完毕后再返回");
             return;
         }
