@@ -96,6 +96,8 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_MODE_R18_ENABLED = "pref_mode_r18_enabled";
 
+    public static final String KEY_LAST_SITE_ID = "last_site_id";
+
     private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
     private BaseActivity activity;

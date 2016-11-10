@@ -77,7 +77,6 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.R.id.list;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -268,11 +267,30 @@ public class MainActivity extends BaseActivity {
         mRecyclerViewDragDropManager.attachRecyclerView(rvSite);
         mRecyclerViewExpandableItemManager.attachRecyclerView(rvSite);
 
-        // 默认展开第一个分类并选中第一个站点
+        int lastSiteId = (int) SharedPreferencesUtil.getData(this, SettingFragment.KEY_LAST_SITE_ID, 0);
+        // 默认展开并选中上次打开的站点
         if (siteGroups.size() > 0 && siteGroups.get(0).second.size() > 0) {
-            mRecyclerViewExpandableItemManager.expandGroup(0);
-            Site site = siteGroups.get(0).second.get(0);
-            selectSite(site);
+            Site lastSite = null;
+            int groupPos = 0;
+            for (int i = 0; i < siteGroups.size(); i++) {
+                Pair<SiteGroup, List<Site>> pair = siteGroups.get(i);
+                for (int j = 0; j < pair.second.size(); j++) {
+                    groupPos = j;
+                    Site site = pair.second.get(j);
+                    if (site.sid == lastSiteId) {
+                        lastSite = site;
+                        break;
+                    }
+                }
+                if (lastSite != null)
+                    break;
+            }
+            if (lastSite == null) {
+                groupPos = 0;
+                lastSite = siteGroups.get(0).second.get(0);
+            }
+            mRecyclerViewExpandableItemManager.expandGroup(groupPos);
+            selectSite(lastSite);
         }
 
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
@@ -850,6 +868,7 @@ public class MainActivity extends BaseActivity {
         fragment.setArguments(bundle);
         replaceFragment(fragment, site.title);
         searchView.closeSearch();
+        SharedPreferencesUtil.saveData(this, SettingFragment.KEY_LAST_SITE_ID, site.sid);
 
         if (site.categories != null && site.categories.size() > 0) {
             ListDataProvider<Category> dataProvider = new ListDataProvider<>(site.categories);
