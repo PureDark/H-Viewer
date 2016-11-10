@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -178,8 +179,8 @@ public class RuleParser {
                     Document element = Jsoup.parse(text);
                     collection = getCollectionDetail(collection, element, rule, sourceUrl);
                 } else {
-                    ReadContext ctx = JsonPath.parse(text);
-                    collection = getCollectionDetail(collection, ctx, rule, sourceUrl);
+                    JsonElement elemet = new JsonParser().parse(text);
+                    collection = getCollectionDetail(collection, elemet, rule, sourceUrl);
                 }
             }
         } catch (Exception e) {
