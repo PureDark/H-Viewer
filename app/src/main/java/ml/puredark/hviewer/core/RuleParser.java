@@ -170,7 +170,6 @@ public class RuleParser {
             return collection;
         try {
             if (rule.item != null && rule.pictureRule != null && rule.pictureRule.item != null) {
-                Log.d("RuleParser", "rule.item != null");
                 List<Collection> collections = new ArrayList<>();
                 collections.add(collection);
                 collection = getCollections(collections, text, rule, sourceUrl).get(0);
