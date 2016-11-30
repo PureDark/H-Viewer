@@ -275,7 +275,7 @@ public class MainActivity extends BaseActivity {
             for (int i = 0; i < siteGroups.size(); i++) {
                 Pair<SiteGroup, List<Site>> pair = siteGroups.get(i);
                 for (int j = 0; j < pair.second.size(); j++) {
-                    groupPos = j;
+                    groupPos = i;
                     Site site = pair.second.get(j);
                     if (site.sid == lastSiteId) {
                         lastSite = site;

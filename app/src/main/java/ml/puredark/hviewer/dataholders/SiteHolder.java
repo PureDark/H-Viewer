@@ -165,6 +165,20 @@ public class SiteHolder {
         }
     }
 
+    public SiteGroup getGroupById(int gid) {
+        Cursor cursor = dbHelper.query("SELECT * FROM " + groupDbName + " WHERE `gid` = '" + gid + "' ORDER BY `index` ASC LIMIT 1");
+        try {
+            if (cursor.moveToNext()) {
+                String title = cursor.getString(1);
+                SiteGroup group = new SiteGroup(gid, title);
+                return group;
+            }
+            return null;
+        } finally {
+            cursor.close();
+        }
+    }
+
     public Site getSiteByTitle(String title) {
         Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `title` = '" + title + "' ORDER BY `index` ASC LIMIT 1");
         try {

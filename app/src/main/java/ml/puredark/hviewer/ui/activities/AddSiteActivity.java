@@ -80,8 +80,8 @@ public class AddSiteActivity extends BaseActivity {
         setReturnButton(btnReturn);
 
         //获取传递过来的SiteGroup实例
-        if (HViewerApplication.temp instanceof Pair)
-            pair = (Pair<SiteGroup, List<Site>>) HViewerApplication.temp;
+//        if (HViewerApplication.temp instanceof Pair)
+//            pair = (Pair<SiteGroup, List<Site>>) HViewerApplication.temp;
 
         //获取失败则结束此界面
 //        if (pair == null) {
@@ -141,7 +141,16 @@ public class AddSiteActivity extends BaseActivity {
             return;
         }
 
-        newSite.gid = pair.first.gid;
+        SiteGroup group = siteHolder.getGroupByTitle(newSite.group);
+        if (group == null){
+            group = new SiteGroup(0,newSite.group);
+            siteHolder.addSiteGroup(group);
+            int gid = siteHolder.getMaxGroupId();
+            group.gid = gid;
+            group.index = gid;
+            siteHolder.updateSiteGroupIndex(group);
+        }
+        newSite.gid = group.gid;
         int sid = siteHolder.addSite(newSite);
         if(sid<0){
             showSnackBar("插入数据库失败");

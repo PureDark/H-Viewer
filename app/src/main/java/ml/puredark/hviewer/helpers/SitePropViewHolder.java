@@ -24,6 +24,8 @@ import ml.puredark.hviewer.beans.PictureRule;
 import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.ui.adapters.CategoryInputAdapter;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
@@ -35,6 +37,8 @@ import static java.util.regex.Pattern.DOTALL;
 
 
 public class SitePropViewHolder {
+    @BindView(R.id.input_sitegroup)
+    MaterialEditText inputGroup;
     @BindView(R.id.input_title)
     MaterialEditText inputTitle;
     @BindView(R.id.input_indexUrl)
@@ -570,6 +574,7 @@ public class SitePropViewHolder {
 
     public void fillSitePropEditText(Site site) {
         lastSite = site;
+        inputGroup.setText(site.group);
         inputTitle.setText(site.title);
         inputIndexUrl.setText(site.indexUrl);
         inputGalleryUrl.setText(site.galleryUrl);
@@ -970,6 +975,7 @@ public class SitePropViewHolder {
 
     public Site fromEditTextToSite() {
         Site newSite = new Site();
+        newSite.group = loadString(inputGroup);
         newSite.title = loadString(inputTitle);
         newSite.indexUrl = loadString(inputIndexUrl);
         newSite.galleryUrl = loadString(inputGalleryUrl);

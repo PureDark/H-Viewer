@@ -29,6 +29,7 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.configs.PasteEEConfig;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -106,6 +107,7 @@ public class ModifySiteActivity extends BaseActivity {
 
         siteHolder = new SiteHolder(this);
 
+        site.group = siteHolder.getGroupById(site.gid).title;
         holder.fillSitePropEditText(site);
     }
 
@@ -224,9 +226,19 @@ public class ModifySiteActivity extends BaseActivity {
             showSnackBar("规则缺少必要参数，请检查");
             return;
         }
+        
+        SiteGroup group = siteHolder.getGroupByTitle(newSite.group);
+        if (group == null){
+            group = new SiteGroup(0,newSite.group);
+            siteHolder.addSiteGroup(group);
+            int gid = siteHolder.getMaxGroupId();
+            group.gid = gid;
+            group.index = gid;
+            siteHolder.updateSiteGroupIndex(group);
+        }
+        newSite.gid = group.gid;
         newSite.sid = site.sid;
         newSite.index = site.index;
-        newSite.gid = site.gid;
         HViewerApplication.temp = newSite;
         siteHolder.updateSite(newSite);
 
