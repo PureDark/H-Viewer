@@ -1,9 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+ext {
+    VERSION_DATE = new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+    SUPPORT_LIBRARY_VERSION = '25.0.1'
+    BUILD_TOOLS = "25.0.0"
+}
+
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion BUILD_TOOLS
     defaultConfig {
         applicationId "ml.puredark.hviewer"
         minSdkVersion 17
@@ -12,6 +18,7 @@ android {
         versionName "0.8.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        project.ext.set("archivesBaseName", "H-Viewer_by_GE" + VERSION_DATE);
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

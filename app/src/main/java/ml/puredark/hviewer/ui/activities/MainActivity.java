@@ -297,27 +297,27 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onGroupClick(View v, int groupPosition) {
                 // 点击分类（如果是新建按钮则创建，否则展开）
-                if (groupPosition == siteAdapter.getGroupCount() - 1) {
-                    View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
-                    MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("新建组名")
-                            .setView(view)
-                            .setNegativeButton("取消", null)
-                            .setPositiveButton("确定", (dialog, which) -> {
-                                String title = inputGroupTitle.getText().toString();
-                                SiteGroup group = new SiteGroup(0, title);
-                                siteHolder.addSiteGroup(group);
-                                int gid = siteHolder.getMaxGroupId();
-                                group.gid = gid;
-                                group.index = gid;
-                                siteHolder.updateSiteGroupIndex(group);
-                                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
-                                siteAdapter.notifyDataSetChanged();
-                            }).show();
-                } else {
+//                if (groupPosition == siteAdapter.getGroupCount() - 1) {
+//                    View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+//                    MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
+//                    new AlertDialog.Builder(MainActivity.this)
+//                            .setTitle("新建组名")
+//                            .setView(view)
+//                            .setNegativeButton("取消", null)
+//                            .setPositiveButton("确定", (dialog, which) -> {
+//                                String title = inputGroupTitle.getText().toString();
+//                                SiteGroup group = new SiteGroup(0, title);
+//                                siteHolder.addSiteGroup(group);
+//                                int gid = siteHolder.getMaxGroupId();
+//                                group.gid = gid;
+//                                group.index = gid;
+//                                siteHolder.updateSiteGroupIndex(group);
+//                                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+//                                siteAdapter.notifyDataSetChanged();
+//                            }).show();
+//                } else {
                     notifyGroupItemChanged(groupPosition);
-                }
+//                }
             }
 
             @Override
@@ -358,18 +358,19 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(View v, int groupPosition, int childPosition) {
                 // 点击站点
-                if (childPosition == siteAdapter.getChildCount(groupPosition) - 1) {
-                    Pair<SiteGroup, List<Site>> pair = siteAdapter.getDataProvider().getItem(groupPosition);
-                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
-                    HViewerApplication.temp = pair;
-                    startActivityForResult(intent, RESULT_ADD_SITE);
-                } else {
+                //添加新站点
+//                if (childPosition == siteAdapter.getChildCount(groupPosition) - 1) {
+//                    Pair<SiteGroup, List<Site>> pair = siteAdapter.getDataProvider().getItem(groupPosition);
+//                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
+//                    HViewerApplication.temp = pair;
+//                    startActivityForResult(intent, RESULT_ADD_SITE);
+//                } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                     setTitle(site.title);
                     new Handler().postDelayed(() -> selectSite(site), 300);
                     notifyChildItemChanged(groupPosition, childPosition);
                     drawer.closeDrawer(GravityCompat.START);
-                }
+//                }
             }
 
             @Override
@@ -1037,6 +1038,12 @@ public class MainActivity extends BaseActivity {
             mWrappedAdapter = null;
         }
         super.onDestroy();
+    }
+
+    @OnClick(R.id.btn_add_site)
+    void addsite(){
+        Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
+        startActivityForResult(intent, RESULT_ADD_SITE);
     }
 
     @OnClick(R.id.btn_site_market)

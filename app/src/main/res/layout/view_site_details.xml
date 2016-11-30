@@ -12,6 +12,13 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
+        <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+            android:id="@+id/input_sitegroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EditTextAddSite"
+            app:met_floatingLabelText="站点分组" >
+        </com.rengwuxian.materialedittext.MaterialAutoCompleteTextView>
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/input_title"
             android:layout_width="match_parent"

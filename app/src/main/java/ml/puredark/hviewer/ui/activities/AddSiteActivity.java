@@ -84,10 +84,10 @@ public class AddSiteActivity extends BaseActivity {
             pair = (Pair<SiteGroup, List<Site>>) HViewerApplication.temp;
 
         //获取失败则结束此界面
-        if (pair == null) {
-            finish();
-            return;
-        }
+//        if (pair == null) {
+//            finish();
+//            return;
+//        }
 
         holder = new SitePropViewHolder(viewSiteDetails);
         siteHolder = new SiteHolder(this);
