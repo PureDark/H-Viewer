@@ -84,5 +84,9 @@
     <string name="setting_about_qq_group_summary">590668841</string>
     <string name="setting_about_donate">捐赠</string>
     <string name="setting_about_donate_summary">支付宝:bruce.lee.liang@gmail.com</string>
+    <string name="settings_bk_rs">备份恢复</string>
+    <string name="settings_backup">备份</string>
+    <string name="settings_restore">恢复</string>
+    <string name="restore_Succes">还原成功</string>
 
 </resources>

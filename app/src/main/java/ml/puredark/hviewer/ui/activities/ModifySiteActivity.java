@@ -227,16 +227,6 @@ public class ModifySiteActivity extends BaseActivity {
             return;
         }
         
-        SiteGroup group = siteHolder.getGroupByTitle(newSite.group);
-        if (group == null){
-            group = new SiteGroup(0,newSite.group);
-            siteHolder.addSiteGroup(group);
-            int gid = siteHolder.getMaxGroupId();
-            group.gid = gid;
-            group.index = gid;
-            siteHolder.updateSiteGroupIndex(group);
-        }
-        newSite.gid = group.gid;
         newSite.sid = site.sid;
         newSite.index = site.index;
         HViewerApplication.temp = newSite;

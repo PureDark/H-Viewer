@@ -78,10 +78,8 @@ dependencies {
     compile 'com.android.support:cardview-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
-
     //umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
-
     //material widget
     compile 'com.github.vajro:MaterialDesignLibrary:1.6'
     compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.2.2'
@@ -96,13 +94,12 @@ dependencies {
     compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
     compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
-
-
     //Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9') {
         exclude group: 'com.android.support'
     }
     // SwipeBack
+
     //    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
 
     //butter knife
@@ -111,17 +108,14 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.13.0'
     compile 'com.facebook.fresco:animated-gif:0.13.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0+'
-//    compile 'me.relex:photodraweeview:1.1.0'
+    //    compile 'me.relex:photodraweeview:1.1.0'
     compile 'com.github.PureDark:PhotoDraweeView:2c7b7f65b1'
-//    compile project (':photodraweeview')
-
+    //    compile project (':photodraweeview')
     compile 'com.nineoldandroids:library:2.4.0'
     //http
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-
     //httpdns
-    compile project (':httpdns')
-
+    compile project(':httpdns')
     //email
     compile files('libs/activation.jar')
     compile files('libs/additionnal.jar')
@@ -130,7 +124,7 @@ dependencies {
     //format, gson, jsoup, etc
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.jhy:jsoup:jsoup-1.9.2'
-    compile('com.jayway.jsonpath:json-path:2.2.0'){
+    compile('com.jayway.jsonpath:json-path:2.2.0') {
         exclude group: 'org.ow2.asm'
     }
     //zxing

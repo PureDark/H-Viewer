@@ -30,6 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.DataRestore;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -50,8 +52,11 @@ import ml.puredark.hviewer.ui.activities.MainActivity;
 import ml.puredark.hviewer.ui.activities.ModifySiteActivity;
 import ml.puredark.hviewer.ui.customs.LongClickPreference;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.helpers.DataBackup;
 
 import static android.R.attr.path;
+import static android.app.Activity.RESULT_OK;
+import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 /**
@@ -89,6 +94,9 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_CACHE_SIZE = "pref_cache_size";
     public static final String KEY_PREF_CACHE_CLEAN = "pref_cache_clean";
+
+    public static final String KEY_PREF_BKRS_BACKUP = "pref_backupandrestore_backup";
+    public static final String KEY_PREF_BKRS_RESTORE = "pref_backupandrestore_restore";
 
     public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
     public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
@@ -215,6 +223,18 @@ public class SettingFragment extends PreferenceFragment
         if (preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)) {
             if (!checking)
                 checkUpdate();
+        } else if (preference.getKey().equals(KEY_PREF_BKRS_BACKUP)) {
+            String backup = new DataBackup().DoBackup();
+            activity.showSnackBar(backup);
+        } else if (preference.getKey().equals(KEY_PREF_BKRS_RESTORE)) {
+            String restore = new DataRestore().DoRestore();
+            activity.showSnackBar(restore);
+            if (restore.equals(this.getString(R.string.restore_Succes))) {
+                Intent intent = new Intent();
+                activity.setResult(RESULT_OK, intent);
+
+            }
+
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
             Intent intent = new Intent(activity, LicenseActivity.class);
             startActivity(intent);
@@ -316,7 +336,7 @@ public class SettingFragment extends PreferenceFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_CHOOSE_DIRECTORY) {
                 Uri uriTree = data.getData();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

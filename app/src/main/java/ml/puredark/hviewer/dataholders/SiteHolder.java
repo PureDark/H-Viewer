@@ -38,12 +38,21 @@ public class SiteHolder {
 
     public int addSite(Site item) {
         if (item == null) return -1;
+        SiteGroup siteGroup = getGroupByTitle(item.group);
+        if (siteGroup == null) {
+            siteGroup = new SiteGroup(0, item.group);
+            addSiteGroup(siteGroup);
+            int gid = getMaxGroupId();
+            siteGroup.gid = gid;
+            siteGroup.index = gid;
+            updateSiteGroupIndex(siteGroup);
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`indexUrl`", item.indexUrl);
         contentValues.put("`galleryUrl`", item.galleryUrl);
         contentValues.put("`index`", item.index);
-        contentValues.put("`gid`", item.gid);
+        contentValues.put("`gid`", siteGroup.gid);
         contentValues.put("`json`", new Gson().toJson(item));
         return (int) dbHelper.insert(dbName, contentValues);
     }

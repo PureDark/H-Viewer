@@ -86,6 +86,7 @@ public class MainActivity extends BaseActivity {
     private static int RESULT_MODIFY_SITE = 2;
     private static int RESULT_LOGIN = 3;
     private static int RESULT_SITE_MARKET = 4;
+    private static int RESULT_SETTING = 4;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
@@ -983,6 +984,9 @@ public class MainActivity extends BaseActivity {
             } else if (requestCode == RESULT_SITE_MARKET) {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
+            } else if (requestCode == RESULT_SETTING) {
+                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                siteAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -1060,7 +1064,7 @@ public class MainActivity extends BaseActivity {
         drawer.closeDrawer(GravityCompat.START);
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, RESULT_SETTING);
         }, 300);
     }
 

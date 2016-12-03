@@ -141,16 +141,6 @@ public class AddSiteActivity extends BaseActivity {
             return;
         }
 
-        SiteGroup group = siteHolder.getGroupByTitle(newSite.group);
-        if (group == null){
-            group = new SiteGroup(0,newSite.group);
-            siteHolder.addSiteGroup(group);
-            int gid = siteHolder.getMaxGroupId();
-            group.gid = gid;
-            group.index = gid;
-            siteHolder.updateSiteGroupIndex(group);
-        }
-        newSite.gid = group.gid;
         int sid = siteHolder.addSite(newSite);
         if(sid<0){
             showSnackBar("插入数据库失败");
@@ -159,8 +149,6 @@ public class AddSiteActivity extends BaseActivity {
         newSite.sid = sid;
         newSite.index = sid;
         siteHolder.updateSiteIndex(newSite);
-
-        pair.second.add(newSite);
 
         HViewerApplication.temp = newSite;
         Intent intent = new Intent();
