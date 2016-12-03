@@ -221,20 +221,22 @@ public class SettingFragment extends PreferenceFragment
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)) {
+            //检查新版本
             if (!checking)
                 checkUpdate();
         } else if (preference.getKey().equals(KEY_PREF_BKRS_BACKUP)) {
+            //备份
             String backup = new DataBackup().DoBackup();
             activity.showSnackBar(backup);
         } else if (preference.getKey().equals(KEY_PREF_BKRS_RESTORE)) {
+            //还原
             String restore = new DataRestore().DoRestore();
             activity.showSnackBar(restore);
-            if (restore.equals(this.getString(R.string.restore_Succes))) {
+            if (restore.equals(getString(R.string.restore_Succes))) {
                 Intent intent = new Intent();
                 activity.setResult(RESULT_OK, intent);
-
             }
-
+            activity.showSnackBar(getString(R.string.restore_Succes));
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
             Intent intent = new Intent(activity, LicenseActivity.class);
             startActivity(intent);
