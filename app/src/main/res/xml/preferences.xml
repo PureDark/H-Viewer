@@ -145,10 +145,12 @@
         android:title="@string/settings_bk_rs">
         <Preference
             android:key="pref_backupandrestore_backup"
-            android:title="@string/settings_backup" />
+            android:title="@string/settings_backup"
+            android:summary="@string/settings_backup_summary"/>
         <Preference
             android:key="pref_backupandrestore_restore"
-            android:title="@string/settings_restore" />
+            android:title="@string/settings_restore"
+            android:summary="@string/settings_restore_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory
