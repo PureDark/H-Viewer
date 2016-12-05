@@ -2,6 +2,7 @@ package ml.puredark.hviewer.helpers;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 
@@ -18,6 +19,8 @@ import ml.puredark.hviewer.utils.DocumentUtil;
  */
 
 public class FileHelper {
+    public static final String sitePath = Environment.getExternalStorageDirectory()  + "/H-ViewerSites.xml/" ;
+    public static final String settingPath = Environment.getExternalStorageDirectory()  + "/H-ViewerSetting.xml/" ;
 
     public static boolean isFileExist(String fileName, String rootPath, String... subDirs){
         return DocumentUtil.isFileExist(HViewerApplication.mContext, fileName, rootPath, subDirs);

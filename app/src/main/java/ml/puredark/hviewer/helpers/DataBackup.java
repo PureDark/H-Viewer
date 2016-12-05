@@ -2,6 +2,7 @@ package ml.puredark.hviewer.helpers;
 
 import android.app.backup.SharedPreferencesBackupHelper;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
@@ -16,6 +17,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +44,6 @@ public class DataBackup {
     private String settingBackup = "设置备份失败";
     private String siteBackup = "站点备份失败";
     private String favouriteBackup = "收藏夹备份失败";
-    //文件路径
-    private String SDPATH = Environment.getExternalStorageDirectory()  + "/H-ViewerSites.xml/" ;
-
 
     public String DoBackup() {
         settingBackup = SettingBackup();
@@ -54,7 +53,7 @@ public class DataBackup {
     }
 
     public String SiteBackup() {
-        File file = new File( SDPATH ) ;
+        File file = new File( FileHelper.sitePath ) ;
         XmlSerializer serializer;
         if( !file.exists() ){
             try {
@@ -110,10 +109,37 @@ public class DataBackup {
     }
 
     public String SettingBackup(){
+        File file = new File(FileHelper.settingPath ) ;
+        XmlSerializer serializer;
+        if( !file.exists() ){
+            try {
+                file.createNewFile() ;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "设置备份失败";
+            }
+        }
 
-
+        ObjectOutputStream output = null;
+        try {
+            output = new ObjectOutputStream(new FileOutputStream(file));
+            SharedPreferences pref = mContext.getSharedPreferences(SharedPreferencesUtil.FILE_NAME, mContext.MODE_PRIVATE);
+            output.writeObject(pref.getAll());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "设置备份失败";
+        }finally {
+            try {
+                if (output != null) {
+                    output.flush();
+                    output.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return "设置备份失败";
+            }
+        }
         return "设置备份成功";
     }
-
 
 }
