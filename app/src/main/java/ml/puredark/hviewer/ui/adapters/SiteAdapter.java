@@ -198,24 +198,25 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public boolean onCheckGroupCanStartDrag(SiteGroupViewHolder holder, int groupPosition, int x, int y) {
-        if (groupPosition == getGroupCount() - 1)
-            return false;
+//        if (groupPosition == getGroupCount() - 1)
+//            return false;
         final View dragHandleView = holder.ivIcon;
         return ViewUtil.hitTest(dragHandleView, x, y);
     }
 
     @Override
     public boolean onCheckChildCanStartDrag(SiteViewHolder holder, int groupPosition, int childPosition, int x, int y) {
-        if (childPosition == getChildCount(groupPosition) - 1)
-            return false;
+//        if (childPosition == getChildCount(groupPosition) - 1)
+//            return false;
         final View dragHandleView = holder.ivIcon;
         return ViewUtil.hitTest(dragHandleView, x, y);
     }
 
     @Override
     public ItemDraggableRange onGetGroupItemDraggableRange(SiteGroupViewHolder holder, int groupPosition) {
-        int end = Math.max(0, getGroupCount() - 2);
-        return new GroupPositionItemDraggableRange(0, end);
+        return null;
+//        int end = Math.max(0, getGroupCount());
+//        return new GroupPositionItemDraggableRange(0, end);
     }
 
     @Override

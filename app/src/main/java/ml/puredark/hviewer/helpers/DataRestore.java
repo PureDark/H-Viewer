@@ -3,6 +3,7 @@ package ml.puredark.hviewer.helpers;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
+import android.support.v4.provider.DocumentFile;
 import android.util.Xml;
 
 import com.google.gson.Gson;
@@ -21,7 +22,9 @@ import java.util.List;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.ui.adapters.MarketSiteAdapter;
 
 import static android.app.Activity.RESULT_OK;

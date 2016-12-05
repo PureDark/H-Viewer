@@ -21,6 +21,8 @@
     <string name="settings_proxy_server">更改 HProxy 服务器</string>
 
     <string name="settings_view">浏览设置</string>
+    <string name="settings_view_rememberLastSite">记住上次打开站点</string>
+    <string name="settings_view_rememberLastSite_summary">打开应用时打开上次退出时打开的站点</string>
     <string name="settings_view_high_res">优先浏览原图</string>
     <string name="settings_view_high_res_summary">在浏览时加载高清原图，可能会降低加载速度</string>
     <string name="settings_view_preload_pages">预加载页数</string>
@@ -87,6 +89,7 @@
     <string name="settings_bk_rs">备份恢复</string>
     <string name="settings_backup">备份</string>
     <string name="settings_restore">恢复</string>
+
     <string name="restore_Succes">还原成功</string>
 
 </resources>

@@ -70,6 +70,7 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_PROXY_PICTURE = "pref_proxy_picture";
     public static final String KEY_PREF_PROXY_SERVER = "pref_proxy_server";
 
+    public static final String KEY_PRER_VIEW_REMLASTSITE = "pref_view_rememberLastSite";
     public static final String KEY_PREF_VIEW_HIGH_RES = "pref_view_high_res";
     public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
     public static final String KEY_PREF_VIEW_DIRECTION = "pref_view_direction";
@@ -77,12 +78,9 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_VIEW_ONE_PIC_GALLERY = "pref_view_one_pic_gallery";
     public static final String KEY_PREF_VIEW_ONE_HAND = "pref_view_one_hand";
 
-    public static final String DIREACTION_LEFT_TO_RIGHT =
-            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];
-    public static final String DIREACTION_RIGHT_TO_LEFT =
-            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[1];
-    public static final String DIREACTION_TOP_TO_BOTTOM =
-            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
+    public static final String DIREACTION_LEFT_TO_RIGHT = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];
+    public static final String DIREACTION_RIGHT_TO_LEFT = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[1];
+    public static final String DIREACTION_TOP_TO_BOTTOM = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
 
     public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
     public static final String KEY_PREF_DOWNLOAD_NOMEDIA = "pref_download_nomedia";
@@ -238,15 +236,18 @@ public class SettingFragment extends PreferenceFragment
             }
             activity.showSnackBar(getString(R.string.restore_Succes));
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
+            //开源协议
             Intent intent = new Intent(activity, LicenseActivity.class);
             startActivity(intent);
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_H_VIEWER)) {
+            //关于
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.setting_content, new AboutFragment(activity));
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_PATH)) {
+            //下载路径
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -264,6 +265,7 @@ public class SettingFragment extends PreferenceFragment
                 mDialog.show(getFragmentManager(), null);
             }
         } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_IMPORT)) {
+            //导入已下载
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -279,6 +281,7 @@ public class SettingFragment extends PreferenceFragment
                     })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
+            //导出收藏夹
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -291,9 +294,10 @@ public class SettingFragment extends PreferenceFragment
                             activity.showSnackBar("导出收藏夹成功");
                         } else
                             activity.showSnackBar("创建文件失败，请检查下载目录");
-                    })
+                        })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_IMPORT)) {
+            //导入收藏夹
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -318,6 +322,7 @@ public class SettingFragment extends PreferenceFragment
                     })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_CACHE_CLEAN)) {
+            //清空图片缓存
             new AlertDialog.Builder(activity).setTitle("确定要清空图片缓存？")
                     .setMessage("近期加载过的图片将会需要重新下载")
                     .setPositiveButton("确定", (dialog, which) -> {
@@ -327,6 +332,7 @@ public class SettingFragment extends PreferenceFragment
                     })
                     .setNegativeButton("取消", null).show();
         } else if (preference.getKey().equals(KEY_PREF_PROXY_DETAIL)) {
+            //PROXY代理
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.setting_content, new ProxyFragment(activity));
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

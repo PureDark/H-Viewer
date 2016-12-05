@@ -269,6 +269,7 @@ public class MainActivity extends BaseActivity {
         mRecyclerViewExpandableItemManager.attachRecyclerView(rvSite);
 
         int lastSiteId = (int) SharedPreferencesUtil.getData(this, SettingFragment.KEY_LAST_SITE_ID, 0);
+        Boolean openLastSite = (Boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PRER_VIEW_REMLASTSITE, false);
         // 默认展开并选中上次打开的站点
         if (siteGroups.size() > 0 && siteGroups.get(0).second.size() > 0) {
             Site lastSite = null;
@@ -286,7 +287,7 @@ public class MainActivity extends BaseActivity {
                 if (lastSite != null)
                     break;
             }
-            if (lastSite == null) {
+            if (lastSite == null || !openLastSite) {
                 groupPos = 0;
                 lastSite = siteGroups.get(0).second.get(0);
             }

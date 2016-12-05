@@ -9,6 +9,12 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="pref_view_rememberLastSite"
+            android:title="@string/settings_view_rememberLastSite"
+            android:summary="@string/settings_view_rememberLastSite_summary" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_view_high_res"
             android:title="@string/settings_view_high_res"
             android:summary="@string/settings_view_high_res_summary"/>
