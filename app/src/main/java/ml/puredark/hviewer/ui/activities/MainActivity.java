@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity {
     private static int RESULT_MODIFY_SITE = 2;
     private static int RESULT_LOGIN = 3;
     private static int RESULT_SITE_MARKET = 4;
-    private static int RESULT_SETTING = 4;
+    private static int RESULT_SETTING = 5;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
