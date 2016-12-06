@@ -233,9 +233,10 @@ public class SettingFragment extends PreferenceFragment
             if (restore.equals(getString(R.string.restore_Succes))) {
                 Intent intent = new Intent();
                 activity.setResult(RESULT_OK, intent);
+                activity.finish();
             }
-            activity.showSnackBar(getString(R.string.restore_Succes));
-            activity.finish();
+            activity.showSnackBar(restore);
+
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
             //开源协议
             Intent intent = new Intent(activity, LicenseActivity.class);

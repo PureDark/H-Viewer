@@ -233,18 +233,6 @@ public class MainActivity extends BaseActivity {
 
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
 
-        // 测试新站点用
-//        List<Site> sites = ExampleSites.get();
-//        if (siteGroups.size() == 0)
-//            siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
-//        siteGroups.get(0).second.addAll(sites);
-//        siteGroups.get(0).second.add(0, sites.get(sites.size() - 2));
-//        siteGroups.get(0).second.add(0, sites.get(sites.size()-1));
-//        SimpleFileUtil.writeString("/sdcard/sites1.txt", new Gson().toJson(sites.get(sites.size() - 1)), "utf-8");
-//        SimpleFileUtil.writeString("/sdcard/sites2.txt", new Gson().toJson(sites.get(sites.size() - 2)), "utf-8");
-//        SimpleFileUtil.writeString("/sdcard/sites3.txt", new Gson().toJson(sites.get(sites.size() - 3)), "utf-8");
-//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
-
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
 
@@ -298,28 +286,8 @@ public class MainActivity extends BaseActivity {
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
             public void onGroupClick(View v, int groupPosition) {
-                // 点击分类（如果是新建按钮则创建，否则展开）
-//                if (groupPosition == siteAdapter.getGroupCount() - 1) {
-//                    View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
-//                    MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
-//                    new AlertDialog.Builder(MainActivity.this)
-//                            .setTitle("新建组名")
-//                            .setView(view)
-//                            .setNegativeButton("取消", null)
-//                            .setPositiveButton("确定", (dialog, which) -> {
-//                                String title = inputGroupTitle.getText().toString();
-//                                SiteGroup group = new SiteGroup(0, title);
-//                                siteHolder.addSiteGroup(group);
-//                                int gid = siteHolder.getMaxGroupId();
-//                                group.gid = gid;
-//                                group.index = gid;
-//                                siteHolder.updateSiteGroupIndex(group);
-//                                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
-//                                siteAdapter.notifyDataSetChanged();
-//                            }).show();
-//                } else {
+                // 点击分类
                     notifyGroupItemChanged(groupPosition);
-//                }
             }
 
             @Override
@@ -360,19 +328,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(View v, int groupPosition, int childPosition) {
                 // 点击站点
-                //添加新站点
-//                if (childPosition == siteAdapter.getChildCount(groupPosition) - 1) {
-//                    Pair<SiteGroup, List<Site>> pair = siteAdapter.getDataProvider().getItem(groupPosition);
-//                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
-//                    HViewerApplication.temp = pair;
-//                    startActivityForResult(intent, RESULT_ADD_SITE);
-//                } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                     setTitle(site.title);
                     new Handler().postDelayed(() -> selectSite(site), 300);
                     notifyChildItemChanged(groupPosition, childPosition);
                     drawer.closeDrawer(GravityCompat.START);
-//                }
             }
 
             @Override
@@ -988,6 +948,7 @@ public class MainActivity extends BaseActivity {
             } else if (requestCode == RESULT_SETTING) {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
+                showSnackBar(getString(R.string.restore_Succes));
             }
         }
     }
