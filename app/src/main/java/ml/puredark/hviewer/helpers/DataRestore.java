@@ -135,6 +135,9 @@ public class DataRestore {
                                 if(sid<0){
                                     return "插入数据库失败";
                                 }
+                                site.sid = sid;
+                                site.index = sid;
+                                siteHolder.updateSiteIndex(site);
                             }
                         }
                     }

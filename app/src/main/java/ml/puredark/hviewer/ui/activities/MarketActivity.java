@@ -166,7 +166,15 @@ public class MarketActivity extends BaseActivity {
                 })
                 .setNegativeButton("否", (dialog, which) -> {
                     newSite.gid = currSite.gid;
-                    siteHolder.addSite(newSite);
+                    int sid = siteHolder.addSite(newSite);
+                    if(sid<0){
+                        showSnackBar("插入数据库失败");
+                        return;
+                    }
+                    newSite.sid = sid;
+                    newSite.index = sid;
+                    siteHolder.updateSiteIndex(newSite);
+
                     showSnackBar("站点添加成功！");
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
