@@ -7,6 +7,27 @@ ext {
     BUILD_TOOLS = "25.0.0"
 }
 
+def gitVersionCode() {
+    def cmd = 'git rev-list HEAD --first-parent --count'
+    cmd.execute().text.trim().toInteger()
+}
+
+def gitVersionTag() {
+    def cmd = 'git describe --tags'
+    def version = cmd.execute().text.trim()
+
+    def pattern = "-(\\d+)-g"
+    def matcher = version =~ pattern
+
+    if (matcher) {
+        version = version.substring(0, matcher.start()) + "." + matcher[0][1]
+    } else {
+        version = version + ".0"
+    }
+
+    return version
+}
+
 android {
     compileSdkVersion 24
     buildToolsVersion BUILD_TOOLS
@@ -35,17 +56,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
             zipAlignEnabled true
         }
+        applicationVariants.all { variant ->
+            if (variant.buildType.name.equals('release')) {
+                variant.mergedFlavor.versionCode = gitVersionCode()
+                variant.mergedFlavor.versionName = gitVersionTag()
+            }
+        }
     }
+
     lintOptions {
         abortOnError false
     }
     productFlavors {
-        wandoujia {}
         coolapk {}
         github {}
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
-        }
+            }
     }
 
     packagingOptions {
