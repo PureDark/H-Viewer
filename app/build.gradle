@@ -68,7 +68,6 @@ android {
         abortOnError false
     }
     productFlavors {
-        coolapk {}
         github {}
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
