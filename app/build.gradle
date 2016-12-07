@@ -12,6 +12,7 @@ android {
     buildToolsVersion BUILD_TOOLS
     defaultConfig {
         applicationId "ml.puredark.hviewer"
+        resValue "string","app_name","H-Viewer"
         minSdkVersion 17
         targetSdkVersion 22
         versionCode 61
@@ -27,6 +28,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
+            resValue "string","app_name","H-Viewer-debug"
         }
         release {
             minifyEnabled false
