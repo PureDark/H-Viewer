@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 ext {
-    VERSION_DATE = new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+    VERSION_DATE = new Date().format("yy-MM-dd", TimeZone.getTimeZone("UTC"))
     SUPPORT_LIBRARY_VERSION = '25.0.1'
     BUILD_TOOLS = "25.0.0"
 }
