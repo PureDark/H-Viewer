@@ -192,7 +192,7 @@ public class MainActivity extends BaseActivity {
 
         initBottomSheet();
 
-        HViewerApplication.checkUpdate(this);
+//        HViewerApplication.checkUpdate(this);
     }
 
     private void initDrawer() {

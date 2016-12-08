@@ -47,7 +47,7 @@ public class AboutFragment extends PreferenceFragment {
         getPreferenceManager().setSharedPreferencesName(SharedPreferencesUtil.FILE_NAME);
         addPreferencesFromResource(R.xml.about);
         Preference preference = getPreferenceScreen().findPreference(KEY_PREF_ABOUT_VERSION);
-        preference.setSummary("v" + HViewerApplication.getVersionName());
+        preference.setSummary(HViewerApplication.getVersionName());
     }
 
     @Override
