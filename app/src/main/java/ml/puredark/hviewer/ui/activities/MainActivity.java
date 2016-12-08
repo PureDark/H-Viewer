@@ -408,12 +408,13 @@ public class MainActivity extends BaseActivity {
             }
 
             private void updateGroupItemIndex(int groupPosition) {
-                int childCount = siteAdapter.getChildCount(groupPosition) - 1;
+                int childCount = siteAdapter.getChildCount(groupPosition);
                 for (int i = 0; i < childCount; i++) {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, i);
                     site.index = i + 1;
                     siteHolder.updateSiteIndex(site);
                 }
+
             }
 
             public void notifyChildItemMoved(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {

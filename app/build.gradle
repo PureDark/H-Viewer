@@ -29,11 +29,13 @@ def gitVersionTag() {
 }
 
 android {
+    signingConfigs {
+    }
     compileSdkVersion 24
     buildToolsVersion BUILD_TOOLS
     defaultConfig {
         applicationId "ml.puredark.hviewer"
-        resValue "string","app_name","H-Viewer"
+        resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 22
         versionCode 61
@@ -49,7 +51,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
-            resValue "string","app_name","H-Viewer-debug"
+            resValue "string", "app_name", "H-Viewer-debug"
         }
         release {
             minifyEnabled false
@@ -63,7 +65,6 @@ android {
             }
         }
     }
-
     lintOptions {
         abortOnError false
     }
@@ -71,9 +72,8 @@ android {
         github {}
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
-            }
+        }
     }
-
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/LICENSE.txt'
