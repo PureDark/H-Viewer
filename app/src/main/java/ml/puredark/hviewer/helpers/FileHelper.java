@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.utils.DocumentUtil;
 
 
@@ -19,8 +20,10 @@ import ml.puredark.hviewer.utils.DocumentUtil;
  */
 
 public class FileHelper {
-    public static final String sitePath = Environment.getExternalStorageDirectory()  + "/H-ViewerSites.xml/" ;
-    public static final String settingPath = Environment.getExternalStorageDirectory()  + "/H-ViewerSetting.xml/" ;
+    public static final String appdirname = "H-Viewer";
+    public static final String sitename = "H-ViewerSites.xml" ;
+    public static final String settingname = "H-ViewerSetting.json" ;
+    public static final String favouritesname = "favourites.json";
 
     public static boolean isFileExist(String fileName, String rootPath, String... subDirs){
         return DocumentUtil.isFileExist(HViewerApplication.mContext, fileName, rootPath, subDirs);

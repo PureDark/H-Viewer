@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.util.Xml;
 
 
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
+import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.mContext;
@@ -53,50 +56,21 @@ public class DataBackup {
     }
 
     public String SiteBackup() {
-        File file = new File( FileHelper.sitePath ) ;
-        XmlSerializer serializer;
-        if( !file.exists() ){
-            try {
-                file.createNewFile() ;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "站点备份失败";
-            }
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            serializer = Xml.newSerializer();
-            serializer.setOutput(fos, "utf-8");
-            serializer.startDocument("utf-8", true);
-            serializer.startTag(null, "sites");
+        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        if (file == null) {
+            return "站点备份失败";
+        } else {
             siteHolder = new SiteHolder(mContext);
             final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
-            for (int i = 0; i < siteGroups.size(); i++) {
-                siteGroupListPair = siteGroups.get(i);
-                siteGroup = siteGroupListPair.first;
-                sites = siteGroupListPair.second;
-                serializer.startTag(siteGroup.title, "group");
-                for (int j = 0; j < sites.size(); j++) {
-                    site = sites.get(j);
-                    site.group = siteGroup.title;
-                    final String jsonStr = new Gson().toJson(site);
-                    serializer.startTag(site.title, "site");
-                    serializer.text(jsonStr);
-                    serializer.endTag(site.title, "site");
-                }
-                serializer.endTag(siteGroup.title, "group");
-            }
-            serializer.endTag(null, "sites");
-            serializer.endDocument();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "站点备份失败";
+            String json = new Gson().toJson(siteGroups);
+            FileHelper.writeString(json, file);
+            siteHolder.onDestroy();
         }
         return "站点备份成功";
     }
 
     public String FavouriteBackup() {
-        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath());
+        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
         if (file == null) {
             return "收藏夹备份失败";
         } else {
@@ -109,36 +83,15 @@ public class DataBackup {
     }
 
     public String SettingBackup(){
-        File file = new File(FileHelper.settingPath ) ;
-        XmlSerializer serializer;
-        if( !file.exists() ){
-            try {
-                file.createNewFile() ;
-            } catch (IOException e) {
-                e.printStackTrace();
+        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        if( file == null ){
                 return "设置备份失败";
-            }
         }
 
-        ObjectOutputStream output = null;
-        try {
-            output = new ObjectOutputStream(new FileOutputStream(file));
-            SharedPreferences pref = mContext.getSharedPreferences(SharedPreferencesUtil.FILE_NAME, mContext.MODE_PRIVATE);
-            output.writeObject(pref.getAll());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "设置备份失败";
-        }finally {
-            try {
-                if (output != null) {
-                    output.flush();
-                    output.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return "设置备份失败";
-            }
-        }
+        SharedPreferences pref = mContext.getSharedPreferences(SharedPreferencesUtil.FILE_NAME, mContext.MODE_PRIVATE);
+        String json = new Gson().toJson(pref.getAll());
+        FileHelper.writeString(json, file);
+
         return "设置备份成功";
     }
 

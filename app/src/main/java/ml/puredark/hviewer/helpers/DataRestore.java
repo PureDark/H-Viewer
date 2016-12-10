@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
+import android.support.v4.util.Pair;
 import android.util.Xml;
 
 import com.google.gson.Gson;
@@ -26,6 +27,7 @@ import java.util.Map;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -41,13 +43,10 @@ import static ml.puredark.hviewer.HViewerApplication.mContext;
  */
 
 public class DataRestore {
-    private String jsonStr;
-    private Site site;
     private SiteHolder siteHolder = new SiteHolder(mContext);
-    private InputStream inputStream;
     int sid;
 
-    public String DoRestore(){
+    public String DoRestore() {
         String siteRestore = SiteRestore();
         String settingRestore = SettingRestore();
         String favouriteRestore = FavouriteRestore();
@@ -56,37 +55,30 @@ public class DataRestore {
     }
 
     public String SettingRestore() {
-        File file = new File( FileHelper.settingPath ) ;
-        if( !file.exists() ){
-            return "读取文件出错";
-        }
-        ObjectInputStream input = null;
-        try {
-            input = new ObjectInputStream(new FileInputStream(file));
-            SharedPreferencesUtil.clearData(mContext);
-            Map<String, ?> entries = (Map<String, ?>) input.readObject();
-            for (Map.Entry<String, ?> entry : entries.entrySet()) {
-                Object v = entry.getValue();
-                String key = entry.getKey();
-                SharedPreferencesUtil.saveData(mContext, key, v);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "设置还原失败";
-        } finally {
+        String json = FileHelper.readString(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        if (json == null) {
+            return "未在下载目录中找到设置备份";
+        } else {
             try {
-                if (input != null) {
-                    input.close();
+                Map<String, ?> entries = new Gson().fromJson(json, new TypeToken<Map<String, ?>>() {
+                }.getType());
+                SharedPreferencesUtil.clearData(mContext);
+                for (Map.Entry<String, ?> entry : entries.entrySet()) {
+                    Object v = entry.getValue();
+                    String key = entry.getKey();
+                    SharedPreferencesUtil.saveData(mContext, key, v);
                 }
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                return "设置还原成功";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "设置还原失败";
             }
         }
-        return "设置还原成功";
+
     }
 
     public String FavouriteRestore() {
-        String json = FileHelper.readString("favourites.json", DownloadManager.getDownloadPath());
+        String json = FileHelper.readString(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
         if (json == null) {
             return "未在下载目录中找到收藏夹备份";
         } else {
@@ -107,53 +99,37 @@ public class DataRestore {
     }
 
     public String SiteRestore() {
-        File file = new File( FileHelper.sitePath ) ;
-        if( !file.exists() ){
-            return "读取文件出错";
-        }
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return "没有发现备份文件";
-        }
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xmlPullParser = factory.newPullParser();
-            xmlPullParser.setInput(inputStream, "UTF-8");
-            int eventType = xmlPullParser.getEventType();
-
-            while (eventType != xmlPullParser.END_DOCUMENT) {
-                try {
-                    if (eventType == xmlPullParser.START_TAG) {
-                        if ("site".equals(xmlPullParser.getName())) {
-                            jsonStr = xmlPullParser.nextText();
-                            site = new Gson().fromJson(jsonStr, Site.class);
-                            if (siteHolder.getSiteByTitle(site.title) == null) {
-                                sid = siteHolder.addSite(site);
-                                if(sid<0){
-                                    return "插入数据库失败";
-                                }
-                                site.sid = sid;
-                                site.index = sid;
-                                siteHolder.updateSiteIndex(site);
-                            }
+        String json = FileHelper.readString(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        if (json == null) {
+            return "未在下载目录中找到站点备份";
+        } else {
+            List<Pair<SiteGroup, List<Site>>> siteGroups = new Gson().fromJson(json, new TypeToken<List<Pair<SiteGroup, List<Site>>>>() {
+            }.getType());
+            Pair<SiteGroup, List<Site>> siteGroupListPair;
+            SiteGroup siteGroup;
+            List<Site> sites;
+            Site site;
+            for (int i = 0; i < siteGroups.size(); i++) {
+                siteGroupListPair = siteGroups.get(i);
+                siteGroup = siteGroupListPair.first;
+                sites = siteGroupListPair.second;
+                for (int j = 0; j < sites.size(); j++) {
+                    site = sites.get(j);
+                    site.group = siteGroup.title;
+                    if (siteHolder.getSiteByTitle(site.title) == null) {
+                        sid = siteHolder.addSite(site);
+                        if (sid < 0) {
+                            return "插入数据库失败";
                         }
+                        site.sid = sid;
+                        site.index = sid;
+                        siteHolder.updateSiteIndex(site);
                     }
-
-                    eventType = xmlPullParser.next();
-                } catch (IOException e) {
-                    return "";
                 }
-
             }
-
-
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-            return "结束";
+            return "站点还愿成功";
         }
-        return "站点还原成功";
     }
 }
+
+

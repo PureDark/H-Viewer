@@ -69,6 +69,7 @@ public class DownloadManager {
                 SimpleFileUtil.createDirIfNotExist(getDownloadPath());
         }
     }
+
     public static File getAlbumStorageDir(String albumName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), albumName);
@@ -77,10 +78,10 @@ public class DownloadManager {
     }
     public static String getDownloadPath() {
         String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
-        if (downloadPath != null)
-            return downloadPath;
-        else
+        if (downloadPath == null) {
             return DEFAULT_PATH;
+        }
+        return downloadPath;
     }
 
     public boolean isDownloading() {

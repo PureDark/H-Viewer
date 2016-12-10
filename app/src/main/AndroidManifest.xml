@@ -88,7 +88,8 @@
         <activity android:name=".ui.activities.VideoViewerActivity"
             android:hardwareAccelerated="true"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="user" ></activity>
+            android:screenOrientation="user" />
+
     </application>
 
 </manifest>

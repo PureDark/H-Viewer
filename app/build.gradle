@@ -36,8 +36,8 @@ android {
     defaultConfig {
         applicationId "ml.puredark.hviewer"
         resValue "string", "app_name", "H-Viewer"
-        minSdkVersion 17
-        targetSdkVersion 22
+        minSdkVersion 24
+        targetSdkVersion 24
         versionCode 61
         versionName "0.8.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
