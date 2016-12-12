@@ -1,18 +1,22 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -65,6 +69,8 @@ import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.GetContentUri;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -78,7 +84,6 @@ import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
-import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -93,7 +98,6 @@ public class MainActivity extends BaseActivity {
     private static int RESULT_LOGIN = 3;
     private static int RESULT_SITE_MARKET = 4;
     private static int RESULT_SETTING = 5;
-    private static int RESULT_RDSQ = 6;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
@@ -184,11 +188,6 @@ public class MainActivity extends BaseActivity {
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) searchView.getLayoutParams();
             lp.topMargin = MDStatusBarCompat.getStatusBarHeight(this);
             searchView.setLayoutParams(lp);
-        }
-        //获取存储权限
-        String downloadPath = DownloadManager.getDownloadPath();
-        if (!downloadPath.startsWith("content://")) {
-            initSetDefultDownloadPath();
         }
 
         initDrawer();
@@ -491,13 +490,6 @@ public class MainActivity extends BaseActivity {
             searchView.setQuery(keyword, false);
         });
         isSuggestionEmpty = false;
-    }
-
-    private void initSetDefultDownloadPath() {
-        StorageManager sm = (StorageManager)getSystemService(mContext.STORAGE_SERVICE);
-        StorageVolume volume = sm.getPrimaryStorageVolume();
-        Intent intent = volume.createAccessIntent(Environment.DIRECTORY_PICTURES);
-        startActivityForResult(intent, RESULT_RDSQ);
     }
 
     private void initSearchView() {
@@ -968,13 +960,6 @@ public class MainActivity extends BaseActivity {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
                 showSnackBar(getString(R.string.restore_Succes));
-            } else if (requestCode == RESULT_RDSQ) {
-                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, data.getDataString() + "/H-Viewer");
-                DocumentUtil.createDirIfNotExist(mContext, data.getDataString(), "H-Viewer");
-            }
-        } else if (resultCode == RESULT_CANCELED) {
-            if (requestCode == RESULT_RDSQ) {
-                showSnackBar("授权失败将会影响下载和备份");
             }
         }
     }
