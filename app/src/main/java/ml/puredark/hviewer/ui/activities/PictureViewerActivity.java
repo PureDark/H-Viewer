@@ -585,7 +585,7 @@ public class PictureViewerActivity extends BaseActivity {
 
     private class MyOnItemLongClickListener implements OnItemLongClickListener {
         private DirectoryChooserFragment mDialog;
-        private String lastPath = DownloadManager.getDownloadPath();
+        private String lastPath = DownloadManager.getDownloadPath() + "/" + FileHelper.appdirname;
         private Picture pictureToBeSaved;
 
         private DirectoryChooserFragment.OnFragmentInteractionListener onFragmentInteractionListener =
@@ -628,7 +628,7 @@ public class PictureViewerActivity extends BaseActivity {
                                     .setPositiveButton("确定", (dialog, which) -> new AlertDialog.Builder(PictureViewerActivity.this).setTitle("是否直接保存到下载目录？")
                                             .setMessage("否则另存到其他目录")
                                             .setPositiveButton("是", (dialog1, which1) ->
-                                                    onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath())))
+                                                    onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath() + "/" + FileHelper.appdirname)))
                                             .setNegativeButton("否", (dialog12, which12) -> {
                                                 final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
                                                         .initialDirectory(lastPath)
@@ -653,7 +653,7 @@ public class PictureViewerActivity extends BaseActivity {
                                     .setNegativeButton("取消", null)
                                     .show();
                         } else if (i == 1) {
-                            loadPicture(pictureToBeSaved, DownloadManager.getDownloadPath(), ACTION_SHARE);
+                            loadPicture(pictureToBeSaved, DownloadManager.getDownloadPath() + "/" + FileHelper.appdirname, ACTION_SHARE);
                         }
                     })
                     .setNegativeButton("取消", null)
@@ -780,9 +780,9 @@ public class PictureViewerActivity extends BaseActivity {
                 int i = 1;
                 do {
                     fileName = Uri.encode(site.title + "_" + FileHelper.filenameFilter(collection.idCode) + "_" + (i++) + "." + postfix);
-                } while (FileHelper.isFileExist(fileName, path));
+                } while (FileHelper.isFileExist(fileName, path,FileHelper.appdirname));
             }
-            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path);
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, path,FileHelper.appdirname);
             if (FileHelper.writeBytes(bytes, documentFile)) {
                 if (share) {
                     Intent shareIntent = new Intent();

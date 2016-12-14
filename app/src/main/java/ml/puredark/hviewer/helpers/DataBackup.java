@@ -56,7 +56,7 @@ public class DataBackup {
     }
 
     public String SiteBackup() {
-        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
         if (file == null) {
             return "站点备份失败";
         } else {
@@ -70,7 +70,7 @@ public class DataBackup {
     }
 
     public String FavouriteBackup() {
-        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
         if (file == null) {
             return "收藏夹备份失败";
         } else {
@@ -83,7 +83,7 @@ public class DataBackup {
     }
 
     public String SettingBackup(){
-        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
         if( file == null ){
                 return "设置备份失败";
         }

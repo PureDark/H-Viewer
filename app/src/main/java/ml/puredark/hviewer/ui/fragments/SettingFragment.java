@@ -197,18 +197,29 @@ public class SettingFragment extends PreferenceFragment
                 checkUpdate();
         } else if (preference.getKey().equals(KEY_PREF_BKRS_BACKUP)) {
             //备份
-            String backup = new DataBackup().DoBackup();
-            activity.showSnackBar(backup);
+            new AlertDialog.Builder(activity).setTitle("确认备份?")
+                    .setMessage("将会覆盖之前的备份")
+                    .setPositiveButton("确定",((dialog, which) -> {
+                        String backup = new DataBackup().DoBackup();
+                        activity.showSnackBar(backup);
+                    }))
+                    .setNegativeButton("取消", null).show();
+
         } else if (preference.getKey().equals(KEY_PREF_BKRS_RESTORE)) {
             //还原
-            String restore = new DataRestore().DoRestore();
-            activity.showSnackBar(restore);
-            if (restore.equals(getString(R.string.restore_Succes))) {
-                Intent intent = new Intent();
-                activity.setResult(RESULT_OK, intent);
-                activity.finish();
-            }
-            activity.showSnackBar(restore);
+            new AlertDialog.Builder(activity).setTitle("确认恢复?")
+                    .setMessage("将会新增站点,不会删除原有站点")
+                    .setPositiveButton("确定",((dialog, which) -> {
+                        String restore = new DataRestore().DoRestore();
+                        activity.showSnackBar(restore);
+                        if (restore.equals(getString(R.string.restore_Succes))) {
+                            Intent intent = new Intent();
+                            activity.setResult(RESULT_OK, intent);
+                            activity.finish();
+                        }
+                        activity.showSnackBar(restore);
+                    }))
+                    .setNegativeButton("取消", null).show();
 
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
             //开源协议
@@ -241,7 +252,7 @@ public class SettingFragment extends PreferenceFragment
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton("确定", (dialog, which) -> {
                         DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
+                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath(),FileHelper.appdirname);
                         holder.onDestroy();
                         if (count > 0)
                             activity.showSnackBar("成功导入" + count + "个已下载图册");
@@ -256,7 +267,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), FileHelper.appdirname);
+                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
                         if (file != null) {
                             FavouriteHolder holder = new FavouriteHolder(activity);
                             String json = new Gson().toJson(holder.getFavourites());
@@ -272,7 +283,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        String json = FileHelper.readString("favourites.json", DownloadManager.getDownloadPath());
+                        String json = FileHelper.readString(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
                         if (json == null) {
                             activity.showSnackBar("未在下载目录中找到收藏夹备份");
                         } else {

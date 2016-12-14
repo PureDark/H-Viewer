@@ -173,15 +173,15 @@ public class ModifySiteActivity extends BaseActivity {
                     return;
                 //二维码图片较大时，生成图片的时间可能较长，因此放在新线程中
                 new Thread(() -> {
-                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath());
+                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath(), FileHelper.appdirname);
                     final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
                             BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath()));
+                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath(),FileHelper.appdirname));
 
                     runOnUiThread(() -> {
                         if (success) {
                             switchBetweenShareAndDetail(viewShareSiteQrCode);
-                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath())));
+                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath(), FileHelper.appdirname)));
                         } else {
                             onFailure(null);
                         }
@@ -208,9 +208,8 @@ public class ModifySiteActivity extends BaseActivity {
     void saveQrCode() {
         Bitmap bitmap = ((BitmapDrawable) ivQrCode.getDrawable()).getBitmap();
         try {
-            String rootPath = DownloadManager.getDownloadPath();
             String fileName = FileHelper.filenameFilter(site.title) + ".jpg";
-            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, "QrCodes");
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), FileHelper.appdirname,"QrCodes");
             FileHelper.saveBitmapToFile(bitmap, documentFile);
             showSnackBar("二维码已成功保存到下载目录中");
         } catch (IOException e) {

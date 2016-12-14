@@ -32,7 +32,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
  */
 
 public class DownloadManager {
-    public final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir("H-Viewer").getAbsolutePath());
+    public final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir().getAbsolutePath());
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -54,34 +54,32 @@ public class DownloadManager {
 
     private void checkNoMediaFile() {
         boolean nomedia = (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_NOMEDIA, true);
-        String path = Uri.decode(getDownloadPath());
+        String path = Uri.decode(getDownloadPath() + "/" + FileHelper.appdirname);
         if (nomedia) {
             try {
-                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
+                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath(), FileHelper.appdirname);
             } catch (Exception e) {
                 SimpleFileUtil.createIfNotExist(path + "/.nomedia");
             }
         } else {
-            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath());
+            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath(), FileHelper.appdirname);
             Log.d("DownloadManager", "file:" + file + " file.getName:" + ((file!=null)?file.getName():"null"));
             Log.d("DownloadManager", "file.exists():" + file.exists());
             if (file == null || !file.exists())
-                SimpleFileUtil.createDirIfNotExist(getDownloadPath());
+                SimpleFileUtil.createDirIfNotExist(path);
         }
     }
 
-    public static File getAlbumStorageDir(String albumName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
-        file.mkdirs();
+    public static File getAlbumStorageDir() {
+        File file = new File(Environment.DIRECTORY_PICTURES);
         return file;
     }
     public static String getDownloadPath() {
         String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
-        if (downloadPath == null) {
+        if (downloadPath == null)
             return DEFAULT_PATH;
-        }
-        return downloadPath;
+        else
+            return downloadPath;
     }
 
     public boolean isDownloading() {
@@ -94,7 +92,7 @@ public class DownloadManager {
 
     public boolean createDownloadTask(LocalCollection collection) {
         String dirName = generateDirName(collection, 0);
-        String path = getDownloadPath() + "/" + Uri.encode(dirName);
+        String path = getDownloadPath() + "/" + FileHelper.appdirname + "/" + Uri.encode(dirName);
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (binder == null)
                 //||holder.isInList(task))
@@ -102,16 +100,16 @@ public class DownloadManager {
         int did = holder.addDownloadTask(task);
         task.did = did;
         int i = 2;
-        while (FileHelper.isFileExist(dirName, getDownloadPath())) {
+        while (FileHelper.isFileExist(dirName, getDownloadPath(), FileHelper.appdirname)) {
             dirName = generateDirName(collection, i);
         }
-        DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
+        DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(),  FileHelper.appdirname, dirName);
         if(dir==null){
             holder.deleteDownloadTask(task);
             return false;
         }
         dirName = dir.getName();
-        path = getDownloadPath() + "/" + Uri.encode(dirName);
+        path = getDownloadPath() + "/" + FileHelper.appdirname + "/" + Uri.encode(dirName);
         task.path = path;
         holder.updateDownloadTasks(task);
         // 统计添加下载次数

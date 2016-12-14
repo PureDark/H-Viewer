@@ -47,26 +47,27 @@ public class DataRestore {
     int sid;
 
     public String DoRestore() {
-        String siteRestore = SiteRestore();
         String settingRestore = SettingRestore();
+        String siteRestore = SiteRestore();
         String favouriteRestore = FavouriteRestore();
         return mContext.getString(R.string.restore_Succes);
 
     }
 
     public String SettingRestore() {
-        String json = FileHelper.readString(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        String json = FileHelper.readString(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
         if (json == null) {
             return "未在下载目录中找到设置备份";
         } else {
             try {
                 Map<String, ?> entries = new Gson().fromJson(json, new TypeToken<Map<String, ?>>() {
                 }.getType());
-                SharedPreferencesUtil.clearData(mContext);
                 for (Map.Entry<String, ?> entry : entries.entrySet()) {
                     Object v = entry.getValue();
                     String key = entry.getKey();
-                    SharedPreferencesUtil.saveData(mContext, key, v);
+                    if (!key.equals(SettingFragment.KEY_PREF_DOWNLOAD_PATH)) {
+                        SharedPreferencesUtil.saveData(mContext, key, v);
+                    }
                 }
                 return "设置还原成功";
             } catch (Exception e) {
@@ -78,7 +79,7 @@ public class DataRestore {
     }
 
     public String FavouriteRestore() {
-        String json = FileHelper.readString(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        String json = FileHelper.readString(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
         if (json == null) {
             return "未在下载目录中找到收藏夹备份";
         } else {
@@ -99,7 +100,7 @@ public class DataRestore {
     }
 
     public String SiteRestore() {
-        String json = FileHelper.readString(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname);
+        String json = FileHelper.readString(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
         if (json == null) {
             return "未在下载目录中找到站点备份";
         } else {
