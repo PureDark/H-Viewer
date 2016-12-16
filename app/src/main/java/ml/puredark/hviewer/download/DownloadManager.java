@@ -92,7 +92,7 @@ public class DownloadManager {
 
     public boolean createDownloadTask(LocalCollection collection) {
         String dirName = generateDirName(collection, 0);
-        String path = getDownloadPath() + "/" + FileHelper.appdirname + "/" + Uri.encode(dirName);
+        String path = getDownloadPath() + "/" + Uri.encode(dirName);
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (binder == null)
                 //||holder.isInList(task))

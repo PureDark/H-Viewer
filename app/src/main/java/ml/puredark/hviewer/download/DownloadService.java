@@ -128,8 +128,8 @@ public class DownloadService extends Service {
                 // 记录信息，以求恢复删除了的下载记录
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                 String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                FileHelper.createFileIfNotExist("detail.txt", rootPath, dirName);
-                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dirName);
+                FileHelper.createFileIfNotExist("detail.txt", rootPath, FileHelper.appdirname,dirName);
+                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, FileHelper.appdirname,dirName);
             }
             return;
         }
@@ -323,7 +323,7 @@ public class DownloadService extends Service {
                 fileName += ".jpg";
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                 String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
+                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, FileHelper.appdirname,dirName);
                 FileHelper.saveBitmapToFile((Bitmap) pic, documentFile);
             } else if (pic instanceof PooledByteBuffer) {
                 String fileName;
@@ -343,7 +343,7 @@ public class DownloadService extends Service {
                 fileName += "." + postfix;
                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                 String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
+                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, FileHelper.appdirname,dirName);
                 if (!FileHelper.writeBytes(bytes, documentFile)) {
                     throw new IOException();
                 }
