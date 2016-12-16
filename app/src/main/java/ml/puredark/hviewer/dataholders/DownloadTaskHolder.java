@@ -24,6 +24,7 @@ public class DownloadTaskHolder {
     private DBHelper dbHelper;
 
     public DownloadTaskHolder(Context context) {
+        downloadTasks = new ArrayList<>();
         dbHelper = new DBHelper();
         dbHelper.open(context);
     }
@@ -96,29 +97,25 @@ public class DownloadTaskHolder {
     }
 
     public int scanPathForDownloadTask(String rootPath, String... subDirs){
-        try {
-            DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
-            DocumentFile[] dirs = root.listFiles();
-            int count = 0;
-            for (DocumentFile dir : dirs) {
-                if (dir.isDirectory()) {
-                    DocumentFile file = dir.findFile("detail.txt");
-                    if (file != null && file.isFile() && file.exists() && file.canRead()) {
-                        String detail = FileHelper.readString(file);
-                        DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
-                        task.status = DownloadTask.STATUS_COMPLETED;
-                        if(!isInList(task)){
-                            count++;
-                            addDownloadTask(task);
-                        }
+        DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
+        DocumentFile[] dirs = root.listFiles();
+        int count = 0;
+        for (DocumentFile dir : dirs) {
+            if (dir.isDirectory()) {
+                DocumentFile file = dir.findFile("detail.txt");
+                if (file != null && file.isFile() && file.exists() && file.canRead()) {
+                    String detail = FileHelper.readString(file);
+                    DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
+                    task.status = DownloadTask.STATUS_COMPLETED;
+                    if(!isInList(task)){
+                        count++;
+                        addDownloadTask(task);
                     }
                 }
             }
-            return count;
-        } catch (Exception e){
-            e.printStackTrace();
-            return -1;
         }
+        return count;
+
     }
 
     public boolean isInList(DownloadTask item) {
