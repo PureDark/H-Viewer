@@ -165,9 +165,7 @@ public class DownloadActivity extends BaseActivity {
                                                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialog1, int which1) {
-                                                            String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                                            String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
-                                                            FileHelper.deleteFile(dirName, rootPath);
+                                                            FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),FileHelper.appdirname);
                                                         }
                                                     }).setNegativeButton("取消", null).show(), 250);
                                         }).setNegativeButton("取消", null).show();
@@ -202,9 +200,7 @@ public class DownloadActivity extends BaseActivity {
                             new Handler().postDelayed(() -> new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
                                     .setMessage("是否删除内存卡中对应图片？")
                                     .setPositiveButton("是", (dialog12, which12) -> {
-                                        String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                        String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
-                                        FileHelper.deleteFile(dirName, rootPath);
+                                        FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),FileHelper.appdirname);
                                     }).setNegativeButton("否", null).show(), 250);
                         }).setNegativeButton("取消", null).show();
                 return true;

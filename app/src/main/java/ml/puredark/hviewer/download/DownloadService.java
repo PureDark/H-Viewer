@@ -3,6 +3,7 @@ package ml.puredark.hviewer.download;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -126,10 +127,8 @@ public class DownloadService extends Service {
                 MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCompleted");
 
                 // 记录信息，以求恢复删除了的下载记录
-                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                FileHelper.createFileIfNotExist("detail.txt", rootPath, FileHelper.appdirname,dirName);
-                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, FileHelper.appdirname,dirName);
+                FileHelper.createFileIfNotExist("detail.txt", DownloadManager.getDownloadPath(), FileHelper.appdirname, task.dirName);
+                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", DownloadManager.getDownloadPath(), FileHelper.appdirname, task.dirName);
             }
             return;
         }
@@ -321,9 +320,7 @@ public class DownloadService extends Service {
                     fileName = picture.pid + "";
                 }
                 fileName += ".jpg";
-                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, FileHelper.appdirname,dirName);
+                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(),FileHelper.appdirname,task.dirName);
                 FileHelper.saveBitmapToFile((Bitmap) pic, documentFile);
             } else if (pic instanceof PooledByteBuffer) {
                 String fileName;
@@ -341,9 +338,7 @@ public class DownloadService extends Service {
                 }
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
-                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, FileHelper.appdirname,dirName);
+                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), FileHelper.appdirname,task.dirName);
                 if (!FileHelper.writeBytes(bytes, documentFile)) {
                     throw new IOException();
                 }

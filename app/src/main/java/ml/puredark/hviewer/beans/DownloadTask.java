@@ -12,14 +12,14 @@ public class DownloadTask extends AbstractDataProvider.Data{
     public final static int STATUS_DOWNLOADING = 3;
     public final static int STATUS_COMPLETED = 4;
     public int did;
+    public String dirName;
     public LocalCollection collection;
-    public String path;
     public int status = STATUS_IN_QUEUE;
 
-    public DownloadTask(int did, LocalCollection collection, String path){
+    public DownloadTask(int did, LocalCollection collection, String dirName){
         this.did = did;
+        this.dirName = dirName;
         this.collection = collection;
-        this.path = path;
     }
 
     @Override

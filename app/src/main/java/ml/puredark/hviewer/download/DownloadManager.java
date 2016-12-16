@@ -92,8 +92,7 @@ public class DownloadManager {
 
     public boolean createDownloadTask(LocalCollection collection) {
         String dirName = generateDirName(collection, 0);
-        String path = getDownloadPath() + "/" + Uri.encode(dirName);
-        DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
+        DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, dirName);
         if (binder == null)
                 //||holder.isInList(task))
             return false;
@@ -109,8 +108,7 @@ public class DownloadManager {
             return false;
         }
         dirName = dir.getName();
-        path = getDownloadPath() + "/" + FileHelper.appdirname + "/" + Uri.encode(dirName);
-        task.path = path;
+        task.dirName = dirName;
         holder.updateDownloadTasks(task);
         // 统计添加下载次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCreated");
