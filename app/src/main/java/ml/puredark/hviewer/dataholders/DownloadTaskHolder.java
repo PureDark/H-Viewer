@@ -20,11 +20,10 @@ import ml.puredark.hviewer.helpers.FileHelper;
 
 public class DownloadTaskHolder {
     private final static String dbName = "downloads";
-    private static List<DownloadTask> downloadTasks;
+    private static List<DownloadTask> downloadTasks = new ArrayList<>();
     private DBHelper dbHelper;
 
     public DownloadTaskHolder(Context context) {
-        downloadTasks = new ArrayList<>();
         dbHelper = new DBHelper();
         dbHelper.open(context);
     }
