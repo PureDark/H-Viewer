@@ -82,16 +82,16 @@
     <string name="restore_Succes">还原成功</string>
 
     <string name="setting_about_author">作者</string>
-    <string name="setting_about_author_summary">PureDark&lt;liangzhonghua@163.com&gt;</string>
+    <string name="setting_about_author_summary">PureDark And Kunfei</string>
     <string name="setting_about_github">Github主页</string>
-    <string name="setting_about_github_summary">https://github.com/PureDark/H-Viewer</string>
+    <string name="setting_about_github_summary">https://github.com/gedoor/H-Viewer</string>
     <string name="setting_about_changelog">更新日志</string>
-    <string name="setting_about_changelog_summary">https://github.com/PureDark/H-Viewer/releases</string>
+    <string name="setting_about_changelog_summary">https://github.com/gedoor/H-Viewer/releases</string>
     <string name="setting_about_version">版本号</string>
     <string name="setting_about_version_summary">v0.1.0</string>
     <string name="setting_about_qq_group">加入内测群</string>
     <string name="setting_about_qq_group_summary">590668841</string>
     <string name="setting_about_donate">捐赠</string>
-    <string name="setting_about_donate_summary">支付宝:bruce.lee.liang@gmail.com</string>
+    <string name="setting_about_donate_summary">支付宝:bruce.lee.liang@gmail.com And gekunfei@qq.com</string>
 
 </resources>
