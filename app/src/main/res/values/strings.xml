@@ -91,7 +91,7 @@
     <string name="setting_about_version_summary">v0.1.0</string>
     <string name="setting_about_qq_group">加入内测群</string>
     <string name="setting_about_qq_group_summary">590668841</string>
-    <string name="setting_about_donate">捐赠</string>
-    <string name="setting_about_donate_summary">支付宝:bruce.lee.liang@gmail.com And gekunfei@qq.com</string>
+    <string name="setting_about_donate">捐赠-支付宝</string>
+    <string name="setting_about_donate_summary">bruce.lee.liang@gmail.com\ngekunfei@qq.com</string>
 
 </resources>
