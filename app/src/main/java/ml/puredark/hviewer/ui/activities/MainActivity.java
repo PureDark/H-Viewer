@@ -298,7 +298,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onGroupClick(View v, int groupPosition) {
                 // 点击分类
-                    notifyGroupItemChanged(groupPosition);
+                notifyGroupItemChanged(groupPosition);
             }
 
             @Override
