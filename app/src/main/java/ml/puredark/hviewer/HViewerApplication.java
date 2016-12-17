@@ -90,35 +90,7 @@ public class HViewerApplication extends SwipeBackApplication {
         return false;
     }
 
-    public static void checkUpdate(final Context context) {
-        String url = UrlConfig.updateUrl;
-        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, Object result) {
-                try {
-                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
-                    boolean prerelease = version.get("prerelease").getAsBoolean();
-                    if (prerelease)
-                        return;
-                    JsonArray assets = version.get("assets").getAsJsonArray();
-                    if (assets.size() > 0) {
-                        String oldVersion = HViewerApplication.getVersionName();
-                        String newVersion = version.get("tag_name").getAsString().substring(1);
-                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
-                        String detail = version.get("body").getAsString();
-                        new UpdateManager(context, url, newVersion + "版本更新", detail)
-                                .checkUpdateInfo(oldVersion, newVersion);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-            }
-        });
-    }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")
