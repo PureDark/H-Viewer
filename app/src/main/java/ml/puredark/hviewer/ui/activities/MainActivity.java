@@ -186,9 +186,11 @@ public class MainActivity extends BaseActivity {
         }
 
         //获取存储权限
-        String downloadPath = DownloadManager.getDownloadPath();
-        if (!downloadPath.startsWith("content://")) {
-            initSetDefultDownloadPath();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            String downloadPath = DownloadManager.getDownloadPath();
+            if (!downloadPath.startsWith("content://")) {
+                initSetDefultDownloadPath();
+            }
         }
 
         initDrawer();
@@ -875,11 +877,13 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initSetDefultDownloadPath() {
-        StorageManager sm = (StorageManager)getSystemService(mContext.STORAGE_SERVICE);
-        StorageVolume volume = sm.getPrimaryStorageVolume();
-        Intent intent = volume.createAccessIntent(Environment.DIRECTORY_PICTURES);
-        startActivityForResult(intent, RESULT_RDSQ);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            StorageManager sm = (StorageManager)getSystemService(mContext.STORAGE_SERVICE);
+            StorageVolume volume = sm.getPrimaryStorageVolume();
+            Intent intent = volume.createAccessIntent(Environment.DIRECTORY_PICTURES);
+            startActivityForResult(intent, RESULT_RDSQ);
         }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
