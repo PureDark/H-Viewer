@@ -47,12 +47,13 @@ public class SiteHolder {
             siteGroup.index = gid;
             updateSiteGroupIndex(siteGroup);
         }
+        item.gid = siteGroup.gid;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`indexUrl`", item.indexUrl);
         contentValues.put("`galleryUrl`", item.galleryUrl);
         contentValues.put("`index`", item.index);
-        contentValues.put("`gid`", siteGroup.gid);
+        contentValues.put("`gid`", item.gid);
         contentValues.put("`json`", new Gson().toJson(item));
         return (int) dbHelper.insert(dbName, contentValues);
     }
