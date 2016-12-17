@@ -82,7 +82,7 @@
     <string name="restore_Succes">还原成功</string>
 
     <string name="setting_about_author">作者</string>
-    <string name="setting_about_author_summary">PureDark And Kunfei</string>
+    <string name="setting_about_author_summary">PureDark And KunFei</string>
     <string name="setting_about_github">Github主页</string>
     <string name="setting_about_github_summary">https://github.com/gedoor/H-Viewer</string>
     <string name="setting_about_changelog">更新日志</string>
@@ -92,6 +92,19 @@
     <string name="setting_about_qq_group">加入内测群</string>
     <string name="setting_about_qq_group_summary">590668841</string>
     <string name="setting_about_donate">捐赠-支付宝</string>
-    <string name="setting_about_donate_summary">bruce.lee.liang@gmail.com\ngekunfei@qq.com</string>
+    <string name="setting_about_donate_summary">&lt;gekunfei@qq.com&gt;\n&lt;bruce.lee.liang@gmail.com&gt;</string>
+
+
+    <string name="authorization_failed">授权失败将会影响下载和备份</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="jump_to_page">跳转到第几页？</string>
+    <string name="site_loading_error">载入站点出错，请重试</string>
+    <string name="search">搜索</string>
+    <string name="favorite">收藏</string>
+    <string name="refresh">刷新</string>
+    <string name="clear">清空</string>
+    <string name="add">添加</string>
+    <string name="delete">删除</string>
 
 </resources>

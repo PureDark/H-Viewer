@@ -590,9 +590,9 @@ public class MainActivity extends BaseActivity {
         TagTabViewHolder favorTagTab = new TagTabViewHolder(view2, favorTagAdapter);
         TagTabViewHolder historyTagTab = new TagTabViewHolder(view3, historyTagAdapter);
 
-        siteTagTab.setButtonText("搜索", "收藏", "刷新", "清空");
-        favorTagTab.setButtonText("搜索", "添加", "删除", "清空");
-        historyTagTab.setButtonText("搜索", "收藏", "删除", "清空");
+        siteTagTab.setButtonText(getString(R.string.search), getString(R.string.favorite), getString(R.string.refresh), getString(R.string.clear));
+        favorTagTab.setButtonText(getString(R.string.search), getString(R.string.add), getString(R.string.delete), getString(R.string.clear));
+        historyTagTab.setButtonText(getString(R.string.search), getString(R.string.favorite), getString(R.string.delete), getString(R.string.clear));
 
         siteTagTab.btnTag1.setOnClickListener(v -> siteTagTab.searchTags());
         siteTagTab.btnTag2.setOnClickListener(v -> siteTagTab.favorTags());
@@ -771,8 +771,8 @@ public class MainActivity extends BaseActivity {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("TAG名")
                     .setView(view)
-                    .setNegativeButton("取消", null)
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         String title = inputTagTitle.getText().toString();
                         Tag tag = new Tag(0, title);
                         tagHolder.addTag(sid, tag);
@@ -797,11 +797,11 @@ public class MainActivity extends BaseActivity {
         private void clearTags(int sid, AbstractTagHolder tagHolder) {
             new AlertDialog.Builder(MainActivity.this).setTitle("是否清空？")
                     .setMessage("清空后将无法恢复")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         tagHolder.clear(sid);
                         mSiteTagAdapter.getDataProvider().clear();
                         mSiteTagAdapter.notifyDataSetChanged();
-                    }).setNegativeButton("取消", null).show();
+                    }).setNegativeButton(getString(R.string.cancel), null).show();
         }
     }
 
@@ -831,7 +831,7 @@ public class MainActivity extends BaseActivity {
             currFragment = fragment;
         } catch (Exception e) {
             e.printStackTrace();
-            showSnackBar("载入站点出错，请重试");
+            showSnackBar(getString(R.string.site_loading_error));
         }
     }
 
@@ -903,10 +903,10 @@ public class MainActivity extends BaseActivity {
                 MaterialEditText inputJumpToPage = (MaterialEditText) view.findViewById(R.id.input_text);
                 inputJumpToPage.setInputType(InputType.TYPE_CLASS_NUMBER);
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("跳转到第几页？")
+                        .setTitle(R.string.jump_to_page)
                         .setView(view)
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("确定", (dialog, which) -> {
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> {
                             String pageStr = inputJumpToPage.getText().toString();
                             int page = 0;
                             try {
@@ -983,7 +983,7 @@ public class MainActivity extends BaseActivity {
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == RESULT_RDSQ) {
-                showSnackBar("授权失败将会影响下载和备份");
+                showSnackBar(getString(R.string.authorization_failed));
             }
         }
     }
