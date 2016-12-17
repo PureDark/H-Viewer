@@ -15,31 +15,28 @@ def gitVersionCode() {
 def gitVersionTag() {
     def cmd = 'git describe --tags'
     def version = cmd.execute().text.trim()
-
     def pattern = "-(\\d+)-g"
     def matcher = version =~ pattern
-
     if (matcher) {
         version = version.substring(0, matcher.start()) + "." + matcher[0][1]
     } else {
         version = version + ".0"
     }
-
     return version
 }
 
 android {
     signingConfigs {
     }
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion BUILD_TOOLS
     defaultConfig {
         applicationId "ml.puredark.hviewer"
         resValue "string", "app_name", "H-Viewer"
-        minSdkVersion 20
-        targetSdkVersion 24
-        versionCode 61
-        versionName "0.8.6"
+        minSdkVersion 23
+        targetSdkVersion 25
+        versionCode 100
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         project.ext.set("archivesBaseName", "H-Viewer_by_GE");
@@ -105,9 +102,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //Google offical
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:cardview-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:cardview-v7:25.1.0'
+    compile 'com.android.support:design:25.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
     //umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
