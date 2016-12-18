@@ -20,7 +20,7 @@ import ml.puredark.hviewer.helpers.FileHelper;
 
 public class DownloadTaskHolder {
     private final static String dbName = "downloads";
-    private static List<DownloadTask> downloadTasks = new ArrayList<>();
+    private static List<DownloadTask> downloadTasks;
     private DBHelper dbHelper;
 
     public DownloadTaskHolder(Context context) {
@@ -96,6 +96,7 @@ public class DownloadTaskHolder {
     }
 
     public int scanPathForDownloadTask(String rootPath, String... subDirs){
+        getDownloadTasks();
         DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
         DocumentFile[] dirs = root.listFiles();
         int count = 0;
