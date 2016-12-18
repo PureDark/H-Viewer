@@ -106,5 +106,10 @@
     <string name="clear">清空</string>
     <string name="add">添加</string>
     <string name="delete">删除</string>
+    <string name="favorites">收藏夹</string>
+    <string name="hvfavorites">HV收藏夹</string>
+    <string name="not_support_function">您的手机版本不支持该功能!</string>
+    <string name="download">下载</string>
+    <string name="hvdownload">HV下载</string>
 
 </resources>

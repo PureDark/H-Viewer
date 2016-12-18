@@ -33,13 +33,13 @@ android {
     defaultConfig {
         applicationId "ml.puredark.hviewer"
         resValue "string", "app_name", "H-Viewer"
-        minSdkVersion 23
+        minSdkVersion 25
         targetSdkVersion 25
         versionCode 100
         versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        project.ext.set("archivesBaseName", "H-Viewer_by_GE");
+        project.ext.set("archivesBaseName", "H-Viewer byGE");
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
