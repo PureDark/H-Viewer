@@ -92,10 +92,12 @@
     <string name="setting_about_qq_group">加入内测群</string>
     <string name="setting_about_qq_group_summary">590668841</string>
     <string name="setting_about_donate">捐赠-支付宝</string>
-    <string name="setting_about_donate_summary">&lt;gekunfei@qq.com&gt;\n&lt;bruce.lee.liang@gmail.com&gt;</string>
+    <string name="setting_about_donate_summary">&lt;bruce.lee.liang@gmail.com&gt;\n&lt;gekunfei@qq.com&gt;</string>
 
 
     <string name="authorization_failed">授权失败将会影响下载和备份</string>
+    <string name="no">否</string>
+    <string name="yes">是</string>
     <string name="cancel">取消</string>
     <string name="ok">确定</string>
     <string name="jump_to_page">跳转到第几页？</string>

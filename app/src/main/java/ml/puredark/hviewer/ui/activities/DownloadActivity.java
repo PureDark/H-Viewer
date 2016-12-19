@@ -157,21 +157,21 @@ public class DownloadActivity extends BaseActivity {
                             } else if (i == 1) {
                                 new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除下载记录？")
                                         .setMessage("删除后将无法恢复")
-                                        .setPositiveButton("确定", (dialog, which) -> {
+                                        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                                             manager.deleteDownloadTask(task);
                                             distinguishDownloadTasks();
                                             new Handler().postDelayed(() -> new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
                                                     .setMessage("是否删除内存卡中对应图片？")
-                                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialog1, int which1) {
                                                             FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),FileHelper.appdirname);
                                                         }
-                                                    }).setNegativeButton("取消", null).show(), 250);
-                                        }).setNegativeButton("取消", null).show();
+                                                    }).setNegativeButton(getString(R.string.cancel), null).show(), 250);
+                                        }).setNegativeButton(getString(R.string.cancel), null).show();
                             }
                         })
-                        .setNegativeButton("取消", null)
+                        .setNegativeButton(getString(R.string.cancel), null)
                         .show();
                 return true;
             }
@@ -194,15 +194,15 @@ public class DownloadActivity extends BaseActivity {
                 final DownloadTask task = (DownloadTask) downloadedTaskAdapter.getDataProvider().getItem(position);
                 new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
                         .setMessage("删除后将无法恢复")
-                        .setPositiveButton("确定", (dialog, which) -> {
+                        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                             manager.deleteDownloadTask(task);
                             distinguishDownloadTasks();
                             new Handler().postDelayed(() -> new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
                                     .setMessage("是否删除内存卡中对应图片？")
-                                    .setPositiveButton("是", (dialog12, which12) -> {
+                                    .setPositiveButton(getString(R.string.yes), (dialog12, which12) -> {
                                         FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),FileHelper.appdirname);
-                                    }).setNegativeButton("否", null).show(), 250);
-                        }).setNegativeButton("取消", null).show();
+                                    }).setNegativeButton(getString(R.string.no), null).show(), 250);
+                        }).setNegativeButton(getString(R.string.cancel), null).show();
                 return true;
             }
         });

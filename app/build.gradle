@@ -38,7 +38,7 @@ android {
         versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        project.ext.set("archivesBaseName", "H-Viewer byGE " + gitVersionTag());
+        project.ext.set("archivesBaseName", "H-Viewer " + gitVersionTag());
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
