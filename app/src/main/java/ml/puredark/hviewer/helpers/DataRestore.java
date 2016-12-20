@@ -56,7 +56,7 @@ public class DataRestore {
     }
 
     public String SettingRestore() {
-        String json = FileHelper.readString(Names.settingname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
+        String json = FileHelper.readString(Names.settingname, DownloadManager.getDownloadPath(), Names.backupdirname);
         if (json == null) {
             return "未在下载目录中找到设置备份";
         } else {
@@ -80,7 +80,7 @@ public class DataRestore {
     }
 
     public String FavouriteRestore() {
-        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
+        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.backupdirname);
         if (json == null) {
             return "未在下载目录中找到收藏夹备份";
         } else {
@@ -101,7 +101,7 @@ public class DataRestore {
     }
 
     public String SiteRestore() {
-        String json = FileHelper.readString(Names.sitename, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
+        String json = FileHelper.readString(Names.sitename, DownloadManager.getDownloadPath(), Names.backupdirname);
         if (json == null) {
             return "未在下载目录中找到站点备份";
         } else {

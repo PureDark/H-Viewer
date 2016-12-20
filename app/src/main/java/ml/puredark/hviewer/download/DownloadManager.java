@@ -55,15 +55,15 @@ public class DownloadManager {
 
     private void checkNoMediaFile() {
         boolean nomedia = (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_NOMEDIA, true);
-        String path = Uri.decode(getDownloadPath() + "/" + Names.appdirname);
+        String path = Uri.decode(getDownloadPath());
         if (nomedia) {
             try {
-                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath(), Names.appdirname);
+                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath());
             } catch (Exception e) {
                 SimpleFileUtil.createIfNotExist(path + "/.nomedia");
             }
         } else {
-            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath(), Names.appdirname);
+            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath());
             Log.d("DownloadManager", "file:" + file + " file.getName:" + ((file!=null)?file.getName():"null"));
             Log.d("DownloadManager", "file.exists():" + file.exists());
             if (file == null || !file.exists())
@@ -72,7 +72,7 @@ public class DownloadManager {
     }
 
     public static File getAlbumStorageDir() {
-        File file = new File(Environment.DIRECTORY_PICTURES);
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Names.appdirname);
         return file;
     }
     public static String getDownloadPath() {
@@ -93,23 +93,25 @@ public class DownloadManager {
 
     public boolean createDownloadTask(LocalCollection collection) {
         String dirName = generateDirName(collection, 0);
-        DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, dirName);
+        String path = getDownloadPath() + "/" + Uri.encode(dirName);
+        DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (binder == null)
-                //||holder.isInList(task))
+            //||holder.isInList(task))
             return false;
         int did = holder.addDownloadTask(task);
         task.did = did;
         int i = 2;
-        while (FileHelper.isFileExist(dirName, getDownloadPath(), Names.appdirname)) {
+        while (FileHelper.isFileExist(dirName, getDownloadPath())) {
             dirName = generateDirName(collection, i);
         }
-        DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(),  Names.appdirname, dirName);
+        DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
         if(dir==null){
             holder.deleteDownloadTask(task);
             return false;
         }
         dirName = dir.getName();
-        task.dirName = dirName;
+        path = getDownloadPath() + "/" + Uri.encode(dirName);
+        task.path = path;
         holder.updateDownloadTasks(task);
         // 统计添加下载次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCreated");

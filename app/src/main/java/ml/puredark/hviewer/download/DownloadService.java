@@ -128,8 +128,10 @@ public class DownloadService extends Service {
                 MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCompleted");
 
                 // 记录信息，以求恢复删除了的下载记录
-                FileHelper.createFileIfNotExist("detail.txt", DownloadManager.getDownloadPath(), Names.appdirname, task.dirName);
-                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", DownloadManager.getDownloadPath(), Names.appdirname, task.dirName);
+                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
+                FileHelper.createFileIfNotExist("detail.txt", rootPath, dirName);
+                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dirName);
             }
             return;
         }
@@ -321,7 +323,9 @@ public class DownloadService extends Service {
                     fileName = picture.pid + "";
                 }
                 fileName += ".jpg";
-                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), Names.appdirname,task.dirName);
+                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
+                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
                 FileHelper.saveBitmapToFile((Bitmap) pic, documentFile);
             } else if (pic instanceof PooledByteBuffer) {
                 String fileName;
@@ -339,7 +343,9 @@ public class DownloadService extends Service {
                 }
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
-                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), Names.appdirname,task.dirName);
+                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
+                documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, dirName);
                 if (!FileHelper.writeBytes(bytes, documentFile)) {
                     throw new IOException();
                 }

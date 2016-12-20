@@ -174,15 +174,15 @@ public class ModifySiteActivity extends BaseActivity {
                     return;
                 //二维码图片较大时，生成图片的时间可能较长，因此放在新线程中
                 new Thread(() -> {
-                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath(), Names.appdirname);
+                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath());
                     final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
                             BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath(),Names.appdirname));
+                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath()));
 
                     runOnUiThread(() -> {
                         if (success) {
                             switchBetweenShareAndDetail(viewShareSiteQrCode);
-                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath(), Names.appdirname)));
+                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath())));
                         } else {
                             onFailure(null);
                         }
@@ -210,7 +210,7 @@ public class ModifySiteActivity extends BaseActivity {
         Bitmap bitmap = ((BitmapDrawable) ivQrCode.getDrawable()).getBitmap();
         try {
             String fileName = FileHelper.filenameFilter(site.title) + ".jpg";
-            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), Names.appdirname,"QrCodes");
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), "QrCodes");
             FileHelper.saveBitmapToFile(bitmap, documentFile);
             showSnackBar("二维码已成功保存到下载目录中");
         } catch (IOException e) {

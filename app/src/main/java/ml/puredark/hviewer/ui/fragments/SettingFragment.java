@@ -283,7 +283,7 @@ public class SettingFragment extends PreferenceFragment
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath(), Names.appdirname);
+                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
                         holder.onDestroy();
                         if (count > 0)
                             activity.showSnackBar("成功导入" + count + "个已下载图册");
@@ -298,7 +298,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
+                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), Names.backupdirname);
                         if (file != null) {
                             FavouriteHolder holder = new FavouriteHolder(activity);
                             String json = new Gson().toJson(holder.getFavourites());
@@ -314,7 +314,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
+                        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.backupdirname);
                         if (json == null) {
                             activity.showSnackBar("未在下载目录中找到收藏夹备份");
                         } else {
