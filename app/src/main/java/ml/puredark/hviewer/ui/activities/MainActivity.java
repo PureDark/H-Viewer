@@ -66,6 +66,7 @@ import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteAdapter;
@@ -205,7 +206,7 @@ public class MainActivity extends BaseActivity {
 
         initBottomSheet();
 
-//        HViewerApplication.checkUpdate(this);
+        UpdateManager.checkUpdate(this);
     }
 
     private void initDrawer() {
@@ -974,8 +975,10 @@ public class MainActivity extends BaseActivity {
                 showSnackBar(getString(R.string.restore_Succes));
             } else if (requestCode == RESULT_RDSQ) {
                 try {
-                    this.getContentResolver().takePersistableUriPermission(
-                            data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        this.getContentResolver().takePersistableUriPermission(
+                                data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }

@@ -32,7 +32,7 @@ android {
     defaultConfig {
         applicationId "ml.puredark.hviewer"
         resValue "string", "app_name", "H-Viewer"
-        minSdkVersion 19
+        minSdkVersion 17
         targetSdkVersion 25
         versionCode 100
         versionName "1.1.1"

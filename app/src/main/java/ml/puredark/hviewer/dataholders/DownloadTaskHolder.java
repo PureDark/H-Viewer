@@ -97,25 +97,30 @@ public class DownloadTaskHolder {
 
     public int scanPathForDownloadTask(String rootPath, String... subDirs){
         getDownloadTasks();
-        DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
-        DocumentFile[] dirs = root.listFiles();
         int count = 0;
-        for (DocumentFile dir : dirs) {
-            if (dir.isDirectory()) {
-                DocumentFile file = dir.findFile("detail.txt");
-                if (file != null && file.isFile() && file.exists() && file.canRead()) {
-                    String detail = FileHelper.readString(file);
-                    DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
-                    task.status = DownloadTask.STATUS_COMPLETED;
-                    if(!isInList(task)){
-                        count++;
-                        addDownloadTask(task);
+        try {
+            DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
+            DocumentFile[] dirs = root.listFiles();
+
+            for (DocumentFile dir : dirs) {
+                if (dir.isDirectory()) {
+                    DocumentFile file = dir.findFile("detail.txt");
+                    if (file != null && file.isFile() && file.exists() && file.canRead()) {
+                        String detail = FileHelper.readString(file);
+                        DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
+                        task.status = DownloadTask.STATUS_COMPLETED;
+                        if (!isInList(task)) {
+                            count++;
+                            addDownloadTask(task);
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            count = -1;
+            e.printStackTrace();
         }
         return count;
-
     }
 
     public boolean isInList(DownloadTask item) {
