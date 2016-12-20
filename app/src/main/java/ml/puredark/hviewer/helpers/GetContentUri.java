@@ -38,7 +38,7 @@ public class GetContentUri {
                     } catch (SecurityException e) {
                         e.printStackTrace();
                     }
-                    return uri.normalizeScheme();
+                    return uri;
                 }
             }
         } finally {
