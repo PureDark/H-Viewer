@@ -149,7 +149,33 @@ public class SettingFragment extends PreferenceFragment
                 .build();
         mDialog = DirectoryChooserFragment.newInstance(config);
         mDialog.setTargetFragment(this, 0);
-
+        LongClickPreference prefDownloadPath = (LongClickPreference) getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH);
+        prefDownloadPath.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(activity)
+                    .setTitle("选择路径方式")
+                    .setItems(new String[]{"系统文档（新）", "路径选择框（旧）"}, (dialogInterface, pos) -> {
+                        if (pos == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                            try {
+                                startActivityForResult(intent, RESULT_CHOOSE_DIRECTORY);
+                            } catch (ActivityNotFoundException e) {
+                                e.printStackTrace();
+                                mDialog.show(getFragmentManager(), null);
+                            }
+                            new Handler().postDelayed(() -> {
+                                if(!opened)
+                                    activity.showSnackBar("如无法开启系统文档，长按使用旧工具");
+                            }, 1000);
+                        } else if (pos == 1) {
+                            mDialog.show(getFragmentManager(), null);
+                        } else
+                            activity.showSnackBar("当前系统版本不支持");
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+            return true;
+        });
     }
 
     @Override
@@ -244,6 +270,10 @@ public class SettingFragment extends PreferenceFragment
                     e.printStackTrace();
                     mDialog.show(getFragmentManager(), null);
                 }
+                new Handler().postDelayed(() -> {
+                    if(!opened)
+                        activity.showSnackBar("如无法开启系统文档，长按使用旧工具");
+                }, 1000);
             } else {
                 mDialog.show(getFragmentManager(), null);
             }

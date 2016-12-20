@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.gc.materialdesign.views.ButtonFlat;
+import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -65,6 +66,7 @@ import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.ExampleSites;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
@@ -81,6 +83,7 @@ import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
@@ -246,6 +249,17 @@ public class MainActivity extends BaseActivity {
     private void initNavSites() {
 
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
+        //测试新站点
+//        List<Site> sites = ExampleSites.get();
+//        if (siteGroups.size() == 0)
+//            siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
+//        siteGroups.get(0).second.addAll(sites);
+//        siteGroups.get(0).second.add(0, sites.get(sites.size() - 2));
+//        siteGroups.get(0).second.add(0, sites.get(sites.size()-1));
+//        SimpleFileUtil.writeString("/sdcard/sites1.txt", new Gson().toJson(sites.get(sites.size() - 1)), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites2.txt", new Gson().toJson(sites.get(sites.size() - 2)), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites3.txt", new Gson().toJson(sites.get(sites.size() - 3)), "utf-8");
+//        SimpleFileUtil.writeString("/sdcard/sites.txt", new Gson().toJson(sites), "utf-8");
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(siteGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
