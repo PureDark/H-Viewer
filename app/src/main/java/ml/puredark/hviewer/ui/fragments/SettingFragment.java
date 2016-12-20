@@ -172,7 +172,7 @@ public class SettingFragment extends PreferenceFragment
                         } else
                             activity.showSnackBar("当前系统版本不支持");
                     })
-                    .setNegativeButton("取消", null)
+                    .setNegativeButton(getString(R.string.cancel), null)
                     .show();
             return true;
         });
@@ -226,17 +226,17 @@ public class SettingFragment extends PreferenceFragment
             //备份
             new AlertDialog.Builder(activity).setTitle("确认备份?")
                     .setMessage("将会覆盖之前的备份")
-                    .setPositiveButton("确定",((dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok),((dialog, which) -> {
                         String backup = new DataBackup().DoBackup();
                         activity.showSnackBar(backup);
                     }))
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
 
         } else if (preference.getKey().equals(KEY_PREF_BKRS_RESTORE)) {
             //还原
             new AlertDialog.Builder(activity).setTitle("确认恢复?")
                     .setMessage("将会新增站点,不会删除原有站点")
-                    .setPositiveButton("确定",((dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok),((dialog, which) -> {
                         String restore = new DataRestore().DoRestore();
                         activity.showSnackBar(restore);
                         if (restore.equals(getString(R.string.restore_Succes))) {
@@ -246,7 +246,7 @@ public class SettingFragment extends PreferenceFragment
                         }
                         activity.showSnackBar(restore);
                     }))
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
 
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
             //开源协议
@@ -281,7 +281,7 @@ public class SettingFragment extends PreferenceFragment
             //导入已下载
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         DownloadTaskHolder holder = new DownloadTaskHolder(activity);
                         int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath(), Names.appdirname);
                         holder.onDestroy();
@@ -292,7 +292,7 @@ public class SettingFragment extends PreferenceFragment
                         else
                             activity.showSnackBar("导入失败");
                     })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
             //导出收藏夹
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
@@ -308,12 +308,12 @@ public class SettingFragment extends PreferenceFragment
                         } else
                             activity.showSnackBar("创建文件失败，请检查下载目录");
                         })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_IMPORT)) {
             //导入收藏夹
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
                         if (json == null) {
                             activity.showSnackBar("未在下载目录中找到收藏夹备份");
@@ -333,17 +333,17 @@ public class SettingFragment extends PreferenceFragment
                             }
                         }
                     })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_CACHE_CLEAN)) {
             //清空图片缓存
             new AlertDialog.Builder(activity).setTitle("确定要清空图片缓存？")
                     .setMessage("近期加载过的图片将会需要重新下载")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         ImagePipeline imagePipeline = Fresco.getImagePipeline();
                         imagePipeline.clearDiskCaches();
                         activity.showSnackBar("缓存清理成功");
                     })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_PROXY_DETAIL)) {
             //PROXY代理
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
