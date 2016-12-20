@@ -134,7 +134,8 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
         holder.container.setOnLongClickListener(v -> {
             if (mItemClickListener != null && childPosition >= 0)
                 return mItemClickListener.onItemLongClick(v, groupPosition, childPosition);
-            return false;
+            else
+                return false;
         });
         holder.switchListGrid.setOnClickListener(view -> holder.switchListGrid.toggle());
         if (mOnCheckedChangeListener != null)
