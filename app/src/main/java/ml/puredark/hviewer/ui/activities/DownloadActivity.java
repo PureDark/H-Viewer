@@ -24,6 +24,7 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.helpers.FileHelper;
@@ -165,7 +166,7 @@ public class DownloadActivity extends BaseActivity {
                                                     .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialog1, int which1) {
-                                                            FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),FileHelper.appdirname);
+                                                            FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(), Names.appdirname);
                                                         }
                                                     }).setNegativeButton(getString(R.string.cancel), null).show(), 250);
                                         }).setNegativeButton(getString(R.string.cancel), null).show();
@@ -200,7 +201,7 @@ public class DownloadActivity extends BaseActivity {
                             new Handler().postDelayed(() -> new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
                                     .setMessage("是否删除内存卡中对应图片？")
                                     .setPositiveButton(getString(R.string.yes), (dialog12, which12) -> {
-                                        FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),FileHelper.appdirname);
+                                        FileHelper.deleteFile(task.dirName, DownloadManager.getDownloadPath(),Names.appdirname);
                                     }).setNegativeButton(getString(R.string.no), null).show(), 250);
                         }).setNegativeButton(getString(R.string.cancel), null).show();
                 return true;

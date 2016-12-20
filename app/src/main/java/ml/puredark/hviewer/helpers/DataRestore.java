@@ -28,6 +28,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -55,7 +56,7 @@ public class DataRestore {
     }
 
     public String SettingRestore() {
-        String json = FileHelper.readString(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+        String json = FileHelper.readString(Names.settingname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
         if (json == null) {
             return "未在下载目录中找到设置备份";
         } else {
@@ -79,7 +80,7 @@ public class DataRestore {
     }
 
     public String FavouriteRestore() {
-        String json = FileHelper.readString(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
         if (json == null) {
             return "未在下载目录中找到收藏夹备份";
         } else {
@@ -100,7 +101,7 @@ public class DataRestore {
     }
 
     public String SiteRestore() {
-        String json = FileHelper.readString(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+        String json = FileHelper.readString(Names.sitename, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
         if (json == null) {
             return "未在下载目录中找到站点备份";
         } else {

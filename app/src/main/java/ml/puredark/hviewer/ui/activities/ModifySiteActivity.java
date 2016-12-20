@@ -30,6 +30,7 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.configs.PasteEEConfig;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -173,15 +174,15 @@ public class ModifySiteActivity extends BaseActivity {
                     return;
                 //二维码图片较大时，生成图片的时间可能较长，因此放在新线程中
                 new Thread(() -> {
-                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath(), FileHelper.appdirname);
+                    FileHelper.createFileIfNotExist("temp", DownloadManager.getDownloadPath(), Names.appdirname);
                     final boolean success = QRCodeUtil.createQRImage(url, 300, 300,
                             BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath(),FileHelper.appdirname));
+                            FileHelper.getFileOutputSteam("temp", DownloadManager.getDownloadPath(),Names.appdirname));
 
                     runOnUiThread(() -> {
                         if (success) {
                             switchBetweenShareAndDetail(viewShareSiteQrCode);
-                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath(), FileHelper.appdirname)));
+                            ivQrCode.setImageBitmap(BitmapFactory.decodeStream(FileHelper.getFileInputSteam("temp", DownloadManager.getDownloadPath(), Names.appdirname)));
                         } else {
                             onFailure(null);
                         }
@@ -209,7 +210,7 @@ public class ModifySiteActivity extends BaseActivity {
         Bitmap bitmap = ((BitmapDrawable) ivQrCode.getDrawable()).getBitmap();
         try {
             String fileName = FileHelper.filenameFilter(site.title) + ".jpg";
-            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), FileHelper.appdirname,"QrCodes");
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), Names.appdirname,"QrCodes");
             FileHelper.saveBitmapToFile(bitmap, documentFile);
             showSnackBar("二维码已成功保存到下载目录中");
         } catch (IOException e) {

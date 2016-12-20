@@ -31,6 +31,7 @@ import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
@@ -127,8 +128,8 @@ public class DownloadService extends Service {
                 MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCompleted");
 
                 // 记录信息，以求恢复删除了的下载记录
-                FileHelper.createFileIfNotExist("detail.txt", DownloadManager.getDownloadPath(), FileHelper.appdirname, task.dirName);
-                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", DownloadManager.getDownloadPath(), FileHelper.appdirname, task.dirName);
+                FileHelper.createFileIfNotExist("detail.txt", DownloadManager.getDownloadPath(), Names.appdirname, task.dirName);
+                FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", DownloadManager.getDownloadPath(), Names.appdirname, task.dirName);
             }
             return;
         }
@@ -320,7 +321,7 @@ public class DownloadService extends Service {
                     fileName = picture.pid + "";
                 }
                 fileName += ".jpg";
-                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(),FileHelper.appdirname,task.dirName);
+                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), Names.appdirname,task.dirName);
                 FileHelper.saveBitmapToFile((Bitmap) pic, documentFile);
             } else if (pic instanceof PooledByteBuffer) {
                 String fileName;
@@ -338,7 +339,7 @@ public class DownloadService extends Service {
                 }
                 String postfix = FileType.getFileType(bytes, FileType.TYPE_IMAGE);
                 fileName += "." + postfix;
-                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), FileHelper.appdirname,task.dirName);
+                documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), Names.appdirname,task.dirName);
                 if (!FileHelper.writeBytes(bytes, documentFile)) {
                     throw new IOException();
                 }

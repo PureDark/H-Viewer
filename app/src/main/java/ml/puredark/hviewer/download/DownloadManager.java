@@ -19,6 +19,7 @@ import java.util.List;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
@@ -54,15 +55,15 @@ public class DownloadManager {
 
     private void checkNoMediaFile() {
         boolean nomedia = (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_NOMEDIA, true);
-        String path = Uri.decode(getDownloadPath() + "/" + FileHelper.appdirname);
+        String path = Uri.decode(getDownloadPath() + "/" + Names.appdirname);
         if (nomedia) {
             try {
-                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath(), FileHelper.appdirname);
+                FileHelper.createFileIfNotExist(".nomedia", getDownloadPath(), Names.appdirname);
             } catch (Exception e) {
                 SimpleFileUtil.createIfNotExist(path + "/.nomedia");
             }
         } else {
-            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath(), FileHelper.appdirname);
+            DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath(), Names.appdirname);
             Log.d("DownloadManager", "file:" + file + " file.getName:" + ((file!=null)?file.getName():"null"));
             Log.d("DownloadManager", "file.exists():" + file.exists());
             if (file == null || !file.exists())
@@ -99,10 +100,10 @@ public class DownloadManager {
         int did = holder.addDownloadTask(task);
         task.did = did;
         int i = 2;
-        while (FileHelper.isFileExist(dirName, getDownloadPath(), FileHelper.appdirname)) {
+        while (FileHelper.isFileExist(dirName, getDownloadPath(), Names.appdirname)) {
             dirName = generateDirName(collection, i);
         }
-        DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(),  FileHelper.appdirname, dirName);
+        DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(),  Names.appdirname, dirName);
         if(dir==null){
             holder.deleteDownloadTask(task);
             return false;

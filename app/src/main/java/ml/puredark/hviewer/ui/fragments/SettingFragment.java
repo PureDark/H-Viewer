@@ -37,6 +37,7 @@ import java.util.List;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
@@ -252,7 +253,7 @@ public class SettingFragment extends PreferenceFragment
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton("确定", (dialog, which) -> {
                         DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath(),FileHelper.appdirname);
+                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath(), Names.appdirname);
                         holder.onDestroy();
                         if (count > 0)
                             activity.showSnackBar("成功导入" + count + "个已下载图册");
@@ -267,7 +268,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
                         if (file != null) {
                             FavouriteHolder holder = new FavouriteHolder(activity);
                             String json = new Gson().toJson(holder.getFavourites());
@@ -283,7 +284,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        String json = FileHelper.readString(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+                        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
                         if (json == null) {
                             activity.showSnackBar("未在下载目录中找到收藏夹备份");
                         } else {

@@ -20,11 +20,6 @@ import ml.puredark.hviewer.utils.DocumentUtil;
  */
 
 public class FileHelper {
-    public static final String appdirname = "H-Viewer";
-    public static final String backupdirname = "Backup";
-    public static final String sitename = "Sites.json" ;
-    public static final String settingname = "Setting.json" ;
-    public static final String favouritesname = "Favourites.json";
 
     public static boolean isFileExist(String fileName, String rootPath, String... subDirs){
         return DocumentUtil.isFileExist(HViewerApplication.mContext, fileName, rootPath, subDirs);

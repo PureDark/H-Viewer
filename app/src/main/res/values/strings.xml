@@ -82,17 +82,17 @@
     <string name="restore_Succes">还原成功</string>
 
     <string name="setting_about_author">作者</string>
-    <string name="setting_about_author_summary">PureDark And KunFei</string>
+    <string name="setting_about_author_summary">PureDark</string>
     <string name="setting_about_github">Github主页</string>
-    <string name="setting_about_github_summary">https://github.com/gedoor/H-Viewer</string>
+    <string name="setting_about_github_summary">https://github.com/PureDark/H-Viewer</string>
     <string name="setting_about_changelog">更新日志</string>
-    <string name="setting_about_changelog_summary">https://github.com/gedoor/H-Viewer/releases</string>
+    <string name="setting_about_changelog_summary">https://github.com/PureDark/H-Viewer/releases</string>
     <string name="setting_about_version">版本号</string>
     <string name="setting_about_version_summary">v0.1.0</string>
     <string name="setting_about_qq_group">加入内测群</string>
     <string name="setting_about_qq_group_summary">590668841</string>
     <string name="setting_about_donate">捐赠-支付宝</string>
-    <string name="setting_about_donate_summary">&lt;bruce.lee.liang@gmail.com&gt;\n&lt;gekunfei@qq.com&gt;</string>
+    <string name="setting_about_donate_summary">&lt;bruce.lee.liang@gmail.com&gt;</string>
 
 
     <string name="authorization_failed">授权失败将会影响下载和备份</string>

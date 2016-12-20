@@ -25,6 +25,7 @@ import java.util.List;
 
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -56,7 +57,7 @@ public class DataBackup {
     }
 
     public String SiteBackup() {
-        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.sitename, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+        DocumentFile file = FileHelper.createFileIfNotExist(Names.sitename, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
         if (file == null) {
             return "站点备份失败";
         } else {
@@ -70,7 +71,7 @@ public class DataBackup {
     }
 
     public String FavouriteBackup() {
-        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.favouritesname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+        DocumentFile file = FileHelper.createFileIfNotExist(Names.favouritesname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
         if (file == null) {
             return "收藏夹备份失败";
         } else {
@@ -83,7 +84,7 @@ public class DataBackup {
     }
 
     public String SettingBackup(){
-        DocumentFile file = FileHelper.createFileIfNotExist(FileHelper.settingname, DownloadManager.getDownloadPath(), FileHelper.appdirname, FileHelper.backupdirname);
+        DocumentFile file = FileHelper.createFileIfNotExist(Names.settingname, DownloadManager.getDownloadPath(), Names.appdirname, Names.backupdirname);
         if( file == null ){
                 return "设置备份失败";
         }
