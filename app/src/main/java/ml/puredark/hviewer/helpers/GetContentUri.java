@@ -9,12 +9,15 @@ import android.os.Build;
 import android.provider.DocumentsContract;
 import android.support.annotation.RequiresApi;
 
+import ml.puredark.hviewer.ui.activities.MainActivity;
+
 /**
  * Created by GKF on 2016/12/20.
  */
 
 
 public class GetContentUri {
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public Uri GetContentUriByParentUri(Context context, Uri parentUri, String dirname) {
         ContentResolver contentResolver = context.getContentResolver();
@@ -56,4 +59,5 @@ public class GetContentUri {
             }
         }
     }
+
 }

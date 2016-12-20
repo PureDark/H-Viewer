@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -60,6 +61,7 @@ import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.AbstractTagHolder;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
@@ -67,6 +69,7 @@ import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.ExampleSites;
+import ml.puredark.hviewer.helpers.GetContentUri;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
@@ -989,14 +992,15 @@ public class MainActivity extends BaseActivity {
                 showSnackBar(getString(R.string.restore_Succes));
             } else if (requestCode == RESULT_RDSQ) {
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Uri uri = new GetContentUri().GetContentUriByParentUri(this, data.getData(), Names.appdirname);
                         this.getContentResolver().takePersistableUriPermission(
-                                data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, uri);
                     }
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
-                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, data.getDataString());
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == RESULT_RDSQ) {
