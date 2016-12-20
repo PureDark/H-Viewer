@@ -33,18 +33,12 @@ public class GetContentUri {
                 if (docname.equals(dirname)) {
                     closeQuietly(childCursor);
                     Uri uri = DocumentsContract.buildDocumentUriUsingTree(parentUri,docid);
-                    try {
-                        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    }
                     return uri;
                 }
             }
         } finally {
             closeQuietly(childCursor);
         }
-
         return null;
     }
 

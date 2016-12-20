@@ -992,15 +992,14 @@ public class MainActivity extends BaseActivity {
                 showSnackBar(getString(R.string.restore_Succes));
             } else if (requestCode == RESULT_RDSQ) {
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Uri uri = new GetContentUri().GetContentUriByParentUri(this, data.getData(), Names.appdirname);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         this.getContentResolver().takePersistableUriPermission(
-                                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, uri);
+                                data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     }
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
+                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, data.getDataString());
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == RESULT_RDSQ) {
