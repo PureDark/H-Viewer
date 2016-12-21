@@ -29,6 +29,8 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.beans.SiteGroup;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.configs.PasteEEConfig;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -106,6 +108,7 @@ public class ModifySiteActivity extends BaseActivity {
 
         siteHolder = new SiteHolder(this);
 
+        site.group = siteHolder.getGroupById(site.gid).title;
         holder.fillSitePropEditText(site);
     }
 
@@ -206,9 +209,8 @@ public class ModifySiteActivity extends BaseActivity {
     void saveQrCode() {
         Bitmap bitmap = ((BitmapDrawable) ivQrCode.getDrawable()).getBitmap();
         try {
-            String rootPath = DownloadManager.getDownloadPath();
             String fileName = FileHelper.filenameFilter(site.title) + ".jpg";
-            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, rootPath, "QrCodes");
+            DocumentFile documentFile = FileHelper.createFileIfNotExist(fileName, DownloadManager.getDownloadPath(), "QrCodes");
             FileHelper.saveBitmapToFile(bitmap, documentFile);
             showSnackBar("二维码已成功保存到下载目录中");
         } catch (IOException e) {
@@ -224,9 +226,9 @@ public class ModifySiteActivity extends BaseActivity {
             showSnackBar("规则缺少必要参数，请检查");
             return;
         }
+        
         newSite.sid = site.sid;
         newSite.index = site.index;
-        newSite.gid = site.gid;
         HViewerApplication.temp = newSite;
         siteHolder.updateSite(newSite);
 

@@ -3,13 +3,17 @@ package ml.puredark.hviewer.ui.activities;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -56,12 +60,16 @@ import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.AbstractTagHolder;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
+import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteAdapter;
@@ -77,6 +85,7 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
@@ -86,6 +95,8 @@ public class MainActivity extends BaseActivity {
     private static int RESULT_MODIFY_SITE = 2;
     private static int RESULT_LOGIN = 3;
     private static int RESULT_SITE_MARKET = 4;
+    private static int RESULT_SETTING = 5;
+    private static int RESULT_RDSQ = 6;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
@@ -178,6 +189,13 @@ public class MainActivity extends BaseActivity {
             searchView.setLayoutParams(lp);
         }
 
+        //获取存储权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            String downloadPath = DownloadManager.getDownloadPath();
+            if (!downloadPath.startsWith("content://")) {
+                initSetDefultDownloadPath();
+            }
+        }
 
         initDrawer();
 
@@ -191,7 +209,7 @@ public class MainActivity extends BaseActivity {
 
         initBottomSheet();
 
-        HViewerApplication.checkUpdate(this);
+        UpdateManager.checkUpdate(this);
     }
 
     private void initDrawer() {
@@ -231,8 +249,7 @@ public class MainActivity extends BaseActivity {
     private void initNavSites() {
 
         final List<Pair<SiteGroup, List<Site>>> siteGroups = siteHolder.getSites();
-
-        // 测试新站点用
+        //测试新站点
 //        List<Site> sites = ExampleSites.get();
 //        if (siteGroups.size() == 0)
 //            siteGroups.add(0, new Pair<>(new SiteGroup(1, "TEST"), new ArrayList<>()));
@@ -268,6 +285,7 @@ public class MainActivity extends BaseActivity {
         mRecyclerViewExpandableItemManager.attachRecyclerView(rvSite);
 
         int lastSiteId = (int) SharedPreferencesUtil.getData(this, SettingFragment.KEY_LAST_SITE_ID, 0);
+        Boolean openLastSite = (Boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PRER_VIEW_REMLASTSITE, false);
         // 默认展开并选中上次打开的站点
         if (siteGroups.size() > 0 && siteGroups.get(0).second.size() > 0) {
             Site lastSite = null;
@@ -275,7 +293,7 @@ public class MainActivity extends BaseActivity {
             for (int i = 0; i < siteGroups.size(); i++) {
                 Pair<SiteGroup, List<Site>> pair = siteGroups.get(i);
                 for (int j = 0; j < pair.second.size(); j++) {
-                    groupPos = j;
+                    groupPos = i;
                     Site site = pair.second.get(j);
                     if (site.sid == lastSiteId) {
                         lastSite = site;
@@ -285,7 +303,7 @@ public class MainActivity extends BaseActivity {
                 if (lastSite != null)
                     break;
             }
-            if (lastSite == null) {
+            if (lastSite == null || !openLastSite) {
                 groupPos = 0;
                 lastSite = siteGroups.get(0).second.get(0);
             }
@@ -296,28 +314,8 @@ public class MainActivity extends BaseActivity {
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
             public void onGroupClick(View v, int groupPosition) {
-                // 点击分类（如果是新建按钮则创建，否则展开）
-                if (groupPosition == siteAdapter.getGroupCount() - 1) {
-                    View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
-                    MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("新建组名")
-                            .setView(view)
-                            .setNegativeButton("取消", null)
-                            .setPositiveButton("确定", (dialog, which) -> {
-                                String title = inputGroupTitle.getText().toString();
-                                SiteGroup group = new SiteGroup(0, title);
-                                siteHolder.addSiteGroup(group);
-                                int gid = siteHolder.getMaxGroupId();
-                                group.gid = gid;
-                                group.index = gid;
-                                siteHolder.updateSiteGroupIndex(group);
-                                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
-                                siteAdapter.notifyDataSetChanged();
-                            }).show();
-                } else {
-                    notifyGroupItemChanged(groupPosition);
-                }
+                // 点击分类
+                notifyGroupItemChanged(groupPosition);
             }
 
             @Override
@@ -358,18 +356,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(View v, int groupPosition, int childPosition) {
                 // 点击站点
-                if (childPosition == siteAdapter.getChildCount(groupPosition) - 1) {
-                    Pair<SiteGroup, List<Site>> pair = siteAdapter.getDataProvider().getItem(groupPosition);
-                    Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
-                    HViewerApplication.temp = pair;
-                    startActivityForResult(intent, RESULT_ADD_SITE);
-                } else {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
                     setTitle(site.title);
                     new Handler().postDelayed(() -> selectSite(site), 300);
                     notifyChildItemChanged(groupPosition, childPosition);
                     drawer.closeDrawer(GravityCompat.START);
-                }
             }
 
             @Override
@@ -445,12 +436,13 @@ public class MainActivity extends BaseActivity {
             }
 
             private void updateGroupItemIndex(int groupPosition) {
-                int childCount = siteAdapter.getChildCount(groupPosition) - 1;
+                int childCount = siteAdapter.getChildCount(groupPosition);
                 for (int i = 0; i < childCount; i++) {
                     Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, i);
                     site.index = i + 1;
                     siteHolder.updateSiteIndex(site);
                 }
+
             }
 
             public void notifyChildItemMoved(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
@@ -613,9 +605,9 @@ public class MainActivity extends BaseActivity {
         TagTabViewHolder favorTagTab = new TagTabViewHolder(view2, favorTagAdapter);
         TagTabViewHolder historyTagTab = new TagTabViewHolder(view3, historyTagAdapter);
 
-        siteTagTab.setButtonText("搜索", "收藏", "刷新", "清空");
-        favorTagTab.setButtonText("搜索", "添加", "删除", "清空");
-        historyTagTab.setButtonText("搜索", "收藏", "删除", "清空");
+        siteTagTab.setButtonText(getString(R.string.search), getString(R.string.favorite), getString(R.string.refresh), getString(R.string.clear));
+        favorTagTab.setButtonText(getString(R.string.search), getString(R.string.add), getString(R.string.delete), getString(R.string.clear));
+        historyTagTab.setButtonText(getString(R.string.search), getString(R.string.favorite), getString(R.string.delete), getString(R.string.clear));
 
         siteTagTab.btnTag1.setOnClickListener(v -> siteTagTab.searchTags());
         siteTagTab.btnTag2.setOnClickListener(v -> siteTagTab.favorTags());
@@ -794,8 +786,8 @@ public class MainActivity extends BaseActivity {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("TAG名")
                     .setView(view)
-                    .setNegativeButton("取消", null)
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         String title = inputTagTitle.getText().toString();
                         Tag tag = new Tag(0, title);
                         tagHolder.addTag(sid, tag);
@@ -820,11 +812,11 @@ public class MainActivity extends BaseActivity {
         private void clearTags(int sid, AbstractTagHolder tagHolder) {
             new AlertDialog.Builder(MainActivity.this).setTitle("是否清空？")
                     .setMessage("清空后将无法恢复")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         tagHolder.clear(sid);
                         mSiteTagAdapter.getDataProvider().clear();
                         mSiteTagAdapter.notifyDataSetChanged();
-                    }).setNegativeButton("取消", null).show();
+                    }).setNegativeButton(getString(R.string.cancel), null).show();
         }
     }
 
@@ -854,7 +846,7 @@ public class MainActivity extends BaseActivity {
             currFragment = fragment;
         } catch (Exception e) {
             e.printStackTrace();
-            showSnackBar("载入站点出错，请重试");
+            showSnackBar(getString(R.string.site_loading_error));
         }
     }
 
@@ -899,6 +891,15 @@ public class MainActivity extends BaseActivity {
         return true;
     }
 
+    private void initSetDefultDownloadPath() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            StorageManager sm = (StorageManager)getSystemService(mContext.STORAGE_SERVICE);
+            StorageVolume volume = sm.getPrimaryStorageVolume();
+            Intent intent = volume.createAccessIntent(Environment.DIRECTORY_PICTURES);
+            startActivityForResult(intent, RESULT_RDSQ);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final Intent intent;
@@ -917,10 +918,10 @@ public class MainActivity extends BaseActivity {
                 MaterialEditText inputJumpToPage = (MaterialEditText) view.findViewById(R.id.input_text);
                 inputJumpToPage.setInputType(InputType.TYPE_CLASS_NUMBER);
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("跳转到第几页？")
+                        .setTitle(R.string.jump_to_page)
                         .setView(view)
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("确定", (dialog, which) -> {
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> {
                             String pageStr = inputJumpToPage.getText().toString();
                             int page = 0;
                             try {
@@ -982,6 +983,25 @@ public class MainActivity extends BaseActivity {
             } else if (requestCode == RESULT_SITE_MARKET) {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
+            } else if (requestCode == RESULT_SETTING) {
+                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                siteAdapter.notifyDataSetChanged();
+                showSnackBar(getString(R.string.restore_Succes));
+            } else if (requestCode == RESULT_RDSQ) {
+                DocumentFile file = FileHelper.createDirIfNotExist(data.getData().toString(), Names.appdirname);
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        this.getContentResolver().takePersistableUriPermission(
+                                file.getUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
+                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, file.getUri().toString());
+            }
+        } else if (resultCode == RESULT_CANCELED) {
+            if (requestCode == RESULT_RDSQ) {
+                showSnackBar(getString(R.string.authorization_failed));
             }
         }
     }
@@ -1039,6 +1059,12 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    @OnClick(R.id.btn_add_site)
+    void addsite(){
+        Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
+        startActivityForResult(intent, RESULT_ADD_SITE);
+    }
+
     @OnClick(R.id.btn_site_market)
     void openMarket() {
         drawer.closeDrawer(GravityCompat.START);
@@ -1053,7 +1079,7 @@ public class MainActivity extends BaseActivity {
         drawer.closeDrawer(GravityCompat.START);
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, RESULT_SETTING);
         }, 300);
     }
 

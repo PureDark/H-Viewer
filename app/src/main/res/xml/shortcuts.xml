@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="scfavorites"
+        android:enabled="true"
+        android:icon="@mipmap/favorites"
+        android:shortcutShortLabel="@string/hvfavorites"
+        android:shortcutLongLabel="@string/favorites"
+        android:shortcutDisabledMessage="@string/not_support_function">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="ml.puredark.hviewer"
+            android:targetClass="ml.puredark.hviewer.ui.activities.FavouriteActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="scdownload"
+        android:enabled="true"
+        android:icon="@mipmap/download"
+        android:shortcutShortLabel="@string/hvdownload"
+        android:shortcutLongLabel="@string/download"
+        android:shortcutDisabledMessage="@string/not_support_function">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="ml.puredark.hviewer"
+            android:targetClass="ml.puredark.hviewer.ui.activities.DownloadActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+</shortcuts>

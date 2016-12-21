@@ -22,6 +22,27 @@
             android:src="@drawable/polygon_5" />
 
         <LinearLayout
+            android:id="@+id/btn_add_site"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="true"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/ic_add_white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/half_margin"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="添加站点" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btn_site_market"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

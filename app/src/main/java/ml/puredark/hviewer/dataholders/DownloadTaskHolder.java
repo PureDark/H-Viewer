@@ -10,7 +10,9 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
+import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.helpers.FileHelper;
 
@@ -96,10 +98,12 @@ public class DownloadTaskHolder {
     }
 
     public int scanPathForDownloadTask(String rootPath, String... subDirs){
+        getDownloadTasks();
+        int count = 0;
         try {
             DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
             DocumentFile[] dirs = root.listFiles();
-            int count = 0;
+
             for (DocumentFile dir : dirs) {
                 if (dir.isDirectory()) {
                     DocumentFile file = dir.findFile("detail.txt");
@@ -107,18 +111,34 @@ public class DownloadTaskHolder {
                         String detail = FileHelper.readString(file);
                         DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
                         task.status = DownloadTask.STATUS_COMPLETED;
-                        if(!isInList(task)){
-                            count++;
-                            addDownloadTask(task);
+                        LocalCollection collection = task.collection;
+                        String filename;
+                        filename = collection.cover.substring(collection.cover.lastIndexOf("%2F")+3, collection.cover.length());
+                        DocumentFile ifile = dir.findFile(filename);
+                        if (ifile != null) collection.cover = ifile.getUri().toString();
+                        for (Picture picture : collection.pictures) {
+                            filename = picture.thumbnail.substring(picture.thumbnail.lastIndexOf("%2F")+3,picture.thumbnail.length());
+                            ifile = dir.findFile(filename);
+                            if (ifile != null) {
+                                picture.thumbnail = ifile.getUri().toString();
+                                picture.pic = ifile.getUri().toString();
+                            }
                         }
+
+                        if (!isInList(task)) {
+                            addDownloadTask(task);
+                        } else {
+                            updateDownloadTasks(task);
+                        }
+                        count++;
                     }
                 }
             }
-            return count;
-        } catch (Exception e){
+        } catch (Exception e) {
+            count = -1;
             e.printStackTrace();
-            return -1;
         }
+        return count;
     }
 
     public boolean isInList(DownloadTask item) {

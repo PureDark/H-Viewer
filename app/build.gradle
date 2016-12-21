@@ -1,41 +1,75 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+ext {
+    VERSION_DATE = new Date().format("yy-MM-dd", TimeZone.getTimeZone("UTC"))
+    BUILD_TOOLS = "25.0.2"
+}
+
+def gitVersionCode() {
+    def cmd = 'git rev-list HEAD --first-parent --count'
+    cmd.execute().text.trim().toInteger()
+}
+
+def gitVersionTag() {
+    def cmd = 'git describe --tags'
+    def version = cmd.execute().text.trim()
+    def pattern = "-(\\d+)-g"
+    def matcher = version =~ pattern
+    if (matcher) {
+        version = version.substring(0, matcher.start()) + "." + matcher[0][1]
+    } else {
+        version = version + ".0"
+    }
+    return version
+}
+
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    signingConfigs {
+    }
+    compileSdkVersion 25
+    buildToolsVersion BUILD_TOOLS
     defaultConfig {
         applicationId "ml.puredark.hviewer"
+        resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
-        targetSdkVersion 22
-        versionCode 60
-        versionName "0.8.5"
+        targetSdkVersion 25
+        versionCode 100
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        project.ext.set("archivesBaseName", "H-Viewer " + gitVersionTag());
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            resValue "string", "app_name", "H-Viewer-debug"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
             zipAlignEnabled true
+        }
+        applicationVariants.all { variant ->
+            if (variant.buildType.name.equals('release')) {
+                variant.mergedFlavor.versionCode = gitVersionCode()
+                variant.mergedFlavor.versionName = gitVersionTag()
+            }
         }
     }
     lintOptions {
         abortOnError false
     }
     productFlavors {
-        wandoujia {}
-        coolapk {}
         github {}
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
         }
     }
-
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/LICENSE.txt'
@@ -67,17 +101,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //Google offical
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:cardview-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
-
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:cardview-v7:25.1.0'
+    compile 'com.android.support:design:25.1.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     //umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
-
     //material widget
     compile 'com.github.vajro:MaterialDesignLibrary:1.6'
-    compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.2.2'
+    compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.3.1'
     compile 'com.github.rengwuxian:MaterialEditText:2.1.4'
     compile 'com.github.clans:fab:1.6.1'
     compile 'com.balysv:material-ripple:1.0.2'
@@ -89,13 +121,12 @@ dependencies {
     compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
     compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
-
-
     //Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9') {
         exclude group: 'com.android.support'
     }
     // SwipeBack
+
     //    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
 
     //butter knife
@@ -104,17 +135,14 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.13.0'
     compile 'com.facebook.fresco:animated-gif:0.13.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0+'
-//    compile 'me.relex:photodraweeview:1.1.0'
+    //    compile 'me.relex:photodraweeview:1.1.0'
     compile 'com.github.PureDark:PhotoDraweeView:2c7b7f65b1'
-//    compile project (':photodraweeview')
-
+    //    compile project (':photodraweeview')
     compile 'com.nineoldandroids:library:2.4.0'
     //http
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-
     //httpdns
-    compile project (':httpdns')
-
+    compile project(':httpdns')
     //email
     compile files('libs/activation.jar')
     compile files('libs/additionnal.jar')
@@ -123,7 +151,7 @@ dependencies {
     //format, gson, jsoup, etc
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.jhy:jsoup:jsoup-1.9.2'
-    compile('com.jayway.jsonpath:json-path:2.2.0'){
+    compile('com.jayway.jsonpath:json-path:2.2.0') {
         exclude group: 'org.ow2.asm'
     }
     //zxing

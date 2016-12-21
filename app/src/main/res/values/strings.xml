@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">H-Viewer</string>
 
     <string name="UA">Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36</string>
 
@@ -21,6 +20,8 @@
     <string name="settings_proxy_server">更改 HProxy 服务器</string>
 
     <string name="settings_view">浏览设置</string>
+    <string name="settings_view_rememberLastSite">记住上次打开站点</string>
+    <string name="settings_view_rememberLastSite_summary">打开应用时打开上次退出时打开的站点</string>
     <string name="settings_view_high_res">优先浏览原图</string>
     <string name="settings_view_high_res_summary">在浏览时加载高清原图，可能会降低加载速度</string>
     <string name="settings_view_preload_pages">预加载页数</string>
@@ -72,8 +73,16 @@
     <string name="settings_about_license">开源协议</string>
     <string name="settings_about_h_viewer">关于H-Viewer</string>
 
+    <string name="settings_bk_rs">备份恢复</string>
+    <string name="settings_backup">备份</string>
+    <string name="settings_backup_summary">备份站点,设置,收藏夹</string>
+    <string name="settings_restore">恢复</string>
+    <string name="settings_restore_summary">恢复站点,设置,收藏夹</string>
+
+    <string name="restore_Succes">还原成功</string>
+
     <string name="setting_about_author">作者</string>
-    <string name="setting_about_author_summary">PureDark&lt;liangzhonghua@163.com&gt;</string>
+    <string name="setting_about_author_summary">PureDark</string>
     <string name="setting_about_github">Github主页</string>
     <string name="setting_about_github_summary">https://github.com/PureDark/H-Viewer</string>
     <string name="setting_about_changelog">更新日志</string>
@@ -82,7 +91,27 @@
     <string name="setting_about_version_summary">v0.1.0</string>
     <string name="setting_about_qq_group">加入内测群</string>
     <string name="setting_about_qq_group_summary">590668841</string>
-    <string name="setting_about_donate">捐赠</string>
-    <string name="setting_about_donate_summary">支付宝:bruce.lee.liang@gmail.com</string>
+    <string name="setting_about_donate">捐赠-支付宝</string>
+    <string name="setting_about_donate_summary">&lt;bruce.lee.liang@gmail.com&gt;</string>
+
+
+    <string name="authorization_failed">授权失败将会影响下载和备份</string>
+    <string name="no">否</string>
+    <string name="yes">是</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="jump_to_page">跳转到第几页？</string>
+    <string name="site_loading_error">载入站点出错，请重试</string>
+    <string name="search">搜索</string>
+    <string name="favorite">收藏</string>
+    <string name="refresh">刷新</string>
+    <string name="clear">清空</string>
+    <string name="add">添加</string>
+    <string name="delete">删除</string>
+    <string name="favorites">收藏夹</string>
+    <string name="hvfavorites">HV收藏夹</string>
+    <string name="not_support_function">您的手机版本不支持该功能!</string>
+    <string name="download">下载</string>
+    <string name="hvdownload">HV下载</string>
 
 </resources>

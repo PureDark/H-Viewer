@@ -65,40 +65,25 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public void onBindGroupViewHolder(SiteGroupViewHolder holder, final int groupPosition, int viewType) {
-        if (groupPosition == getGroupCount() - 1) {
-            holder.ivIcon.setImageResource(R.drawable.ic_create_new_group_black);
-            holder.tvTitle.setText("添加新分类");
-            holder.indicator.setVisibility(View.GONE);
-        } else {
-            holder.indicator.setVisibility(View.VISIBLE);
-            holder.ivIcon.setImageResource(R.drawable.ic_group_black);
-            SiteGroup group = mProvider.getGroupItem(groupPosition);
-            holder.tvTitle.setText(group.title);
-            int expandState = holder.getExpandStateFlags();
-            boolean isExpanded = ((expandState & ExpandableItemConstants.STATE_FLAG_IS_EXPANDED) != 0);
-            boolean animateIndicator = ((expandState & ExpandableItemConstants.STATE_FLAG_HAS_EXPANDED_STATE_CHANGED) != 0);
-            holder.indicator.setExpandedState(isExpanded, animateIndicator);
-        }
+        holder.indicator.setVisibility(View.VISIBLE);
+        holder.ivIcon.setImageResource(R.drawable.ic_group_black);
+        SiteGroup group = mProvider.getGroupItem(groupPosition);
+        holder.tvTitle.setText(group.title);
+        int expandState = holder.getExpandStateFlags();
+        boolean isExpanded = ((expandState & ExpandableItemConstants.STATE_FLAG_IS_EXPANDED) != 0);
+        boolean animateIndicator = ((expandState & ExpandableItemConstants.STATE_FLAG_HAS_EXPANDED_STATE_CHANGED) != 0);
+        holder.indicator.setExpandedState(isExpanded, animateIndicator);
         holder.container.setOnClickListener(v -> {
             if (mItemClickListener != null && groupPosition >= 0)
                 mItemClickListener.onGroupClick(v, groupPosition);
         });
         holder.container.setOnLongClickListener(v -> {
-            if (mItemClickListener != null && groupPosition >= 0 && groupPosition < getGroupCount() - 1)
                 return mItemClickListener.onGroupLongClick(v, groupPosition);
-            else
-                return false;
         });
     }
 
     @Override
     public void onBindChildViewHolder(final SiteViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
-        if (childPosition == getChildCount(groupPosition) - 1) {
-            holder.ivIcon.setImageResource(R.drawable.ic_add_black);
-            holder.tvTitle.setText("添加新站点");
-            holder.container.setBackground(null);
-            holder.switchListGrid.setVisibility(View.GONE);
-        } else {
             Site site = mProvider.getChildItem(groupPosition, childPosition);
             int rID = R.drawable.ic_filter_9_plus_black;
             switch (childPosition) {
@@ -141,13 +126,13 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
                 holder.container.setBackgroundDrawable(null);
                 holder.switchListGrid.setVisibility(View.GONE);
             }
-        }
+
         holder.container.setOnClickListener(v -> {
             if (mItemClickListener != null && childPosition >= 0)
                 mItemClickListener.onItemClick(v, groupPosition, childPosition);
         });
         holder.container.setOnLongClickListener(v -> {
-            if (mItemClickListener != null && childPosition >= 0 && childPosition < getChildCount(groupPosition) - 1)
+            if (mItemClickListener != null && childPosition >= 0)
                 return mItemClickListener.onItemLongClick(v, groupPosition, childPosition);
             else
                 return false;
@@ -159,29 +144,21 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public int getGroupCount() {
-        return (mProvider == null) ? 1 : mProvider.getGroupCount() + 1;
+        return (mProvider == null) ? 0 : mProvider.getGroupCount();
     }
 
     @Override
     public int getChildCount(int groupPosition) {
-        if(groupPosition == getGroupCount()-1)
-            return 0;
-        return (mProvider == null) ? 1 : mProvider.getChildCount(groupPosition) + 1;
+        return (mProvider == null) ? 0 : mProvider.getChildCount(groupPosition);
     }
 
     @Override
     public long getGroupId(int groupPosition) {
-        if (groupPosition == getGroupCount() - 1)
-            return 0;
-        else
             return (mProvider == null) ? 0 : mProvider.getGroupItem(groupPosition).getGroupId();
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        if (childPosition == getChildCount(groupPosition) - 1)
-            return 0;
-        else
             return (mProvider == null) ? 0 : mProvider.getChildItem(groupPosition, childPosition).getChildId();
     }
 
@@ -194,24 +171,19 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public boolean onCheckGroupCanStartDrag(SiteGroupViewHolder holder, int groupPosition, int x, int y) {
-        if (groupPosition == getGroupCount() - 1)
-            return false;
         final View dragHandleView = holder.ivIcon;
         return ViewUtil.hitTest(dragHandleView, x, y);
     }
 
     @Override
     public boolean onCheckChildCanStartDrag(SiteViewHolder holder, int groupPosition, int childPosition, int x, int y) {
-        if (childPosition == getChildCount(groupPosition) - 1)
-            return false;
         final View dragHandleView = holder.ivIcon;
         return ViewUtil.hitTest(dragHandleView, x, y);
     }
 
     @Override
     public ItemDraggableRange onGetGroupItemDraggableRange(SiteGroupViewHolder holder, int groupPosition) {
-        int end = Math.max(0, getGroupCount() - 2);
-        return new GroupPositionItemDraggableRange(0, end);
+        return null;
     }
 
     @Override
@@ -231,13 +203,9 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public void onMoveChildItem(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
-        if ((fromGroupPosition == toGroupPosition &&
-                (fromChildPosition == toChildPosition || toChildPosition >= mProvider.getChildCount(toGroupPosition)))
-                || fromGroupPosition >= mProvider.getGroupCount() || toGroupPosition >= mProvider.getGroupCount()) {
+        if (fromGroupPosition == toGroupPosition && fromChildPosition == toChildPosition)  {
             return;
         }
-        if(toChildPosition > mProvider.getChildCount(toGroupPosition))
-            toChildPosition =  mProvider.getChildCount(toGroupPosition);
         mProvider.moveChildItem(fromGroupPosition, fromChildPosition, toGroupPosition, toChildPosition);
         if (onItemMoveListener != null)
             onItemMoveListener.onItemMove(fromGroupPosition, fromChildPosition, toGroupPosition, toChildPosition);

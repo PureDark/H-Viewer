@@ -43,7 +43,7 @@ public class HViewerApplication extends SwipeBackApplication {
      * 是否开启日志输出,在Debug状态下开启,
      * 在Release状态下关闭以提示程序性能
      */
-    public final static boolean DEBUG = false;
+    public final static boolean DEBUG = true;
 
     // 全局变量，用于跨Activity传递复杂对象的引用
     public static Object temp, temp2, temp3, temp4;
@@ -90,35 +90,7 @@ public class HViewerApplication extends SwipeBackApplication {
         return false;
     }
 
-    public static void checkUpdate(final Context context) {
-        String url = UrlConfig.updateUrl;
-        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, Object result) {
-                try {
-                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
-                    boolean prerelease = version.get("prerelease").getAsBoolean();
-                    if (prerelease)
-                        return;
-                    JsonArray assets = version.get("assets").getAsJsonArray();
-                    if (assets.size() > 0) {
-                        String oldVersion = HViewerApplication.getVersionName();
-                        String newVersion = version.get("tag_name").getAsString().substring(1);
-                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
-                        String detail = version.get("body").getAsString();
-                        new UpdateManager(context, url, newVersion + "版本更新", detail)
-                                .checkUpdateInfo(oldVersion, newVersion);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-            }
-        });
-    }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")

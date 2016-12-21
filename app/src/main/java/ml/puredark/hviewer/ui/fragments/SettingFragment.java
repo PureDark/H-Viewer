@@ -30,16 +30,19 @@ import com.google.gson.reflect.TypeToken;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.DataRestore;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -50,8 +53,11 @@ import ml.puredark.hviewer.ui.activities.MainActivity;
 import ml.puredark.hviewer.ui.activities.ModifySiteActivity;
 import ml.puredark.hviewer.ui.customs.LongClickPreference;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.helpers.DataBackup;
 
 import static android.R.attr.path;
+import static android.app.Activity.RESULT_OK;
+import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 
 /**
@@ -65,6 +71,7 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_PROXY_PICTURE = "pref_proxy_picture";
     public static final String KEY_PREF_PROXY_SERVER = "pref_proxy_server";
 
+    public static final String KEY_PRER_VIEW_REMLASTSITE = "pref_view_rememberLastSite";
     public static final String KEY_PREF_VIEW_HIGH_RES = "pref_view_high_res";
     public static final String KEY_PREF_VIEW_PRELOAD_PAGES = "pref_view_preload_pages";
     public static final String KEY_PREF_VIEW_DIRECTION = "pref_view_direction";
@@ -72,12 +79,9 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_VIEW_ONE_PIC_GALLERY = "pref_view_one_pic_gallery";
     public static final String KEY_PREF_VIEW_ONE_HAND = "pref_view_one_hand";
 
-    public static final String DIREACTION_LEFT_TO_RIGHT =
-            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];
-    public static final String DIREACTION_RIGHT_TO_LEFT =
-            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[1];
-    public static final String DIREACTION_TOP_TO_BOTTOM =
-            HViewerApplication.mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
+    public static final String DIREACTION_LEFT_TO_RIGHT = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];
+    public static final String DIREACTION_RIGHT_TO_LEFT = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[1];
+    public static final String DIREACTION_TOP_TO_BOTTOM = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
 
     public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
     public static final String KEY_PREF_DOWNLOAD_NOMEDIA = "pref_download_nomedia";
@@ -89,6 +93,9 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_CACHE_SIZE = "pref_cache_size";
     public static final String KEY_PREF_CACHE_CLEAN = "pref_cache_clean";
+
+    public static final String KEY_PREF_BKRS_BACKUP = "pref_backupandrestore_backup";
+    public static final String KEY_PREF_BKRS_RESTORE = "pref_backupandrestore_restore";
 
     public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
     public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
@@ -142,7 +149,6 @@ public class SettingFragment extends PreferenceFragment
                 .build();
         mDialog = DirectoryChooserFragment.newInstance(config);
         mDialog.setTargetFragment(this, 0);
-
         LongClickPreference prefDownloadPath = (LongClickPreference) getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH);
         prefDownloadPath.setOnLongClickListener(v -> {
             new AlertDialog.Builder(activity)
@@ -166,7 +172,7 @@ public class SettingFragment extends PreferenceFragment
                         } else
                             activity.showSnackBar("当前系统版本不支持");
                     })
-                    .setNegativeButton("取消", null)
+                    .setNegativeButton(getString(R.string.cancel), null)
                     .show();
             return true;
         });
@@ -213,18 +219,48 @@ public class SettingFragment extends PreferenceFragment
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)) {
+            //检查新版本
             if (!checking)
                 checkUpdate();
+        } else if (preference.getKey().equals(KEY_PREF_BKRS_BACKUP)) {
+            //备份
+            new AlertDialog.Builder(activity).setTitle("确认备份?")
+                    .setMessage("将会覆盖之前的备份")
+                    .setPositiveButton(getString(R.string.ok),((dialog, which) -> {
+                        String backup = new DataBackup().DoBackup();
+                        activity.showSnackBar(backup);
+                    }))
+                    .setNegativeButton(getString(R.string.cancel), null).show();
+
+        } else if (preference.getKey().equals(KEY_PREF_BKRS_RESTORE)) {
+            //还原
+            new AlertDialog.Builder(activity).setTitle("确认恢复?")
+                    .setMessage("将会新增站点,不会删除原有站点")
+                    .setPositiveButton(getString(R.string.ok),((dialog, which) -> {
+                        String restore = new DataRestore().DoRestore();
+                        activity.showSnackBar(restore);
+                        if (restore.equals(getString(R.string.restore_Succes))) {
+                            Intent intent = new Intent();
+                            activity.setResult(RESULT_OK, intent);
+                            activity.finish();
+                        }
+                        activity.showSnackBar(restore);
+                    }))
+                    .setNegativeButton(getString(R.string.cancel), null).show();
+
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
+            //开源协议
             Intent intent = new Intent(activity, LicenseActivity.class);
             startActivity(intent);
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_H_VIEWER)) {
+            //关于
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.setting_content, new AboutFragment(activity));
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_PATH)) {
+            //下载路径
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -242,9 +278,10 @@ public class SettingFragment extends PreferenceFragment
                 mDialog.show(getFragmentManager(), null);
             }
         } else if (preference.getKey().equals(KEY_PREF_DOWNLOAD_IMPORT)) {
+            //导入已下载
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         DownloadTaskHolder holder = new DownloadTaskHolder(activity);
                         int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
                         holder.onDestroy();
@@ -255,12 +292,13 @@ public class SettingFragment extends PreferenceFragment
                         else
                             activity.showSnackBar("导入失败");
                     })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
+            //导出收藏夹
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath());
+                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), Names.backupdirname);
                         if (file != null) {
                             FavouriteHolder holder = new FavouriteHolder(activity);
                             String json = new Gson().toJson(holder.getFavourites());
@@ -269,13 +307,14 @@ public class SettingFragment extends PreferenceFragment
                             activity.showSnackBar("导出收藏夹成功");
                         } else
                             activity.showSnackBar("创建文件失败，请检查下载目录");
-                    })
-                    .setNegativeButton("取消", null).show();
+                        })
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_IMPORT)) {
+            //导入收藏夹
             new AlertDialog.Builder(activity).setTitle("确定要导入收藏夹？")
                     .setMessage("将从当前指定的下载目录搜索收藏夹备份")
-                    .setPositiveButton("确定", (dialog, which) -> {
-                        String json = FileHelper.readString("favourites.json", DownloadManager.getDownloadPath());
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.backupdirname);
                         if (json == null) {
                             activity.showSnackBar("未在下载目录中找到收藏夹备份");
                         } else {
@@ -294,17 +333,19 @@ public class SettingFragment extends PreferenceFragment
                             }
                         }
                     })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_CACHE_CLEAN)) {
+            //清空图片缓存
             new AlertDialog.Builder(activity).setTitle("确定要清空图片缓存？")
                     .setMessage("近期加载过的图片将会需要重新下载")
-                    .setPositiveButton("确定", (dialog, which) -> {
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         ImagePipeline imagePipeline = Fresco.getImagePipeline();
                         imagePipeline.clearDiskCaches();
                         activity.showSnackBar("缓存清理成功");
                     })
-                    .setNegativeButton("取消", null).show();
+                    .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_PROXY_DETAIL)) {
+            //PROXY代理
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.setting_content, new ProxyFragment(activity));
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -316,7 +357,7 @@ public class SettingFragment extends PreferenceFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_CHOOSE_DIRECTORY) {
                 Uri uriTree = data.getData();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

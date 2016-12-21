@@ -31,9 +31,10 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
         <activity
             android:name=".ui.activities.CollectionActivity"
@@ -88,7 +89,8 @@
         <activity android:name=".ui.activities.VideoViewerActivity"
             android:hardwareAccelerated="true"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="user" ></activity>
+            android:screenOrientation="user" />
+
     </application>
 
 </manifest>

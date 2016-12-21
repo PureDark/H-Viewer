@@ -40,6 +40,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_POST_PICTURE = "postPicture";
 
     public int sid, gid;
+    public String group = "";
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;

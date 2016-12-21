@@ -19,6 +19,7 @@ import java.util.List;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
@@ -32,7 +33,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
  */
 
 public class DownloadManager {
-    public final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir("H-Viewer").getAbsolutePath());
+    public final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir().getAbsolutePath());
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
 
@@ -66,21 +67,20 @@ public class DownloadManager {
             Log.d("DownloadManager", "file:" + file + " file.getName:" + ((file!=null)?file.getName():"null"));
             Log.d("DownloadManager", "file.exists():" + file.exists());
             if (file == null || !file.exists())
-                SimpleFileUtil.createDirIfNotExist(getDownloadPath());
+                SimpleFileUtil.createDirIfNotExist(path);
         }
     }
-    public static File getAlbumStorageDir(String albumName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
-        file.mkdirs();
+
+    public static File getAlbumStorageDir() {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Names.appdirname);
         return file;
     }
     public static String getDownloadPath() {
         String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
-        if (downloadPath != null)
-            return downloadPath;
-        else
+        if (downloadPath == null)
             return DEFAULT_PATH;
+        else
+            return downloadPath;
     }
 
     public boolean isDownloading() {
@@ -96,7 +96,7 @@ public class DownloadManager {
         String path = getDownloadPath() + "/" + Uri.encode(dirName);
         DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
         if (binder == null)
-                //||holder.isInList(task))
+            //||holder.isInList(task))
             return false;
         int did = holder.addDownloadTask(task);
         task.did = did;

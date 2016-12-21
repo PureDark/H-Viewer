@@ -79,16 +79,6 @@ public class AddSiteActivity extends BaseActivity {
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
 
-        //获取传递过来的SiteGroup实例
-        if (HViewerApplication.temp instanceof Pair)
-            pair = (Pair<SiteGroup, List<Site>>) HViewerApplication.temp;
-
-        //获取失败则结束此界面
-        if (pair == null) {
-            finish();
-            return;
-        }
-
         holder = new SitePropViewHolder(viewSiteDetails);
         siteHolder = new SiteHolder(this);
 
@@ -141,7 +131,6 @@ public class AddSiteActivity extends BaseActivity {
             return;
         }
 
-        newSite.gid = pair.first.gid;
         int sid = siteHolder.addSite(newSite);
         if(sid<0){
             showSnackBar("插入数据库失败");
@@ -150,8 +139,6 @@ public class AddSiteActivity extends BaseActivity {
         newSite.sid = sid;
         newSite.index = sid;
         siteHolder.updateSiteIndex(newSite);
-
-        pair.second.add(newSite);
 
         HViewerApplication.temp = newSite;
         Intent intent = new Intent();

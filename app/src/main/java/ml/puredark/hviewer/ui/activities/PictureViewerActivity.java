@@ -68,6 +68,7 @@ import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Picture;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
+import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;

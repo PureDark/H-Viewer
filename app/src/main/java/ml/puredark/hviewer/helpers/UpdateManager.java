@@ -16,6 +16,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +28,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.configs.UrlConfig;
+import ml.puredark.hviewer.http.HViewerHttpClient;
 
 public class UpdateManager {
 
@@ -66,6 +73,36 @@ public class UpdateManager {
 
         ;
     };
+
+    public static void checkUpdate(final Context context) {
+        String url = UrlConfig.updateUrl;
+        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
+            @Override
+            public void onSuccess(String contentType, Object result) {
+                try {
+                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
+                    boolean prerelease = version.get("prerelease").getAsBoolean();
+                    if (prerelease)
+                        return;
+                    JsonArray assets = version.get("assets").getAsJsonArray();
+                    if (assets.size() > 0) {
+                        String oldVersion = HViewerApplication.getVersionName();
+                        String newVersion = version.get("tag_name").getAsString().substring(1);
+                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
+                        String detail = version.get("body").getAsString();
+                        new UpdateManager(context, url, newVersion + "版本更新", detail)
+                                .checkUpdateInfo(oldVersion, newVersion);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(HViewerHttpClient.HttpError error) {
+            }
+        });
+    }
 
     public UpdateManager(Context context, String apkUrl, String title, String updateMsg) {
         this.mContext = context;

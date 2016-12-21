@@ -7,7 +7,13 @@
         android:key="pref_view_settings"
         android:title="@string/settings_view">
 
-        <CheckBoxPreference
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="pref_view_rememberLastSite"
+            android:title="@string/settings_view_rememberLastSite"
+            android:summary="@string/settings_view_rememberLastSite_summary" />
+
+        <SwitchPreference
             android:defaultValue="false"
             android:key="pref_view_high_res"
             android:title="@string/settings_view_high_res"
@@ -30,19 +36,19 @@
             android:dialogTitle="@string/settings_view_direction_dialog_title"
             android:defaultValue="0"/>
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="pref_view_volume_flick"
             android:title="@string/settings_view_volume_flick"
             android:summary="@string/settings_view_volume_flick_summary"/>
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="false"
             android:key="pref_view_one_pic_gallery"
             android:title="@string/settings_view_open_one_pic_gallery"
             android:summary="@string/settings_view_open_one_pic_gallery_summary"/>
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="false"
             android:key="pref_view_one_hand"
             android:title="@string/settings_view_one_hand"
@@ -54,13 +60,13 @@
         android:key="pref_download_settings"
         android:title="@string/settings_download">
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="pref_download_high_res"
             android:title="@string/settings_download_high_res"
             android:summary="@string/settings_download_high_res_summary"/>
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="pref_download_nomedia"
             android:title="@string/settings_download_nomedia"
@@ -132,6 +138,19 @@
             android:key="pref_proxy_detail"
             android:title="@string/settings_proxy_detail"
             android:summary="@string/settings_proxy_detail_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_backupandrestore"
+        android:title="@string/settings_bk_rs">
+        <Preference
+            android:key="pref_backupandrestore_backup"
+            android:title="@string/settings_backup"
+            android:summary="@string/settings_backup_summary"/>
+        <Preference
+            android:key="pref_backupandrestore_restore"
+            android:title="@string/settings_restore"
+            android:summary="@string/settings_restore_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory
