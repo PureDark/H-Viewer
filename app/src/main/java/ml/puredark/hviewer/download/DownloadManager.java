@@ -102,7 +102,7 @@ public class DownloadManager {
         task.did = did;
         int i = 2;
         while (FileHelper.isFileExist(dirName, getDownloadPath())) {
-            dirName = generateDirName(collection, i);
+            dirName = generateDirName(collection, i++);
         }
         DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
         if(dir==null){
