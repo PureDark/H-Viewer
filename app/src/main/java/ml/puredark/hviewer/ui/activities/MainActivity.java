@@ -1,7 +1,6 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +13,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -34,7 +34,6 @@ import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.gc.materialdesign.views.ButtonFlat;
-import com.google.gson.Gson;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -68,8 +67,7 @@ import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
-import ml.puredark.hviewer.helpers.ExampleSites;
-import ml.puredark.hviewer.helpers.GetContentUri;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
@@ -86,7 +84,6 @@ import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
@@ -991,15 +988,16 @@ public class MainActivity extends BaseActivity {
                 siteAdapter.notifyDataSetChanged();
                 showSnackBar(getString(R.string.restore_Succes));
             } else if (requestCode == RESULT_RDSQ) {
+                DocumentFile file = FileHelper.createDirIfNotExist(data.getData().toString(), Names.appdirname);
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         this.getContentResolver().takePersistableUriPermission(
-                                data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                file.getUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     }
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
-                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, data.getDataString());
+                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, file.getUri().toString());
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == RESULT_RDSQ) {
