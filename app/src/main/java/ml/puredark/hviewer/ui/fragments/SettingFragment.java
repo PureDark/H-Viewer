@@ -280,7 +280,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        FavouriteImport();
+                        DownloadedImport();
                     })
                     .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
@@ -366,7 +366,7 @@ public class SettingFragment extends PreferenceFragment
         }
     }
 
-    public void FavouriteImport() {
+    public void DownloadedImport() {
         new Thread(() -> {
             DownloadTaskHolder holder = new DownloadTaskHolder(activity);
             int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());

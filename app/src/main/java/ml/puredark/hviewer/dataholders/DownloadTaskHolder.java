@@ -112,6 +112,7 @@ public class DownloadTaskHolder {
                         DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
                         task.status = DownloadTask.STATUS_COMPLETED;
                         LocalCollection collection = task.collection;
+
                         String filename;
                         filename = collection.cover.substring(collection.cover.lastIndexOf("%2F")+3, collection.cover.length());
                         DocumentFile ifile = dir.findFile(filename);
