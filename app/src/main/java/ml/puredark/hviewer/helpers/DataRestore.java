@@ -51,8 +51,7 @@ public class DataRestore {
         String settingRestore = SettingRestore();
         String siteRestore = SiteRestore();
         String favouriteRestore = FavouriteRestore();
-        return mContext.getString(R.string.restore_Succes);
-
+        return settingRestore + "\n" + siteRestore + "\n" + favouriteRestore;
     }
 
     public String SettingRestore() {

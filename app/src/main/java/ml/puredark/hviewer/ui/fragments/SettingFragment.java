@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
@@ -238,13 +239,10 @@ public class SettingFragment extends PreferenceFragment
                     .setMessage("将会新增站点,不会删除原有站点")
                     .setPositiveButton(getString(R.string.ok),((dialog, which) -> {
                         String restore = new DataRestore().DoRestore();
-                        activity.showSnackBar(restore);
-                        if (restore.equals(getString(R.string.restore_Succes))) {
-                            Intent intent = new Intent();
-                            activity.setResult(RESULT_OK, intent);
-                            activity.finish();
-                        }
-                        activity.showSnackBar(restore);
+                        Intent intent = new Intent();
+                        activity.setResult(RESULT_OK, intent);
+                        Toast.makeText(activity, restore, Toast.LENGTH_LONG).show();
+                        activity.finish();
                     }))
                     .setNegativeButton(getString(R.string.cancel), null).show();
 
@@ -282,15 +280,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-                        int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
-                        holder.onDestroy();
-                        if (count > 0)
-                            activity.showSnackBar("成功导入" + count + "个已下载图册");
-                        else if (count == 0)
-                            activity.showSnackBar("未发现不在下载管理中的已下载图册");
-                        else
-                            activity.showSnackBar("导入失败");
+                        DownloadedImport();
                     })
                     .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
@@ -374,6 +364,21 @@ public class SettingFragment extends PreferenceFragment
                 getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);
             }
         }
+    }
+
+    public void DownloadedImport() {
+        new Thread(() -> {
+            DownloadTaskHolder holder = new DownloadTaskHolder(activity);
+            int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
+            holder.onDestroy();
+            if (count > 0)
+                Toast.makeText(mContext,"成功导入" + count + "个已下载图册",Toast.LENGTH_SHORT).show();
+            else if (count == 0)
+                Toast.makeText(mContext,"未发现不在下载管理中的已下载图册",Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(mContext,"导入失败",Toast.LENGTH_SHORT).show();
+        }).start();
+
     }
 
     public void checkUpdate() {

@@ -986,7 +986,6 @@ public class MainActivity extends BaseActivity {
             } else if (requestCode == RESULT_SETTING) {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
-                showSnackBar(getString(R.string.restore_Succes));
             } else if (requestCode == RESULT_RDSQ) {
                 DocumentFile file = FileHelper.createDirIfNotExist(data.getData().toString(), Names.appdirname);
                 try {
