@@ -165,6 +165,7 @@ public class DownloadTaskActivity extends BaseActivity {
         if (collection.pictures != null) {
             if(collection.pictures.size()>0)
                 collection.cover = collection.pictures.get(0).thumbnail;
+                collection.filename = collection.pictures.get(0).filename;
         }
     }
 

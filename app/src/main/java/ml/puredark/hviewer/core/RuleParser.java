@@ -202,6 +202,8 @@ public class RuleParser {
 
         String datetime = parseSingleProperty(source, rule.datetime, sourceUrl, false);
 
+        String filename = parseSingleProperty(source, rule.filename, sourceUrl, false);
+
         String description = parseSingleProperty(source, rule.description, sourceUrl, false);
         if (source instanceof Element) {
             try {

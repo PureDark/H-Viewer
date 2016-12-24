@@ -355,6 +355,7 @@ public class DownloadService extends Service {
                 return;
             if (picture.pid == 1) {
                 task.collection.cover = documentFile.getUri().toString();
+                task.collection.filename = documentFile.getName();
             }
             picture.thumbnail = documentFile.getUri().toString();
             picture.pic = documentFile.getUri().toString();

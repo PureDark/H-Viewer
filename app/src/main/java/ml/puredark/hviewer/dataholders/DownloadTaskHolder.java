@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
@@ -113,19 +114,28 @@ public class DownloadTaskHolder {
                         task.status = DownloadTask.STATUS_COMPLETED;
                         LocalCollection collection = task.collection;
 
-                        String filename;
-                        filename = collection.cover.substring(collection.cover.lastIndexOf("%2F")+3, collection.cover.length());
-                        DocumentFile ifile = dir.findFile(filename);
+                        if (collection.filename == null) {
+                            collection.filename = collection.cover.substring(collection.cover.lastIndexOf("%2F")+3, collection.cover.length());
+                            if (collection.filename.contains("/")) {
+                                collection.filename = collection.filename.substring(collection.filename.lastIndexOf("/") + 1, collection.filename.length());
+                            }
+                        }
+                        DocumentFile ifile = dir.findFile(collection.filename);
                         if (ifile != null) collection.cover = ifile.getUri().toString();
                         for (Picture picture : collection.pictures) {
-                            filename = picture.thumbnail.substring(picture.thumbnail.lastIndexOf("%2F")+3,picture.thumbnail.length());
-                            ifile = dir.findFile(filename);
+                            if (picture.filename == null) {
+                                picture.filename = picture.thumbnail.substring(picture.thumbnail.lastIndexOf("%2F")+3,picture.thumbnail.length());
+                                if (picture.filename.contains("/")) {
+                                    picture.filename = picture.filename.substring(picture.filename.lastIndexOf("/") + 1, picture.filename.length());
+                                }
+                            }
+                            ifile = dir.findFile(picture.filename);
                             if (ifile != null) {
                                 picture.thumbnail = ifile.getUri().toString();
                                 picture.pic = ifile.getUri().toString();
                             }
                         }
-
+                        FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dir.getName());
                         if (!isInList(task)) {
                             addDownloadTask(task);
                         } else {
