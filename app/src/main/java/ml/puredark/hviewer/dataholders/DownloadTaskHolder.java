@@ -113,6 +113,7 @@ public class DownloadTaskHolder {
                         DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
                         task.status = DownloadTask.STATUS_COMPLETED;
                         LocalCollection collection = task.collection;
+                        DocumentFile ifile;
 
                         if (collection.filename == null) {
                             collection.filename = collection.cover.substring(collection.cover.lastIndexOf("%2F")+3, collection.cover.length());
@@ -120,7 +121,7 @@ public class DownloadTaskHolder {
                                 collection.filename = collection.filename.substring(collection.filename.lastIndexOf("/") + 1, collection.filename.length());
                             }
                         }
-                        DocumentFile ifile = dir.findFile(collection.filename);
+                        ifile = dir.findFile(collection.filename);
                         if (ifile != null) collection.cover = ifile.getUri().toString();
                         for (Picture picture : collection.pictures) {
                             if (picture.filename == null) {
@@ -136,9 +137,11 @@ public class DownloadTaskHolder {
                             }
                         }
                         FileHelper.writeString(HViewerApplication.getGson().toJson(task), "detail.txt", rootPath, dir.getName());
-                        if (!isInList(task)) {
+                        int did = isInList(task);
+                        if (did == -1) {
                             addDownloadTask(task);
                         } else {
+                            task.did = did;
                             updateDownloadTasks(task);
                         }
                         count++;
@@ -152,13 +155,13 @@ public class DownloadTaskHolder {
         return count;
     }
 
-    public boolean isInList(DownloadTask item) {
-        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `idCode` = ? AND `title` = ? AND `referer` = ?",
-                new String[]{item.collection.idCode, item.collection.title, item.collection.referer});
+    public int isInList(DownloadTask item) {
+        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `title` = ?",
+                new String[]{item.collection.title});
         if (cursor.moveToNext())
-            return true;
+            return item.did;
         else
-            return false;
+            return -1;
     }
 
     public void setAllPaused() {

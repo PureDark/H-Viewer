@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.download;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,7 +10,9 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Message;
 import android.support.v4.provider.DocumentFile;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -33,15 +37,18 @@ import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
+import ml.puredark.hviewer.ui.activities.DownloadActivity;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_COMPLETED;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_DOWNLOADING;
 import static ml.puredark.hviewer.beans.DownloadTask.STATUS_PAUSED;
@@ -63,6 +70,11 @@ public class DownloadService extends Service {
 
     private Map<Integer, Picture> pictureInQueue;
 
+    private boolean run = false;
+    private int mid = 111;
+    private NotificationManager mNotificationManager;
+    private NotificationCompat.Builder mBuilder;
+
     public boolean downloadHighRes() {
         return (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext,
                 SettingFragment.KEY_PREF_DOWNLOAD_HIGH_RES, false);
@@ -79,6 +91,46 @@ public class DownloadService extends Service {
         Intent intent = new Intent(ON_START);
         sendBroadcast(intent);
     }
+
+    public void DownloadedImport() {
+        if (run) {
+            return;
+        }
+        run = true;
+        mNotificationManager= (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(mContext);
+        mBuilder.setSmallIcon(R.mipmap.download);
+        mBuilder.setContentTitle("导入已下载");
+        mBuilder.setContentText("正在导入");
+        mBuilder.setOngoing(true);
+        Intent intent = new Intent(mContext, DownloadActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
+        mNotificationManager.notify(mid, mBuilder.build());
+        new Thread(() -> {
+            Message message = new Message();
+            DownloadTaskHolder holder = new DownloadTaskHolder(mContext);
+            message.what = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
+            holder.onDestroy();
+            handler.sendMessage(message);
+        }).start();
+
+    }
+
+    Handler handler= new Handler(){
+        public void handleMessage(Message msg) {
+            if (msg.what == -1) {
+                mBuilder.setContentText("导入失败");
+            } else if (msg.what == 0) {
+                mBuilder.setContentText("导入完成-未发现已下载图册");
+            } else {
+                mBuilder.setContentText("导入成功" + msg.what + "个已下载图册");
+            }
+            run = false;
+            mBuilder.setOngoing(false);
+            mNotificationManager.notify(mid,mBuilder.build());
+        }
+    };
 
     public void pause() {
         if (currTask != null && currTask.status != STATUS_COMPLETED) {

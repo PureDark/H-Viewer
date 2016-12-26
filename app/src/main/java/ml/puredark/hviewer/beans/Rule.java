@@ -3,7 +3,7 @@ package ml.puredark.hviewer.beans;
 import java.lang.reflect.Field;
 
 public class Rule {
-    public Selector item, idCode, title, uploader, cover, category, datetime, filename, rating, tags, description;
+    public Selector item, idCode, title, uploader, cover, category, datetime, rating, tags, description;
 
     @Deprecated
     public Selector pictureId, pictureUrl, pictureThumbnail, pictureHighRes;
