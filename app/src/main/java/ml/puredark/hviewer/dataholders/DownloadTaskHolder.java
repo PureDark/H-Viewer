@@ -156,8 +156,8 @@ public class DownloadTaskHolder {
     }
 
     public int isInList(DownloadTask item) {
-        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `title` = ?",
-                new String[]{item.collection.title});
+        Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `idCode` = ? AND `title` = ? AND `referer` = ?",
+                new String[]{item.collection.idCode, item.collection.title, item.collection.referer});
         if (cursor.moveToNext())
             return item.did;
         else
