@@ -7,6 +7,10 @@
 
 *（iOS / UWP 版本开发同期进行中，时间周期可能会较长，但是敬请期待！）*
 
+*对于即将启动开发的 iOS 版本，正在对外征集建议，[【查看详情】](https://github.com/PureDark/H-Viewer/issues/46)*
+
+---
+
 一个使用选择器和正则表达式来从网站获取数据的安卓图册阅览器
 
 An android feed reader application which fetch data with selector and regular expression.
