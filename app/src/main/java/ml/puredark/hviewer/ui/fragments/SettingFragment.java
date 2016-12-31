@@ -43,6 +43,7 @@ import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.helpers.DataRestore;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.UpdateManager;
@@ -280,7 +281,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导入已下载图册？")
                     .setMessage("将从当前指定的下载目录进行搜索")
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        DownloadedImport();
+                        new DownloadService().DownloadedImport();
                     })
                     .setNegativeButton(getString(R.string.cancel), null).show();
         } else if (preference.getKey().equals(KEY_PREF_FAVOURITE_EXPORT)) {
@@ -364,21 +365,6 @@ public class SettingFragment extends PreferenceFragment
                 getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);
             }
         }
-    }
-
-    public void DownloadedImport() {
-        new Thread(() -> {
-            DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-            int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
-            holder.onDestroy();
-            if (count > 0)
-                Toast.makeText(mContext,"成功导入" + count + "个已下载图册",Toast.LENGTH_SHORT).show();
-            else if (count == 0)
-                Toast.makeText(mContext,"未发现不在下载管理中的已下载图册",Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(mContext,"导入失败",Toast.LENGTH_SHORT).show();
-        }).start();
-
     }
 
     public void checkUpdate() {

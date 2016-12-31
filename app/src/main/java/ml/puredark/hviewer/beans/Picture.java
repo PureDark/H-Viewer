@@ -7,7 +7,7 @@ public class Picture extends AbstractDataProvider.Data {
     public final static int STATUS_DOWNLOADING = 2;
     public final static int STATUS_DOWNLOADED = 3;
     public int pid;
-    public String thumbnail, url, pic, highRes;
+    public String thumbnail, url, pic, highRes, filename;
     public int retries;
     public int status = STATUS_WAITING;
     public String referer;
