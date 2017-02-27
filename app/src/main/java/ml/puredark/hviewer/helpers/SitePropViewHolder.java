@@ -444,6 +444,13 @@ public class SitePropViewHolder {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, groupTitles);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         inputGroup.setAdapter(adapter);
+        btnDisableHProxy.setOnClickListener(v -> {
+            if (checkBoxDisableHProxy.isChecked()) {
+                checkBoxDisableHProxy.setChecked(false);
+            } else {
+                checkBoxDisableHProxy.setChecked(true);
+            }
+        });
         btnWaterfallAsList.setOnClickListener(v -> {
             if (checkBoxWaterfallAsList.isChecked()) {
                 checkBoxWaterfallAsList.setChecked(false);

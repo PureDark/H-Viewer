@@ -8,11 +8,14 @@ import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.DownloadTaskAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
@@ -61,6 +65,8 @@ public class DownloadActivity extends BaseActivity {
     private DownloadReceiver receiver;
 
     private List<DownloadTask> downloadingTasks, downloadedTasks;
+
+    private boolean checkboxChecked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,21 +162,18 @@ public class DownloadActivity extends BaseActivity {
                                 Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
                                 startActivity(intent);
                             } else if (i == 1) {
-                                new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除下载记录？")
-                                        .setMessage("删除后将无法恢复")
+                                View view = LayoutInflater.from(DownloadActivity.this).inflate(R.layout.dialog_delete_confirm, null);
+                                AppCompatCheckBox checkBoxDeleteFile = (AppCompatCheckBox) view.findViewById(R.id.checkbox_delete_file);
+                                new AlertDialog.Builder(DownloadActivity.this)
+                                        .setView(view)
                                         .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                                             manager.deleteDownloadTask(task);
                                             distinguishDownloadTasks();
-                                            new Handler().postDelayed(() -> new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
-                                                    .setMessage("是否删除内存卡中对应图片？")
-                                                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog1, int which1) {
-                                                            String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                                            String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
-                                                            FileHelper.deleteFile(dirName, rootPath);
-                                                        }
-                                                    }).setNegativeButton(getString(R.string.cancel), null).show(), 250);
+                                            if(checkBoxDeleteFile.isChecked()){
+                                                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                                                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                                                FileHelper.deleteFile(dirName, rootPath);
+                                            }
                                         }).setNegativeButton(getString(R.string.cancel), null).show();
                             }
                         })
@@ -195,18 +198,18 @@ public class DownloadActivity extends BaseActivity {
             @Override
             public boolean onItemLongClick(View v, int position) {
                 final DownloadTask task = (DownloadTask) downloadedTaskAdapter.getDataProvider().getItem(position);
-                new AlertDialog.Builder(DownloadActivity.this).setTitle("是否删除？")
-                        .setMessage("删除后将无法恢复")
+                View view = LayoutInflater.from(DownloadActivity.this).inflate(R.layout.dialog_delete_confirm, null);
+                AppCompatCheckBox checkBoxDeleteFile = (AppCompatCheckBox) view.findViewById(R.id.checkbox_delete_file);
+                new AlertDialog.Builder(DownloadActivity.this)
+                        .setView(view)
                         .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                             manager.deleteDownloadTask(task);
                             distinguishDownloadTasks();
-                            new Handler().postDelayed(() -> new AlertDialog.Builder(DownloadActivity.this).setTitle("下载记录删除成功")
-                                    .setMessage("是否删除内存卡中对应图片？")
-                                    .setPositiveButton(getString(R.string.yes), (dialog12, which12) -> {
-                                        String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                        String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
-                                        FileHelper.deleteFile(dirName, rootPath);
-                                    }).setNegativeButton(getString(R.string.no), null).show(), 250);
+                            if(checkBoxDeleteFile.isChecked()){
+                                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                                FileHelper.deleteFile(dirName, rootPath);
+                            }
                         }).setNegativeButton(getString(R.string.cancel), null).show();
                 return true;
             }
