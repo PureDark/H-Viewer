@@ -60,6 +60,9 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     //是否动画中
     private boolean animating = false;
 
+    //允许退出当前Activity
+    private boolean allowExit = true;
+
     //是否开始页面统计
     private boolean analyze = true;
 
@@ -134,6 +137,10 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         isDoubleBackExitEnabled = doubleBackExitEnabled;
     }
 
+    public void setAllowExit(boolean allow) {
+        allowExit = allow;
+    }
+
     public void showSnackBar(String content) {
         if (container == null) return;
         Snackbar snackbar = Snackbar.make(
@@ -170,7 +177,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
 
     @Override
     public void onBackPressed() {
-        if (animating)
+        if (animating || !allowExit)
             return;
         if(isDoubleBackExitEnabled){
             backCount++;

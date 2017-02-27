@@ -17,7 +17,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +40,9 @@ import ml.puredark.hviewer.utils.MathUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.StringEscapeUtils;
 
+import static android.R.attr.offset;
 import static java.util.regex.Pattern.DOTALL;
+import static u.aly.x.m;
 
 /**
  * Created by PureDark on 2016/8/9.
@@ -59,6 +65,72 @@ public class RuleParser {
             map.put(matcher2.group(1), matcher2.group(2));
         }
         return map;
+    }
+
+    public static String parseUrl(String url, int page, String idCode, String keyword, Object[] objs){
+        Map<String, String> matchResult = RuleParser.parseUrl(url);
+        String pageStr = matchResult.get("page");
+        int startPage = 0;
+        int pageStep = 1;
+        try {
+            if ("minid".equals(pageStr)) {
+                int min = Integer.MAX_VALUE;
+                for (Object obj : objs) {
+                    if(obj instanceof Collection)
+                        min = Math.min(min, Integer.parseInt(((Collection)obj).idCode.replaceAll("[^0-9]", "")));
+                    else if(obj instanceof Picture)
+                        min = Math.min(min, ((Picture)obj).pid);
+                }
+                page = min;
+            } else if ("maxid".equals(pageStr)) {
+                int max = Integer.MIN_VALUE;
+                for (Object obj : objs) {
+                    if(obj instanceof Collection)
+                        max = Math.max(max, Integer.parseInt(((Collection)obj).idCode.replaceAll("[^0-9]", "")));
+                    else if(obj instanceof Picture)
+                        max = Math.max(max, ((Picture)obj).pid);
+                }
+                page = max;
+            } else if (pageStr != null) {
+                String[] pageStrs = pageStr.split(":");
+                if (pageStrs.length > 1) {
+                    pageStep = Integer.parseInt(pageStrs[1]);
+                    startPage = Integer.parseInt(pageStrs[0]);
+                } else {
+                    pageStep = 1;
+                    startPage = Integer.parseInt(pageStr);
+                }
+            }
+        } catch (NumberFormatException e) {
+        }
+        int realPage = page + (page - startPage) * pageStep;
+        url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (realPage == startPage) ? "" : matchResult.get("pageStr"))
+                .replaceAll("\\{page:.*?\\}", "" + realPage)
+                .replaceAll("\\{keyword:.*?\\}", keyword)
+                .replaceAll("\\{idCode:\\}", idCode);
+        if (matchResult.containsKey("date")) {
+            String[] dateStrs = matchResult.get("date").split(":");
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat(dateStrs[0]);
+            if (dateStrs.length > 1) {
+                int offset = Integer.parseInt(dateStrs[1]);
+                calendar.add(Calendar.DAY_OF_MONTH, offset);
+            }
+            String currDate =dateFormat.format(calendar.getTime());
+            url = url.replaceAll("\\{date:.*?\\}", currDate);
+        }
+        if (matchResult.containsKey("time")) {
+            String[] timeStrs = matchResult.get("time").split(":");
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat(timeStrs[0]);
+            if (timeStrs.length > 1) {
+                int offset = Integer.parseInt(timeStrs[1]);
+                calendar.add(Calendar.SECOND, offset);
+            }
+            String currTime =dateFormat.format(calendar.getTime());
+            url = url.replaceAll("\\{time:.*?\\}", currTime);
+        }
+        return url;
     }
 
     public static boolean isJson(String string) {

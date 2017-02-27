@@ -2,14 +2,17 @@ package ml.puredark.hviewer.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -17,7 +20,10 @@ import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -52,7 +58,9 @@ import ml.puredark.hviewer.ui.activities.LicenseActivity;
 import ml.puredark.hviewer.ui.activities.LoginActivity;
 import ml.puredark.hviewer.ui.activities.MainActivity;
 import ml.puredark.hviewer.ui.activities.ModifySiteActivity;
+import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
 import ml.puredark.hviewer.ui.customs.LongClickPreference;
+import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.helpers.DataBackup;
 
@@ -367,18 +375,38 @@ public class SettingFragment extends PreferenceFragment
     }
 
     public void DownloadedImport() {
+        // 关闭边缘滑动返回
+        activity.setSwipeBackEnable(false);
+        // 阻止退出
+        activity.setAllowExit(false);
+        View view = LayoutInflater.from(activity).inflate(R.layout.dialog_loading, null);
+        TextView tvLoadingText = (TextView) view.findViewById(R.id.tv_loading_text);
+        tvLoadingText.setText("正在导入已下载图册");
+        final Dialog dialog = new AlertDialog.Builder(activity)
+                .setView(view)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
+        //设置对话框位置
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.width = DensityUtil.getScreenWidth(activity) - DensityUtil.dp2px(activity, 64);
+        dialog.getWindow().setAttributes(lp);
+        dialog.show();
         new Thread(() -> {
             DownloadTaskHolder holder = new DownloadTaskHolder(activity);
-            int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
+            final int count = holder.scanPathForDownloadTask(DownloadManager.getDownloadPath());
             holder.onDestroy();
-            if (count > 0)
-                Toast.makeText(mContext,"成功导入" + count + "个已下载图册",Toast.LENGTH_SHORT).show();
-            else if (count == 0)
-                Toast.makeText(mContext,"未发现不在下载管理中的已下载图册",Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(mContext,"导入失败",Toast.LENGTH_SHORT).show();
+            activity.runOnUiThread(() -> {
+                if (count > 0)
+                    Toast.makeText(mContext,"成功导入" + count + "个已下载图册",Toast.LENGTH_SHORT).show();
+                else if (count == 0)
+                    Toast.makeText(mContext,"未发现不在下载管理中的已下载图册",Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(mContext,"导入失败",Toast.LENGTH_SHORT).show();
+            });
+            activity.setSwipeBackEnable(true);
+            activity.setAllowExit(true);
+            dialog.dismiss();
         }).start();
-
     }
 
     public void checkUpdate() {

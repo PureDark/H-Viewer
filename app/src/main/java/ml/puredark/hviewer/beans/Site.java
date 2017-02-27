@@ -4,6 +4,7 @@ import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,6 @@ import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
-import ml.puredark.hviewer.utils.RegexValidateUtil;
-import okhttp3.Cookie;
 
 public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_NO_COVER = "noCover";
@@ -95,9 +94,9 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
 
     public List<Pair<String, String>> getHeaders() {
         List<Pair<String, String>> headers = new ArrayList<>();
-        if(!TextUtils.isEmpty(cookie))
+        if (!TextUtils.isEmpty(cookie))
             headers.add(new Pair<>("cookie", cookie));
-        if(!TextUtils.isEmpty(header)) {
+        if (!TextUtils.isEmpty(header)) {
             Pattern pattern = Pattern.compile("([^\\r\\n]*?):([^\\r\\n]*)", Pattern.DOTALL);
             Matcher matcher = pattern.matcher(header);
             while (matcher.find() && matcher.groupCount() == 2) {
@@ -115,67 +114,11 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     }
 
     public String getListUrl(String url, int page, String keyword, List<Collection> collections) {
-        Map<String, String> matchResult = RuleParser.parseUrl(url);
-        String pageStr = matchResult.get("page");
-        int startPage;
-        try {
-            if ("minid".equals(pageStr)) {
-                startPage = 0;
-                int min = Integer.MAX_VALUE;
-                for (Collection collection : collections) {
-                    min = Math.min(min, Integer.parseInt(collection.idCode.replaceAll("[^0-9]", "")));
-                }
-                page = min;
-            } else if ("maxid".equals(pageStr)) {
-                startPage = 0;
-                int max = Integer.MIN_VALUE;
-                for (Collection collection : collections) {
-                    max = Math.max(max, Integer.parseInt(collection.idCode.replaceAll("[^0-9]", "")));
-                }
-                page = max;
-            } else {
-                startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
-            }
-        } catch (NumberFormatException e) {
-            startPage = 0;
-        }
-        url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (page == startPage) ? "" : "" + matchResult.get("pageStr"))
-                .replaceAll("\\{keyword:.*?\\}", keyword)
-                .replaceAll("\\{page:.*?\\}", "" + page);
-
-        return url;
+        return RuleParser.parseUrl(url, page, "", keyword, collections.toArray());
     }
 
     public String getGalleryUrl(String idCode, int page, List<Picture> pictures) {
-        Map<String, String> matchResult = RuleParser.parseUrl(galleryUrl);
-        String pageStr = matchResult.get("page");
-        boolean firstPage;
-        try {
-            if ("minid".equals(pageStr)) {
-                firstPage = (page == 0);
-                int min = Integer.MAX_VALUE;
-                for (Picture picture : pictures) {
-                    min = Math.min(min, picture.pid);
-                }
-                page = min;
-            } else if ("maxid".equals(pageStr)) {
-                firstPage = (page == 0);
-                int max = Integer.MIN_VALUE;
-                for (Picture picture : pictures) {
-                    max = Math.max(max, picture.pid);
-                }
-                page = max;
-            } else {
-                int startPage = (pageStr != null) ? Integer.parseInt(pageStr) : 0;
-                firstPage = (page == startPage);
-            }
-        } catch (NumberFormatException e) {
-            firstPage = (page == 0);
-        }
-        String url = galleryUrl.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", firstPage ? "" : "" + matchResult.get("pageStr"))
-                .replaceAll("\\{page:.*?\\}", "" + page)
-                .replaceAll("\\{idCode:\\}", idCode);
-        return url;
+        return RuleParser.parseUrl(galleryUrl, page, idCode, "", pictures.toArray());
     }
 
     public void replace(Site site) {
