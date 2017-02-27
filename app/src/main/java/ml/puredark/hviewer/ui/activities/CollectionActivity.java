@@ -602,7 +602,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 if (!commentAdapter.getDataProvider().getItems().contains(firstComment)) {
                     int preSize = commentAdapter.getItemCount();
                     commentAdapter.getDataProvider().addAll(myCollection.comments);
-                    pictureVideoAdapter.notifyItemRangeInserted(preSize, myCollection.comments.size());
+                    commentAdapter.notifyItemRangeInserted(preSize, myCollection.comments.size());
                 }
             }
 
