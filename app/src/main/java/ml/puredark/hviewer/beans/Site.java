@@ -40,7 +40,6 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     public final static String FLAG_POST_PICTURE = "postPicture";
 
     public int sid, gid;
-    public String group = "";
     public String title = "";
     public String indexUrl = "", galleryUrl = "", searchUrl = "", loginUrl = "";
     public List<Category> categories;
@@ -190,8 +189,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
                 f.setAccessible(true);
                 if (f.getType() == String.class) {
                     String value = (String) f.get(site);
-                    if (!TextUtils.isEmpty(value))
-                        f.set(this, value);
+                    f.set(this, value);
                 } else if (f.getType() == Integer.class) {
                     int value = (int) f.get(site);
                     if (value != 0)
@@ -210,18 +208,20 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
                 } else if (f.getType() == Selector.class) {
                     Selector oldProp = (Selector) f.get(this);
                     Selector newProp = (Selector) f.get(site);
-                    if (oldProp == null)
+                    /*if (oldProp == null)
                         oldProp = newProp;
                     else
-                        oldProp.replace(newProp);
+                        oldProp.replace(newProp);*/
+                    oldProp = newProp;
                     f.set(this, oldProp);
                 } else if (f.getType() == Rule.class) {
                     Rule oldProp = (Rule) f.get(this);
                     Rule newProp = (Rule) f.get(site);
-                    if (oldProp == null)
+                    /*if (oldProp == null)
                         oldProp = newProp;
                     else
-                        oldProp.replace(newProp);
+                        oldProp.replace(newProp);*/
+                    oldProp = newProp;
                     f.set(this, oldProp);
                 } else {
                     f.set(this, f.get(site));

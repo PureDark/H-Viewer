@@ -79,8 +79,8 @@ public class AddSiteActivity extends BaseActivity {
         /* 为返回按钮加载图标 */
         setReturnButton(btnReturn);
 
-        holder = new SitePropViewHolder(viewSiteDetails);
         siteHolder = new SiteHolder(this);
+        holder = new SitePropViewHolder(viewSiteDetails, siteHolder.getGroups());
 
     }
 
@@ -125,7 +125,7 @@ public class AddSiteActivity extends BaseActivity {
 
     @OnClick(R.id.fab_submit)
     void submit() {
-        Site newSite = holder.fromEditTextToSite();
+        Site newSite = holder.fromEditTextToSite(false);
         if (newSite == null) {
             showSnackBar("规则缺少必要参数，请检查");
             return;

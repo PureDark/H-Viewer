@@ -1,26 +1,11 @@
 package ml.puredark.hviewer.helpers;
 
-import android.app.backup.SharedPreferencesBackupHelper;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
-import android.support.v7.widget.ThemedSpinnerAdapter;
-import android.util.Xml;
-
 
 import com.google.gson.Gson;
 
-import org.xmlpull.v1.XmlSerializer;
-
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Site;
@@ -29,8 +14,6 @@ import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
-import ml.puredark.hviewer.ui.fragments.SettingFragment;
-import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.mContext;
@@ -41,18 +24,11 @@ import static ml.puredark.hviewer.HViewerApplication.mContext;
 
 public class DataBackup {
     private SiteHolder siteHolder;
-    private Pair<SiteGroup, List<Site>> siteGroupListPair;
-    private SiteGroup siteGroup;
-    private List<Site> sites;
-    private Site site;
-    private String settingBackup = "设置备份失败";
-    private String siteBackup = "站点备份失败";
-    private String favouriteBackup = "收藏夹备份失败";
 
     public String DoBackup() {
-        settingBackup = SettingBackup();
-        siteBackup = SiteBackup();
-        favouriteBackup = FavouriteBackup();
+        String settingBackup = SettingBackup();
+        String siteBackup = SiteBackup();
+        String favouriteBackup = FavouriteBackup();
         return settingBackup + " " + siteBackup + " " + favouriteBackup;
     }
 
@@ -83,10 +59,10 @@ public class DataBackup {
         }
     }
 
-    public String SettingBackup(){
+    public String SettingBackup() {
         DocumentFile file = FileHelper.createFileIfNotExist(Names.settingname, DownloadManager.getDownloadPath(), Names.backupdirname);
-        if( file == null ){
-                return "设置备份失败";
+        if (file == null) {
+            return "设置备份失败";
         }
 
         SharedPreferences pref = mContext.getSharedPreferences(SharedPreferencesUtil.FILE_NAME, mContext.MODE_PRIVATE);

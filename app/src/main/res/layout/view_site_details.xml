@@ -11,19 +11,29 @@
         android:padding="@dimen/uni_padding"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
-
-        <com.rengwuxian.materialedittext.MaterialEditText
+        <smtchahal.materialspinner.MaterialSpinner
             android:id="@+id/input_sitegroup"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            style="@style/EditTextAddSite"
-            app:met_floatingLabelText="站点分组" >
-        </com.rengwuxian.materialedittext.MaterialEditText>
+            app:ms_multiline="false"
+            app:ms_enableFloatingLabel="true"
+            app:ms_enableErrorLabel="false"
+            app:ms_hint="选择一个分类"
+            app:ms_floatingLabelText="站点分类"
+            app:ms_thickness="1px"
+            app:ms_baseColor="@color/colorAccent"
+            app:ms_highlightColor="@color/colorAccent"
+            app:ms_errorColor="@color/colorAccent"
+            app:ms_hintColor="@color/colorAccent"
+            app:ms_arrowColor="@color/colorAccent"
+            app:ms_alignLabels="false"
+            app:ms_floatingLabelColor="@color/colorAccent"/>
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/input_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_maxCharacters="20"
             app:met_clearButton="true"
             app:met_floatingLabelText="站点名称" >
@@ -33,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="首页URL" />
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -40,6 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="图片目录URL"/>
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -47,6 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="搜索URL（可选）"/>
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -54,6 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="登录URL（可选）"/>
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -61,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="FLAG（可选）"/>
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -68,6 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="COOKIE（可选）"/>
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -75,6 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/EditTextAddSite"
+            android:editable="true"
             app:met_clearButton="true"
             app:met_floatingLabelText="HEADER（可选）"/>
 

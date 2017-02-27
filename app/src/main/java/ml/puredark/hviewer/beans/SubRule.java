@@ -16,13 +16,8 @@ public class SubRule {
             for (Field f : fs) {
                 f.setAccessible(true);
                 if (f.getType() == Selector.class) {
-                    Selector oldProp = (Selector) f.get(this);
                     Selector newProp = (Selector) f.get(rule);
-                    if (oldProp == null)
-                        oldProp = newProp;
-                    else
-                        oldProp.replace(newProp);
-                    f.set(this, oldProp);
+                    f.set(this, newProp);
                 }
             }
         } catch (IllegalAccessException e) {

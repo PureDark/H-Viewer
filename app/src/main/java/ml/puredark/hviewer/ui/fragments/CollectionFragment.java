@@ -248,7 +248,8 @@ public class CollectionFragment extends MyFragment {
             }
             Logger.d("CollectionFragment", "WebView");
         } else
-            HViewerHttpClient.get(url, site.disableHProxy, site.getHeaders(), site.hasFlag(Site.FLAG_POST_INDEX), new HViewerHttpClient.OnResponseListener() {
+            HViewerHttpClient.get(url, site.disableHProxy, site.getHeaders(), site.hasFlag(Site.FLAG_POST_INDEX) || site.hasFlag(Site.FLAG_POST_ALL),
+                    new HViewerHttpClient.OnResponseListener() {
                 @Override
                 public void onSuccess(String contentType, final Object result) {
                     if (!(result instanceof String))

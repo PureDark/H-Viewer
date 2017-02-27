@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.beans;
 
+import android.util.Log;
+
 import java.lang.reflect.Field;
 
 public class Selector {
@@ -46,7 +48,11 @@ public class Selector {
         try {
             for (Field f : fs) {
                 f.setAccessible(true);
-                if (f.get(selector) != null)
+                if ("path".equals(f.getName())) {
+                    String newPath = (String) f.get(selector);
+                    if(newPath!=null)
+                        f.set(this, newPath);
+                } else
                     f.set(this, f.get(selector));
             }
         } catch (IllegalAccessException e) {

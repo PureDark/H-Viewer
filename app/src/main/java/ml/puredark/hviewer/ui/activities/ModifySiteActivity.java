@@ -104,11 +104,8 @@ public class ModifySiteActivity extends BaseActivity {
             return;
         }
 
-        holder = new SitePropViewHolder(viewSiteDetails);
-
         siteHolder = new SiteHolder(this);
-
-        site.group = siteHolder.getGroupById(site.gid).title;
+        holder = new SitePropViewHolder(viewSiteDetails, siteHolder.getGroups());
         holder.fillSitePropEditText(site);
     }
 
@@ -120,7 +117,7 @@ public class ModifySiteActivity extends BaseActivity {
 
     @OnClick(R.id.btn_site_json)
     void showSiteJson() {
-        Site newSite = holder.fromEditTextToSite();
+        Site newSite = holder.fromEditTextToSite(false);
         if (newSite == null) {
             showSnackBar("规则缺少必要参数，请检查");
             return;
@@ -133,7 +130,7 @@ public class ModifySiteActivity extends BaseActivity {
     @OnClick(R.id.btn_site_qr_code)
     void generateQrCode() {
         if (isPosting) return;
-        Site newSite = holder.fromEditTextToSite();
+        Site newSite = holder.fromEditTextToSite(false);
         if (newSite == null) {
             showSnackBar("规则缺少必要参数，请检查");
             return;
@@ -221,7 +218,7 @@ public class ModifySiteActivity extends BaseActivity {
 
     @OnClick(R.id.fab_submit)
     void submit() {
-        Site newSite = holder.fromEditTextToSite();
+        Site newSite = holder.fromEditTextToSite(false);
         if (newSite == null) {
             showSnackBar("规则缺少必要参数，请检查");
             return;

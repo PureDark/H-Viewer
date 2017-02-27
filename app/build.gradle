@@ -34,8 +34,8 @@ android {
         resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 100
-        versionName "1.1.1"
+        versionCode 61
+        versionName "0.8.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         project.ext.set("archivesBaseName", "H-Viewer " + gitVersionTag());
@@ -65,6 +65,8 @@ android {
         abortOnError false
     }
     productFlavors {
+        wandoujia {}
+        coolapk {}
         github {}
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
@@ -101,10 +103,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //Google offical
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:cardview-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:cardview-v7:25.2.0'
+    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
     //umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
     //material widget
@@ -121,6 +124,10 @@ dependencies {
     compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
     compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
+    compile ('com.github.smtchahal:MaterialSpinner:1.1.7'){
+        exclude group: 'com.nineoldandroids', module: 'library'
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
     //Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9') {
         exclude group: 'com.android.support'

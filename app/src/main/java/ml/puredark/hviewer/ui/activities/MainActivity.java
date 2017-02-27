@@ -216,7 +216,6 @@ public class MainActivity extends BaseActivity {
         if (isInOneHandMode()) {
             // 设定侧边栏滑动边距
             drawer.setDrawerLeftEdgeSize(0.5f);
-            drawer.setDrawerLeftEdgeSize(0.5f);
             drawer.setDrawerRightEdgeSize(0.5f);
         }
 
@@ -617,7 +616,7 @@ public class MainActivity extends BaseActivity {
         favorTagTab.btnTag1.setOnClickListener(v -> favorTagTab.searchTags());
         favorTagTab.btnTag2.setOnClickListener(v -> favorTagTab.addTags(siteAdapter.selectedSid, favorTagHolder));
         favorTagTab.btnTag3.setOnClickListener(v -> favorTagTab.deleteTags(siteAdapter.selectedSid, favorTagHolder));
-        favorTagTab.btnTag4.setOnClickListener(v -> siteTagTab.clearTags(siteAdapter.selectedSid, favorTagHolder));
+        favorTagTab.btnTag4.setOnClickListener(v -> favorTagTab.clearTags(siteAdapter.selectedSid, favorTagHolder));
 
         historyTagTab.btnTag1.setOnClickListener(v -> historyTagTab.searchTags());
         historyTagTab.btnTag2.setOnClickListener(v -> historyTagTab.favorTags());

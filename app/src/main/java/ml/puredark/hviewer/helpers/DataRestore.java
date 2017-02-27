@@ -1,30 +1,14 @@
 package ml.puredark.hviewer.helpers;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Environment;
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
-import android.util.Xml;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
@@ -32,11 +16,9 @@ import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
-import ml.puredark.hviewer.ui.adapters.MarketSiteAdapter;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.app.Activity.RESULT_OK;
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 
 /**
@@ -114,16 +96,19 @@ public class DataRestore {
                 siteGroupListPair = siteGroups.get(i);
                 siteGroup = siteGroupListPair.first;
                 sites = siteGroupListPair.second;
+                SiteGroup existSiteGroup = siteHolder.getGroupByTitle(siteGroup.title);
+                siteGroup.gid = (existSiteGroup == null)
+                        ?siteHolder.addSiteGroup(siteGroup)
+                        :existSiteGroup.gid;
                 for (int j = 0; j < sites.size(); j++) {
                     site = sites.get(j);
-                    site.group = siteGroup.title;
+                    site.gid = siteGroup.gid;
                     if (siteHolder.getSiteByTitle(site.title) == null) {
                         sid = siteHolder.addSite(site);
                         if (sid < 0) {
                             return "插入数据库失败";
                         }
                         site.sid = sid;
-                        site.index = sid;
                         siteHolder.updateSiteIndex(site);
                     }
                 }

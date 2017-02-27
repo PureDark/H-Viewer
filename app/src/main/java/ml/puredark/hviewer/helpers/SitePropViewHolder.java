@@ -4,6 +4,7 @@ import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,9 +26,9 @@ import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
-import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.ui.adapters.CategoryInputAdapter;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
+import smtchahal.materialspinner.MaterialSpinner;
 
 import static java.util.regex.Pattern.DOTALL;
 
@@ -38,7 +39,7 @@ import static java.util.regex.Pattern.DOTALL;
 
 public class SitePropViewHolder {
     @BindView(R.id.input_sitegroup)
-    MaterialEditText inputGroup;
+    MaterialSpinner inputGroup;
     @BindView(R.id.input_title)
     MaterialEditText inputTitle;
     @BindView(R.id.input_indexUrl)
@@ -429,11 +430,20 @@ public class SitePropViewHolder {
 
     private CategoryInputAdapter categoryInputAdapter;
     private Site lastSite;
+    private List<SiteGroup> siteGroups;
 
-    public SitePropViewHolder(View view) {
+    public SitePropViewHolder(View view, List<SiteGroup> siteGroups) {
         ButterKnife.bind(this, view);
         if (lastSite == null)
             lastSite = new Site();
+        this.siteGroups = siteGroups;
+        String[] groupTitles = new String[siteGroups.size()];
+        for (int i = 0; i < siteGroups.size(); i++) {
+            groupTitles[i] = siteGroups.get(i).title;
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, groupTitles);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        inputGroup.setAdapter(adapter);
         btnWaterfallAsList.setOnClickListener(v -> {
             if (checkBoxWaterfallAsList.isChecked()) {
                 checkBoxWaterfallAsList.setChecked(false);
@@ -574,7 +584,12 @@ public class SitePropViewHolder {
 
     public void fillSitePropEditText(Site site) {
         lastSite = site;
-        inputGroup.setText(site.group);
+        for (int i = 0; i < siteGroups.size(); i++) {
+            if (siteGroups.get(i).gid == site.gid && i+1 < siteGroups.size()) {
+                inputGroup.setSelection(i+1);
+                break;
+            }
+        }
         inputTitle.setText(site.title);
         inputIndexUrl.setText(site.indexUrl);
         inputGalleryUrl.setText(site.galleryUrl);
@@ -973,18 +988,7 @@ public class SitePropViewHolder {
         }
     }
 
-    public Site fromEditTextToSite() {
-        Site newSite = new Site();
-        newSite.group = loadString(inputGroup);
-        newSite.title = loadString(inputTitle);
-        newSite.indexUrl = loadString(inputIndexUrl);
-        newSite.galleryUrl = loadString(inputGalleryUrl);
-        newSite.searchUrl = loadString(inputSearchUrl);
-        newSite.loginUrl = loadString(inputLoginUrl);
-        newSite.cookie = loadString(inputCookie);
-        newSite.header = loadString(inputHeader);
-        newSite.flag = loadString(inputFlag);
-        newSite.disableHProxy = checkBoxDisableHProxy.isChecked();
+    public Site fromEditTextToSite(boolean editSelector) {
 
         //categories
         List<Category> categories = categoryInputAdapter.getDataProvider().getItems();
@@ -997,97 +1001,126 @@ public class SitePropViewHolder {
                 category.cid = i + 1;
             }
         }
-        if (categories.size() > 0)
-            newSite.categories = categories;
 
-        //index rule
-        newSite.indexRule = (newSite.indexRule == null) ? new Rule() : newSite.indexRule;
-        newSite.indexRule.item = loadSelector(inputIndexRuleItemSelector, inputIndexRuleItemRegex, inputIndexRuleItemReplacement);
-        newSite.indexRule.idCode = loadSelector(inputIndexRuleIdCodeSelector, inputIndexRuleIdCodeRegex, inputIndexRuleIdCodeReplacement);
-        newSite.indexRule.title = loadSelector(inputIndexRuleTitleSelector, inputIndexRuleTitleRegex, inputIndexRuleTitleReplacement);
-        newSite.indexRule.uploader = loadSelector(inputIndexRuleUploaderSelector, inputIndexRuleUploaderRegex, inputIndexRuleUploaderReplacement);
-        newSite.indexRule.cover = loadSelector(inputIndexRuleCoverSelector, inputIndexRuleCoverRegex, inputIndexRuleCoverReplacement);
-        newSite.indexRule.category = loadSelector(inputIndexRuleCategorySelector, inputIndexRuleCategoryRegex, inputIndexRuleCategoryReplacement);
-        newSite.indexRule.datetime = loadSelector(inputIndexRuleDatetimeSelector, inputIndexRuleDatetimeRegex, inputIndexRuleDatetimeReplacement);
-        newSite.indexRule.rating = loadSelector(inputIndexRuleRatingSelector, inputIndexRuleRatingRegex, inputIndexRuleRatingReplacement);
-        newSite.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
+        if (!editSelector) {
+            lastSite.gid = siteGroups.get(inputGroup.getSelectedItemPosition()).gid;
+            lastSite.title = loadString(inputTitle);
+            lastSite.indexUrl = loadString(inputIndexUrl);
+            lastSite.galleryUrl = loadString(inputGalleryUrl);
+            lastSite.searchUrl = loadString(inputSearchUrl);
+            lastSite.loginUrl = loadString(inputLoginUrl);
+            lastSite.cookie = loadString(inputCookie);
+            lastSite.header = loadString(inputHeader);
+            lastSite.flag = loadString(inputFlag);
+            lastSite.disableHProxy = checkBoxDisableHProxy.isChecked();
+            if (categories.size() > 0)
+                lastSite.categories = categories;
+            else
+                lastSite.categories = null;
+        } else {
+            Site newSite = new Site();
+            newSite.gid = siteGroups.get(inputGroup.getSelectedItemPosition()).gid;
+            newSite.title = loadString(inputTitle);
+            newSite.indexUrl = loadString(inputIndexUrl);
+            newSite.galleryUrl = loadString(inputGalleryUrl);
+            newSite.searchUrl = loadString(inputSearchUrl);
+            newSite.loginUrl = loadString(inputLoginUrl);
+            newSite.cookie = loadString(inputCookie);
+            newSite.header = loadString(inputHeader);
+            newSite.flag = loadString(inputFlag);
+            newSite.disableHProxy = checkBoxDisableHProxy.isChecked();
+            if (categories.size() > 0)
+                newSite.categories = categories;
 
-        //search rule
-        newSite.searchRule = (newSite.searchRule == null) ? new Rule() : newSite.searchRule;
-        newSite.searchRule.item = loadSelector(inputSearchRuleItemSelector, inputSearchRuleItemRegex, inputSearchRuleItemReplacement);
-        newSite.searchRule.idCode = loadSelector(inputSearchRuleIdCodeSelector, inputSearchRuleIdCodeRegex, inputSearchRuleIdCodeReplacement);
-        newSite.searchRule.title = loadSelector(inputSearchRuleTitleSelector, inputSearchRuleTitleRegex, inputSearchRuleTitleReplacement);
-        newSite.searchRule.uploader = loadSelector(inputSearchRuleUploaderSelector, inputSearchRuleUploaderRegex, inputSearchRuleUploaderReplacement);
-        newSite.searchRule.cover = loadSelector(inputSearchRuleCoverSelector, inputSearchRuleCoverRegex, inputSearchRuleCoverReplacement);
-        newSite.searchRule.category = loadSelector(inputSearchRuleCategorySelector, inputSearchRuleCategoryRegex, inputSearchRuleCategoryReplacement);
-        newSite.searchRule.datetime = loadSelector(inputSearchRuleDatetimeSelector, inputSearchRuleDatetimeRegex, inputSearchRuleDatetimeReplacement);
-        newSite.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
-        newSite.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
+            //index rule
+            newSite.indexRule = (newSite.indexRule == null) ? new Rule() : newSite.indexRule;
+            newSite.indexRule.item = loadSelector(inputIndexRuleItemSelector, inputIndexRuleItemRegex, inputIndexRuleItemReplacement);
+            newSite.indexRule.idCode = loadSelector(inputIndexRuleIdCodeSelector, inputIndexRuleIdCodeRegex, inputIndexRuleIdCodeReplacement);
+            newSite.indexRule.title = loadSelector(inputIndexRuleTitleSelector, inputIndexRuleTitleRegex, inputIndexRuleTitleReplacement);
+            newSite.indexRule.uploader = loadSelector(inputIndexRuleUploaderSelector, inputIndexRuleUploaderRegex, inputIndexRuleUploaderReplacement);
+            newSite.indexRule.cover = loadSelector(inputIndexRuleCoverSelector, inputIndexRuleCoverRegex, inputIndexRuleCoverReplacement);
+            newSite.indexRule.category = loadSelector(inputIndexRuleCategorySelector, inputIndexRuleCategoryRegex, inputIndexRuleCategoryReplacement);
+            newSite.indexRule.datetime = loadSelector(inputIndexRuleDatetimeSelector, inputIndexRuleDatetimeRegex, inputIndexRuleDatetimeReplacement);
+            newSite.indexRule.rating = loadSelector(inputIndexRuleRatingSelector, inputIndexRuleRatingRegex, inputIndexRuleRatingReplacement);
+            newSite.indexRule.tags = loadSelector(inputIndexRuleTagsSelector, inputIndexRuleTagsRegex, inputIndexRuleTagsReplacement);
 
-        if (newSite.searchRule.isEmpty())
-            newSite.searchRule = null;
+            //search rule
+            newSite.searchRule = (newSite.searchRule == null) ? new Rule() : newSite.searchRule;
+            newSite.searchRule.item = loadSelector(inputSearchRuleItemSelector, inputSearchRuleItemRegex, inputSearchRuleItemReplacement);
+            newSite.searchRule.idCode = loadSelector(inputSearchRuleIdCodeSelector, inputSearchRuleIdCodeRegex, inputSearchRuleIdCodeReplacement);
+            newSite.searchRule.title = loadSelector(inputSearchRuleTitleSelector, inputSearchRuleTitleRegex, inputSearchRuleTitleReplacement);
+            newSite.searchRule.uploader = loadSelector(inputSearchRuleUploaderSelector, inputSearchRuleUploaderRegex, inputSearchRuleUploaderReplacement);
+            newSite.searchRule.cover = loadSelector(inputSearchRuleCoverSelector, inputSearchRuleCoverRegex, inputSearchRuleCoverReplacement);
+            newSite.searchRule.category = loadSelector(inputSearchRuleCategorySelector, inputSearchRuleCategoryRegex, inputSearchRuleCategoryReplacement);
+            newSite.searchRule.datetime = loadSelector(inputSearchRuleDatetimeSelector, inputSearchRuleDatetimeRegex, inputSearchRuleDatetimeReplacement);
+            newSite.searchRule.rating = loadSelector(inputSearchRuleRatingSelector, inputSearchRuleRatingRegex, inputSearchRuleRatingReplacement);
+            newSite.searchRule.tags = loadSelector(inputSearchRuleTagsSelector, inputSearchRuleTagsRegex, inputSearchRuleTagsReplacement);
 
-        //gallery rule
-        newSite.galleryRule = (newSite.galleryRule == null) ? new Rule() : newSite.galleryRule;
-        newSite.galleryRule.item = loadSelector(inputGalleryRuleItemSelector, inputGalleryRuleItemRegex, inputGalleryRuleItemReplacement);
-        newSite.galleryRule.title = loadSelector(inputGalleryRuleTitleSelector, inputGalleryRuleTitleRegex, inputGalleryRuleTitleReplacement);
-        newSite.galleryRule.uploader = loadSelector(inputGalleryRuleUploaderSelector, inputGalleryRuleUploaderRegex, inputGalleryRuleUploaderReplacement);
-        newSite.galleryRule.cover = loadSelector(inputGalleryRuleCoverSelector, inputGalleryRuleCoverRegex, inputGalleryRuleCoverReplacement);
-        newSite.galleryRule.category = loadSelector(inputGalleryRuleCategorySelector, inputGalleryRuleCategoryRegex, inputGalleryRuleCategoryReplacement);
-        newSite.galleryRule.datetime = loadSelector(inputGalleryRuleDatetimeSelector, inputGalleryRuleDatetimeRegex, inputGalleryRuleDatetimeReplacement);
-        newSite.galleryRule.rating = loadSelector(inputGalleryRuleRatingSelector, inputGalleryRuleRatingRegex, inputGalleryRuleRatingReplacement);
-        newSite.galleryRule.description = loadSelector(inputGalleryRuleDescriptionSelector, inputGalleryRuleDescriptionRegex, inputGalleryRuleDescriptionReplacement);
-        newSite.galleryRule.tags = loadSelector(inputGalleryRuleTagsSelector, inputGalleryRuleTagsRegex, inputGalleryRuleTagsReplacement);
+            if (newSite.searchRule.isEmpty())
+                newSite.searchRule = null;
 
-        newSite.galleryRule.pictureRule = (newSite.galleryRule.pictureRule == null) ? new PictureRule() : newSite.galleryRule.pictureRule;
-        newSite.galleryRule.pictureRule.item = loadSelector(inputGalleryRulePictureItemSelector, inputGalleryRulePictureItemRegex, inputGalleryRulePictureItemReplacement);
-        newSite.galleryRule.pictureRule.thumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
-        newSite.galleryRule.pictureRule.url = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
-        newSite.galleryRule.pictureRule.highRes = loadSelector(inputGalleryRulePictureHighResSelector, inputGalleryRulePictureHighResRegex, inputGalleryRulePictureHighResReplacement);
+            //gallery rule
+            newSite.galleryRule = (newSite.galleryRule == null) ? new Rule() : newSite.galleryRule;
+            newSite.galleryRule.item = loadSelector(inputGalleryRuleItemSelector, inputGalleryRuleItemRegex, inputGalleryRuleItemReplacement);
+            newSite.galleryRule.title = loadSelector(inputGalleryRuleTitleSelector, inputGalleryRuleTitleRegex, inputGalleryRuleTitleReplacement);
+            newSite.galleryRule.uploader = loadSelector(inputGalleryRuleUploaderSelector, inputGalleryRuleUploaderRegex, inputGalleryRuleUploaderReplacement);
+            newSite.galleryRule.cover = loadSelector(inputGalleryRuleCoverSelector, inputGalleryRuleCoverRegex, inputGalleryRuleCoverReplacement);
+            newSite.galleryRule.category = loadSelector(inputGalleryRuleCategorySelector, inputGalleryRuleCategoryRegex, inputGalleryRuleCategoryReplacement);
+            newSite.galleryRule.datetime = loadSelector(inputGalleryRuleDatetimeSelector, inputGalleryRuleDatetimeRegex, inputGalleryRuleDatetimeReplacement);
+            newSite.galleryRule.rating = loadSelector(inputGalleryRuleRatingSelector, inputGalleryRuleRatingRegex, inputGalleryRuleRatingReplacement);
+            newSite.galleryRule.description = loadSelector(inputGalleryRuleDescriptionSelector, inputGalleryRuleDescriptionRegex, inputGalleryRuleDescriptionReplacement);
+            newSite.galleryRule.tags = loadSelector(inputGalleryRuleTagsSelector, inputGalleryRuleTagsRegex, inputGalleryRuleTagsReplacement);
 
-        newSite.galleryRule.commentRule = (newSite.galleryRule.commentRule == null) ? new CommentRule() : newSite.galleryRule.commentRule;
-        newSite.galleryRule.commentRule.item = loadSelector(inputGalleryRuleCommentItemSelector, inputGalleryRuleCommentItemRegex, inputGalleryRuleCommentItemReplacement);
-        newSite.galleryRule.commentRule.avatar = loadSelector(inputGalleryRuleCommentAvatarSelector, inputGalleryRuleCommentAvatarRegex, inputGalleryRuleCommentAvatarReplacement);
-        newSite.galleryRule.commentRule.author = loadSelector(inputGalleryRuleCommentAuthorSelector, inputGalleryRuleCommentAuthorRegex, inputGalleryRuleCommentAuthorReplacement);
-        newSite.galleryRule.commentRule.datetime = loadSelector(inputGalleryRuleCommentDatetimeSelector, inputGalleryRuleCommentDatetimeRegex, inputGalleryRuleCommentDatetimeReplacement);
-        newSite.galleryRule.commentRule.content = loadSelector(inputGalleryRuleCommentContentSelector, inputGalleryRuleCommentContentRegex, inputGalleryRuleCommentContentReplacement);
-        if (newSite.galleryRule.commentRule.isEmpty())
-            newSite.galleryRule.commentRule = null;
+            newSite.galleryRule.pictureRule = (newSite.galleryRule.pictureRule == null) ? new PictureRule() : newSite.galleryRule.pictureRule;
+            newSite.galleryRule.pictureRule.item = loadSelector(inputGalleryRulePictureItemSelector, inputGalleryRulePictureItemRegex, inputGalleryRulePictureItemReplacement);
+            newSite.galleryRule.pictureRule.thumbnail = loadSelector(inputGalleryRulePictureThumbnailSelector, inputGalleryRulePictureThumbnailRegex, inputGalleryRulePictureThumbnailReplacement);
+            newSite.galleryRule.pictureRule.url = loadSelector(inputGalleryRulePictureUrlSelector, inputGalleryRulePictureUrlRegex, inputGalleryRulePictureUrlReplacement);
+            newSite.galleryRule.pictureRule.highRes = loadSelector(inputGalleryRulePictureHighResSelector, inputGalleryRulePictureHighResRegex, inputGalleryRulePictureHighResReplacement);
 
-        //extra rule
-        newSite.extraRule = (newSite.extraRule == null) ? new Rule() : newSite.extraRule;
-        newSite.extraRule.item = loadSelector(inputExtraRuleItemSelector, inputExtraRuleItemRegex, inputExtraRuleItemReplacement);
-        newSite.extraRule.title = loadSelector(inputExtraRuleTitleSelector, inputExtraRuleTitleRegex, inputExtraRuleTitleReplacement);
-        newSite.extraRule.uploader = loadSelector(inputExtraRuleUploaderSelector, inputExtraRuleUploaderRegex, inputExtraRuleUploaderReplacement);
-        newSite.extraRule.cover = loadSelector(inputExtraRuleCoverSelector, inputExtraRuleCoverRegex, inputExtraRuleCoverReplacement);
-        newSite.extraRule.category = loadSelector(inputExtraRuleCategorySelector, inputExtraRuleCategoryRegex, inputExtraRuleCategoryReplacement);
-        newSite.extraRule.datetime = loadSelector(inputExtraRuleDatetimeSelector, inputExtraRuleDatetimeRegex, inputExtraRuleDatetimeReplacement);
-        newSite.extraRule.rating = loadSelector(inputExtraRuleRatingSelector, inputExtraRuleRatingRegex, inputExtraRuleRatingReplacement);
-        newSite.extraRule.description = loadSelector(inputExtraRuleDescriptionSelector, inputExtraRuleDescriptionRegex, inputExtraRuleDescriptionReplacement);
-        newSite.extraRule.tags = loadSelector(inputExtraRuleTagsSelector, inputExtraRuleTagsRegex, inputExtraRuleTagsReplacement);
+            newSite.galleryRule.commentRule = (newSite.galleryRule.commentRule == null) ? new CommentRule() : newSite.galleryRule.commentRule;
+            newSite.galleryRule.commentRule.item = loadSelector(inputGalleryRuleCommentItemSelector, inputGalleryRuleCommentItemRegex, inputGalleryRuleCommentItemReplacement);
+            newSite.galleryRule.commentRule.avatar = loadSelector(inputGalleryRuleCommentAvatarSelector, inputGalleryRuleCommentAvatarRegex, inputGalleryRuleCommentAvatarReplacement);
+            newSite.galleryRule.commentRule.author = loadSelector(inputGalleryRuleCommentAuthorSelector, inputGalleryRuleCommentAuthorRegex, inputGalleryRuleCommentAuthorReplacement);
+            newSite.galleryRule.commentRule.datetime = loadSelector(inputGalleryRuleCommentDatetimeSelector, inputGalleryRuleCommentDatetimeRegex, inputGalleryRuleCommentDatetimeReplacement);
+            newSite.galleryRule.commentRule.content = loadSelector(inputGalleryRuleCommentContentSelector, inputGalleryRuleCommentContentRegex, inputGalleryRuleCommentContentReplacement);
+            if (newSite.galleryRule.commentRule.isEmpty())
+                newSite.galleryRule.commentRule = null;
 
-        newSite.extraRule.pictureRule = (newSite.extraRule.pictureRule == null) ? new PictureRule() : newSite.extraRule.pictureRule;
-        newSite.extraRule.pictureRule.item = loadSelector(inputExtraRulePictureItemSelector, inputExtraRulePictureItemRegex, inputExtraRulePictureItemReplacement);
-        newSite.extraRule.pictureRule.thumbnail = loadSelector(inputExtraRulePictureThumbnailSelector, inputExtraRulePictureThumbnailRegex, inputExtraRulePictureThumbnailReplacement);
-        newSite.extraRule.pictureRule.url = loadSelector(inputExtraRulePictureUrlSelector, inputExtraRulePictureUrlRegex, inputExtraRulePictureUrlReplacement);
-        newSite.extraRule.pictureRule.highRes = loadSelector(inputExtraRulePictureHighResSelector, inputExtraRulePictureHighResRegex, inputExtraRulePictureHighResReplacement);
+            //extra rule
+            newSite.extraRule = (newSite.extraRule == null) ? new Rule() : newSite.extraRule;
+            newSite.extraRule.item = loadSelector(inputExtraRuleItemSelector, inputExtraRuleItemRegex, inputExtraRuleItemReplacement);
+            newSite.extraRule.title = loadSelector(inputExtraRuleTitleSelector, inputExtraRuleTitleRegex, inputExtraRuleTitleReplacement);
+            newSite.extraRule.uploader = loadSelector(inputExtraRuleUploaderSelector, inputExtraRuleUploaderRegex, inputExtraRuleUploaderReplacement);
+            newSite.extraRule.cover = loadSelector(inputExtraRuleCoverSelector, inputExtraRuleCoverRegex, inputExtraRuleCoverReplacement);
+            newSite.extraRule.category = loadSelector(inputExtraRuleCategorySelector, inputExtraRuleCategoryRegex, inputExtraRuleCategoryReplacement);
+            newSite.extraRule.datetime = loadSelector(inputExtraRuleDatetimeSelector, inputExtraRuleDatetimeRegex, inputExtraRuleDatetimeReplacement);
+            newSite.extraRule.rating = loadSelector(inputExtraRuleRatingSelector, inputExtraRuleRatingRegex, inputExtraRuleRatingReplacement);
+            newSite.extraRule.description = loadSelector(inputExtraRuleDescriptionSelector, inputExtraRuleDescriptionRegex, inputExtraRuleDescriptionReplacement);
+            newSite.extraRule.tags = loadSelector(inputExtraRuleTagsSelector, inputExtraRuleTagsRegex, inputExtraRuleTagsReplacement);
 
-        newSite.extraRule.commentRule = (newSite.extraRule.commentRule == null) ? new CommentRule() : newSite.extraRule.commentRule;
-        newSite.extraRule.commentRule.item = loadSelector(inputExtraRuleCommentItemSelector, inputExtraRuleCommentItemRegex, inputExtraRuleCommentItemReplacement);
-        newSite.extraRule.commentRule.avatar = loadSelector(inputExtraRuleCommentAvatarSelector, inputExtraRuleCommentAvatarRegex, inputExtraRuleCommentAvatarReplacement);
-        newSite.extraRule.commentRule.author = loadSelector(inputExtraRuleCommentAuthorSelector, inputExtraRuleCommentAuthorRegex, inputExtraRuleCommentAuthorReplacement);
-        newSite.extraRule.commentRule.datetime = loadSelector(inputExtraRuleCommentDatetimeSelector, inputExtraRuleCommentDatetimeRegex, inputExtraRuleCommentDatetimeReplacement);
-        newSite.extraRule.commentRule.content = loadSelector(inputExtraRuleCommentContentSelector, inputExtraRuleCommentContentRegex, inputExtraRuleCommentContentReplacement);
-        if (newSite.extraRule.commentRule.isEmpty())
-            newSite.extraRule.commentRule = null;
+            newSite.extraRule.pictureRule = (newSite.extraRule.pictureRule == null) ? new PictureRule() : newSite.extraRule.pictureRule;
+            newSite.extraRule.pictureRule.item = loadSelector(inputExtraRulePictureItemSelector, inputExtraRulePictureItemRegex, inputExtraRulePictureItemReplacement);
+            newSite.extraRule.pictureRule.thumbnail = loadSelector(inputExtraRulePictureThumbnailSelector, inputExtraRulePictureThumbnailRegex, inputExtraRulePictureThumbnailReplacement);
+            newSite.extraRule.pictureRule.url = loadSelector(inputExtraRulePictureUrlSelector, inputExtraRulePictureUrlRegex, inputExtraRulePictureUrlReplacement);
+            newSite.extraRule.pictureRule.highRes = loadSelector(inputExtraRulePictureHighResSelector, inputExtraRulePictureHighResRegex, inputExtraRulePictureHighResReplacement);
 
-        if (newSite.extraRule.isEmpty())
-            newSite.extraRule = null;
+            newSite.extraRule.commentRule = (newSite.extraRule.commentRule == null) ? new CommentRule() : newSite.extraRule.commentRule;
+            newSite.extraRule.commentRule.item = loadSelector(inputExtraRuleCommentItemSelector, inputExtraRuleCommentItemRegex, inputExtraRuleCommentItemReplacement);
+            newSite.extraRule.commentRule.avatar = loadSelector(inputExtraRuleCommentAvatarSelector, inputExtraRuleCommentAvatarRegex, inputExtraRuleCommentAvatarReplacement);
+            newSite.extraRule.commentRule.author = loadSelector(inputExtraRuleCommentAuthorSelector, inputExtraRuleCommentAuthorRegex, inputExtraRuleCommentAuthorReplacement);
+            newSite.extraRule.commentRule.datetime = loadSelector(inputExtraRuleCommentDatetimeSelector, inputExtraRuleCommentDatetimeRegex, inputExtraRuleCommentDatetimeReplacement);
+            newSite.extraRule.commentRule.content = loadSelector(inputExtraRuleCommentContentSelector, inputExtraRuleCommentContentRegex, inputExtraRuleCommentContentReplacement);
+            if (newSite.extraRule.commentRule.isEmpty())
+                newSite.extraRule.commentRule = null;
 
-        if(lastSite!=null)
-            lastSite.replace(newSite);
-        else
-            lastSite = newSite;
+            if (newSite.extraRule.isEmpty())
+                newSite.extraRule = null;
+
+            if (lastSite != null)
+                lastSite.replace(newSite);
+            else
+                lastSite = newSite;
+        }
 
         return lastSite;
     }

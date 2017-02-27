@@ -314,7 +314,12 @@ public class MarketActivity extends BaseActivity {
                     final Site newSite = new Gson().fromJson((String) result, Site.class);
                     final Site currSite = siteHolder.getSiteByTitle(newSite.title);
                     if (currSite == null) {
-                        newSite.group = title;
+                        SiteGroup siteGroup = siteHolder.getGroupByTitle(title);
+                        if (siteGroup == null) {
+                            newSite.gid = siteHolder.addSiteGroup(new SiteGroup(1, title));
+                        } else {
+                            newSite.gid = siteGroup.gid;
+                        }
                         newSite.versionCode = versionCode;
                         siteHolder.addSite(newSite);
                         Intent intent = new Intent();

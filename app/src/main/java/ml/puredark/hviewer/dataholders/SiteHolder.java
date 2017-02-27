@@ -38,16 +38,6 @@ public class SiteHolder {
 
     public int addSite(Site item) {
         if (item == null) return -1;
-        SiteGroup siteGroup = getGroupByTitle(item.group);
-        if (siteGroup == null) {
-            siteGroup = new SiteGroup(0, item.group);
-            addSiteGroup(siteGroup);
-            int gid = getMaxGroupId();
-            siteGroup.gid = gid;
-            siteGroup.index = gid;
-            updateSiteGroupIndex(siteGroup);
-        }
-        item.gid = siteGroup.gid;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`indexUrl`", item.indexUrl);
@@ -144,6 +134,25 @@ public class SiteHolder {
                 }
                 siteGroups.add(new Pair<>(group, sites));
                 cursor.close();
+            }
+        }
+        groupCursor.close();
+
+        return siteGroups;
+    }
+
+    public List<SiteGroup> getGroups() {
+        List<SiteGroup> siteGroups = new ArrayList<>();
+
+        Cursor groupCursor = dbHelper.query("SELECT * FROM " + groupDbName + " ORDER BY `index` ASC");
+
+        while (groupCursor.moveToNext()) {
+            int i = groupCursor.getColumnIndex("title");
+            int gid = groupCursor.getInt(0);
+            if (i >= 0) {
+                String title = groupCursor.getString(i);
+                SiteGroup group = new SiteGroup(gid, title);
+                siteGroups.add(group);
             }
         }
         groupCursor.close();
