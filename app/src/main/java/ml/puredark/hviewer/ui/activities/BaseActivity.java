@@ -137,6 +137,14 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         isDoubleBackExitEnabled = doubleBackExitEnabled;
     }
 
+    public void setAnimating(boolean animating) {
+        this.animating = animating;
+    }
+
+    public boolean isAnimating(){
+        return animating;
+    }
+
     public void setAllowExit(boolean allow) {
         allowExit = allow;
     }

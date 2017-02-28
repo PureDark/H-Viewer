@@ -3,7 +3,6 @@ package ml.puredark.hviewer.ui.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
-import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,7 +37,6 @@ import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -77,7 +75,6 @@ import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -97,11 +94,10 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.R.attr.animation;
+import static android.R.attr.data;
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
-import static u.aly.x.m;
 
 
 public class MainActivity extends BaseActivity {
@@ -211,7 +207,7 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrl(this, backdrop, "https://api.i-meto.com/bing", null, null, true);
+        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true, null);
 
         backdrop.setOnLongClickListener(v -> {
             Uri uri = Uri.parse("https://api.i-meto.com/bing");
@@ -382,11 +378,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(View v, int groupPosition, int childPosition) {
                 // 点击站点
-                    Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
-                    setTitle(site.title);
-                    new Handler().postDelayed(() -> selectSite(site), 300);
-                    notifyChildItemChanged(groupPosition, childPosition);
-                    drawer.closeDrawer(GravityCompat.START);
+                Site site = siteAdapter.getDataProvider().getChildItem(groupPosition, childPosition);
+                setTitle(site.title);
+                new Handler().postDelayed(() -> selectSite(site), 300);
+                notifyChildItemChanged(groupPosition, childPosition);
+                drawer.closeDrawer(GravityCompat.START);
             }
 
             @Override
@@ -543,6 +539,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
+                if (isAnimating()) return;
                 int size = toolbar.getMenu().size();
                 if (state == State.COLLAPSED) {
                     if (size > 1)
@@ -550,8 +547,17 @@ public class MainActivity extends BaseActivity {
                     if (size > 2)
                         toolbar.getMenu().getItem(size - 2).setVisible(true);
                     if (searchView.isSearchOpen()) {
-                        searchView.setVisibility(View.VISIBLE);
-                        searchView.animate().alpha(1f).setDuration(300);
+                        searchView.animate().alpha(1f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                searchView.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                searchView.setVisibility(View.VISIBLE);
+                            }
+                        });
                         showBottomSheet(behavior, true);
                     }
                 } else {
@@ -565,6 +571,7 @@ public class MainActivity extends BaseActivity {
                             public void onAnimationStart(Animator animation) {
                                 searchView.setVisibility(View.VISIBLE);
                             }
+
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 searchView.setVisibility(View.GONE);
@@ -929,7 +936,7 @@ public class MainActivity extends BaseActivity {
 
     private void initSetDefultDownloadPath() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            StorageManager sm = (StorageManager)getSystemService(mContext.STORAGE_SERVICE);
+            StorageManager sm = (StorageManager) getSystemService(mContext.STORAGE_SERVICE);
             StorageVolume volume = sm.getPrimaryStorageVolume();
             Intent intent = volume.createAccessIntent(Environment.DIRECTORY_PICTURES);
             startActivityForResult(intent, RESULT_RDSQ);
@@ -982,9 +989,13 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.fab_search)
     void search() {
+        if(!searchView.isSearchOpen()) {
+            setAnimating(true);
+            searchView.showSearch();
+            new Handler().postDelayed(() -> setAnimating(false), 500);
+            searchView.clearFocus();
+        }
         appBar.setExpanded(false);
-        searchView.showSearch();
-        searchView.clearFocus();
     }
 
     @Override
@@ -1095,7 +1106,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @OnClick(R.id.btn_add_site)
-    void addsite(){
+    void addsite() {
         Intent intent = new Intent(MainActivity.this, AddSiteActivity.class);
         startActivityForResult(intent, RESULT_ADD_SITE);
     }

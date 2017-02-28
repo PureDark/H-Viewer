@@ -34,27 +34,61 @@ import static ml.puredark.hviewer.HViewerApplication.getGson;
 
 public class ImageLoader {
 
-    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url) {
-        return loadImageFromUrl(context, imageView, url, null, null, null);
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url) {
+        loadImageFromUrl(context, imageView, url, null, null, null);
     }
 
-    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie) {
-        return loadImageFromUrl(context, imageView, url, cookie, null, null);
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie) {
+        loadImageFromUrl(context, imageView, url, cookie, null, null);
     }
 
-    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
-        return loadImageFromUrl(context, imageView, url, cookie, referer, null);
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
+        loadImageFromUrl(context, imageView, url, cookie, referer, null);
     }
 
-    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache) {
-        return loadImageFromUrl(context, imageView, url, cookie, referer, noCache, null);
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache) {
+        loadImageFromUrl(context, imageView, url, cookie, referer, noCache, null);
     }
 
-    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
-        return loadImageFromUrl(context, imageView, url, cookie, referer, false, controllerListener);
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
+        loadImageFromUrl(context, imageView, url, cookie, referer, false, controllerListener);
     }
 
-    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
+    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
+        if(TextUtils.isEmpty(url)) {
+            imageView.setImageURI(null);
+        }
+        Uri uri = Uri.parse(url);
+        JsonObject header = new JsonObject();
+        header.addProperty("cookie", cookie);
+        header.addProperty("referer", referer);
+        if (url != null && url.startsWith("http")) {
+            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
+                HProxy proxy = new HProxy(url);
+                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+            }
+            MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
+        }
+        if (imageView instanceof SimpleDraweeView) {
+            SimpleDraweeView draweeView = ((SimpleDraweeView) imageView);
+            ImageRequestBuilder requestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setResizeOptions(new ResizeOptions(1080, 1920));
+            if(noCache)
+                requestBuilder.disableDiskCache();
+            ImageRequest request = requestBuilder.build();
+            DraweeController controller = Fresco.newDraweeControllerBuilder()
+                    .setCallerContext(context)
+                    .setTapToRetryEnabled(true)
+                    .setAutoPlayAnimations(true)
+                    .setOldController(draweeView.getController())
+                    .setControllerListener(controllerListener)
+                    .setImageRequest(request)
+                    .build();
+            draweeView.setController(controller);
+        }
+    }
+
+    public static RetainingDataSourceSupplier loadImageFromUrlRetainingImage(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
         if(TextUtils.isEmpty(url)) {
             imageView.setImageURI(null);
             return null;

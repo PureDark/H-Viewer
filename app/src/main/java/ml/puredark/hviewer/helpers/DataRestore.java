@@ -73,10 +73,10 @@ public class DataRestore {
                     holder.addFavourite(collection);
                 }
                 holder.onDestroy();
-                return "导入收藏夹成功";
+                return "收藏夹还原成功";
             } catch (Exception e) {
                 e.printStackTrace();
-                return "导入收藏夹失败";
+                return "收藏夹还原失败";
             }
         }
     }
@@ -113,7 +113,7 @@ public class DataRestore {
                     }
                 }
             }
-            return "站点还愿成功";
+            return "站点还原成功";
         }
     }
 }

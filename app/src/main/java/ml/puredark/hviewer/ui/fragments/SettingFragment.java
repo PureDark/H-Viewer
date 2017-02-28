@@ -244,7 +244,7 @@ public class SettingFragment extends PreferenceFragment
         } else if (preference.getKey().equals(KEY_PREF_BKRS_RESTORE)) {
             //还原
             new AlertDialog.Builder(activity).setTitle("确认恢复?")
-                    .setMessage("将会新增站点,不会删除原有站点")
+                    .setMessage("如已存在同名站点，不会覆盖")
                     .setPositiveButton(getString(R.string.ok),((dialog, which) -> {
                         String restore = new DataRestore().DoRestore();
                         Intent intent = new Intent();
