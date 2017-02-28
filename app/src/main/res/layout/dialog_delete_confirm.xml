@@ -13,14 +13,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/half_margin"
         style="@style/TextAppearance.AppCompat.Subhead"
-        android:text="是否删除？" />
+        android:text="删除下载记录" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/half_margin"
         style="@style/TextAppearance.AppCompat.Body1"
-        android:text="删除后将无法回复"
+        android:text="是否从列表中删除该下载记录？"
         android:id="@+id/textView" />
 
     <LinearLayout
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextAppearance.AppCompat.Body1"
-            android:text="同时删除文件"/>
+            android:text="同时删除图片文件"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -116,7 +116,7 @@ public class PicturePagerAdapter extends PagerAdapter {
     }
 
     public void onConfigurationChanged() {
-        areaClickHelper = new AreaClickHelper(activity);
+        areaClickHelper.updateScreenSize(activity, 0, 0);
     }
 
     @Override
@@ -133,6 +133,13 @@ public class PicturePagerAdapter extends PagerAdapter {
             return getCount() - 1 - position;
         }
         return position;
+    }
+
+    public PictureViewHolder getViewHolderAt(int position){
+        if(position >= 0 && position < viewHolders.size())
+            return viewHolders.get(getPicturePostion(position));
+        else
+            return null;
     }
 
     @Override
@@ -177,33 +184,9 @@ public class PicturePagerAdapter extends PagerAdapter {
 
         if (pictures != null && position < pictures.size()) {
             final Picture picture = pictures.get(getPicturePostion(position));
-            if (picture.pic != null) {
-                activity.loadImage(picture, viewHolder);
-            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
-                if (site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
-                    activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
-                else if (site.extraRule.pictureUrl != null)
-                    activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
-            } else if (site.picUrlSelector != null) {
-                activity.getPictureUrl(viewHolder, picture, site.picUrlSelector, null);
-            } else {
-                picture.pic = picture.url;
-                activity.loadImage(picture, viewHolder);
-            }
+            activity.getUrlAndLoadImage(viewHolder, picture, false);
             viewHolder.btnRefresh.setOnClickListener(v -> {
-                if (picture.pic != null) {
-                    activity.loadImage(picture, viewHolder);
-                } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
-                    if (site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
-                        activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
-                    else if (site.extraRule.pictureUrl != null)
-                        activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
-                } else if (site.picUrlSelector == null) {
-                    picture.pic = picture.url;
-                    activity.loadImage(picture, viewHolder);
-                } else {
-                    activity.getPictureUrl(viewHolder, picture, site.picUrlSelector, null);
-                }
+                activity.getUrlAndLoadImage(viewHolder, picture, false);
             });
             viewHolder.ivPicture.setOnLongClickListener(v -> {
                 if (mOnItemLongClickListener != null)

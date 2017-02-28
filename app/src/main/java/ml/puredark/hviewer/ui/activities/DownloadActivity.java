@@ -66,8 +66,6 @@ public class DownloadActivity extends BaseActivity {
 
     private List<DownloadTask> downloadingTasks, downloadedTasks;
 
-    private boolean checkboxChecked = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

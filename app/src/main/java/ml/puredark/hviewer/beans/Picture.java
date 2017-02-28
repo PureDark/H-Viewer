@@ -11,6 +11,7 @@ public class Picture extends AbstractDataProvider.Data {
     public int retries;
     public int status = STATUS_WAITING;
     public String referer;
+    public boolean loadedHighRes;
 
     public Picture(int pid, String url, String thumbnail, String highRes, String referer) {
         this.pid = pid;

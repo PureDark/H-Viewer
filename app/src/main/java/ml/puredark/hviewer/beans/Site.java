@@ -4,10 +4,8 @@ import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,11 +112,13 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     }
 
     public String getListUrl(String url, int page, String keyword, List<Collection> collections) {
-        return RuleParser.parseUrl(url, page, "", keyword, collections.toArray());
+        Object[] array = (collections != null) ? collections.toArray() : null;
+        return RuleParser.parseUrl(url, page, "", keyword, array);
     }
 
     public String getGalleryUrl(String idCode, int page, List<Picture> pictures) {
-        return RuleParser.parseUrl(galleryUrl, page, idCode, "", pictures.toArray());
+        Object[] array = (pictures != null) ? pictures.toArray() : null;
+        return RuleParser.parseUrl(galleryUrl, page, idCode, "", array);
     }
 
     public void replace(Site site) {

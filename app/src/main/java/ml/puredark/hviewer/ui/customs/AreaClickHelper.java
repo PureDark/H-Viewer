@@ -14,17 +14,18 @@ public class AreaClickHelper {
     private int width, height;
 
     public AreaClickHelper(Context context) {
-        width = DensityUtil.getScreenWidth(context);
-        height = DensityUtil.getScreenHeight(context);
-        xOffset = width * 3 / 10;
-        yOffset = height * 3 / 10;
+        updateScreenSize(context, 0, 0);
     }
 
     public AreaClickHelper(Context context, int xOffset, int yOffset) {
-        width = DensityUtil.getScreenWidth(context);
-        height = DensityUtil.getScreenHeight(context);
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
+        updateScreenSize(context, xOffset, yOffset);
+    }
+
+    public void updateScreenSize(Context context, int xOffset, int yOffset) {
+        this.width = DensityUtil.getScreenWidth(context);
+        this.height = DensityUtil.getScreenHeight(context);
+        this.xOffset = (xOffset > 0) ? xOffset : width * 3 / 10;
+        this.yOffset = (yOffset > 0) ? yOffset : height * 3 / 10;
     }
 
     public void onClick(float x, float y) {
@@ -37,14 +38,14 @@ public class AreaClickHelper {
                 onAreaClickListener.grid7();
             else
                 onAreaClickListener.grid4();
-        } else if (x > width - xOffset){
+        } else if (x > width - xOffset) {
             if (y < yOffset)
                 onAreaClickListener.grid3();
             else if (y > height - yOffset)
                 onAreaClickListener.grid9();
             else
                 onAreaClickListener.grid6();
-        }else{
+        } else {
             if (y < yOffset)
                 onAreaClickListener.grid2();
             else if (y > height - yOffset)
@@ -61,19 +62,29 @@ public class AreaClickHelper {
 
     public interface OnAreaClickListener {
         void grid1();
+
         void grid2();
+
         void grid3();
+
         void grid4();
+
         void grid5();
+
         void grid6();
+
         void grid7();
+
         void grid8();
+
         void grid9();
     }
 
     public static abstract class OnLeftRightClickListener implements OnAreaClickListener {
         public abstract void left();
+
         public abstract void right();
+
         public abstract void center();
 
         @Override
@@ -124,7 +135,9 @@ public class AreaClickHelper {
 
     public static abstract class OnTopBottomClickListener implements OnAreaClickListener {
         public abstract void top();
+
         public abstract void bottom();
+
         public abstract void center();
 
         @Override

@@ -73,33 +73,9 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
     @Override
     public void onBindViewHolder(PictureViewHolder viewHolder, int position) {
         Picture picture = mProvider.getItem(position);
-        if (picture.pic != null) {
-            activity.loadImage(picture, viewHolder);
-        } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
-            if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
-                activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
-            else if(site.extraRule.pictureUrl != null)
-                activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
-        } else if (site.picUrlSelector != null) {
-            activity.getPictureUrl(viewHolder, picture, site.picUrlSelector, null);
-        } else {
-            picture.pic = picture.url;
-            activity.loadImage(picture, viewHolder);
-        }
+        activity.getUrlAndLoadImage(viewHolder, picture, false);
         viewHolder.btnRefresh.setOnClickListener(v -> {
-            if (picture.pic != null) {
-                activity.loadImage(picture, viewHolder);
-            } else if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE) && site.extraRule != null) {
-                if(site.extraRule.pictureRule != null && site.extraRule.pictureRule.url != null)
-                    activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureRule.url, site.extraRule.pictureRule.highRes);
-                else if(site.extraRule.pictureUrl != null)
-                    activity.getPictureUrl(viewHolder, picture, site.extraRule.pictureUrl, site.extraRule.pictureHighRes);
-            } else if (site.picUrlSelector == null) {
-                picture.pic = picture.url;
-                activity.loadImage(picture, viewHolder);
-            } else {
-                activity.getPictureUrl(viewHolder, picture, site.picUrlSelector, null);
-            }
+            activity.getUrlAndLoadImage(viewHolder, picture, false);
         });
         viewHolder.ivPicture.setOnLongClickListener(v -> {
             if (mOnItemLongClickListener != null)

@@ -635,7 +635,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     @OnClick(R.id.fab_browser)
-    void fab_browser() {
+    void viewInBrowser() {
         final String url = site.getGalleryUrl(myCollection.idCode, startPage, pictureVideoAdapter.getPictureDataProvider().getItems());
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");

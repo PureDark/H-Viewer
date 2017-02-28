@@ -60,6 +60,20 @@
                 android:layout_weight="1"/>
 
             <ImageView
+                android:id="@+id/btn_load_high_res"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                app:srcCompat="@drawable/ic_load_high_res_white"/>
+
+            <ImageView
+                android:id="@+id/btn_rotate_screen"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                app:srcCompat="@drawable/ic_screen_rotation_white"/>
+
+            <ImageView
                 android:id="@+id/btn_picture_info"
                 android:layout_width="24dp"
                 android:layout_height="24dp"

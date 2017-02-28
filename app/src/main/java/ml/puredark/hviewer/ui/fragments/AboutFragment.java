@@ -98,6 +98,13 @@ public class AboutFragment extends PreferenceFragment {
                 myClipboard.setPrimaryClip(ClipData.newPlainText("qq_group", preference.getSummary().toString()));
                 activity.showSnackBar("群号已复制到剪贴板");
             }
+        } else if (preference.getKey().equals(KEY_PREF_ABOUT_DONATE)) {
+            final String url = "https://qr.alipay.com/a6x076685fa21yei9s5zbd5";
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri content_url = Uri.parse(url);
+            intent.setData(content_url);
+            startActivity(intent);
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
