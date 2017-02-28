@@ -152,6 +152,8 @@ public class RuleParser {
                             itemStr = ((Element) item).attr(rule.title.param);
                         else if ("html".equals(rule.item.fun))
                             itemStr = ((Element) item).html();
+                        else if ("text".equals(rule.item.fun))
+                            itemStr = ((Element) item).text();
                         else
                             itemStr = item.toString();
                     } else
@@ -545,6 +547,8 @@ public class RuleParser {
                             prop = elem.attr(selector.param);
                         } else if ("html".equals(selector.fun)) {
                             prop = elem.html();
+                        } else if ("text".equals(selector.fun)){
+                            prop = elem.text();
                         } else {
                             prop = elem.toString();
                         }
@@ -599,6 +603,8 @@ public class RuleParser {
                                     newProp = element.attr(selector.param);
                                 } else if ("html".equals(selector.fun)) {
                                     newProp = element.html();
+                                } else if ("text".equals(selector.fun)) {
+                                    newProp = element.text();
                                 } else {
                                     newProp = element.toString();
                                 }

@@ -1,6 +1,10 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +37,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.gc.materialdesign.views.ButtonFlat;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
@@ -68,14 +77,17 @@ import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
+import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteAdapter;
 import ml.puredark.hviewer.ui.adapters.SiteTagAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
 import ml.puredark.hviewer.ui.customs.DragMarginDrawerLayout;
+import ml.puredark.hviewer.ui.customs.RetainingDataSourceSupplier;
 import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.ui.fragments.CollectionFragment;
@@ -85,9 +97,11 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static android.R.attr.animation;
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
+import static u.aly.x.m;
 
 
 public class MainActivity extends BaseActivity {
@@ -196,6 +210,19 @@ public class MainActivity extends BaseActivity {
                 initSetDefultDownloadPath();
             }
         }
+
+        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrl(this, backdrop, "https://api.i-meto.com/bing", null, null, true);
+
+        backdrop.setOnLongClickListener(v -> {
+            Uri uri = Uri.parse("https://api.i-meto.com/bing");
+            Fresco.getImagePipeline().evictFromMemoryCache(uri);
+            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setResizeOptions(new ResizeOptions(1080, 1920))
+                    .disableDiskCache()
+                    .build();
+            supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, null, ImageRequest.RequestLevel.FULL_FETCH));
+            return true;
+        });
 
         initDrawer();
 
@@ -523,6 +550,7 @@ public class MainActivity extends BaseActivity {
                     if (size > 2)
                         toolbar.getMenu().getItem(size - 2).setVisible(true);
                     if (searchView.isSearchOpen()) {
+                        searchView.setVisibility(View.VISIBLE);
                         searchView.animate().alpha(1f).setDuration(300);
                         showBottomSheet(behavior, true);
                     }
@@ -532,7 +560,16 @@ public class MainActivity extends BaseActivity {
                     if (size > 2)
                         toolbar.getMenu().getItem(size - 2).setVisible(false);
                     if (searchView.isSearchOpen()) {
-                        searchView.animate().alpha(0f).setDuration(300);
+                        searchView.animate().alpha(0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                searchView.setVisibility(View.VISIBLE);
+                            }
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                searchView.setVisibility(View.GONE);
+                            }
+                        });
                         showBottomSheet(behavior, false);
                     }
                 }

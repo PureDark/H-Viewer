@@ -10,6 +10,7 @@ import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -22,6 +23,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.JsonObject;
 
+import ml.puredark.hviewer.ui.customs.RetainingDataSourceSupplier;
 import ml.puredark.hviewer.utils.DensityUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.getGson;
@@ -32,22 +34,30 @@ import static ml.puredark.hviewer.HViewerApplication.getGson;
 
 public class ImageLoader {
 
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url) {
-        loadImageFromUrl(context, imageView, url, null, null, null);
+    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url) {
+        return loadImageFromUrl(context, imageView, url, null, null, null);
     }
 
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie) {
-        loadImageFromUrl(context, imageView, url, cookie, null, null);
+    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie) {
+        return loadImageFromUrl(context, imageView, url, cookie, null, null);
     }
 
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
-        loadImageFromUrl(context, imageView, url, cookie, referer, null);
+    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer) {
+        return loadImageFromUrl(context, imageView, url, cookie, referer, null);
     }
 
-    public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
+    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache) {
+        return loadImageFromUrl(context, imageView, url, cookie, referer, noCache, null);
+    }
+
+    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, ControllerListener controllerListener) {
+        return loadImageFromUrl(context, imageView, url, cookie, referer, false, controllerListener);
+    }
+
+    public static RetainingDataSourceSupplier loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
         if(TextUtils.isEmpty(url)) {
             imageView.setImageURI(null);
-            return;
+            return null;
         }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
@@ -61,19 +71,27 @@ public class ImageLoader {
             MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
         }
         if (imageView instanceof SimpleDraweeView) {
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                    .setResizeOptions(new ResizeOptions(1080, 1920))
-                    .build();
-            DraweeController controller = Fresco.newDraweeControllerBuilder()
+            SimpleDraweeView draweeView = ((SimpleDraweeView) imageView);
+            RetainingDataSourceSupplier<CloseableReference<CloseableImage>> retainingSupplier = new RetainingDataSourceSupplier<>();
+            PipelineDraweeControllerBuilder draweeControllerBuilder = Fresco.newDraweeControllerBuilder();
+            draweeControllerBuilder.setDataSourceSupplier(retainingSupplier);
+            DraweeController controller = draweeControllerBuilder
                     .setCallerContext(context)
                     .setTapToRetryEnabled(true)
                     .setAutoPlayAnimations(true)
-                    .setOldController(((SimpleDraweeView) imageView).getController())
+                    .setOldController(draweeView.getController())
                     .setControllerListener(controllerListener)
-                    .setImageRequest(request)
                     .build();
-            ((SimpleDraweeView) imageView).setController(controller);
+            draweeView.setController(controller);
+            ImageRequestBuilder requestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setResizeOptions(new ResizeOptions(1080, 1920));
+            if(noCache)
+                requestBuilder.disableDiskCache();
+            ImageRequest request = requestBuilder.build();
+            retainingSupplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, null, ImageRequest.RequestLevel.FULL_FETCH));
+            return retainingSupplier;
         }
+        return null;
     }
 
     public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, BaseBitmapDataSubscriber dataSubscriber) {

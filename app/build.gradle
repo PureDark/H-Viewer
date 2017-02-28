@@ -129,7 +129,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
     //Pull Load More
-    compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.0.9') {
+    compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.1.2') {
         exclude group: 'com.android.support'
     }
     // SwipeBack
@@ -168,4 +168,5 @@ dependencies {
     compile 'com.gu:option:1.3'
     compile 'net.rdrei.android.dirchooser:library:3.2@aar'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.2.1'
+    compile 'net.jcip:jcip-annotations:1.0'
 }
