@@ -9,22 +9,18 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:paddingTop="20dp"
         android:layout_weight="1">
-        <LinearLayout
+        <com.dpizarro.autolabel.library.AutoLabelUI
+            android:id="@+id/label_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp">
-            <com.dpizarro.autolabel.library.AutoLabelUI
-                android:id="@+id/label_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:show_cross="false"
-                app:text_color="@android:color/white"
-                app:text_size="@dimen/label_title_size"
-                app:label_background_res="@color/dimgray"
-                app:label_padding="@dimen/half_padding"
-                app:label_clickable="true"/>
-        </LinearLayout>
+            app:show_cross="false"
+            app:text_color="@android:color/white"
+            app:text_size="@dimen/label_title_size"
+            app:label_background_res="@color/dimgray"
+            app:label_padding="@dimen/half_padding"
+            app:label_clickable="true"/>
     </android.support.v4.widget.NestedScrollView>
     <LinearLayout
         android:layout_width="50dp"

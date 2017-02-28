@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.helpers.Logger;
 
 /**
  * Created by PureDark on 2016/10/12.
@@ -25,13 +26,13 @@ public class FavorTagHolder extends AbstractTagHolder{
     }
 
     public void addTag(Tag item) {
-        Log.d("FavorTagHolder", "tagExist(item):" + tagExist(item));
+        Logger.d("FavorTagHolder", "tagExist("+item+"):" + tagExist(item));
         if (item == null || tagExist(item)) return;
         ContentValues contentValues = new ContentValues();
         contentValues.put("title", item.title);
         contentValues.put("url", item.url);
         dbHelper.insert(dbName, contentValues);
-        Log.d("FavorTagHolder", "inserted");
+        Logger.d("FavorTagHolder", "inserted");
     }
 
     public void clear() {

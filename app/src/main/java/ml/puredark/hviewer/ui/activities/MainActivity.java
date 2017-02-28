@@ -12,7 +12,6 @@ import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -53,6 +52,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import biz.laenger.android.vpbs.BottomSheetUtils;
+import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -533,7 +534,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initSearchView() {
-        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+        final ViewPagerBottomSheetBehavior behavior = ViewPagerBottomSheetBehavior.from(bottomSheet);
         //appbar折叠时显示搜索按钮和搜索框，否则隐藏
         appBar.addOnOffsetChangedListener(new AppBarStateChangeListener() {
 
@@ -639,6 +640,7 @@ public class MainActivity extends BaseActivity {
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
         bottomSheetViewPager.setAdapter(viewPagerAdapter);
+        BottomSheetUtils.setupViewPager(bottomSheetViewPager);
 
         siteTagAdapter = new SiteTagAdapter(new ListDataProvider(new ArrayList<>()));
         favorTagAdapter = new SiteTagAdapter(new ListDataProvider(favorTagHolder.getTags()));
@@ -668,9 +670,9 @@ public class MainActivity extends BaseActivity {
         historyTagTab.btnTag4.setOnClickListener(v -> historyTagTab.clearTags(siteAdapter.selectedSid, searchHistoryHolder));
 
         //底部TAG面板
-        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+        final ViewPagerBottomSheetBehavior behavior = ViewPagerBottomSheetBehavior.from(bottomSheet);
         //默认设置为隐藏
-        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        behavior.setState(ViewPagerBottomSheetBehavior.STATE_HIDDEN);
         TabItemBuilder tabItem1 = new TabItemBuilder(this).create()
                 .setDefaultColor(getResources().getColor(R.color.dimgray))
                 .setSelectedColor(getResources().getColor(R.color.colorPrimaryDark))
@@ -721,16 +723,16 @@ public class MainActivity extends BaseActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
-        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        behavior.setBottomSheetCallback(new ViewPagerBottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                    case BottomSheetBehavior.STATE_COLLAPSED:
+                    case ViewPagerBottomSheetBehavior.STATE_HIDDEN:
+                    case ViewPagerBottomSheetBehavior.STATE_COLLAPSED:
                         setDrawerEnabled(true);
                         break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                    case BottomSheetBehavior.STATE_EXPANDED:
+                    case ViewPagerBottomSheetBehavior.STATE_DRAGGING:
+                    case ViewPagerBottomSheetBehavior.STATE_EXPANDED:
                         setDrawerEnabled(false);
                         break;
                 }
@@ -863,15 +865,15 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void showBottomSheet(BottomSheetBehavior behavior, boolean show) {
+    private void showBottomSheet(ViewPagerBottomSheetBehavior behavior, boolean show) {
         if (show) {
             if (currFragment != null && siteAdapter.selectedSid != 0) {
                 siteTagAdapter.getDataProvider().setDataSet(siteTagHolder.getRandomTags(siteAdapter.selectedSid, 30));
                 siteTagAdapter.notifyDataSetChanged();
             }
-            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            behavior.setState(ViewPagerBottomSheetBehavior.STATE_COLLAPSED);
         } else {
-            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            behavior.setState(ViewPagerBottomSheetBehavior.STATE_HIDDEN);
         }
     }
 

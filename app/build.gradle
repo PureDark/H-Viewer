@@ -92,6 +92,7 @@ repositories {
     maven { url "http://kodbiro.github.io/repo/" }
     maven { url "http://dl.bintray.com/glomadrian/maven" }
     maven { url 'http://guardian.github.com/maven/repo-releases' }
+    maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
     jcenter()
 }
 
@@ -128,6 +129,7 @@ dependencies {
         exclude group: 'com.nineoldandroids', module: 'library'
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
+    compile "biz.laenger.android:vpbs:0.0.4"
     //Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.1.2') {
         exclude group: 'com.android.support'
