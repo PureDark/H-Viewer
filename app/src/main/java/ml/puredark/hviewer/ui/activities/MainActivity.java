@@ -539,14 +539,13 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
-                if (isAnimating()) return;
                 int size = toolbar.getMenu().size();
                 if (state == State.COLLAPSED) {
                     if (size > 1)
                         toolbar.getMenu().getItem(size - 1).setVisible(true);
                     if (size > 2)
                         toolbar.getMenu().getItem(size - 2).setVisible(true);
-                    if (searchView.isSearchOpen()) {
+                    if (!isAnimating() && searchView.isSearchOpen()) {
                         searchView.animate().alpha(1f).setDuration(300).setListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationStart(Animator animation) {
@@ -565,7 +564,7 @@ public class MainActivity extends BaseActivity {
                         toolbar.getMenu().getItem(size - 1).setVisible(false);
                     if (size > 2)
                         toolbar.getMenu().getItem(size - 2).setVisible(false);
-                    if (searchView.isSearchOpen()) {
+                    if (!isAnimating() && searchView.isSearchOpen()) {
                         searchView.animate().alpha(0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationStart(Animator animation) {
