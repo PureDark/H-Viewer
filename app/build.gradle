@@ -35,7 +35,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 61
-        versionName "0.8.6"
+        versionName "0.9.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         project.ext.set("archivesBaseName", "H-Viewer " + gitVersionTag());

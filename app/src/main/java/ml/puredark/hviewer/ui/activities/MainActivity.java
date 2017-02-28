@@ -95,7 +95,6 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.R.attr.data;
 import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;

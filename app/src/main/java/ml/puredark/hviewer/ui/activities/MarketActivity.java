@@ -167,7 +167,7 @@ public class MarketActivity extends BaseActivity {
                 .setNegativeButton("否", (dialog, which) -> {
                     newSite.gid = currSite.gid;
                     int sid = siteHolder.addSite(newSite);
-                    if(sid<0){
+                    if (sid < 0) {
                         showSnackBar("插入数据库失败");
                         return;
                     }
@@ -206,8 +206,8 @@ public class MarketActivity extends BaseActivity {
                                         categories[j] = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
                                         }.getType());
                                         if ((--sourceCount) == 0) {
-                                            for(List<MarketSiteCategory> categoryList : categories) {
-                                                if(categoryList==null)
+                                            for (List<MarketSiteCategory> categoryList : categories) {
+                                                if (categoryList == null)
                                                     continue;
                                                 for (MarketSiteCategory category : categoryList) {
                                                     if (!siteCategories.containsKey(category))
@@ -271,19 +271,21 @@ public class MarketActivity extends BaseActivity {
             int cPos = -1, sPos = -1;
             int size = 0;
             Set<MarketSiteCategory> categories = siteCategories.keySet();
-            int i = 0;
-            for (MarketSiteCategory category : categories) {
-                if (category.sites != null) {
-                    if (size + category.sites.size() > flatPos) {
-                        cPos = i;
-                        sPos = flatPos - size;
-                        categoryTitle = category.title;
-                        marketSite = category.sites.get(sPos);
-                        break;
-                    } else
-                        size += category.sites.size();
+            if (categories != null) {
+                int i = 0;
+                for (MarketSiteCategory category : categories) {
+                    if (category.sites != null) {
+                        if (size + category.sites.size() > flatPos) {
+                            cPos = i;
+                            sPos = flatPos - size;
+                            categoryTitle = category.title;
+                            marketSite = category.sites.get(sPos);
+                            break;
+                        } else
+                            size += category.sites.size();
+                    }
+                    i++;
                 }
-                i++;
             }
             if (cPos == -1 || sPos == -1 || marketSite == null) {
                 showSnackBar("站点全部更新完成！");
