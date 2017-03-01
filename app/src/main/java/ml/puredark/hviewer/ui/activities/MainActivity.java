@@ -329,8 +329,27 @@ public class MainActivity extends BaseActivity {
         siteAdapter.setOnItemClickListener(new SiteAdapter.OnItemClickListener() {
             @Override
             public void onGroupClick(View v, int groupPosition) {
-                // 点击分类
-                notifyGroupItemChanged(groupPosition);
+                // 点击分类（如果是新建按钮则创建，否则展开）
+                if (groupPosition == siteAdapter.getGroupCount() - 1) {
+                    View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+                    MaterialEditText inputGroupTitle = (MaterialEditText) view.findViewById(R.id.input_text);
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("新建组名")
+                            .setView(view)
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", (dialog, which) -> {
+                                String title = inputGroupTitle.getText().toString();
+                                SiteGroup group = new SiteGroup(0, title);
+                                int gid = siteHolder.addSiteGroup(group);
+                                group.gid = gid;
+                                group.index = gid;
+                                siteHolder.updateSiteGroupIndex(group);
+                                siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
+                                siteAdapter.notifyDataSetChanged();
+                            }).show();
+                } else {
+                    notifyGroupItemChanged(groupPosition);
+                }
             }
 
             @Override
