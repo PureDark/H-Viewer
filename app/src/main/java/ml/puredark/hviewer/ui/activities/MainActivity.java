@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -92,6 +93,7 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
+import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_FIRST_TIME;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_DOWNLOAD_PATH;
 
 
@@ -195,8 +197,7 @@ public class MainActivity extends BaseActivity {
         }
 
         //获取存储权限
-        String downloadPath = DownloadManager.getDownloadPath();
-        if (!downloadPath.startsWith("content://")) {
+        if ((boolean)SharedPreferencesUtil.getData(this, KEY_FIRST_TIME, true)) {
             initSetDefultDownloadPath();
         }
 
@@ -953,6 +954,7 @@ public class MainActivity extends BaseActivity {
                     .setTitle("请选择默认下载目录")
                     .setMessage("需要手动选择目录以获取读写权限")
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                        SharedPreferencesUtil.saveData(MainActivity.this, KEY_FIRST_TIME, false);
                         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                         try {
@@ -1066,7 +1068,6 @@ public class MainActivity extends BaseActivity {
                     }
                 }
                 String path = uriTree.toString();
-                String displayPath = Uri.decode(path);
                 SharedPreferencesUtil.saveData(this, KEY_PREF_DOWNLOAD_PATH, path);
             }
         } else if (resultCode == RESULT_CANCELED) {

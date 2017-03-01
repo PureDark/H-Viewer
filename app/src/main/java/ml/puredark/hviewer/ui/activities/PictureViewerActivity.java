@@ -219,8 +219,8 @@ public class PictureViewerActivity extends BaseActivity {
 
             int position = picturePagerAdapter.getPicturePostion(currPos);
             tvCount.setText((position + 1) + "/" + picturePagerAdapter.getCount());
-            if (position < pictures.size()) {
-                Picture picture = pictures.get(position);
+            if (position < pictures.size() && pictures.size() > 0) {
+                Picture picture = (position < 0) ? pictures.get(0) : pictures.get(position);
                 if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
                     btnLoadHighRes.setVisibility(View.GONE);
                 else
@@ -290,8 +290,8 @@ public class PictureViewerActivity extends BaseActivity {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
             currPos = linearLayoutManager.findLastVisibleItemPosition();
             tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
-            if (currPos < pictures.size()) {
-                Picture picture = (currPos < 0 && pictures.size() > 0) ? pictures.get(0) : pictures.get(currPos);
+            if (currPos < pictures.size() && pictures.size() > 0) {
+                Picture picture = (currPos < 0) ? pictures.get(0) : pictures.get(currPos);
                 if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
                     btnLoadHighRes.setVisibility(View.GONE);
                 else

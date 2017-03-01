@@ -116,7 +116,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private boolean onePic = false;
     private boolean onePage = false;
     private int startPage;
-    private int pageStep = 1;
     private int currPage;
 
     private boolean isIndexComplete = false;
@@ -214,22 +213,18 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (pageStr == null) {
                 onePage = true;
                 startPage = 0;
-                pageStep = 1;
             } else {
                 onePage = false;
                 String[] pageStrs = pageStr.split(":");
                 if (pageStrs.length > 1) {
-                    pageStep = Integer.parseInt(pageStrs[1]);
                     startPage = Integer.parseInt(pageStrs[0]);
                 } else {
-                    pageStep = 1;
                     startPage = Integer.parseInt(pageStr);
                 }
             }
             currPage = startPage;
         } catch (NumberFormatException e) {
             startPage = 0;
-            pageStep = 1;
             currPage = startPage;
         }
     }
@@ -625,7 +620,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 pictureViewerActivity.notifyDataSetChanged(pictures);
             }
             if (finalFlagNextPage)
-                getCollectionDetail(currPage + pageStep);
+                getCollectionDetail(currPage + 1);
         });
     }
 

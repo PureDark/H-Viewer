@@ -98,29 +98,41 @@ public class RuleParser {
             }
         } catch (NumberFormatException e) {
         }
-        int realPage = page + (page - startPage) * pageStep;
+        int realPage = page + (page - startPage) * (pageStep - 1);
         url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (realPage == startPage) ? "" : matchResult.get("pageStr"))
                 .replaceAll("\\{page:.*?\\}", "" + realPage)
                 .replaceAll("\\{keyword:.*?\\}", keyword)
                 .replaceAll("\\{idCode:\\}", idCode);
         if (matchResult.containsKey("date")) {
-            String[] dateStrs = matchResult.get("date").split(":");
+            String dateStr = matchResult.get("date");
+            int index = dateStr.lastIndexOf(':');
+            String firstParam = dateStr.substring(0, index);
+            String lastParam = dateStr.substring(index+1);
             Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat(dateStrs[0]);
-            if (dateStrs.length > 1) {
-                int offset = Integer.parseInt(dateStrs[1]);
+            SimpleDateFormat dateFormat;
+            try{
+                int offset = Integer.parseInt(lastParam);
+                dateFormat = new SimpleDateFormat(firstParam);
                 calendar.add(Calendar.DAY_OF_MONTH, offset);
+            } catch (NumberFormatException e){
+                dateFormat = new SimpleDateFormat(dateStr);
             }
             String currDate = dateFormat.format(calendar.getTime());
             url = url.replaceAll("\\{date:.*?\\}", currDate);
         }
         if (matchResult.containsKey("time")) {
-            String[] timeStrs = matchResult.get("time").split(":");
+            String timeStr = matchResult.get("time");
+            int index = timeStr.lastIndexOf(':');
+            String firstParam = timeStr.substring(0, index);
+            String lastParam = timeStr.substring(index+1);
             Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat(timeStrs[0]);
-            if (timeStrs.length > 1) {
-                int offset = Integer.parseInt(timeStrs[1]);
+            SimpleDateFormat dateFormat;
+            try{
+                int offset = Integer.parseInt(lastParam);
+                dateFormat = new SimpleDateFormat(firstParam);
                 calendar.add(Calendar.SECOND, offset);
+            } catch (NumberFormatException e){
+                dateFormat = new SimpleDateFormat(timeStr);
             }
             String currTime = dateFormat.format(calendar.getTime());
             url = url.replaceAll("\\{time:.*?\\}", currTime);

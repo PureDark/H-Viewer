@@ -592,7 +592,7 @@ public class SitePropViewHolder {
     public void fillSitePropEditText(Site site) {
         lastSite = site;
         for (int i = 0; i < siteGroups.size(); i++) {
-            if (siteGroups.get(i).gid == site.gid && i + 1 < siteGroups.size()) {
+            if (siteGroups.get(i).gid == site.gid) {
                 inputGroup.setSelection(i + 1);
                 break;
             }

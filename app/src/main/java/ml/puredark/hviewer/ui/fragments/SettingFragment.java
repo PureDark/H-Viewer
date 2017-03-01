@@ -114,6 +114,8 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_LAST_SITE_ID = "last_site_id";
 
+    public static final String KEY_FIRST_TIME = "key_first_time";
+
     private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
     private BaseActivity activity;

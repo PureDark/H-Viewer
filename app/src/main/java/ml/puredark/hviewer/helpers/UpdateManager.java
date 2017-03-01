@@ -32,6 +32,8 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 public class UpdateManager {
 
@@ -45,7 +47,7 @@ public class UpdateManager {
     private Dialog noticeDialog;
     private Dialog downloadDialog;
     /* 下载包安装路径 */
-    private static final String savePath = Environment.getExternalStorageDirectory().getPath() + "/Shanyi/";
+    private static String savePath = Environment.getDownloadCacheDirectory().getAbsolutePath();
     private static final String saveFileName = savePath + "Update.apk";
     /* 进度条与通知ui刷新的handler和msg常量 */
     private ProgressBar mProgress;
@@ -109,6 +111,9 @@ public class UpdateManager {
         this.apkUrl = apkUrl;
         this.title = title;
         this.updateMsg = updateMsg;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            savePath = mContext.getCacheDir().getAbsolutePath();
+        }
     }
 
     //外部接口让主Activity调用
