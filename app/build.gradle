@@ -6,24 +6,6 @@ ext {
     BUILD_TOOLS = "25.0.2"
 }
 
-def gitVersionCode() {
-    def cmd = 'git rev-list HEAD --first-parent --count'
-    cmd.execute().text.trim().toInteger()
-}
-
-def gitVersionTag() {
-    def cmd = 'git describe --tags'
-    def version = cmd.execute().text.trim()
-    def pattern = "-(\\d+)-g"
-    def matcher = version =~ pattern
-    if (matcher) {
-        version = version.substring(0, matcher.start()) + "." + matcher[0][1]
-    } else {
-        version = version + ".0"
-    }
-    return version
-}
-
 android {
     signingConfigs {
     }
@@ -34,11 +16,10 @@ android {
         resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 61
-        versionName "0.9.0"
+        versionCode 62
+        versionName "0.9.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        project.ext.set("archivesBaseName", "H-Viewer " + gitVersionTag());
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -53,12 +34,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
             zipAlignEnabled true
-        }
-        applicationVariants.all { variant ->
-            if (variant.buildType.name.equals('release')) {
-                variant.mergedFlavor.versionCode = gitVersionCode()
-                variant.mergedFlavor.versionName = gitVersionTag()
-            }
         }
     }
     lintOptions {

@@ -289,8 +289,10 @@ public class MarketActivity extends BaseActivity {
             }
             if (cPos == -1 || sPos == -1 || marketSite == null) {
                 showSnackBar("站点全部更新完成！");
-                for (MarketSiteAdapter adapter : siteAdapters) {
-                    adapter.notifyDataSetChanged();
+                if(siteAdapters!=null) {
+                    for (MarketSiteAdapter adapter : siteAdapters) {
+                        adapter.notifyDataSetChanged();
+                    }
                 }
                 return;
             }

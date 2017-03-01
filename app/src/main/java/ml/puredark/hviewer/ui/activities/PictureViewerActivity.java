@@ -219,11 +219,13 @@ public class PictureViewerActivity extends BaseActivity {
 
             int position = picturePagerAdapter.getPicturePostion(currPos);
             tvCount.setText((position + 1) + "/" + picturePagerAdapter.getCount());
-            Picture picture = pictures.get(position);
-            if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
-                btnLoadHighRes.setVisibility(View.GONE);
-            else
-                btnLoadHighRes.setVisibility(View.VISIBLE);
+            if (position < pictures.size()) {
+                Picture picture = pictures.get(position);
+                if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
+                    btnLoadHighRes.setVisibility(View.GONE);
+                else
+                    btnLoadHighRes.setVisibility(View.VISIBLE);
+            }
             viewPager.setAdapter(picturePagerAdapter);
             ViewPager.OnPageChangeListener listener = new ViewPager.OnPageChangeListener() {
                 @Override
@@ -288,11 +290,13 @@ public class PictureViewerActivity extends BaseActivity {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
             currPos = linearLayoutManager.findLastVisibleItemPosition();
             tvCount.setText((currPos + 1) + "/" + pictureViewerAdapter.getItemCount());
-            Picture picture = pictures.get(currPos);
-            if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
-                btnLoadHighRes.setVisibility(View.GONE);
-            else
-                btnLoadHighRes.setVisibility(View.VISIBLE);
+            if (currPos < pictures.size()) {
+                Picture picture = (currPos < 0 && pictures.size() > 0) ? pictures.get(0) : pictures.get(currPos);
+                if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
+                    btnLoadHighRes.setVisibility(View.GONE);
+                else
+                    btnLoadHighRes.setVisibility(View.VISIBLE);
+            }
         }
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_picture_exif, null);
         viewHolder = new InfoDialogViewHolder(view);
@@ -366,7 +370,7 @@ public class PictureViewerActivity extends BaseActivity {
                     showSnackBar("图片未加载，请等待");
                     return;
                 }
-                if(picture.loadedHighRes)
+                if (picture.loadedHighRes)
                     viewHolder.iconHighRes.setVisibility(View.VISIBLE);
                 else
                     viewHolder.iconHighRes.setVisibility(View.GONE);

@@ -592,8 +592,8 @@ public class SitePropViewHolder {
     public void fillSitePropEditText(Site site) {
         lastSite = site;
         for (int i = 0; i < siteGroups.size(); i++) {
-            if (siteGroups.get(i).gid == site.gid && i+1 < siteGroups.size()) {
-                inputGroup.setSelection(i+1);
+            if (siteGroups.get(i).gid == site.gid && i + 1 < siteGroups.size()) {
+                inputGroup.setSelection(i + 1);
                 break;
             }
         }
@@ -1010,7 +1010,8 @@ public class SitePropViewHolder {
         }
 
         if (!editSelector) {
-            lastSite.gid = siteGroups.get(inputGroup.getSelectedItemPosition()).gid;
+            int groupPos = inputGroup.getSelectedItemPosition();
+            lastSite.gid = (groupPos >= 0) ? siteGroups.get(groupPos).gid : 0;
             lastSite.title = loadString(inputTitle);
             lastSite.indexUrl = loadString(inputIndexUrl);
             lastSite.galleryUrl = loadString(inputGalleryUrl);

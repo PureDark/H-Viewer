@@ -2,20 +2,17 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -68,14 +65,12 @@ import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.beans.Tag;
-import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.AbstractTagHolder;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
 import ml.puredark.hviewer.download.DownloadManager;
-import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -95,9 +90,9 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
+import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_DOWNLOAD_PATH;
 
 
 public class MainActivity extends BaseActivity {
@@ -200,11 +195,9 @@ public class MainActivity extends BaseActivity {
         }
 
         //获取存储权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            String downloadPath = DownloadManager.getDownloadPath();
-            if (!downloadPath.startsWith("content://")) {
-                initSetDefultDownloadPath();
-            }
+        String downloadPath = DownloadManager.getDownloadPath();
+        if (!downloadPath.startsWith("content://")) {
+            initSetDefultDownloadPath();
         }
 
         final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true, null);
@@ -935,11 +928,21 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initSetDefultDownloadPath() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            StorageManager sm = (StorageManager) getSystemService(mContext.STORAGE_SERVICE);
-            StorageVolume volume = sm.getPrimaryStorageVolume();
-            Intent intent = volume.createAccessIntent(Environment.DIRECTORY_PICTURES);
-            startActivityForResult(intent, RESULT_RDSQ);
+        //下载路径
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            new AlertDialog.Builder(this)
+                    .setTitle("请选择默认下载目录")
+                    .setMessage("需要手动选择目录以获取读写权限")
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                        try {
+                            startActivityForResult(intent, RESULT_RDSQ);
+                        } catch (ActivityNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }).setCancelable(false)
+                    .show();
         }
     }
 
@@ -989,7 +992,7 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.fab_search)
     void search() {
-        if(!searchView.isSearchOpen()) {
+        if (!searchView.isSearchOpen()) {
             setAnimating(true);
             searchView.showSearch();
             new Handler().postDelayed(() -> setAnimating(false), 500);
@@ -1034,16 +1037,18 @@ public class MainActivity extends BaseActivity {
                 siteAdapter.getDataProvider().setDataSet(siteHolder.getSites());
                 siteAdapter.notifyDataSetChanged();
             } else if (requestCode == RESULT_RDSQ) {
-                DocumentFile file = FileHelper.createDirIfNotExist(data.getData().toString(), Names.appdirname);
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        this.getContentResolver().takePersistableUriPermission(
-                                file.getUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                Uri uriTree = data.getData();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    try {
+                        getContentResolver().takePersistableUriPermission(
+                                uriTree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
                     }
-                } catch (SecurityException e) {
-                    e.printStackTrace();
                 }
-                SharedPreferencesUtil.saveData(this, SettingFragment.KEY_PREF_DOWNLOAD_PATH, file.getUri().toString());
+                String path = uriTree.toString();
+                String displayPath = Uri.decode(path);
+                SharedPreferencesUtil.saveData(this, KEY_PREF_DOWNLOAD_PATH, path);
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == RESULT_RDSQ) {
