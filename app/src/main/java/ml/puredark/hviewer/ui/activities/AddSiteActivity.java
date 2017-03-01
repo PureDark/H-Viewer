@@ -130,6 +130,10 @@ public class AddSiteActivity extends BaseActivity {
             showSnackBar("规则缺少必要参数，请检查");
             return;
         }
+        if (newSite.gid == 0) {
+            showSnackBar("请选择一个分类，如无请先创建分类");
+            return;
+        }
 
         int sid = siteHolder.addSite(newSite);
         if(sid<0){

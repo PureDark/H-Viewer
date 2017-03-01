@@ -223,6 +223,10 @@ public class ModifySiteActivity extends BaseActivity {
             showSnackBar("规则缺少必要参数，请检查");
             return;
         }
+        if (newSite.gid == 0) {
+            showSnackBar("请选择一个分类，如无请先创建分类");
+            return;
+        }
         
         newSite.sid = site.sid;
         newSite.index = site.index;
