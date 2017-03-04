@@ -2,10 +2,9 @@ package ml.puredark.hviewer.beans;
 
 import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 
+import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_WAITING;
+
 public class Picture extends AbstractDataProvider.Data {
-    public final static int STATUS_WAITING = 1;
-    public final static int STATUS_DOWNLOADING = 2;
-    public final static int STATUS_DOWNLOADED = 3;
     public int pid;
     public String thumbnail, url, pic, highRes;
     public int retries;

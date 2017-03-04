@@ -3,14 +3,11 @@ package ml.puredark.hviewer.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
-import android.util.Log;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.regex.Pattern;
-
-import ml.puredark.hviewer.helpers.Logger;
 
 /**
  * Created by PureDark on 2016/9/24.
@@ -181,13 +178,34 @@ public class DocumentUtil {
         return false;
     }
 
+    public static boolean writeFromInputStream(Context context, InputStream inStream, DocumentFile file) {
+        return writeFromInputStream(context, inStream, file.getUri());
+    }
+
+    public static boolean writeFromInputStream(Context context, InputStream inStream, Uri fileUri) {
+        try {
+            OutputStream out = context.getContentResolver().openOutputStream(fileUri);
+            int byteread;
+            byte[] buffer = new byte[1024];
+            while ((byteread = inStream.read(buffer)) > 0) {
+                out.write(buffer, 0, byteread);
+            }
+            inStream.close();
+            out.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     public static byte[] readBytes(Context context, String fileName, String rootPath, String... subDirs) {
         DocumentFile parent = getDirDocument(context, rootPath, subDirs);
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
-        if(file==null)
+        if (file == null)
             return null;
         return readBytes(context, file.getUri());
     }
@@ -198,7 +216,7 @@ public class DocumentUtil {
             return null;
         fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
-        if(file==null)
+        if (file == null)
             return null;
         return readBytes(context, file.getUri());
     }
@@ -209,13 +227,13 @@ public class DocumentUtil {
             return null;
         fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
-        if(file==null)
+        if (file == null)
             return null;
         return readBytes(context, file.getUri());
     }
 
     public static byte[] readBytes(Context context, DocumentFile file) {
-        if(file==null)
+        if (file == null)
             return null;
         return readBytes(context, file.getUri());
     }

@@ -336,20 +336,20 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     }
 
     private void openPictureViewerActivity(int position) {
-        HViewerApplication.temp = CollectionActivity.this;
+        HViewerApplication.temp = this;
         HViewerApplication.temp2 = site;
         HViewerApplication.temp3 = collection;
         List<Picture> pictures = new ArrayList<>();
         pictures.addAll(pictureVideoAdapter.getPictureDataProvider().getItems());
         HViewerApplication.temp4 = pictures;
-        Intent intent = new Intent(CollectionActivity.this, PictureViewerActivity.class);
+        Intent intent = new Intent(this, PictureViewerActivity.class);
         intent.putExtra("position", position);
         startActivity(intent);
     }
 
     private void openVideoViewerActivity(int position) {
         HViewerApplication.temp = pictureVideoAdapter.getVideoDataProvider().getItem(position - pictureVideoAdapter.getPictureSize());
-        Intent intent = new Intent(CollectionActivity.this, VideoViewerActivity.class);
+        Intent intent = new Intent(this, VideoViewerActivity.class);
         startActivity(intent);
     }
 
@@ -397,8 +397,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         collection.rating = myCollection.rating;
         collection.datetime = myCollection.datetime;
         collection.description = myCollection.description;
-        if (myCollection.videos != null && myCollection.videos.size() > 0)
-            fabDownload.setVisibility(View.GONE);
+//        if (myCollection.videos != null && myCollection.videos.size() > 0)
+//            fabDownload.setVisibility(View.GONE);
     }
 
     private void getCollectionDetail(final int page) {

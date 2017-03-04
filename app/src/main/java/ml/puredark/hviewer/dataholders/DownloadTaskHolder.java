@@ -10,11 +10,13 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.DownloadTask;
-import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.helpers.FileHelper;
+
+import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_DOWNLOADING;
+import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_WAITING;
 
 /**
  * Created by PureDark on 2016/8/12.
@@ -31,14 +33,14 @@ public class DownloadTaskHolder {
     }
 
     public void saveDownloadTasks() {
-        if(downloadTasks==null)
+        if (downloadTasks == null)
             return;
         for (DownloadTask item : downloadTasks) {
             updateDownloadTasks(item);
         }
     }
 
-    public void updateDownloadTasks(DownloadTask item){
+    public void updateDownloadTasks(DownloadTask item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("idCode", item.collection.idCode);
         contentValues.put("title", item.collection.title);
@@ -73,8 +75,8 @@ public class DownloadTaskHolder {
         return maxId;
     }
 
-    public List<DownloadTask> getDownloadTasks(){
-        if(downloadTasks==null)
+    public List<DownloadTask> getDownloadTasks() {
+        if (downloadTasks == null)
             downloadTasks = getDownloadTasksFromDB();
         return downloadTasks;
     }
@@ -97,7 +99,7 @@ public class DownloadTaskHolder {
         return downloadTasks;
     }
 
-    public int scanPathForDownloadTask(String rootPath, String... subDirs){
+    public int scanPathForDownloadTask(String rootPath, String... subDirs) {
         getDownloadTasks();
         try {
             DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
@@ -110,7 +112,7 @@ public class DownloadTaskHolder {
                         String detail = FileHelper.readString(file);
                         DownloadTask task = new Gson().fromJson(detail, DownloadTask.class);
                         task.status = DownloadTask.STATUS_COMPLETED;
-                        if(!isInList(task)){
+                        if (!isInList(task)) {
                             count++;
                             addDownloadTask(task);
                         }
@@ -118,7 +120,7 @@ public class DownloadTaskHolder {
                 }
             }
             return count;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }
@@ -134,15 +136,24 @@ public class DownloadTaskHolder {
     }
 
     public void setAllPaused() {
-        if(downloadTasks==null)
+        if (downloadTasks == null)
             return;
         for (DownloadTask task : downloadTasks) {
-            if (task.status == DownloadTask.STATUS_DOWNLOADING) {
+            if (task.status == DownloadTask.STATUS_GETTING) {
                 task.status = DownloadTask.STATUS_PAUSED;
             }
-            for (Picture picture : task.collection.pictures) {
-                if (picture.status == Picture.STATUS_DOWNLOADING) {
-                    picture.status = Picture.STATUS_WAITING;
+            if (task.collection.pictures != null) {
+                for (Picture picture : task.collection.pictures) {
+                    if (picture.status == STATUS_DOWNLOADING) {
+                        picture.status = STATUS_WAITING;
+                    }
+                }
+            }
+            if (task.collection.videos != null) {
+                for (Video video : task.collection.videos) {
+                    if (video.status == STATUS_DOWNLOADING) {
+                        video.status = STATUS_WAITING;
+                    }
                 }
             }
         }

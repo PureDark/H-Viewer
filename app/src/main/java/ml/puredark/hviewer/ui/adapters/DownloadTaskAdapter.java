@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.Comment;
+import ml.puredark.hviewer.beans.DownloadItemStatus;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.beans.Video;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
@@ -67,8 +69,22 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             holder.tvCategory.setText(task.collection.category);
             holder.rbRating.setRating(task.collection.rating);
             holder.tvSubmittime.setText(task.collection.datetime);
-            holder.tvCount.setText(task.getDownloadedPictureCount() + "/" + task.collection.pictures.size());
-            int percent = Math.round(((float) task.getDownloadedPictureCount() * 100 / task.collection.pictures.size()));
+            int percent = 0;
+            if (task.collection.videos != null && task.collection.videos.size() > 0) {
+                for(Video video : task.collection.videos){
+                    if(video.status == DownloadItemStatus.STATUS_DOWNLOADING){
+                        percent = video.percent;
+                        break;
+                    } else if(video.status == DownloadItemStatus.STATUS_WAITING && percent == 0){
+                        percent = video.percent;
+                    }
+                }
+                holder.tvCount.setText(task.getDownloadedVideoCount() + "/" + task.collection.videos.size());
+            } else {
+                int size = task.collection.pictures.size();
+                holder.tvCount.setText(task.getDownloadedPictureCount() + "/" + size);
+                percent = Math.round(((float) task.getDownloadedPictureCount() * 100 / size));
+            }
             holder.tvPercentage.setText(percent + "%");
             holder.progressBar.setProgress(percent);
             int resID = R.drawable.ic_play_arrow_primary_dark;
@@ -76,7 +92,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
                 case DownloadTask.STATUS_PAUSED:
                     resID = R.drawable.ic_play_arrow_primary_dark;
                     break;
-                case DownloadTask.STATUS_DOWNLOADING:
+                case DownloadTask.STATUS_GETTING:
                     resID = R.drawable.ic_pause_primary_dark;
                     break;
                 case DownloadTask.STATUS_IN_QUEUE:
@@ -91,7 +107,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             holder.tvUploader.setText(task.collection.uploader);
             holder.tvCategory.setText(task.collection.category);
             CollectionTagAdapter adapter = (CollectionTagAdapter) holder.rvTags.getAdapter();
-            if(adapter!=null) {
+            if (adapter != null) {
                 adapter.getDataProvider().clear();
                 if (task.collection.tags != null)
                     adapter.getDataProvider().addAll(task.collection.tags);
@@ -203,13 +219,13 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
-                    &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
+                    && mItemClickListener.onItemLongClick(v, getAdapterPosition()));
             rippleLayout.setOnClickListener(v -> {
                 if (mItemClickListener != null && getAdapterPosition() >= 0)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
-                    &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
+                    && mItemClickListener.onItemLongClick(v, getAdapterPosition()));
         }
 
     }
@@ -230,9 +246,9 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             view.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()
-                    &&  mItemClickListener.onItemLongClick(v, getAdapterPosition()));
+                    && mItemClickListener.onItemLongClick(v, getAdapterPosition()));
             rippleLayout.setOnClickListener(v -> {
-                if (mItemClickListener != null  && getAdapterPosition() >= 0)
+                if (mItemClickListener != null && getAdapterPosition() >= 0)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
             rippleLayout.setOnLongClickListener(v -> mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount()

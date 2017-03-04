@@ -11,6 +11,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +24,7 @@ import ml.puredark.hviewer.helpers.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -34,6 +37,40 @@ public class HViewerHttpClient {
             .readTimeout(60, TimeUnit.SECONDS)
             .dns(new HttpDns())
             .build();
+
+    public static MediaType getContentType(String url, List<Pair<String, String>> headers){
+        Response response = getResponseHeader(url, headers);
+        return response.body().contentType();
+    }
+
+    public static long getContentLength(String url, List<Pair<String, String>> headers){
+        Response response = getResponseHeader(url, headers);
+        return response.body().contentLength();
+    }
+
+    public static Response getResponseHeader(String url, List<Pair<String, String>> headers){
+        HRequestBuilder builder = new HRequestBuilder();
+        if (headers != null) {
+            for (Pair<String, String> header : headers) {
+                builder.addHeader(header.first, header.second);
+            }
+        }
+        Request request = builder
+                .url(url)
+                .head()
+                .build();
+        Response response = null;
+        try {
+            response = mClient.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (response!=null) {
+                response.close();
+            }
+        }
+        return response;
+    }
 
     public static Object get(String url, List<Pair<String, String>> headers) {
         if (url == null || !url.startsWith("http")) {

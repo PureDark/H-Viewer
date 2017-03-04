@@ -152,6 +152,7 @@ public class MainActivity extends BaseActivity {
     private SiteHolder siteHolder;
     private SiteTagHolder siteTagHolder;
     private FavorTagHolder favorTagHolder;
+    private DownloadTaskHolder downloadTaskHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +214,9 @@ public class MainActivity extends BaseActivity {
             supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, null, ImageRequest.RequestLevel.FULL_FETCH));
             return true;
         });
+
+        downloadTaskHolder = new DownloadTaskHolder(this);
+        downloadTaskHolder.setAllPaused();
 
         initDrawer();
 
@@ -1110,7 +1114,11 @@ public class MainActivity extends BaseActivity {
             favorTagHolder.onDestroy();
         HViewerApplication.searchHistoryHolder.saveSearchHistory();
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
-        new DownloadTaskHolder(this).setAllPaused();
+
+        if (mRecyclerViewDragDropManager != null) {
+            downloadTaskHolder.setAllPaused();
+            downloadTaskHolder = null;
+        }
 
         if (mRecyclerViewDragDropManager != null) {
             mRecyclerViewDragDropManager.release();

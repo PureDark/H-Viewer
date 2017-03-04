@@ -1,10 +1,8 @@
 package ml.puredark.hviewer.ui.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
@@ -15,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,11 +24,9 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.DownloadTask;
-import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.DownloadTaskAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
@@ -102,11 +97,11 @@ public class DownloadActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try{
-            if(manager!=null) {
+        try {
+            if (manager != null) {
                 manager.unbindService(this);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
     }
 
@@ -136,7 +131,7 @@ public class DownloadActivity extends BaseActivity {
             @Override
             public void onItemClick(View v, int position) {
                 DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
-                if (task.status == DownloadTask.STATUS_DOWNLOADING) {
+                if (task.status == DownloadTask.STATUS_GETTING) {
                     manager.pauseDownload();
                 } else if (task.status == DownloadTask.STATUS_IN_QUEUE) {
                     task.status = DownloadTask.STATUS_PAUSED;
@@ -151,14 +146,20 @@ public class DownloadActivity extends BaseActivity {
             @Override
             public boolean onItemLongClick(View v, int position) {
                 final DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
-
+                String[] options = (task.collection.videos != null && task.collection.videos.size() > 0)
+                        ? new String[]{"重新下载", "删除"}
+                        : new String[]{"浏览", "删除"};
                 new AlertDialog.Builder(DownloadActivity.this)
                         .setTitle("操作")
-                        .setItems(new String[]{"浏览", "删除"}, (dialogInterface, i) -> {
+                        .setItems(options, (dialogInterface, i) -> {
                             if (i == 0) {
-                                HViewerApplication.temp = task;
-                                Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
-                                startActivity(intent);
+                                if (task.collection.videos != null && task.collection.videos.size() > 0) {
+                                    manager.restartDownload(task);
+                                } else {
+                                    HViewerApplication.temp = task;
+                                    Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
+                                    startActivity(intent);
+                                }
                             } else if (i == 1) {
                                 View view = LayoutInflater.from(DownloadActivity.this).inflate(R.layout.dialog_delete_confirm, null);
                                 AppCompatCheckBox checkBoxDeleteFile = (AppCompatCheckBox) view.findViewById(R.id.checkbox_delete_file);
@@ -167,9 +168,9 @@ public class DownloadActivity extends BaseActivity {
                                         .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                                             manager.deleteDownloadTask(task);
                                             distinguishDownloadTasks();
-                                            if(checkBoxDeleteFile.isChecked()){
+                                            if (checkBoxDeleteFile.isChecked()) {
                                                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                                                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
                                                 FileHelper.deleteFile(dirName, rootPath);
                                             }
                                         }).setNegativeButton(getString(R.string.cancel), null).show();
@@ -203,9 +204,9 @@ public class DownloadActivity extends BaseActivity {
                         .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                             manager.deleteDownloadTask(task);
                             distinguishDownloadTasks();
-                            if(checkBoxDeleteFile.isChecked()){
+                            if (checkBoxDeleteFile.isChecked()) {
                                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                String dirName = task.path.substring(task.path.lastIndexOf("/")+1, task.path.length());
+                                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
                                 FileHelper.deleteFile(dirName, rootPath);
                             }
                         }).setNegativeButton(getString(R.string.cancel), null).show();
