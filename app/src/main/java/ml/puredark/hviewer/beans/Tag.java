@@ -1,8 +1,10 @@
 package ml.puredark.hviewer.beans;
 
+import java.io.Serializable;
+
 import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 
-public class Tag extends AbstractDataProvider.Data {
+public class Tag extends AbstractDataProvider.Data implements Serializable {
     public int tid;
     public String title = "";
     public String url;

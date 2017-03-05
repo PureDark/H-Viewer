@@ -37,6 +37,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.core.HtmlContentParser;
 import ml.puredark.hviewer.core.RuleParser;
@@ -290,6 +291,16 @@ public class DownloadTaskActivity extends BaseActivity {
             adapter.getDataProvider().clear();
             adapter.getDataProvider().addAll(task.collection.tags);
         }
+        adapter.setOnItemClickListener((v, position) -> {
+            if (task.collection.tags != null) {
+                Tag tag = adapter.getDataProvider().getItem(position);
+                Intent intent = new Intent(DownloadTaskActivity.this, MainActivity.class);
+                intent.setAction("search");
+                intent.putExtra("tag", tag);
+                startActivity(intent);
+                this.finish();
+            }
+        });
         adapter.notifyDataSetChanged();
         holder.rbRating.setRating(task.collection.rating);
         holder.tvSubmittime.setText(task.collection.datetime);

@@ -50,6 +50,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Context context;
     private ListDataProvider<Collection> mProvider;
     private OnItemClickListener mItemClickListener;
+    private CollectionTagAdapter.OnItemClickListener mTagClickListener;
     private Site site;
     private boolean isGrid = false;
     private boolean waterfallAsList = false;
@@ -100,14 +101,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.tvCategory.setText(collection.category);
             if (collection.tags == null) {
                 holder.tvTitle.setMaxLines(2);
-                holder.rvTags.setAdapter(
-                        new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()))
-                );
+                CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()));
+                adapter.setOnItemClickListener(mTagClickListener);
+                holder.rvTags.setAdapter(adapter);
             } else {
                 holder.tvTitle.setMaxLines(1);
-                holder.rvTags.setAdapter(
-                        new CollectionTagAdapter(new ListDataProvider<>(collection.tags))
-                );
+                CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(collection.tags));
+                adapter.setOnItemClickListener(mTagClickListener);
+                holder.rvTags.setAdapter(adapter);
             }
             holder.rbRating.setRating(collection.rating);
             holder.tvSubmittime.setText(collection.datetime);
@@ -272,6 +273,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mItemClickListener = listener;
+    }
+
+    public void setOnTagClickListener(CollectionTagAdapter.OnItemClickListener listener) {
+        this.mTagClickListener = listener;
     }
 
     public void setSite(Site site) {

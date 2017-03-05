@@ -795,7 +795,6 @@ public class MainActivity extends BaseActivity {
                 if (tag.selected)
                     selectedTags.add(tag);
             }
-            EditText editText = (EditText) searchView.getChildAt(0).findViewById(R.id.searchTextView);
             if (selectedTags.size() == 1) {
                 Tag tag = selectedTags.get(0);
                 Site currSite = currFragment.getCurrSite();
@@ -811,7 +810,7 @@ public class MainActivity extends BaseActivity {
                 HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
                 historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
                 historyTagAdapter.notifyDataSetChanged();
-                editText.setText(tag.title);
+                search(tag.title, false);
                 new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
             } else if (selectedTags.size() > 1) {
                 String keyword = "";
@@ -824,7 +823,7 @@ public class MainActivity extends BaseActivity {
                 currFragment.onSearch(keyword);
                 historyTagAdapter.getDataProvider().setDataSet(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag());
                 historyTagAdapter.notifyDataSetChanged();
-                editText.setText(keyword);
+                search(keyword, true);
                 new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
             }
         }
@@ -1024,6 +1023,44 @@ public class MainActivity extends BaseActivity {
             searchView.clearFocus();
         }
         appBar.setExpanded(false);
+    }
+
+    public void search(String keyword, boolean doSearch){
+        if (!searchView.isSearchOpen()) {
+            setAnimating(true);
+            searchView.showSearch();
+            new Handler().postDelayed(() -> setAnimating(false), 500);
+            searchView.clearFocus();
+        }
+        appBar.setExpanded(false);
+        EditText editText = (EditText) searchView.getChildAt(0).findViewById(R.id.searchTextView);
+        editText.setText(keyword);
+
+        if(doSearch && currFragment != null)
+            currFragment.onSearch(keyword);
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent){
+        if("search".equals(intent.getAction())){
+            Tag tag = (Tag) intent.getSerializableExtra("tag");
+            Site currSite = currFragment.getCurrSite();
+            if (tag.url != null && currSite != null) {
+                String domin1 = RegexValidateUtil.getDominFromUrl(tag.url);
+                String domin2 = RegexValidateUtil.getDominFromUrl(currSite.indexUrl);
+                if (domin1.equals(domin2)) {
+                    currFragment.onLoadUrl(tag.url);
+                } else
+                    currFragment.onSearch(tag.title);
+            } else
+                currFragment.onSearch(tag.title);
+            HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
+            historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
+            historyTagAdapter.notifyDataSetChanged();
+            search(tag.title, false);
+            new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
+        }
     }
 
     @Override

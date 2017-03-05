@@ -14,6 +14,7 @@ import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
 public class CollectionTagAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ListDataProvider<Tag> mProvider;
+    private OnItemClickListener mItemClickListener;
 
     public CollectionTagAdapter(ListDataProvider<Tag> mProvider) {
         this.mProvider = mProvider;
@@ -52,12 +53,21 @@ public class CollectionTagAdapter extends RecyclerView.Adapter<RecyclerView.View
         return 0;
     }
 
-    public ListDataProvider getDataProvider() {
+    public ListDataProvider<Tag> getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(ListDataProvider mProvider) {
+    public void setDataProvider(ListDataProvider<Tag> mProvider) {
         this.mProvider = mProvider;
+    }
+
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
     }
 
     public class TagViewHolder extends RecyclerView.ViewHolder {
@@ -67,6 +77,11 @@ public class CollectionTagAdapter extends RecyclerView.Adapter<RecyclerView.View
         public TagViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+
+            view.setOnClickListener(v -> {
+                if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
+                    mItemClickListener.onItemClick(v, getAdapterPosition());
+            });
         }
     }
 }

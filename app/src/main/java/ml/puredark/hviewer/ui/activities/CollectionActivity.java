@@ -384,6 +384,16 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             }
             adapter.getDataProvider().addAll(myCollection.tags);
             adapter.notifyItemRangeChanged(0, myCollection.tags.size());
+            adapter.setOnItemClickListener((v, position) -> {
+                if (myCollection.tags != null) {
+                    Tag tag = adapter.getDataProvider().getItem(position);
+                    Intent intent = new Intent(CollectionActivity.this, MainActivity.class);
+                    intent.setAction("search");
+                    intent.putExtra("tag", tag);
+                    startActivity(intent);
+                    this.finish();
+                }
+            });
         }
         holder.rbRating.setRating(myCollection.rating);
         Logger.d("CollectionActivity", "myCollection.rating:" + myCollection.rating);
