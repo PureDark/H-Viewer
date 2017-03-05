@@ -5,6 +5,7 @@ package com.sina.util.dnscache.cache;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 
 import com.sina.util.dnscache.model.DomainModel;
 import com.sina.util.dnscache.model.HttpDnsPack;
@@ -137,7 +138,11 @@ public class DnsCacheManager extends DNSCacheDatabaseHelper implements IDnsCache
 
         if( domainModel != null && domainModel.ipModelArr != null && domainModel.ipModelArr.size() > 0){
 	        // 插入数据库
-	        domainModel = super.addDomainModel(dnsPack.domain,dnsPack.localhostSp,domainModel) ;
+            try {
+                domainModel = super.addDomainModel(dnsPack.domain, dnsPack.localhostSp, domainModel);
+            }catch (SQLiteDatabaseLockedException e){
+                e.printStackTrace();
+            }
 	        // 插入内存缓存
 	        addMemoryCache( domainModel.domain, domainModel );
         }

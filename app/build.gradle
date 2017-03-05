@@ -43,6 +43,9 @@ android {
         wandoujia {}
         coolapk {}
         github {}
+        googleplay {
+            applicationIdSuffix '.googleplay'
+        }
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
         }

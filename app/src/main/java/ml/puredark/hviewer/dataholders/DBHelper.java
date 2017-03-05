@@ -71,14 +71,14 @@ public class DBHelper {
         if (mSqliteHelper == null) {
             return;
         }
-        mSqliteHelper.getReadableDatabase().execSQL(sql);
+        mSqliteHelper.getWritableDatabase().execSQL(sql);
     }
 
     public synchronized void nonQuery(String sql, String... args) {
         if (mSqliteHelper == null) {
             return;
         }
-        mSqliteHelper.getReadableDatabase().execSQL(sql, args);
+        mSqliteHelper.getWritableDatabase().execSQL(sql, args);
     }
 
     public synchronized int delete(String table, String whereClause,
@@ -86,7 +86,7 @@ public class DBHelper {
         if (mSqliteHelper == null) {
             return -1;
         }
-        return mSqliteHelper.getReadableDatabase().delete(table, whereClause,
+        return mSqliteHelper.getWritableDatabase().delete(table, whereClause,
                 whereArgs);
     }
 
