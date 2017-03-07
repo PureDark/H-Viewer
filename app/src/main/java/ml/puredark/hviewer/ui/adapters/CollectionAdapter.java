@@ -139,15 +139,15 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             waterfallCheckTextView(holder.tvUploader, collection.uploader);
             waterfallCheckTextView(holder.tvCategory, collection.category);
             waterfallCheckTextView(holder.tvSubmittime, collection.datetime);
-            int originHeight = (storedHeights.get(collection) != null)
-                    ? storedHeights.get(collection)
-                    : DensityUtil.dp2px(context, 215);
-            holder.ivCover.getLayoutParams().height = originHeight;
-            holder.ivIcon.getLayoutParams().height = originHeight;
-            holder.tvDescription.getLayoutParams().height = originHeight;
-            holder.ivCover.requestLayout();
-            holder.ivIcon.requestLayout();
-            holder.tvDescription.requestLayout();
+            int originHeight;
+            if(storedHeights.get(collection) != null){
+                 originHeight = storedHeights.get(collection);
+                holder.ivCover.getLayoutParams().height = originHeight;
+                holder.ivIcon.getLayoutParams().height = originHeight;
+                holder.tvDescription.getLayoutParams().height = originHeight;
+                holder.ivCover.requestLayout();
+                holder.ivIcon.requestLayout();
+            }
             if (TextUtils.isEmpty(collection.cover)) {
                 holder.ivIcon.setVisibility(View.GONE);
                 holder.ivCover.setVisibility(View.GONE);
@@ -169,6 +169,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void onSubmit(String id, Object callerContext) {
                         super.onSubmit(id, callerContext);
+                        holder.itemView.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -181,10 +182,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             final float factor = (float) imageInfo.getHeight() / imageInfo.getWidth();
                             final int originWidth = holder.ivCover.getWidth();
                             final int originHeight = (int) (factor * originWidth);
-                            holder.ivCover.getLayoutParams().height = originHeight;
-                            holder.ivIcon.getLayoutParams().height = originHeight;
-                            holder.ivCover.requestLayout();
-                            holder.ivIcon.requestLayout();
+                            holder.itemView.setVisibility(View.VISIBLE);
+                            if(holder.ivCover.getLayoutParams().height!=originHeight) {
+                                holder.ivCover.getLayoutParams().height = originHeight;
+                                holder.ivIcon.getLayoutParams().height = originHeight;
+                                holder.ivCover.requestLayout();
+                                holder.ivIcon.requestLayout();
+                            }
                             storedHeights.put(collection, originHeight);
                         });
                     }
@@ -196,6 +200,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void onFailure(String id, Throwable throwable) {
                         FLog.e(getClass(), throwable, "Error loading %s", id);
+                        holder.itemView.setVisibility(View.VISIBLE);
+                        holder.itemView.requestLayout();
                     }
                 });
                 if (site != null) {

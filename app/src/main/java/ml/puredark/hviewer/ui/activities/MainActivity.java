@@ -91,6 +91,7 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static android.R.attr.data;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_FIRST_TIME;
@@ -1026,13 +1027,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void search(String keyword, boolean doSearch){
-        if (!searchView.isSearchOpen()) {
-            setAnimating(true);
-            searchView.showSearch();
-            new Handler().postDelayed(() -> setAnimating(false), 500);
-            searchView.clearFocus();
-        }
-        appBar.setExpanded(false);
+        search();
         EditText editText = (EditText) searchView.getChildAt(0).findViewById(R.id.searchTextView);
         editText.setText(keyword);
 
