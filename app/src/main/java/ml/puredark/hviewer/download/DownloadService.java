@@ -250,8 +250,10 @@ public class DownloadService extends Service {
                                         Logger.d("DownloadService", "videoUrl=" + videoUrl);
                                         Logger.d("DownloadService", "size=" + size);
                                     }
-                                    if (realUrl == null)
+                                    if (realUrl == null) {
                                         onFailure(null);
+                                        return;
+                                    }
                                     video.vlink = realUrl;
                                     Logger.d("DownloadService", "realUrl=" + realUrl);
                                     loadVideo(video, task);

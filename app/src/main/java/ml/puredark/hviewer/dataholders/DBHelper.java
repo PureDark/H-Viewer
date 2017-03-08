@@ -150,7 +150,7 @@ public class DBHelper {
                 db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer, `gid` integer)");
                 db.execSQL("CREATE TABLE `favGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
                 db.execSQL("INSERT INTO `favGroups` VALUES(1, \"未分类\", 1);");
-                db.execSQL("INSERT INTO `favourites` SELECT `fid`, `idCode`, `title`, `referer`, `json`, `index`, 1 AS `gid` FROM `_temp_favourites`;");
+                db.execSQL("INSERT INTO `favourites` SELECT `fid`, `idCode`, `title`, `referer`, `json`, 0 AS `index`, 1 AS `gid` FROM `_temp_favourites`;");
                 db.execSQL("DROP TABLE `_temp_favourites`;");
             }
         }

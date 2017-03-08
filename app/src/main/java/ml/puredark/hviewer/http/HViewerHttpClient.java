@@ -55,12 +55,12 @@ public class HViewerHttpClient {
                 builder.addHeader(header.first, header.second);
             }
         }
-        Request request = builder
-                .url(url)
-                .head()
-                .build();
         Response response = null;
         try {
+            Request request = builder
+                    .url(url)
+                    .head()
+                    .build();
             response = mClient.newCall(request).execute();
         } catch (IOException e) {
             e.printStackTrace();

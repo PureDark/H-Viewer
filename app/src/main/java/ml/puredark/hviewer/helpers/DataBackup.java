@@ -26,10 +26,15 @@ public class DataBackup {
     private SiteHolder siteHolder;
 
     public String DoBackup() {
-        String settingBackup = SettingBackup();
-        String siteBackup = SiteBackup();
-        String favouriteBackup = FavouriteBackup();
-        return settingBackup + " " + siteBackup + " " + favouriteBackup;
+        try {
+            String settingBackup = SettingBackup();
+            String siteBackup = SiteBackup();
+            String favouriteBackup = FavouriteBackup();
+            return settingBackup + " " + siteBackup + " " + favouriteBackup;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "备份失败，请检查下载目录是否正确设置";
+        }
     }
 
     public String SiteBackup() {
