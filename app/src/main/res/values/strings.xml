@@ -71,6 +71,7 @@
     <string name="settings_about">关于</string>
     <string name="settings_about_upgrade">检查更新</string>
     <string name="settings_about_license">开源协议</string>
+    <string name="settings_about_privacy">隐私权政策</string>
     <string name="settings_about_h_viewer">关于H-Viewer</string>
 
     <string name="settings_bk_rs">备份恢复</string>

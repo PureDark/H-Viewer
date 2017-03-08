@@ -84,6 +84,9 @@
             android:name=".ui.activities.LicenseActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activities.PrivacyActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activities.LoginActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ui.activities.MarketActivity" />

@@ -165,6 +165,9 @@
             android:key="pref_about_license"
             android:title="@string/settings_about_license" />
         <Preference
+            android:key="pref_about_privacy"
+            android:title="@string/settings_about_privacy" />
+        <Preference
             android:key="pref_about_h_viewer"
             android:title="@string/settings_about_h_viewer" />
     </PreferenceCategory>

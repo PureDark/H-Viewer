@@ -59,6 +59,7 @@ import ml.puredark.hviewer.ui.activities.LoginActivity;
 import ml.puredark.hviewer.ui.activities.MainActivity;
 import ml.puredark.hviewer.ui.activities.ModifySiteActivity;
 import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
+import ml.puredark.hviewer.ui.activities.PrivacyActivity;
 import ml.puredark.hviewer.ui.customs.LongClickPreference;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
@@ -108,6 +109,7 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
     public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
+    public static final String KEY_PREF_ABOUT_PRIVACY = "pref_about_privacy";
     public static final String KEY_PREF_ABOUT_H_VIEWER = "pref_about_h_viewer";
 
     public static final String KEY_PREF_MODE_R18_ENABLED = "pref_mode_r18_enabled";
@@ -259,6 +261,10 @@ public class SettingFragment extends PreferenceFragment
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_LICENSE)) {
             //开源协议
             Intent intent = new Intent(activity, LicenseActivity.class);
+            startActivity(intent);
+        } else if (preference.getKey().equals(KEY_PREF_ABOUT_PRIVACY)) {
+            //隐私权政策
+            Intent intent = new Intent(activity, PrivacyActivity.class);
             startActivity(intent);
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_H_VIEWER)) {
             //关于
