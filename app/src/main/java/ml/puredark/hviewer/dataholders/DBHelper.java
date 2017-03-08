@@ -17,7 +17,7 @@ public class DBHelper {
 
     public synchronized void open(Context context) {
         close();
-        mSqliteHelper = new SQLiteHelper(context, dbName, null, 5);
+        mSqliteHelper = new SQLiteHelper(context, dbName, null, 6);
     }
 
     public synchronized void insert(String sql) {
@@ -110,7 +110,8 @@ public class DBHelper {
             db.execSQL("CREATE TABLE `sites`(`sid` integer primary key autoincrement, `title`, `indexUrl`, `galleryUrl`, `json` text, `index` integer, `gid` integer)");
             db.execSQL("CREATE TABLE `siteGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
             db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
-            db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
+            db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer, `gid` integer)");
+            db.execSQL("CREATE TABLE `favGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
             db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
             db.execSQL("CREATE TABLE `searchSuggestions`(`title` text primary key)");
             db.execSQL("CREATE TABLE `siteTags`(`sid` integer, `title` text, `url` text, FOREIGN KEY(`sid`) REFERENCES `sites`(`sid`), PRIMARY KEY(`sid`,`title`))");
@@ -120,36 +121,8 @@ public class DBHelper {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Logger.d("SQLiteHelper", "onUpgrade: oldVersion=" + oldVersion + " newVersion=" + newVersion);
-            if (oldVersion == 1 && newVersion == 2) {
-                upgrade(db, 1, 2);
-            } else if (oldVersion == 1 && newVersion == 3) {
-                upgrade(db, 1, 2);
-                upgrade(db, 2, 3);
-            } else if (oldVersion == 2 && newVersion == 3) {
-                upgrade(db, 2, 3);
-            } else if (oldVersion == 1 && newVersion == 4) {
-                upgrade(db, 1, 2);
-                upgrade(db, 2, 3);
-                upgrade(db, 3, 4);
-            } else if (oldVersion == 2 && newVersion == 4) {
-                upgrade(db, 2, 3);
-                upgrade(db, 3, 4);
-            } else if (oldVersion == 3 && newVersion == 4) {
-                upgrade(db, 3, 4);
-            } else if (oldVersion == 1 && newVersion == 5) {
-                upgrade(db, 1, 2);
-                upgrade(db, 2, 3);
-                upgrade(db, 3, 4);
-                upgrade(db, 4, 5);
-            } else if (oldVersion == 2 && newVersion == 5) {
-                upgrade(db, 2, 3);
-                upgrade(db, 3, 4);
-                upgrade(db, 4, 5);
-            } else if (oldVersion == 3 && newVersion == 5) {
-                upgrade(db, 3, 4);
-                upgrade(db, 4, 5);
-            } else if (oldVersion == 4 && newVersion == 5) {
-                upgrade(db, 4, 5);
+            for(int currVer = oldVersion; currVer < newVersion; currVer++){
+                upgrade(db, currVer, currVer+1);
             }
         }
 
@@ -172,6 +145,13 @@ public class DBHelper {
             } else if (oldVersion == 4 && newVersion == 5) {
                 db.execSQL("CREATE TABLE `siteTags`(`sid` integer, `title` text, `url` text, FOREIGN KEY(`sid`) REFERENCES `sites`(`sid`), PRIMARY KEY(`sid`,`title`))");
                 db.execSQL("CREATE TABLE `favorSiteTags`(`tid` integer primary key autoincrement, `title` text, `url` text, `index` integer)");
+            } else if (oldVersion == 5 && newVersion == 6) {
+                db.execSQL("ALTER TABLE `favourites` RENAME TO `_temp_favourites`;");
+                db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer, `gid` integer)");
+                db.execSQL("CREATE TABLE `favGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
+                db.execSQL("INSERT INTO `favGroups` VALUES(1, \"未分类\", 1);");
+                db.execSQL("INSERT INTO `favourites` SELECT `fid`, `idCode`, `title`, `referer`, `json`, `index`, 1 AS `gid` FROM `_temp_favourites`;");
+                db.execSQL("DROP TABLE `_temp_favourites`;");
             }
         }
 

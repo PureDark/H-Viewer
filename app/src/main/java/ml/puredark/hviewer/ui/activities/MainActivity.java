@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,7 +70,6 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
-import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -91,7 +89,6 @@ import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.R.attr.data;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_FIRST_TIME;
@@ -199,7 +196,7 @@ public class MainActivity extends BaseActivity {
         }
 
         //获取存储权限
-        if ((boolean)SharedPreferencesUtil.getData(this, KEY_FIRST_TIME, true)) {
+        if ((boolean) SharedPreferencesUtil.getData(this, KEY_FIRST_TIME, true)) {
             initSetDefultDownloadPath();
         }
 
@@ -287,8 +284,9 @@ public class MainActivity extends BaseActivity {
 
         // drag & drop manager
         mRecyclerViewDragDropManager = new RecyclerViewDragDropManager();
-        mRecyclerViewDragDropManager.setInitiateOnMove(true);
+        mRecyclerViewDragDropManager.setInitiateOnMove(false);
         mRecyclerViewDragDropManager.setInitiateOnTouch(false);
+        mRecyclerViewDragDropManager.setInitiateOnLongPress(true);
 
         siteAdapter = new SiteAdapter(dataProvider);
 
@@ -360,6 +358,8 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public boolean onGroupLongClick(View v, final int groupPosition) {
+                if(mRecyclerViewDragDropManager.isDragging())
+                    return true;
                 // 分类上长按，选择操作
                 final SiteGroup group = siteAdapter.getDataProvider().getGroupItem(groupPosition);
                 new AlertDialog.Builder(MainActivity.this)
@@ -947,6 +947,10 @@ public class MainActivity extends BaseActivity {
         MenuItem item = menu.findItem(R.id.action_search);
         //一开始隐藏搜索按钮
         item.setVisible(false);
+        if (menu.size() > 1)
+            menu.getItem(menu.size() - 1).setVisible(false);
+        if (menu.size() > 2)
+            menu.getItem(menu.size() - 2).setVisible(false);
 
         return true;
     }
@@ -1026,19 +1030,19 @@ public class MainActivity extends BaseActivity {
         appBar.setExpanded(false);
     }
 
-    public void search(String keyword, boolean doSearch){
+    public void search(String keyword, boolean doSearch) {
         search();
         EditText editText = (EditText) searchView.getChildAt(0).findViewById(R.id.searchTextView);
         editText.setText(keyword);
 
-        if(doSearch && currFragment != null)
+        if (doSearch && currFragment != null)
             currFragment.onSearch(keyword);
 
     }
 
     @Override
-    protected void onNewIntent(Intent intent){
-        if("search".equals(intent.getAction())){
+    protected void onNewIntent(Intent intent) {
+        if ("search".equals(intent.getAction())) {
             Tag tag = (Tag) intent.getSerializableExtra("tag");
             Site currSite = currFragment.getCurrSite();
             if (tag.url != null && currSite != null) {

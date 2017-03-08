@@ -16,8 +16,10 @@
 
 package ml.puredark.hviewer.libraries.advrecyclerview.common.data;
 
+import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
+
 public abstract class AbstractExpandableDataProvider<G extends AbstractExpandableDataProvider.GroupData, C extends AbstractExpandableDataProvider.ChildData> {
-    public static abstract class BaseData {
+    public static abstract class BaseData extends AbstractDataProvider.Data{
         public abstract String getText();
     }
 

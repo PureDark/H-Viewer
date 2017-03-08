@@ -93,48 +93,48 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public void onBindChildViewHolder(final SiteViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
-            Site site = mProvider.getChildItem(groupPosition, childPosition);
-            int rID = R.drawable.ic_filter_9_plus_black;
-            switch (childPosition) {
-                case 0:
-                    rID = R.drawable.ic_filter_1_black;
-                    break;
-                case 1:
-                    rID = R.drawable.ic_filter_2_black;
-                    break;
-                case 2:
-                    rID = R.drawable.ic_filter_3_black;
-                    break;
-                case 3:
-                    rID = R.drawable.ic_filter_4_black;
-                    break;
-                case 4:
-                    rID = R.drawable.ic_filter_5_black;
-                    break;
-                case 5:
-                    rID = R.drawable.ic_filter_6_black;
-                    break;
-                case 6:
-                    rID = R.drawable.ic_filter_7_black;
-                    break;
-                case 7:
-                    rID = R.drawable.ic_filter_8_black;
-                    break;
-                case 8:
-                    rID = R.drawable.ic_filter_9_black;
-                    break;
-            }
-            holder.ivIcon.setImageResource(rID);
-            holder.tvTitle.setText(site.title);
-            if (selectedSid == site.sid) {
-                holder.container.setBackgroundResource(R.color.black_10);
-                holder.switchListGrid.setVisibility(View.VISIBLE);
-                if(holder.switchListGrid.isChecked() != site.isGrid)
-                    new Handler().postDelayed(()->holder.switchListGrid.toggle(), 100);
-            } else {
-                holder.container.setBackgroundDrawable(null);
-                holder.switchListGrid.setVisibility(View.GONE);
-            }
+        Site site = mProvider.getChildItem(groupPosition, childPosition);
+        int rID = R.drawable.ic_filter_9_plus_black;
+        switch (childPosition) {
+            case 0:
+                rID = R.drawable.ic_filter_1_black;
+                break;
+            case 1:
+                rID = R.drawable.ic_filter_2_black;
+                break;
+            case 2:
+                rID = R.drawable.ic_filter_3_black;
+                break;
+            case 3:
+                rID = R.drawable.ic_filter_4_black;
+                break;
+            case 4:
+                rID = R.drawable.ic_filter_5_black;
+                break;
+            case 5:
+                rID = R.drawable.ic_filter_6_black;
+                break;
+            case 6:
+                rID = R.drawable.ic_filter_7_black;
+                break;
+            case 7:
+                rID = R.drawable.ic_filter_8_black;
+                break;
+            case 8:
+                rID = R.drawable.ic_filter_9_black;
+                break;
+        }
+        holder.ivIcon.setImageResource(rID);
+        holder.tvTitle.setText(site.title);
+        if (selectedSid == site.sid) {
+            holder.container.setBackgroundResource(R.color.black_10);
+            holder.switchListGrid.setVisibility(View.VISIBLE);
+            if (holder.switchListGrid.isChecked() != site.isGrid)
+                new Handler().postDelayed(() -> holder.switchListGrid.toggle(), 100);
+        } else {
+            holder.container.setBackgroundDrawable(null);
+            holder.switchListGrid.setVisibility(View.GONE);
+        }
 
         holder.container.setOnClickListener(v -> {
             if (mItemClickListener != null && childPosition >= 0)
@@ -168,16 +168,20 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
     public long getGroupId(int groupPosition) {
         if (groupPosition == getGroupCount() - 1)
             return 0;
+        else if (mProvider == null)
+            return 0;
         else
-            return (mProvider == null) ? 0 : mProvider.getGroupItem(groupPosition).getGroupId();
+            return mProvider.getGroupItem(groupPosition).getGroupId();
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
         if (groupPosition == getGroupCount() - 1)
             return 0;
+        else if (mProvider == null)
+            return 0;
         else
-            return (mProvider == null) ? 0 : mProvider.getChildItem(groupPosition, childPosition).getChildId();
+            return mProvider.getChildItem(groupPosition, childPosition).getChildId();
     }
 
     @Override
@@ -203,13 +207,14 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     @Override
     public ItemDraggableRange onGetGroupItemDraggableRange(SiteGroupViewHolder holder, int groupPosition) {
-        int end = Math.max(0, getGroupCount() - 2);
+        int end = Math.max(0, mProvider.getGroupCount() - 1);
         return new GroupPositionItemDraggableRange(0, end);
     }
 
     @Override
     public ItemDraggableRange onGetChildItemDraggableRange(SiteViewHolder holder, int groupPosition, int childPosition) {
-        return null;
+        int end = Math.max(0, mProvider.getGroupCount() - 1);
+        return new GroupPositionItemDraggableRange(0, end);
     }
 
     @Override
@@ -243,7 +248,7 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
     @Override
     public boolean onCheckChildCanDrop(int draggingGroupPosition, int draggingChildPosition, int dropGroupPosition, int dropChildPosition) {
         if (draggingGroupPosition >= mProvider.getGroupCount() || dropGroupPosition >= mProvider.getGroupCount() ||
-            draggingChildPosition >= mProvider.getChildCount(draggingGroupPosition) || dropChildPosition >= mProvider.getChildCount(dropChildPosition))
+                draggingChildPosition >= mProvider.getChildCount(draggingGroupPosition) || dropChildPosition >= mProvider.getChildCount(dropChildPosition))
             return false;
         return true;
     }
@@ -273,6 +278,7 @@ public class SiteAdapter extends AbstractExpandableItemAdapter<SiteAdapter.SiteG
 
     public interface OnItemMoveListener {
         void onGroupMove(int fromGroupPosition, int toGroupPosition);
+
         void onItemMove(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition);
     }
 

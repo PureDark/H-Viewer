@@ -164,7 +164,8 @@ public class SiteHolder {
         // 检测是否有gid为0，无法显示的站点，如有则全部添加到新建的“未分类”组别中
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `gid` = 0");
         if (cursor.moveToNext()) {
-            int gid = addSiteGroup(new SiteGroup(0, "未分类"));
+            SiteGroup group = getGroupByTitle("未分类");
+            int gid = (group != null) ? group.gid : addSiteGroup(new SiteGroup(0, "未分类"));
             dbHelper.nonQuery("UPDATE " + dbName + " SET `gid` = " + gid + " WHERE `gid` = 0");
         }
         cursor.close();

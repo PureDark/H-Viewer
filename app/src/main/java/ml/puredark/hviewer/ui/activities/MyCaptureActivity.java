@@ -16,7 +16,6 @@ public class MyCaptureActivity extends CaptureActivity {
         super.onCreate(savedInstanceState);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            //申请WRITE_EXTERNAL_STORAGE权限
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         }
     }
@@ -31,10 +30,8 @@ public class MyCaptureActivity extends CaptureActivity {
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission Granted
-
             } else {
                 // Permission Denied
-                //  displayFrameworkBugMessageAndExit();
                 Toast.makeText(this, "请在应用管理中打开“相机”访问权限！", Toast.LENGTH_LONG).show();
                 finish();
             }

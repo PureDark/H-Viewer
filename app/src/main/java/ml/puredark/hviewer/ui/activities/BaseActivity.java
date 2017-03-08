@@ -115,7 +115,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         this.analyze = analyze;
     }
 
-    public boolean isInOneHandMode(){
+    public boolean isInOneHandMode() {
         return (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_ONE_HAND, false);
     }
 
@@ -141,7 +141,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         this.animating = animating;
     }
 
-    public boolean isAnimating(){
+    public boolean isAnimating() {
         return animating;
     }
 
@@ -156,6 +156,17 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
                 content,
                 Snackbar.LENGTH_LONG);
         snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.colorAccentDark));
+        snackbar.show();
+    }
+
+    public void showSnackBar(String content, String actionText, View.OnClickListener listener) {
+        if (container == null) return;
+        Snackbar snackbar = Snackbar.make(
+                container,
+                content,
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.colorAccentDark));
+        snackbar.setAction(actionText, listener);
         snackbar.show();
     }
 
@@ -187,7 +198,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
     public void onBackPressed() {
         if (animating || !allowExit)
             return;
-        if(isDoubleBackExitEnabled){
+        if (isDoubleBackExitEnabled) {
             backCount++;
             if (backCount == 1)
                 showSnackBar("再按一次退出");
@@ -219,8 +230,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
                     finish();
             }
             new Handler().postDelayed(() -> backCount = 0, 1000);
-        }
-        else
+        } else
             finish();
     }
 

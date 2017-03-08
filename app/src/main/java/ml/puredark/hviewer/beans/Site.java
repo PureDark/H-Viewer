@@ -79,6 +79,12 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
         this.gid = gid;
     }
 
+
+    @Override
+    public int getId() {
+        return sid;
+    }
+
     @Override
     public long getChildId() {
         return sid;

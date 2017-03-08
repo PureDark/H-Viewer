@@ -9,6 +9,9 @@ import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpanda
 public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.GroupData, C extends AbstractExpandableDataProvider.ChildData>
         extends AbstractExpandableDataProvider<G, C> {
     private List<Pair<G, List<C>>> mData;
+    private C mLastRemovedItem;
+    private int mLastRemovedGroupPosition = -1;
+    private int mLastRemovedChildPosition = -1;
 
     public ExpandableDataProvider(List<Pair<G, List<C>>> mData) {
         this.mData = mData;
@@ -24,6 +27,15 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
         return mData.get(groupPosition).second.size();
     }
 
+
+    public int getAllChildCount() {
+        int size = 0;
+        for(Pair<G, List<C>> pair : mData){
+            size += pair.second.size();
+        }
+        return size;
+    }
+
     @Override
     public G getGroupItem(int groupPosition) {
         if (groupPosition < 0 || groupPosition >= getGroupCount()) {
@@ -36,13 +48,13 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
     @Override
     public C getChildItem(int groupPosition, int childPosition) {
         if (groupPosition < 0 || groupPosition >= getGroupCount()) {
-            throw new IndexOutOfBoundsException("groupPosition = " + groupPosition);
+            throw new IndexOutOfBoundsException("groupPosition = " + groupPosition + ", childPosition = " + childPosition);
         }
 
         final List<C> children = mData.get(groupPosition).second;
 
         if (childPosition < 0 || childPosition >= children.size()) {
-            throw new IndexOutOfBoundsException("childPosition = " + childPosition);
+            throw new IndexOutOfBoundsException("groupPosition = " + groupPosition + ", childPosition = " + childPosition);
         }
 
         return children.get(childPosition);
@@ -56,6 +68,8 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
 
         final Pair<G, List<C>> item = mData.remove(fromGroupPosition);
         mData.add(toGroupPosition, item);
+        mLastRemovedGroupPosition = -1;
+        mLastRemovedChildPosition = -1;
     }
 
     @Override
@@ -69,6 +83,8 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
 
         final C item = fromGroup.second.remove(fromChildPosition);
         toGroup.second.add(toChildPosition, item);
+        mLastRemovedGroupPosition = -1;
+        mLastRemovedChildPosition = -1;
     }
 
     @Override
@@ -79,7 +95,9 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
     @Override
     public void removeChildItem(int groupPosition, int childPosition) {
         try {
-            mData.get(groupPosition).second.remove(childPosition);
+            mLastRemovedItem = mData.get(groupPosition).second.remove(childPosition);
+            mLastRemovedGroupPosition = groupPosition;
+            mLastRemovedChildPosition = childPosition;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,5 +109,34 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
 
     public void setDataSet(List<Pair<G, List<C>>> data) {
         mData = data;
+    }
+
+    public C undoLastRemoval() {
+        if (mLastRemovedItem != null) {
+            int insertedGroupPosition, insertedChildPosition;
+            if (mLastRemovedGroupPosition >= 0 && mLastRemovedGroupPosition < mData.size()) {
+                insertedGroupPosition = mLastRemovedGroupPosition;
+                if (mLastRemovedChildPosition >= 0 && mLastRemovedChildPosition < mData.get(mLastRemovedGroupPosition).second.size()) {
+                    insertedChildPosition = mLastRemovedChildPosition;
+                } else {
+                    insertedChildPosition = mData.get(mLastRemovedGroupPosition).second.size();
+                }
+            } else {
+                insertedGroupPosition = mData.size();
+                insertedChildPosition = mData.get(mData.size()-1).second.size();
+            }
+
+            mData.get(insertedGroupPosition).second.add(insertedChildPosition, mLastRemovedItem);
+
+            C temp = mLastRemovedItem;
+
+            mLastRemovedItem = null;
+            mLastRemovedGroupPosition = -1;
+            mLastRemovedChildPosition = -1;
+
+            return temp;
+        } else {
+            return null;
+        }
     }
 }

@@ -1,160 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
-    android:gravity="center"
-    android:elevation="2dp"
-    app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="2dp"
-    app:cardElevation="2dp"
-    app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true">
-
-    <LinearLayout
+    android:layout_marginRight="4dp">
+    <android.support.v7.widget.CardView
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:elevation="2dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="2dp"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="true">
 
-        <RelativeLayout
-            android:id="@+id/layout_cover"
-            android:layout_width="105dp"
-            android:layout_height="145dp">
-
-            <ImageView
-                android:id="@+id/iv_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorPrimary"
-                android:padding="30dp"
-                app:srcCompat="@drawable/ic_gallery_white" />
-
-            <com.facebook.drawee.view.SimpleDraweeView
-                android:id="@+id/iv_cover"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                fresco:actualImageScaleType="centerCrop"/>
-
-        </RelativeLayout>
-
-        <com.balysv.materialripple.MaterialRippleLayout
-            android:id="@+id/ripple_layout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:mrl_rippleOverlay="false"
-            app:mrl_rippleColor="@color/black"
-            app:mrl_rippleAlpha="0.1"
-            app:mrl_rippleDimension="10dp"
-            app:mrl_rippleDuration="250"
-            app:mrl_rippleFadeDuration="75"
-            app:mrl_rippleHover="true"
-            app:mrl_rippleDelayClick="true">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/layout_cover"
+                android:layout_width="105dp"
+                android:layout_height="145dp">
+
+                <ImageView
+                    android:id="@+id/iv_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:padding="30dp"
+                    app:srcCompat="@drawable/ic_gallery_white" />
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/iv_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    fresco:actualImageScaleType="centerCrop"/>
+
+            </RelativeLayout>
+
+            <com.balysv.materialripple.MaterialRippleLayout
+                android:id="@+id/ripple_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="@dimen/half_padding">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:maxLines="1"
-                        android:textColor="@color/black"
-                        android:textSize="14sp"
-                        tools:text="本子名称" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp">
-
-                        <TextView
-                            android:id="@+id/tv_uploader"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="1"
-                            android:textColor="@color/grey"
-                            android:textSize="12sp"
-                            tools:text="by uploader" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp">
-
-                        <TextView
-                            android:id="@+id/tv_category"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="1"
-                            android:textColor="@color/grey"
-                            android:textSize="12sp"
-                            tools:text="Game CG Sets" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp">
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_tags"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layoutManager="StaggeredGridLayoutManager"
-                            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                            app:spanCount="2"
-                            tools:listitem="@layout/item_collection_tag" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
+                app:mrl_rippleOverlay="false"
+                app:mrl_rippleColor="@color/black"
+                app:mrl_rippleAlpha="0.1"
+                app:mrl_rippleDimension="10dp"
+                app:mrl_rippleDuration="250"
+                app:mrl_rippleFadeDuration="75"
+                app:mrl_rippleHover="true"
+                app:mrl_rippleDelayClick="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="@dimen/half_padding">
 
-                    <RatingBar
-                        android:id="@+id/rb_rating"
-                        style="?android:attr/ratingBarStyleSmall"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:numStars="5"
-                        tools:rating="2.5" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1" />
+                        <TextView
+                            android:id="@+id/tv_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:maxLines="1"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            tools:text="本子名称" />
 
-                    <TextView
-                        android:id="@+id/tv_submittime"
-                        android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp">
+
+                            <TextView
+                                android:id="@+id/tv_uploader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:textColor="@color/grey"
+                                android:textSize="12sp"
+                                tools:text="by uploader" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp">
+
+                            <TextView
+                                android:id="@+id/tv_category"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:textColor="@color/grey"
+                                android:textSize="12sp"
+                                tools:text="Game CG Sets" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp">
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rv_tags"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layoutManager="StaggeredGridLayoutManager"
+                                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                                app:spanCount="2"
+                                tools:listitem="@layout/item_collection_tag" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:maxLines="1"
-                        android:textColor="@color/grey"
-                        android:textSize="12sp"
-                        tools:text="2014-03-18 15:20" />
+                        android:layout_marginTop="3dp"
+                        android:orientation="horizontal">
+
+                        <RatingBar
+                            android:id="@+id/rb_rating"
+                            style="?android:attr/ratingBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:numStars="5"
+                            tools:rating="2.5" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/tv_submittime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:maxLines="1"
+                            android:textColor="@color/grey"
+                            android:textSize="12sp"
+                            tools:text="2014-03-18 15:20" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </com.balysv.materialripple.MaterialRippleLayout>
-    </LinearLayout>
-</android.support.v7.widget.CardView>
+            </com.balysv.materialripple.MaterialRippleLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

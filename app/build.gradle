@@ -97,7 +97,7 @@ dependencies {
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.MiguelCatalan:MaterialSearchView:v1.4.0'
     compile 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
-    compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.9.3@aar') {
+    compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.4@aar') {
         transitive = true
     }
     compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
