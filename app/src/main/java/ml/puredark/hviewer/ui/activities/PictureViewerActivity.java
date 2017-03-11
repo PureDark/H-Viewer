@@ -328,15 +328,13 @@ public class PictureViewerActivity extends BaseActivity {
                         return;
                     }
                 } else if (pictureViewerAdapter != null) {
-                    if (currPos < pictures.size()) {
-                        picture = pictures.get(currPos);
-                        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rvPicture.getLayoutManager();
-                        int firstPos = linearLayoutManager.findFirstVisibleItemPosition();
-                        View childView = rvPicture.getChildAt(currPos - firstPos + 1);
-                        PictureViewerAdapter.PictureViewHolder picVH =
-                                (PictureViewerAdapter.PictureViewHolder) rvPicture.getChildViewHolder(childView);
-                        getUrlAndLoadImage(picVH, picture, true);
+                    if (pictures.size() > 0) {
+                        for(int pos=0; pos < pictures.size(); pos++){
+                            picture = pictures.get(pos);
+                            picture.loadedHighRes = true;
+                        }
                         btnLoadHighRes.setVisibility(View.GONE);
+                        pictureViewerAdapter.notifyDataSetChanged();
                     } else {
                         showSnackBar("无法加载原图");
                         return;

@@ -347,6 +347,9 @@ public class DNSCache {
         private void updateSpeedInfo(ArrayList<DomainModel> list) {
             for (int m = 0; m < list.size(); m++) {
                 DomainModel domainModel = list.get(m);
+                if (domainModel == null) {
+                    continue;
+                }
                 ArrayList<IpModel> ipArray = domainModel.ipModelArr;
                 if (ipArray == null || ipArray.size() < 1) {
                     continue;
