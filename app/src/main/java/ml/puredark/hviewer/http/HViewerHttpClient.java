@@ -11,8 +11,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,17 +36,17 @@ public class HViewerHttpClient {
             .dns(new HttpDns())
             .build();
 
-    public static MediaType getContentType(String url, List<Pair<String, String>> headers){
+    public static MediaType getContentType(String url, List<Pair<String, String>> headers) {
         Response response = getResponseHeader(url, headers);
         return response.body().contentType();
     }
 
-    public static long getContentLength(String url, List<Pair<String, String>> headers){
+    public static long getContentLength(String url, List<Pair<String, String>> headers) {
         Response response = getResponseHeader(url, headers);
-        return response.body().contentLength();
+        return (response != null) ? response.body().contentLength() : 0;
     }
 
-    public static Response getResponseHeader(String url, List<Pair<String, String>> headers){
+    public static Response getResponseHeader(String url, List<Pair<String, String>> headers) {
         HRequestBuilder builder = new HRequestBuilder();
         if (headers != null) {
             for (Pair<String, String> header : headers) {
@@ -65,7 +63,7 @@ public class HViewerHttpClient {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (response!=null) {
+            if (response != null) {
                 response.close();
             }
         }

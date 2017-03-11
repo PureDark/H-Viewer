@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextAppearance.AppCompat.Body1"
-            android:text="同时删除图片文件"/>
+            android:text="同时删除文件"/>
     </LinearLayout>
 
 </LinearLayout>

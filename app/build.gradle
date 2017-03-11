@@ -16,8 +16,8 @@ android {
         resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 66
-        versionName "0.9.5"
+        versionCode 67
+        versionName "0.9.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

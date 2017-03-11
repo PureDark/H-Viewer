@@ -20,12 +20,12 @@ import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.download.DownloadInfo;
 import com.lzy.okserver.listener.DownloadListener;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -50,7 +50,6 @@ import ml.puredark.hviewer.utils.FileType;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import okhttp3.MediaType;
 import okhttp3.Response;
-import com.lzy.okgo.request.GetRequest;
 
 import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 import static ml.puredark.hviewer.HViewerApplication.mContext;
@@ -74,7 +73,7 @@ public class DownloadService extends Service {
     private DownloadBinder binder;
 
     private DownloadTask currTask;
-//    private BaseDownloadTask videoTask;
+    //    private BaseDownloadTask videoTask;
     private DownloadInfo currInfo;
     private com.lzy.okserver.download.DownloadManager downloadManager = com.lzy.okserver.download.DownloadService.getDownloadManager();
 
@@ -106,10 +105,16 @@ public class DownloadService extends Service {
     }
 
     public void restart(final DownloadTask task) {
-        if(task.collection.videos != null && task.collection.videos.size() > 0){
-            for(Video video : task.collection.videos){
+        if (task.collection.videos != null && task.collection.videos.size() > 0) {
+            for (Video video : task.collection.videos) {
                 video.vlink = null;
                 video.percent = 0;
+                DownloadInfo downloadInfo = downloadManager.getDownloadInfo(video.content);
+                if (downloadInfo != null) {
+                    downloadManager.pauseTask(downloadInfo.getTaskKey());
+                    downloadManager.removeTask(downloadInfo.getTaskKey());
+                    Logger.d("DownloadService", "removeTask");
+                }
             }
         }
         start(task);
@@ -122,8 +127,8 @@ public class DownloadService extends Service {
                 downloadManager.pauseTask(currInfo.getTaskKey());
                 currInfo = null;
             }
-            if(currTask.collection.videos!=null){
-                for(Video video : currTask.collection.videos)
+            if (currTask.collection.videos != null) {
+                for (Video video : currTask.collection.videos)
                     video.status = STATUS_WAITING;
             }
             currTask = null;
@@ -139,8 +144,8 @@ public class DownloadService extends Service {
                 downloadManager.pauseTask(currInfo.getTaskKey());
                 currInfo = null;
             }
-            if(currTask.collection.videos!=null){
-                for(Video video : currTask.collection.videos)
+            if (currTask.collection.videos != null) {
+                for (Video video : currTask.collection.videos)
                     video.status = STATUS_WAITING;
             }
             currTask = null;
@@ -165,12 +170,12 @@ public class DownloadService extends Service {
         boolean isCompleted = true;
         Video currVideo = null;
         for (Video video : task.collection.videos) {
-            if(video.vlink!=null && (video.vlink.startsWith("file://")|| video.vlink.startsWith("content://"))){
+            if (video.vlink != null && (video.vlink.startsWith("file://") || video.vlink.startsWith("content://"))) {
                 video.status = STATUS_DOWNLOADED;
             }
             if (video.status == STATUS_WAITING) {
+                video.status = STATUS_DOWNLOADING;
                 currVideo = video;
-                currVideo.status = STATUS_DOWNLOADING;
                 isCompleted = false;
                 break;
             } else if (video.status == STATUS_DOWNLOADING) {
@@ -199,11 +204,10 @@ public class DownloadService extends Service {
             return;
         }
         Logger.d("DownloadService", "downloadNewVideo: isCompleted2 = " + isCompleted);
-        final Video video = currVideo;
-        if (!TextUtils.isEmpty(video.vlink)) {
-            loadVideo(video, task);
+        if (!TextUtils.isEmpty(currVideo.vlink)) {
+            loadVideo(currVideo, task);
         } else {
-            getVideoUrl(video, task);
+            getVideoUrl(currVideo, task);
         }
     }
 
@@ -234,24 +238,28 @@ public class DownloadService extends Service {
                             onFailure(null);
                         } else {
                             String html = (String) result;
-                            Logger.d("DownloadService", html);
                             List<String> videoUrls = RuleParser.getVideoUrl(html);
                             if (videoUrls.size() <= 0) {
                                 onFailure(null);
                             } else {
                                 new Thread(() -> {
                                     String realUrl = null;
-                                    long maxSize = 0;
-                                    for (String videoUrl : videoUrls) {
-                                        long size = HViewerHttpClient.getContentLength(videoUrl, task.collection.site.getHeaders());
-                                        if (size == 0)
-                                            continue;
-                                        if (size > maxSize) {
-                                            maxSize = size;
-                                            realUrl = videoUrl;
+                                    if (videoUrls.size() == 1) {
+                                        realUrl = videoUrls.get(0);
+                                        Logger.d("DownloadService", "videoUrl=" + videoUrls.get(0));
+                                    } else {
+                                        long maxSize = 0;
+                                        for (String videoUrl : videoUrls) {
+                                            Logger.d("DownloadService", "videoUrl=" + videoUrl);
+                                            long size = HViewerHttpClient.getContentLength(videoUrl, task.collection.site.getHeaders());
+                                            if (size == 0)
+                                                continue;
+                                            if (size > maxSize) {
+                                                maxSize = size;
+                                                realUrl = videoUrl;
+                                            }
+                                            Logger.d("DownloadService", "size=" + size);
                                         }
-                                        Logger.d("DownloadService", "videoUrl=" + videoUrl);
-                                        Logger.d("DownloadService", "size=" + size);
                                     }
                                     if (realUrl == null) {
                                         onFailure(null);
@@ -302,14 +310,15 @@ public class DownloadService extends Service {
                     float progress = downloadInfo.getProgress();
                     Logger.d("DownloadService", "onProgress: currentSize=" + currentSize);
                     Logger.d("DownloadService", "onProgress: progress=" + progress);
-                    video.percent = Math.round(progress*100);
+                    Logger.d("DownloadService", "onProgress: video.status=" + video.status);
+                    video.percent = Math.round(progress * 100);
                     Intent intent = new Intent(ON_PROGRESS);
                     sendBroadcast(intent);
                 }
 
                 @Override
                 public void onFinish(DownloadInfo downloadInfo) {
-                    new Thread(()->{
+                    new Thread(() -> {
                         long currentSize = downloadInfo.getDownloadLength();
                         Logger.d("DownloadService", "onFinish: currentSize=" + currentSize);
                         Logger.d("DownloadService", "onFinish: targetPath=" + downloadInfo.getTargetPath());
@@ -359,7 +368,7 @@ public class DownloadService extends Service {
     }
 
     private void downloadNewPage(final DownloadTask task) {
-        if(task.collection.pictures==null){
+        if (task.collection.pictures == null) {
             task.status = STATUS_PAUSED;
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "图册中不含有任何图片");

@@ -685,10 +685,11 @@ public class RuleParser {
     public static List<String> getVideoUrl(String html) {
         List<String> videoUrls = new ArrayList<>();
         try {
-            Pattern p = Pattern.compile("https?://[^\"'<>]+?\\.(?:mp4|flv)[^\"'<>]*", Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile("https?[^\"'<>]*?[^\"'<>]+?\\.(?:mp4|flv)[^\"'<>]*", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(html);
             while(matcher.find()){
                 String videoUrl = matcher.group();
+                videoUrl = videoUrl.replaceAll("\\\\/", "/");
                 videoUrls.add(videoUrl);
             }
         } catch (Exception e) {
