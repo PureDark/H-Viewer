@@ -26,7 +26,6 @@ import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.beans.Video;
-import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
@@ -71,17 +70,17 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
             holder.tvSubmittime.setText(task.collection.datetime);
             int percent = 0;
             if (task.collection.videos != null && task.collection.videos.size() > 0) {
-                for(Video video : task.collection.videos){
-                    if(video.status == DownloadItemStatus.STATUS_DOWNLOADING){
+                for (Video video : task.collection.videos) {
+                    if (video.status == DownloadItemStatus.STATUS_DOWNLOADING) {
                         percent = video.percent;
                         break;
-                    } else if(video.status == DownloadItemStatus.STATUS_WAITING && percent == 0){
+                    } else if (video.status == DownloadItemStatus.STATUS_WAITING && percent == 0) {
                         percent = video.percent;
                     }
                 }
                 holder.tvCount.setText(task.getDownloadedVideoCount() + "/" + task.collection.videos.size());
             } else {
-                int size = task.collection.pictures.size();
+                int size = (task.collection.pictures != null) ? task.collection.pictures.size() : 0;
                 holder.tvCount.setText(task.getDownloadedPictureCount() + "/" + size);
                 percent = Math.round(((float) task.getDownloadedPictureCount() * 100 / size));
             }

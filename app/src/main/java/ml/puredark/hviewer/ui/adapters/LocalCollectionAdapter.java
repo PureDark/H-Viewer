@@ -110,7 +110,8 @@ public class LocalCollectionAdapter
     public void onBindChildViewHolder(final CollectionViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
         LocalCollection collection = mProvider.getChildItem(groupPosition, childPosition);
         String cookie = (collection.site == null) ? "" : collection.site.cookie;
-        ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
+        if(holder.ivCover!=null)
+            ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
         holder.tvCategory.setText(collection.category);

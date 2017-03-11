@@ -27,6 +27,7 @@ public class SearchSuggestionHolder {
         }.getType());
         if(searchSuggestions==null)
             searchSuggestions = new ArrayList<>();
+        removeDuplicate();
         trimSearchSuggestion();
     }
 
@@ -35,7 +36,6 @@ public class SearchSuggestionHolder {
     }
 
     public void saveSearchSuggestion() {
-        removeDuplicate();
         SharedPreferencesUtil.saveData(mContext, "SearchSuggestion", new Gson().toJson(searchSuggestions));
     }
 
@@ -59,7 +59,7 @@ public class SearchSuggestionHolder {
 
     public void trimSearchSuggestion() {
         while (searchSuggestions.size() > 500)
-            searchSuggestions.remove(500);
+            searchSuggestions.remove(searchSuggestions.size()-1);
     }
 
     public List<String> getSearchSuggestion() {

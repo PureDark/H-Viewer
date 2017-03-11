@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static android.R.id.list;
+
 /**
  *
  * 项目名称: DNSCache <br>
@@ -79,7 +81,12 @@ public class DnsCacheManager extends DNSCacheDatabaseHelper implements IDnsCache
 		
 		if( model == null ){
 			//缓存中没有从数据库中查找
-			ArrayList<DomainModel> list = (ArrayList<DomainModel>) db.QueryDomainInfo(url, sp ) ;
+            ArrayList<DomainModel> list = null;
+            try {
+                list = (ArrayList<DomainModel>) db.QueryDomainInfo(url, sp);
+            } catch(SQLiteDatabaseLockedException e){
+                e.printStackTrace();
+            }
 			if( list != null && list.size() != 0){
 				model = list.get( list.size() - 1 ) ;
 			}

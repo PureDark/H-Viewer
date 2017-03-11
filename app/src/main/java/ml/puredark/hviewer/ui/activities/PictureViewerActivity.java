@@ -237,11 +237,13 @@ public class PictureViewerActivity extends BaseActivity {
                     currPos = position;
                     position = picturePagerAdapter.getPicturePostion(currPos);
                     tvCount.setText((position + 1) + "/" + picturePagerAdapter.getCount());
-                    Picture picture = pictures.get(position);
-                    if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
-                        btnLoadHighRes.setVisibility(View.GONE);
-                    else
-                        btnLoadHighRes.setVisibility(View.VISIBLE);
+                    if (position < pictures.size()) {
+                        Picture picture = pictures.get(position);
+                        if (TextUtils.isEmpty(picture.highRes) || picture.loadedHighRes)
+                            btnLoadHighRes.setVisibility(View.GONE);
+                        else
+                            btnLoadHighRes.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override

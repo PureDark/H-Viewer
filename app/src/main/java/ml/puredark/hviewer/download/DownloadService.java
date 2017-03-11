@@ -356,6 +356,13 @@ public class DownloadService extends Service {
     }
 
     private void downloadNewPage(final DownloadTask task) {
+        if(task.collection.pictures==null){
+            task.status = STATUS_PAUSED;
+            Intent intent = new Intent(ON_FAILURE);
+            intent.putExtra("message", "图册中不含有任何图片");
+            sendBroadcast(intent);
+            return;
+        }
         boolean isCompleted = true;
         Picture currPic = null;
         for (Picture picture : task.collection.pictures) {

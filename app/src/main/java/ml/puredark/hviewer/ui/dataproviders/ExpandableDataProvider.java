@@ -51,7 +51,7 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
             throw new IndexOutOfBoundsException("groupPosition = " + groupPosition + ", childPosition = " + childPosition);
         }
 
-        final List<C> children = mData.get(groupPosition).second;
+        final List<C> children = getItem(groupPosition).second;
 
         if (childPosition < 0 || childPosition >= children.size()) {
             throw new IndexOutOfBoundsException("groupPosition = " + groupPosition + ", childPosition = " + childPosition);
