@@ -165,6 +165,9 @@ public class DownloadService extends Service {
         boolean isCompleted = true;
         Video currVideo = null;
         for (Video video : task.collection.videos) {
+            if(video.vlink!=null && (video.vlink.startsWith("file://")|| video.vlink.startsWith("content://"))){
+                video.status = STATUS_DOWNLOADED;
+            }
             if (video.status == STATUS_WAITING) {
                 currVideo = video;
                 currVideo.status = STATUS_DOWNLOADING;
@@ -278,10 +281,10 @@ public class DownloadService extends Service {
     private void loadVideo(final Video video, final DownloadTask task) {
         Logger.d("DownloadService", "loadVideo: video.vlink=" + video.vlink);
         downloadManager.pauseAllTask();
-        DownloadInfo downloadInfo = downloadManager.getDownloadInfo(video.vlink);
+        DownloadInfo downloadInfo = downloadManager.getDownloadInfo(video.content);
         if (downloadInfo != null) {
             Logger.d("DownloadService", "loadVideo: startExisted : ");
-            downloadManager.addTask(downloadInfo.getUrl(), downloadInfo.getRequest(), downloadInfo.getListener());
+            downloadManager.addTask(downloadInfo.getTaskKey(), downloadInfo.getRequest(), downloadInfo.getListener());
             currInfo = downloadInfo;
         } else {
             Logger.d("DownloadService", "loadVideo: addNew");
@@ -292,7 +295,7 @@ public class DownloadService extends Service {
             }
             downloadManager.setTargetFolder(cachePath + "/" + dirName);
             GetRequest request = OkGo.get(video.vlink);
-            downloadManager.addTask(video.vlink, request, new DownloadListener() {
+            downloadManager.addTask(video.content, request, new DownloadListener() {
                 @Override
                 public void onProgress(DownloadInfo downloadInfo) {
                     long currentSize = downloadInfo.getDownloadLength();

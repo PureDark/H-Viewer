@@ -260,6 +260,10 @@ public class DownloadTaskActivity extends BaseActivity {
 
     private void openVideoViewerActivity(int position) {
         Video video = (Video) pictureVideoAdapter.getVideoDataProvider().getItem(position - pictureVideoAdapter.getPictureSize());
+        if(video.vlink==null){
+            showSnackBar("视频为空，可能下载失败");
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse(video.vlink);
         DocumentFile docFile = DocumentFile.fromSingleUri(this, uri);
