@@ -84,6 +84,10 @@ public class RegexValidateUtil {
     }
 
     public static String getAbsoluteUrlFromRelative(String url, String host) {
+        if(url!=null)
+            url = url.replaceAll("\\\\/", "/");
+        else
+            return url;
         if(urlHasProtocol(url))
             return url;
         if (url.startsWith("//"))

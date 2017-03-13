@@ -238,7 +238,7 @@ public class DownloadService extends Service {
                             onFailure(null);
                         } else {
                             String html = (String) result;
-                            List<String> videoUrls = RuleParser.getVideoUrl(html);
+                            List<String> videoUrls = RuleParser.getVideoUrl(html, video.content);
                             if (videoUrls.size() <= 0) {
                                 onFailure(null);
                             } else {

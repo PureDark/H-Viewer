@@ -682,14 +682,16 @@ public class RuleParser {
         }
     }
 
-    public static List<String> getVideoUrl(String html) {
+    public static List<String> getVideoUrl(String html, String sourceUrl) {
         List<String> videoUrls = new ArrayList<>();
         try {
             Pattern p = Pattern.compile("https?[^\"'<>]*?[^\"'<>]+?\\.(?:mp4|flv)[^\"'<>]*", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(html);
             while(matcher.find()){
                 String videoUrl = matcher.group();
-                videoUrl = videoUrl.replaceAll("\\\\/", "/");
+                if (TextUtils.isEmpty(videoUrl))
+                    continue;
+                videoUrl = RegexValidateUtil.getAbsoluteUrlFromRelative(videoUrl, sourceUrl);
                 videoUrls.add(videoUrl);
             }
         } catch (Exception e) {
