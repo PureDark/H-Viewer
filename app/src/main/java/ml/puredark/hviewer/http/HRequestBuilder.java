@@ -2,6 +2,8 @@ package ml.puredark.hviewer.http;
 
 import java.net.URLEncoder;
 
+import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import okhttp3.Request;
 
@@ -15,6 +17,7 @@ public class HRequestBuilder extends Request.Builder {
     public HRequestBuilder(boolean disableHProxy){
         super();
         this.disableHProxy = disableHProxy;
+        this.header("User-Agent", HViewerApplication.mContext.getResources().getString(R.string.UA));
     }
 
     @Override

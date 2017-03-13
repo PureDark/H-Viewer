@@ -53,10 +53,10 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
                 holder.ivIcon.setImageResource(R.drawable.ic_add_black);
                 holder.tvTitle.setText("添加新分类");
             }
-        }else if(viewHolder instanceof CategoryInputViewHolder){
+        } else if (viewHolder instanceof CategoryInputViewHolder) {
             CategoryInputViewHolder holder = (CategoryInputViewHolder) viewHolder;
             Category category = mProvider.getItem(position);
-            if(category==null){
+            if (category == null) {
                 category = new Category(0, "", "");
             }
             holder.inputCategoryTitle.setText(category.title);
@@ -114,7 +114,7 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
                 @Override
                 public void afterTextChanged(Editable editable) {
                     int position = getAdapterPosition();
-                    if(position<mProvider.getCount()){
+                    if (position < mProvider.getCount()) {
                         Category category = mProvider.getItem(position);
                         category.title = editable.toString();
                     }
@@ -132,7 +132,7 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
                 @Override
                 public void afterTextChanged(Editable editable) {
                     int position = getAdapterPosition();
-                    if(position<mProvider.getCount()){
+                    if (position >= 0 && position < mProvider.getCount()) {
                         Category category = mProvider.getItem(position);
                         category.url = editable.toString();
                     }

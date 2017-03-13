@@ -39,6 +39,8 @@ public class DownloadTask extends AbstractDataProvider.Data{
     }
 
     public int getDownloadedPictureCount(){
+        if(collection.pictures==null)
+            return 0;
         int count = 0;
         for(int i = 0; i < collection.pictures.size(); i++){
             Picture picture = collection.pictures.get(i);
@@ -49,6 +51,8 @@ public class DownloadTask extends AbstractDataProvider.Data{
     }
 
     public int getDownloadedVideoCount(){
+        if(collection.videos==null)
+            return 0;
         int count = 0;
         for(int i = 0; i < collection.videos.size(); i++){
             Video video = collection.videos.get(i);
