@@ -60,8 +60,8 @@ public class ImageLoader {
         }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
+        header.addProperty("Cookie", cookie);
+        header.addProperty("Referer", referer);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
@@ -95,8 +95,8 @@ public class ImageLoader {
         }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
+        header.addProperty("Cookie", cookie);
+        header.addProperty("Referer", referer);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
@@ -133,8 +133,8 @@ public class ImageLoader {
             return;
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
+        header.addProperty("Cookie", cookie);
+        header.addProperty("Referer", referer);
         if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
             HProxy proxy = new HProxy(url);
             header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
@@ -153,8 +153,8 @@ public class ImageLoader {
             return;
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
+        header.addProperty("Cookie", cookie);
+        header.addProperty("Referer", referer);
         if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
             HProxy proxy = new HProxy(url);
             header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
@@ -188,8 +188,8 @@ public class ImageLoader {
         }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
-        header.addProperty("cookie", cookie);
-        header.addProperty("referer", referer);
+        header.addProperty("Cookie", cookie);
+        header.addProperty("Referer", referer);
         if (url != null && url.startsWith("http")) {
             if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
                 HProxy proxy = new HProxy(url);
