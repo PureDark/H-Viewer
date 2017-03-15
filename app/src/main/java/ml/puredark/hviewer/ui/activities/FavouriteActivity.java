@@ -5,12 +5,10 @@ import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -132,7 +130,7 @@ public class FavouriteActivity extends BaseActivity {
         mRecyclerViewDragDropManager.attachRecyclerView(rvCollection);
         mRecyclerViewExpandableItemManager.attachRecyclerView(rvCollection);
 
-        if(adapter.getDataProvider().getGroupCount() > 0)
+        if (adapter.getDataProvider().getGroupCount() > 0)
             mRecyclerViewExpandableItemManager.expandGroup(0);
 
         adapter.setOnItemClickListener(new LocalCollectionAdapter.OnItemClickListener() {
@@ -163,7 +161,7 @@ public class FavouriteActivity extends BaseActivity {
 
             @Override
             public boolean onGroupLongClick(View v, final int groupPosition) {
-                if(mRecyclerViewDragDropManager.isDragging())
+                if (mRecyclerViewDragDropManager.isDragging())
                     return true;
                 // 分类上长按，选择操作
                 final FavGroup group = adapter.getDataProvider().getGroupItem(groupPosition);
@@ -200,11 +198,15 @@ public class FavouriteActivity extends BaseActivity {
 
             @Override
             public void onItemClick(View v, int groupPosition, int childPosition) {
-                LocalCollection collection = adapter.getDataProvider().getChildItem(groupPosition, childPosition);
-                HViewerApplication.temp = collection.site;
-                HViewerApplication.temp2 = collection;
-                Intent intent = new Intent(FavouriteActivity.this, CollectionActivity.class);
-                startActivity(intent);
+                try {
+                    LocalCollection collection = adapter.getDataProvider().getChildItem(groupPosition, childPosition);
+                    HViewerApplication.temp = collection.site;
+                    HViewerApplication.temp2 = collection;
+                    Intent intent = new Intent(FavouriteActivity.this, CollectionActivity.class);
+                    startActivity(intent);
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override

@@ -58,8 +58,12 @@ public class SearchSuggestionHolder {
     }
 
     public void trimSearchSuggestion() {
-        while (searchSuggestions.size() > 500)
-            searchSuggestions.remove(searchSuggestions.size()-1);
+        try {
+            while (searchSuggestions.size() > 500)
+                searchSuggestions.remove(searchSuggestions.size() - 1);
+        }catch (IndexOutOfBoundsException e){
+            e.printStackTrace();
+        }
     }
 
     public List<String> getSearchSuggestion() {

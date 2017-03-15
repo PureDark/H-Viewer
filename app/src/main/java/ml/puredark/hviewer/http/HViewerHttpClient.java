@@ -47,6 +47,9 @@ public class HViewerHttpClient {
     }
 
     public static Response getResponseHeader(String url, List<Pair<String, String>> headers) {
+        if (url == null || !url.startsWith("http")) {
+            return null;
+        }
         HRequestBuilder builder = new HRequestBuilder();
         if (headers != null) {
             for (Pair<String, String> header : headers) {
@@ -113,7 +116,7 @@ public class HViewerHttpClient {
         if (!post)
             get(url, disableHProxy, headers, false, null, callback);
         else {
-            String params = (url == null) ? "" : url.substring(url.indexOf('?'));
+            String params = (url == null) ? "" : (url.indexOf('?') > 0) ? url.substring(url.indexOf('?')) : url;
             post(url, disableHProxy, params, headers, callback);
         }
     }

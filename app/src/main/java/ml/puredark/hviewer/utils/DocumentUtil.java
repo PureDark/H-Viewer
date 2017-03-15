@@ -288,6 +288,8 @@ public class DocumentUtil {
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
+        if (file == null)
+            return null;
         return getFileOutputSteam(context, file.getUri());
     }
 
@@ -296,6 +298,8 @@ public class DocumentUtil {
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
+        if (file == null)
+            return null;
         return getFileOutputSteam(context, file.getUri());
     }
 
@@ -304,6 +308,8 @@ public class DocumentUtil {
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
+        if (file == null)
+            return null;
         return getFileOutputSteam(context, file.getUri());
     }
 
@@ -326,6 +332,8 @@ public class DocumentUtil {
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
+        if (file == null)
+            return null;
         return getFileInputSteam(context, file.getUri());
     }
 
@@ -335,6 +343,8 @@ public class DocumentUtil {
             return null;
         fileName = filenameFilter(Uri.decode(fileName));
         DocumentFile file = parent.findFile(fileName);
+        if (file == null)
+            return null;
         return getFileInputSteam(context, file.getUri());
     }
 
@@ -343,6 +353,8 @@ public class DocumentUtil {
         if (parent == null)
             return null;
         DocumentFile file = parent.findFile(fileName);
+        if (file == null)
+            return null;
         return getFileInputSteam(context, file.getUri());
     }
 
