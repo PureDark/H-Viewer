@@ -205,6 +205,7 @@ public class DownloadService extends Service {
         }
         Logger.d("DownloadService", "downloadNewVideo: isCompleted2 = " + isCompleted);
         if (!TextUtils.isEmpty(currVideo.vlink)) {
+            currVideo.retries = 0;
             loadVideo(currVideo, task);
         } else {
             getVideoUrl(currVideo, task);
@@ -229,6 +230,7 @@ public class DownloadService extends Service {
             if (contentType.type().equals("video")) {
                 video.vlink = finalUrl;
                 Logger.d("DownloadService", "realUrl=" + video.vlink);
+                video.retries = 0;
                 loadVideo(video, task);
             } else {
                 HViewerHttpClient.get(video.content, task.collection.site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
@@ -267,6 +269,7 @@ public class DownloadService extends Service {
                                     }
                                     video.vlink = realUrl;
                                     Logger.d("DownloadService", "realUrl=" + realUrl);
+                                    video.retries = 0;
                                     loadVideo(video, task);
                                 }).start();
                             }
@@ -333,11 +336,20 @@ public class DownloadService extends Service {
 
                 @Override
                 public void onError(DownloadInfo downloadInfo, String errorMsg, Exception e) {
-                    task.status = STATUS_PAUSED;
-                    Intent intent = new Intent(ON_FAILURE);
-                    intent.putExtra("message", errorMsg);
-                    Logger.d("DownloadService", "video.content : " + video.content);
-                    sendBroadcast(intent);
+                    if (video.retries < 15) {
+                        int delay = 1000 * video.retries;
+                        video.retries++;
+                        video.status = STATUS_DOWNLOADING;
+                        new Handler().postDelayed(() -> loadVideo(video, task), delay);
+                    } else {
+                        video.retries = 0;
+                        task.status = STATUS_PAUSED;
+                        video.status = STATUS_WAITING;
+                        Intent intent = new Intent(ON_FAILURE);
+                        intent.putExtra("message", errorMsg);
+                        Logger.d("DownloadService", "video.content : " + video.content);
+                        sendBroadcast(intent);
+                    }
                 }
             });
             currInfo = downloadManager.getDownloadInfo(video.vlink);
@@ -561,9 +573,10 @@ public class DownloadService extends Service {
                     @Override
                     protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
                         if (picture.retries < 15) {
+                            int delay = 1000 * picture.retries;
                             picture.retries++;
                             picture.status = STATUS_DOWNLOADING;
-                            loadPicture(picture, task, highRes);
+                            new Handler().postDelayed(() -> loadPicture(picture, task, highRes), delay);
                         } else {
                             picture.retries = 0;
                             task.status = STATUS_PAUSED;

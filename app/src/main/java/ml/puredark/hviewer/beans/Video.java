@@ -10,6 +10,7 @@ public class Video extends AbstractDataProvider.Data {
     public String vlink;
     public int status = STATUS_WAITING;
     public int percent = 0;
+    public int retries;
 
     public Video(int vid, String thumbnail, String content) {
         this.vid = vid;

@@ -277,6 +277,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (site.hasFlag(Site.FLAG_NO_TITLE)) {
             holder.tvTitle.setVisibility(View.GONE);
         }
+        holder.tvTitle.setMaxLines(2);
     }
 
     @Override

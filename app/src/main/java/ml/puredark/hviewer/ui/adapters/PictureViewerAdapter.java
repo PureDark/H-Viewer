@@ -3,6 +3,7 @@ package ml.puredark.hviewer.ui.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
@@ -73,6 +75,8 @@ public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdap
     @Override
     public void onBindViewHolder(PictureViewHolder viewHolder, int position) {
         Picture picture = mProvider.getItem(position);
+        Uri uri = null;
+        viewHolder.ivPicture.setImageURI(uri);
         activity.getUrlAndLoadImage(viewHolder, picture, false);
         viewHolder.btnRefresh.setOnClickListener(v -> {
             activity.getUrlAndLoadImage(viewHolder, picture, false);
