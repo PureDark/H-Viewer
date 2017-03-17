@@ -104,7 +104,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 adapter.setOnItemClickListener(mTagClickListener);
                 holder.rvTags.setAdapter(adapter);
             } else {
-                holder.tvTitle.setMaxLines(1);
+                if(TextUtils.isEmpty(collection.uploader) || TextUtils.isEmpty(collection.category))
+                    holder.tvTitle.setMaxLines(2);
+                else
+                    holder.tvTitle.setMaxLines(1);
                 CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(collection.tags));
                 adapter.setOnItemClickListener(mTagClickListener);
                 holder.rvTags.setAdapter(adapter);
