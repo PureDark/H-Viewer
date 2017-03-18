@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -33,7 +35,9 @@ import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.gc.materialdesign.views.ButtonFlat;
@@ -44,6 +48,7 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -200,16 +205,34 @@ public class MainActivity extends BaseActivity {
             initSetDefultDownloadPath();
         }
 
-        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true, null);
+        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true,
+                new BaseControllerListener<ImageInfo>() {
+                    @Override
+                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+
+                    }
+                });
 
         backdrop.setOnLongClickListener(v -> {
-            Uri uri = Uri.parse("https://api.i-meto.com/bing");
-            Fresco.getImagePipeline().evictFromMemoryCache(uri);
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                    .setResizeOptions(new ResizeOptions(1080, 1920))
-                    .disableDiskCache()
-                    .build();
-            supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, null, ImageRequest.RequestLevel.FULL_FETCH));
+            String[] options = new String[]{"自定义", "随机图片"};
+            new AlertDialog.Builder(this)
+                    .setTitle("更改顶部图片")
+                    .setItems(options, (dialogInterface, i) -> {
+                        if (i == 0) {
+
+                        } else if (i == 1) {
+                            Uri uri = Uri.parse("https://api.i-meto.com/bing");
+                            Fresco.getImagePipeline().evictFromMemoryCache(uri);
+                            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                                    .setResizeOptions(new ResizeOptions(1080, 1920))
+                                    .disableDiskCache()
+                                    .build();
+                            supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, this, ImageRequest.RequestLevel.FULL_FETCH));
+                            File path = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .show();
             return true;
         });
 
@@ -358,7 +381,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public boolean onGroupLongClick(View v, final int groupPosition) {
-                if(mRecyclerViewDragDropManager.isDragging())
+                if (mRecyclerViewDragDropManager.isDragging())
                     return true;
                 // 分类上长按，选择操作
                 final SiteGroup group = siteAdapter.getDataProvider().getGroupItem(groupPosition);

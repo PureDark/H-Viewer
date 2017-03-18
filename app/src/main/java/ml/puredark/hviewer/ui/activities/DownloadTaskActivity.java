@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUriExposedException;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.provider.DocumentFile;
@@ -48,7 +49,6 @@ import ml.puredark.hviewer.ui.adapters.CollectionTagAdapter;
 import ml.puredark.hviewer.ui.adapters.CommentAdapter;
 import ml.puredark.hviewer.ui.adapters.PictureVideoAdapter;
 import ml.puredark.hviewer.ui.adapters.ViewPagerAdapter;
-import ml.puredark.hviewer.ui.customs.AutoFitGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.AutoFitStaggeredGridLayoutManager;
 import ml.puredark.hviewer.ui.customs.ExTabLayout;
 import ml.puredark.hviewer.ui.customs.ExViewPager;
@@ -260,16 +260,20 @@ public class DownloadTaskActivity extends BaseActivity {
 
     private void openVideoViewerActivity(int position) {
         Video video = (Video) pictureVideoAdapter.getVideoDataProvider().getItem(position - pictureVideoAdapter.getPictureSize());
-        if(video.vlink==null){
+        if (video.vlink == null) {
             showSnackBar("视频为空，可能下载失败");
             return;
         }
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse(video.vlink);
-        DocumentFile docFile = DocumentFile.fromSingleUri(this, uri);
-        intent.setDataAndType(docFile.getUri(), "video/mp4");
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(intent, "选择播放器"));
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Uri uri = Uri.parse(video.vlink);
+            DocumentFile docFile = DocumentFile.fromSingleUri(this, uri);
+            intent.setDataAndType(docFile.getUri(), "video/mp4");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(intent, "选择播放器"));
+        } catch (Exception e) {
+            showSnackBar("无法打开，下载路径需要设置为content://协议");
+        }
     }
 
     private boolean commentEnabled() {

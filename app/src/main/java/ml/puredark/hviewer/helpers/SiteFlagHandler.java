@@ -86,24 +86,7 @@ public class SiteFlagHandler {
     }
 
     public static void preloadGallery(final Context context, final RecyclerView.Adapter adapter, final int position, final Site site, final Collection collection, final SiteTagHolder siteTagHolder) {
-        //解析URL模板
-        String pageStr = RuleParser.parseUrl(site.galleryUrl).get("page");
-        int startPage;
-        try {
-            if (pageStr == null) {
-                startPage = 0;
-            } else {
-                String[] pageStrs = pageStr.split(":");
-                if (pageStrs.length > 1) {
-                    startPage = Integer.parseInt(pageStrs[0]);
-                } else {
-                    startPage = Integer.parseInt(pageStr);
-                }
-            }
-        } catch (NumberFormatException e) {
-            startPage = 0;
-        }
-        final String url = site.getGalleryUrl(collection.idCode, startPage, null);
+        final String url = site.getGalleryUrl(collection.idCode, 0, null);
         HViewerHttpClient.get(url, site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {

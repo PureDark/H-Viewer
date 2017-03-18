@@ -98,6 +98,8 @@ public class RuleParser {
             }
         } catch (NumberFormatException e) {
         }
+        if (page < startPage)
+            page = startPage;
         int realPage = page + (page - startPage) * (pageStep - 1);
         url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (realPage == startPage) ? "" : matchResult.get("pageStr"))
                 .replaceAll("\\{page:.*?\\}", "" + realPage)
@@ -107,14 +109,14 @@ public class RuleParser {
             String dateStr = matchResult.get("date");
             int index = dateStr.lastIndexOf(':');
             String firstParam = dateStr.substring(0, index);
-            String lastParam = dateStr.substring(index+1);
+            String lastParam = dateStr.substring(index + 1);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat;
-            try{
+            try {
                 int offset = Integer.parseInt(lastParam);
                 dateFormat = new SimpleDateFormat(firstParam);
                 calendar.add(Calendar.DAY_OF_MONTH, offset);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 dateFormat = new SimpleDateFormat(dateStr);
             }
             String currDate = dateFormat.format(calendar.getTime());
@@ -124,14 +126,14 @@ public class RuleParser {
             String timeStr = matchResult.get("time");
             int index = timeStr.lastIndexOf(':');
             String firstParam = timeStr.substring(0, index);
-            String lastParam = timeStr.substring(index+1);
+            String lastParam = timeStr.substring(index + 1);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat;
-            try{
+            try {
                 int offset = Integer.parseInt(lastParam);
                 dateFormat = new SimpleDateFormat(firstParam);
                 calendar.add(Calendar.SECOND, offset);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 dateFormat = new SimpleDateFormat(timeStr);
             }
             String currTime = dateFormat.format(calendar.getTime());
@@ -284,6 +286,7 @@ public class RuleParser {
         String datetime = parseSingleProperty(source, rule.datetime, sourceUrl, false);
 
         String description = parseSingleProperty(source, rule.description, sourceUrl, false);
+
         if (source instanceof Element) {
             try {
                 Element element = Jsoup.parse(description);
@@ -559,7 +562,7 @@ public class RuleParser {
                             prop = elem.attr(selector.param);
                         } else if ("html".equals(selector.fun)) {
                             prop = elem.html();
-                        } else if ("text".equals(selector.fun)){
+                        } else if ("text".equals(selector.fun)) {
                             prop = elem.text();
                         } else {
                             prop = elem.toString();
@@ -687,7 +690,7 @@ public class RuleParser {
         try {
             Pattern p = Pattern.compile("https?[^\"'<>]*?[^\"'<>]+?\\.(?:mp4|flv)[^\"'<>]*", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(html);
-            while(matcher.find()){
+            while (matcher.find()) {
                 String videoUrl = matcher.group();
                 if (TextUtils.isEmpty(videoUrl))
                     continue;

@@ -195,10 +195,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder.tvDescription.setVisibility(View.GONE);
                 if (!TextUtils.isEmpty(collection.cover))
                     ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer, new BaseControllerListener<ImageInfo>() {
-                        @Override
-                        public void onSubmit(String id, Object callerContext) {
-                            super.onSubmit(id, callerContext);
-                        }
 
                         @Override
                         public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
@@ -220,10 +216,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                     storedHeights.put(collection, originHeight);
                                 }
                             });
-                        }
-
-                        @Override
-                        public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
                         }
 
                         @Override
