@@ -1,20 +1,23 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.drawable.Animatable;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -34,10 +37,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.gc.materialdesign.views.ButtonFlat;
@@ -48,7 +54,6 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.umeng.analytics.MobclickAgent;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -75,6 +80,7 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -178,6 +184,14 @@ public class MainActivity extends BaseActivity {
         // 开启按两次返回退出
         setDoubleBackExitEnabled(true);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, 1);
+        }
+
         if (HViewerApplication.DEBUG)
             toolbar.setOnLongClickListener(v -> {
                 if (currFragment != null && currFragment.getCurrSite() != null
@@ -205,13 +219,18 @@ public class MainActivity extends BaseActivity {
             initSetDefultDownloadPath();
         }
 
-        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true,
-                new BaseControllerListener<ImageInfo>() {
-                    @Override
-                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true, null);
+        supplier.get().subscribe(new BaseBitmapDataSubscriber() {
+            @Override
+            protected void onNewResultImpl(Bitmap bitmap) {
+                Logger.d("ImageTest", "onNewResultImpl");
+            }
 
-                    }
-                });
+            @Override
+            protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                Logger.d("ImageTest", "onFailureImpl");
+            }
+        }, CallerThreadExecutor.getInstance());
 
         backdrop.setOnLongClickListener(v -> {
             String[] options = new String[]{"自定义", "随机图片"};
@@ -228,7 +247,6 @@ public class MainActivity extends BaseActivity {
                                     .disableDiskCache()
                                     .build();
                             supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, this, ImageRequest.RequestLevel.FULL_FETCH));
-                            File path = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                         }
                     })
                     .setNegativeButton(getString(R.string.cancel), null)

@@ -95,12 +95,13 @@ public class SiteFlagHandler {
                 new Thread(() -> {
                     RuleParser.getCollectionDetail(collection, (String) result, site.galleryRule, url);
                     collection.preloaded = true;
-
-                    if (collection.tags != null) {
-                        for (Tag tag : collection.tags) {
-                            HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
-                            if (siteTagHolder != null)
-                                siteTagHolder.addTag(site.sid, tag);
+                    synchronized(context) {
+                        if (collection.tags != null) {
+                            for (Tag tag : collection.tags) {
+                                HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);
+                                if (siteTagHolder != null)
+                                    siteTagHolder.addTag(site.sid, tag);
+                            }
                         }
                     }
 

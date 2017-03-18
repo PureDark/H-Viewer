@@ -152,4 +152,7 @@ dependencies {
     compile 'net.rdrei.android.dirchooser:library:3.2@aar'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'net.jcip:jcip-annotations:1.0'
+
+    // unlock methods, such as pin, fingerprint, etc
+    compile 'com.andrognito.pinlockview:pinlockview:2.0.1'
 }

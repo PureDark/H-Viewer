@@ -62,9 +62,9 @@ public class ImagePipelineConfigBuilder {
     public static ImagePipelineConfig getDefaultImagePipelineConfig(Context context) {
         final int cacheSize = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
                 SettingFragment.KEY_PREF_CACHE_SIZE, 300);
-        MAX_DISK_CACHE_VERYLOW_SIZE = cacheSize / 5;
-        MAX_DISK_CACHE_LOW_SIZE = cacheSize * 3/5;
-        MAX_DISK_CACHE_SIZE = cacheSize;
+        MAX_DISK_CACHE_VERYLOW_SIZE = cacheSize / 5  * ByteConstants.MB;
+        MAX_DISK_CACHE_LOW_SIZE = cacheSize * 3/5  * ByteConstants.MB;
+        MAX_DISK_CACHE_SIZE = cacheSize  * ByteConstants.MB;
 
         //内存配置
         final MemoryCacheParams bitmapCacheParams = new MemoryCacheParams(
@@ -120,7 +120,7 @@ public class ImagePipelineConfigBuilder {
                 .setNetworkFetcher(new MyOkHttpNetworkFetcher(okHttpClient));
 
 
-        // 就是这段代码，用于清理缓存
+        // 这段代码用于清理缓存
         NoOpMemoryTrimmableRegistry.getInstance().registerMemoryTrimmable(new MemoryTrimmable() {
             @Override
             public void trim(MemoryTrimType trimType) {

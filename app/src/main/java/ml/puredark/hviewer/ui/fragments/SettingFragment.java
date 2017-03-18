@@ -118,6 +118,8 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_FIRST_TIME = "key_first_time";
 
+    public static final String KEY_CUSTOM_HEADER_IMAGE = "key_custom_header_image";
+
     private static final int RESULT_CHOOSE_DIRECTORY = 1;
 
     private BaseActivity activity;
