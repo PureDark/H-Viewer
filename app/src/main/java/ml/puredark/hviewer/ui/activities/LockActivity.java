@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -38,6 +39,7 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.VibratorUtil;
 import rx.Subscriber;
 import rx.Subscription;
+import zwh.com.lib.CodeException;
 import zwh.com.lib.FPerException;
 import zwh.com.lib.RxFingerPrinter;
 
@@ -65,6 +67,7 @@ public class LockActivity extends AppCompatActivity {
     TextView tvMessage;
 
     private String correctPin;
+    private boolean success = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,22 +80,20 @@ public class LockActivity extends AppCompatActivity {
         layoutPinLock.setVisibility(View.GONE);
 
         initBlurryBackground();
-        initFingerPrintLock();
+
+        FingerprintManagerCompat manager = FingerprintManagerCompat.from(this);
+        boolean isFingerPrintLock = manager.hasEnrolledFingerprints();
+        boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PATTERN;
+        boolean isPinLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PIN;
+
+        if(isFingerPrintLock)
+            initFingerPrintLock();
 
         correctPin = (String) SharedPreferencesUtil.getData(this, LockMethodFragment.KEY_PREF_PIN_LOCK, "");
-//        correctPin = "5566";
-//        List<PatternView.Cell> LOGO_PATTERN = new ArrayList<>();
-//        LOGO_PATTERN.add(PatternView.Cell.of(0, 1));
-//        LOGO_PATTERN.add(PatternView.Cell.of(1, 0));
-//        LOGO_PATTERN.add(PatternView.Cell.of(2, 1));
-//        LOGO_PATTERN.add(PatternView.Cell.of(1, 2));
-//        LOGO_PATTERN.add(PatternView.Cell.of(1, 1));
-//        PatternLockUtils.setPattern(this, LOGO_PATTERN);
-//        PatternLockUtils.clearPattern(this);
 
-        if (PatternLockUtils.hasPattern(this)) {
+        if (isPatternLock) {
             initPatternLock();
-        } else if (!TextUtils.isEmpty(correctPin)) {
+        } else if (isPinLock) {
             initPinkLock();
         } else {
             Intent intent = new Intent(LockActivity.this, MainActivity.class);
@@ -119,10 +120,12 @@ public class LockActivity extends AppCompatActivity {
     }
 
     private void initPatternLock() {
+        tvMessage.setText(LockActivity.this.getString(R.string.pattern_lock_message));
         layoutPatternLock.setVisibility(View.VISIBLE);
         mPatternView.setOnPatternListener(new PatternView.OnPatternListener() {
             @Override
             public void onPatternStart() {
+                tvMessage.setText(LockActivity.this.getString(R.string.pattern_lock_message));
             }
 
             @Override
@@ -135,27 +138,32 @@ public class LockActivity extends AppCompatActivity {
 
             @Override
             public void onPatternDetected(List<PatternView.Cell> list) {
+                if(success)
+                    return;
                 if (PatternLockUtils.isPatternCorrect(LockActivity.this, list)) {
                     mPatternView.setDisplayMode(PatternView.DisplayMode.Correct);
                     onSuccessUnlock();
                 } else {
                     mPatternView.setDisplayMode(PatternView.DisplayMode.Wrong);
-                    showErrorMessage(LockActivity.this.getString(R.string.pin_lock_wrong));
+                    showErrorMessage(LockActivity.this.getString(R.string.pattern_lock_wrong), true);
                 }
             }
         });
     }
 
     private void initPinkLock() {
+        tvMessage.setText(LockActivity.this.getString(R.string.pin_lock_message));
         layoutPinLock.setVisibility(View.VISIBLE);
         mPinLockView.attachIndicatorDots(mIndicatorDots);
         mPinLockView.setPinLockListener(new PinLockListener() {
             @Override
             public void onComplete(String pin) {
+                if(success)
+                    return;
                 if (pin.equals(correctPin)) {
                     onSuccessUnlock();
                 } else {
-                    showErrorMessage(LockActivity.this.getString(R.string.pin_lock_wrong));
+                    showErrorMessage(LockActivity.this.getString(R.string.pin_lock_wrong), true);
                 }
             }
 
@@ -188,16 +196,18 @@ public class LockActivity extends AppCompatActivity {
                                 @Override
                                 public void onError(Throwable e) {
                                     if (e instanceof FPerException) {
-                                        showErrorMessage(((FPerException) e).getDisplayMessage());
+                                        showErrorMessage(((FPerException) e).getDisplayMessage(), false);
                                     }
                                 }
 
                                 @Override
                                 public void onNext(Boolean aBoolean) {
+                                    if(success)
+                                        return;
                                     if (aBoolean) {
                                         onSuccessUnlock();
                                     } else {
-                                        showErrorMessage(LockActivity.this.getString(R.string.finger_print_lock_wrong));
+                                        showErrorMessage(LockActivity.this.getString(R.string.finger_print_lock_wrong), true);
                                     }
                                 }
                             });
@@ -206,18 +216,28 @@ public class LockActivity extends AppCompatActivity {
     }
 
     private void onSuccessUnlock() {
-        VibratorUtil.Vibrate(LockActivity.this, 20);
+        vibrate(20, true);
+        success = true;
         Intent intent = new Intent(LockActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void showErrorMessage(String message) {
-        VibratorUtil.Vibrate(LockActivity.this, 100);
+    private void showErrorMessage(String message, boolean vibrate) {
+        if(vibrate)
+            vibrate(50, false);
         tvMessage.setText(message);
         YoYo.with(Techniques.BounceInUp)
                 .duration(200)
                 .playOn(tvMessage);
+    }
+
+    private synchronized void vibrate(int milliseconds, boolean success){
+        if(!this.success) {
+            VibratorUtil.Vibrate(LockActivity.this, milliseconds);
+        }
+        if(success)
+            this.success = success;
     }
 
 }

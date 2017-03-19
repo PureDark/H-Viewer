@@ -98,16 +98,23 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.tvTitle.setText(collection.title);
             holder.tvUploader.setText(collection.uploader);
             holder.tvCategory.setText(collection.category);
+            holder.tvUploader.setVisibility(View.VISIBLE);
+            holder.tvCategory.setVisibility(View.VISIBLE);
             if (collection.tags == null) {
                 holder.tvTitle.setMaxLines(2);
                 CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()));
                 adapter.setOnItemClickListener(mTagClickListener);
                 holder.rvTags.setAdapter(adapter);
             } else {
-                if(TextUtils.isEmpty(collection.uploader) || TextUtils.isEmpty(collection.category))
-                    holder.tvTitle.setMaxLines(2);
-                else
+                if(TextUtils.isEmpty(collection.uploader)){
+                    holder.tvUploader.setVisibility(View.GONE);
+                    holder.tvTitle.setLines(2);
+                } else if(TextUtils.isEmpty(collection.category)) {
+                    holder.tvCategory.setVisibility(View.GONE);
+                    holder.tvTitle.setLines(2);
+                } else {
                     holder.tvTitle.setMaxLines(1);
+                }
                 CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(collection.tags));
                 adapter.setOnItemClickListener(mTagClickListener);
                 holder.rvTags.setAdapter(adapter);
@@ -130,8 +137,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            checkSiteFlags(position, site, collection);
-            ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
+            if(TextUtils.isEmpty(collection.cover))
+                checkSiteFlags(position, site, collection);
+            else
+                ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
         } else if (viewHolder instanceof CollectionWaterfallViewHolder) {
             CollectionWaterfallViewHolder holder = (CollectionWaterfallViewHolder) viewHolder;
             String cookie = (site == null) ? "" : site.cookie;

@@ -12,8 +12,10 @@ import java.util.List;
 
 import me.zhanghai.android.patternlock.PatternView;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.ui.fragments.LockMethodFragment;
 import ml.puredark.hviewer.utils.AppUtils;
 import ml.puredark.hviewer.utils.PatternLockUtils;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class SetPatternActivity extends me.zhanghai.android.patternlock.SetPatternActivity {
 
@@ -39,5 +41,6 @@ public class SetPatternActivity extends me.zhanghai.android.patternlock.SetPatte
     @Override
     protected void onSetPattern(List<PatternView.Cell> pattern) {
         PatternLockUtils.setPattern(this, pattern);
+        SharedPreferencesUtil.saveData(this, LockMethodFragment.KEY_PREF_CURR_LOCK_METHOD, "pattern");
     }
 }

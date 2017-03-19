@@ -88,6 +88,7 @@ public class SetPinActivity extends BaseActivity {
                 btnRight.setClickable(false);
             } else if (step == STEP_2ND_CONFIRM) {
                 SharedPreferencesUtil.saveData(this, LockMethodFragment.KEY_PREF_PIN_LOCK, correctPin);
+                SharedPreferencesUtil.saveData(this, LockMethodFragment.KEY_PREF_CURR_LOCK_METHOD, "pin");
                 finish();
             }
         });
@@ -142,7 +143,7 @@ public class SetPinActivity extends BaseActivity {
 
 
     private void showErrorMessage(String message) {
-        VibratorUtil.Vibrate(SetPinActivity.this, 100);
+        VibratorUtil.Vibrate(SetPinActivity.this, 50);
         tvMessage.setText(message);
         YoYo.with(Techniques.BounceInUp)
                 .duration(200)

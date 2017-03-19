@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.ui.fragments.LockMethodFragment;
-import ml.puredark.hviewer.utils.PatternLockUtils;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
@@ -31,14 +30,13 @@ public class LockMethodPreference extends Preference {
 
     @Override
     public CharSequence getSummary() {
-        FingerprintManagerCompat manager = FingerprintManagerCompat.from(getContext());
-        boolean isFingerPrintLock = manager.hasEnrolledFingerprints();
         Context context = getContext();
-        boolean isPatternLock = PatternLockUtils.hasPattern(context);
-        String pin = (String) SharedPreferencesUtil.getData(context, LockMethodFragment.KEY_PREF_PIN_LOCK, "");
-        boolean isPinLock = !TextUtils.isEmpty(pin);
+        FingerprintManagerCompat manager = FingerprintManagerCompat.from(context);
+        boolean isFingerPrintLock = manager.hasEnrolledFingerprints();
+        boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PATTERN;
+        boolean isPinLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PIN;
         String summary = (isPatternLock) ? "图案解锁" : (isPinLock) ? "数字解锁" : "";
-        if(!TextUtils.isEmpty(summary))
+        if (!TextUtils.isEmpty(summary))
             summary += (isFingerPrintLock) ? "、指纹" : "";
         else
             summary = context.getString(R.string.settings_lock_methods_detail_summary);

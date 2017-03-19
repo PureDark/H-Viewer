@@ -135,6 +135,8 @@
 
     <string name="pin_lock_message">使用指纹或输入数字密码</string>
     <string name="pin_lock_wrong">输入了不正确的数字密码</string>
+    <string name="pattern_lock_message">使用指纹或使用图案解锁</string>
+    <string name="pattern_lock_wrong">图案不正确</string>
     <string name="finger_print_lock_wrong">无匹配</string>
 
 </resources>
