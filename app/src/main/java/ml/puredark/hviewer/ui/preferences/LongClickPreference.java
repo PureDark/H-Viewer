@@ -1,4 +1,4 @@
-package ml.puredark.hviewer.ui.customs;
+package ml.puredark.hviewer.ui.preferences;
 
 import android.content.Context;
 import android.preference.Preference;
@@ -36,19 +36,15 @@ public class LongClickPreference extends Preference implements View.OnLongClickL
     protected View onCreateView(ViewGroup parent) {
         if (parent instanceof ListView) {
             ListView listView = (ListView) parent;
-            listView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
-
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    ListView listView = (ListView) parent;
-                    ListAdapter listAdapter = listView.getAdapter();
-                    Object obj = listAdapter.getItem(position);
-                    if (obj != null && obj instanceof View.OnLongClickListener) {
-                        View.OnLongClickListener longListener = (View.OnLongClickListener) obj;
-                        return longListener.onLongClick(view);
-                    }
-                    return false;
+            listView.setOnItemLongClickListener((parent1, view, position, id) -> {
+                ListView listView1 = (ListView) parent1;
+                ListAdapter listAdapter = listView1.getAdapter();
+                Object obj = listAdapter.getItem(position);
+                if (obj != null && obj instanceof View.OnLongClickListener) {
+                    View.OnLongClickListener longListener = (View.OnLongClickListener) obj;
+                    return longListener.onLongClick(view);
                 }
+                return false;
             });
         }
         return super.onCreateView(parent);

@@ -80,8 +80,6 @@
     <string name="settings_restore">恢复</string>
     <string name="settings_restore_summary">恢复站点,设置,收藏夹</string>
 
-    <string name="restore_Succes">还原成功</string>
-
     <string name="setting_about_author">作者</string>
     <string name="setting_about_author_summary">PureDark</string>
     <string name="setting_about_github">Github主页</string>
@@ -95,7 +93,27 @@
     <string name="setting_about_donate">捐赠-支付宝</string>
     <string name="setting_about_donate_summary">&lt;bruce.lee.liang@gmail.com&gt;</string>
 
+    <string name="settings_lock_methods">应用解锁方式</string>
+    <string name="settings_lock_methods_detail">设置解锁方式</string>
+    <string name="settings_lock_methods_detail_summary">未设置</string>
 
+    <string name="setting_pattern_lock_title">图案解锁</string>
+    <string name="setting_title_set_pattern">图案</string>
+    <string name="setting_summary_set_pattern_none">[ 未设置图案 ]</string>
+    <string name="setting_summary_set_pattern_has">[ 已设置图案 ]</string>
+    <string name="setting_title_set_pin">数字密码</string>
+    <string name="setting_summary_set_pin_none">[ 未设置密码 ]</string>
+    <string name="setting_summary_set_pin_has">[ 已设置密码 ]</string>
+    <string name="setting_title_clear_lock_methods">清除所有解锁方式</string>
+    <string name="setting_dialog_message_clear_lock_methods">要清除所有解锁方式吗？</string>
+    <string name="setting_lock_methods_cleared">已清除所有解锁方式</string>
+
+    <string name="setting_set_pin_message">请设置4位密码</string>
+    <string name="setting_set_pin_confirm_message">请重新输入以确认</string>
+    <string name="setting_set_pin_confirm_error">密码错误，请重试</string>
+
+
+    <string name="restore_succes">还原成功</string>
     <string name="authorization_failed">授权失败将会影响下载和备份</string>
     <string name="no">否</string>
     <string name="yes">是</string>

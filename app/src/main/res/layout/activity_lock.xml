@@ -55,31 +55,48 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/default_text_size" />
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:minHeight="288dp"
-                android:layout_marginTop="36dp"
-                android:orientation="vertical">
-
-                <com.andrognito.pinlockview.IndicatorDots
-                    android:id="@+id/indicator_dots"
+                android:layout_marginTop="36dp">
+                <LinearLayout
+                    android:id="@+id/layout_pattern_lock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"/>
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
-                <com.andrognito.pinlockview.PinLockView
-                    android:id="@+id/pin_lock_view"
+                    <me.zhanghai.android.patternlock.PatternView
+                        android:id="@+id/pattern_lock_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="36dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout_pin_lock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="36dp"
-                    app:keypadDeleteButtonSize="24dp"
-                    app:keypadButtonSize="72dp"
-                    app:keypadShowDeleteButton="true"
-                    app:keypadTextColor="@color/white"
-                    app:keypadTextSize="24dp" />
-            </LinearLayout>
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <com.andrognito.pinlockview.IndicatorDots
+                        android:id="@+id/indicator_dots"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <com.andrognito.pinlockview.PinLockView
+                        android:id="@+id/pin_lock_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="36dp"
+                        app:keypadDeleteButtonSize="24dp"
+                        app:keypadButtonSize="72dp"
+                        app:keypadShowDeleteButton="true"
+                        app:keypadTextColor="@color/white"
+                        app:keypadTextSize="24dp" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
 
     </eightbitlab.com.blurview.BlurView>

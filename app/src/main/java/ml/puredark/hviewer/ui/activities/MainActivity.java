@@ -287,8 +287,8 @@ public class MainActivity extends BaseActivity {
     private void initHeaderImage() {
         final String rootDir = mContext.getExternalCacheDir().getAbsolutePath();
         File headerFile = new File(rootDir + "/image/header.jpg");
-        String currHeaderUrl = (headerFile.exists()) ? "file://" + headerFile.getAbsolutePath() : "drawable://backdrop";
-        Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
+                String currHeaderUrl = (headerFile.exists()) ? "file://" + headerFile.getAbsolutePath() : "drawable://backdrop";
+                Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
 
         supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, currHeaderUrl, null, null, true,
                 new BaseControllerListener<ImageInfo>() {
@@ -349,8 +349,9 @@ public class MainActivity extends BaseActivity {
                 try {
                     String text = (String) result;
                     JsonObject jsonObject = new JsonParser().parse(text).getAsJsonObject();
-                    String url = "http://www.bing.com";
-                    url += jsonObject.get("images").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+//                    String url = "http://www.bing.com";
+//                    url += jsonObject.get("images").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+                    String url = jsonObject.get("data").getAsJsonObject().get("original_pic").getAsString();
                     Uri uri = Uri.parse(url);
                     headerImageUri = uri;
                     //Fresco.getImagePipeline().evictFromMemoryCache(uri);

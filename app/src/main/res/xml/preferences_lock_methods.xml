@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+<PreferenceCategory android:title="@string/settings_lock_methods">
+
+
+    <ml.puredark.hviewer.ui.preferences.SetPatternLockPreference
+        android:key="pref_pattern_lock"
+        android:persistent="false"
+        android:title="@string/setting_title_set_pattern" />
+
+    <ml.puredark.hviewer.ui.preferences.SetPinLockPreference
+        android:key="pref_pin_lock"
+        android:persistent="false"
+        android:title="@string/setting_title_set_pin" />
+
+    <Preference
+        android:key="pref_clear_lock_methods"
+        android:title="@string/setting_title_clear_lock_methods"/>
+
+</PreferenceCategory>
+
+</PreferenceScreen>

@@ -31,7 +31,11 @@ public class SettingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preference);
-        getFragmentManager().beginTransaction().replace(R.id.setting_content, new SettingFragment(this)).commit();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.setting_content, new SettingFragment(this))
+                .addToBackStack(null)
+                .commit();
         ButterKnife.bind(this);
         MDStatusBarCompat.setSwipeBackToolBar(this, coordinatorLayout, appbar, toolbar);
 
@@ -48,10 +52,15 @@ public class SettingActivity extends BaseActivity {
 
     @OnClick(R.id.btn_return)
     void back() {
-        if (getFragmentManager().getBackStackEntryCount() > 1)
-            getFragmentManager().popBackStack();
-        else
+        try {
+            if (getFragmentManager().getBackStackEntryCount() > 1)
+                getFragmentManager().popBackStack();
+            else
+                super.onBackPressed();
+        } catch (Exception e) {
+            e.printStackTrace();
             super.onBackPressed();
+        }
     }
 
     @Override

@@ -72,7 +72,7 @@
             android:title="@string/settings_download_nomedia"
             android:summary="@string/settings_download_nomedia_summary"/>
 
-        <ml.puredark.hviewer.ui.customs.LongClickPreference
+        <ml.puredark.hviewer.ui.preferences.LongClickPreference
             android:defaultValue=""
             android:key="pref_download_path"
             android:singleLine="true"
@@ -129,7 +129,6 @@
 
     </PreferenceCategory>
 
-
     <PreferenceCategory
         android:key="pref_proxy"
         android:title="@string/settings_proxy">
@@ -151,6 +150,16 @@
             android:key="pref_backupandrestore_restore"
             android:title="@string/settings_restore"
             android:summary="@string/settings_restore_summary"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_lock_methods"
+        android:title="@string/settings_lock_methods">
+
+        <ml.puredark.hviewer.ui.preferences.LockMethodPreference
+            android:key="pref_lock_methods_detail"
+            android:title="@string/settings_lock_methods_detail"
+            android:summary="@string/settings_lock_methods_detail_summary" />
     </PreferenceCategory>
 
     <PreferenceCategory

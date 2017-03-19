@@ -187,6 +187,7 @@
     <color name="colorAccentDark">#16a085</color>
 
     <color name="colorPrimaryMask">#cc1abc9c</color>
+    <color name="colorPrimaryLightest">#4cf5d4</color>
 
     <color name="statusBar">#30000000</color>
 

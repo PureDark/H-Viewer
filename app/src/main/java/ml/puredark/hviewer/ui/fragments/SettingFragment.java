@@ -53,7 +53,7 @@ import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.LicenseActivity;
 import ml.puredark.hviewer.ui.activities.PrivacyActivity;
-import ml.puredark.hviewer.ui.customs.LongClickPreference;
+import ml.puredark.hviewer.ui.preferences.LongClickPreference;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
@@ -96,6 +96,8 @@ public class SettingFragment extends PreferenceFragment
 
     public static final String KEY_PREF_BKRS_BACKUP = "pref_backupandrestore_backup";
     public static final String KEY_PREF_BKRS_RESTORE = "pref_backupandrestore_restore";
+
+    public static final String KEY_PREF_LOCK_METHODS_DETAIL = "pref_lock_methods_detail";
 
     public static final String KEY_PREF_ABOUT_UPGRADE = "pref_about_upgrade";
     public static final String KEY_PREF_ABOUT_LICENSE = "pref_about_license";
@@ -352,6 +354,13 @@ public class SettingFragment extends PreferenceFragment
             //PROXY代理
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.setting_content, new ProxyFragment(activity));
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } else if (preference.getKey().equals(KEY_PREF_LOCK_METHODS_DETAIL)) {
+            //应用解锁方式
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.setting_content, new LockMethodFragment(activity));
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
             transaction.commit();

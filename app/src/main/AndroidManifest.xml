@@ -55,6 +55,21 @@
             android:name=".ui.activities.SettingActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activities.SetPatternActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/ActionBarTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activities.SettingActivity" />
+        </activity>
+        <activity
+            android:name=".ui.activities.SetPinActivity"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activities.SettingActivity" />
+        </activity>
+        <activity
             android:name=".ui.activities.AddSiteActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
@@ -97,6 +112,7 @@
             android:name=".ui.activities.LoginActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ui.activities.MarketActivity" />
+
         <activity android:name=".ui.activities.VideoViewerActivity"
             android:hardwareAccelerated="true"
             android:configChanges="orientation|screenSize|keyboardHidden"

@@ -10,6 +10,18 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/ActivityTransition</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="patternViewStyle">@style/MyPatternView</item>
+    </style>
+    <style name="ActionBarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+        <item name="android:windowAnimationStyle">@style/ActivityTransition</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="patternViewStyle">@style/PatternView.Light</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -63,6 +75,13 @@
         <item name="met_primaryColor">@color/colorAccent</item>
         <item name="met_floatingLabel">highlight</item>
         <item name="met_floatingLabelAlwaysShown">true</item>
+    </style>
+
+    <style name="MyPatternView">
+        <item name="pl_aspect">square</item>
+        <item name="pl_regularColor">@color/white</item>
+        <item name="pl_errorColor">#fff4511e</item>
+        <item name="pl_successColor">@color/colorPrimaryLightest</item>
     </style>
 
 </resources>
