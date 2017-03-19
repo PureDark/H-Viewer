@@ -31,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import me.zhanghai.android.patternlock.PatternView;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -72,17 +73,11 @@ public class LockActivity extends AppCompatActivity {
 
     private void initBlurryBackground(){
         final String rootDir = mContext.getExternalCacheDir().getAbsolutePath();
-        String[] exts = new String[]{"jpg", "jpeg", "png", "gif", "bmp", "webp"};
-        String currHeaderUrl = "drawable://backdrop";
-        for (String ext : exts) {
-            File headerFile = new File(rootDir + "/image/header." + ext);
-            if (headerFile.exists()) {
-                currHeaderUrl = "file://" + headerFile.getAbsolutePath();
-                break;
-            }
-        }
+        File headerFile = new File(rootDir + "/image/header.jpg");
+        String currHeaderUrl = (headerFile.exists()) ? "file://" + headerFile.getAbsolutePath() : "drawable://backdrop";
+        Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
 
-        ImageLoader.loadImageFromUrl(this, dvBackground, currHeaderUrl);
+        ImageLoader.loadImageFromUrl(this, dvBackground, currHeaderUrl, null, null, true);
 
         View decorView = getWindow().getDecorView();
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
@@ -155,7 +150,7 @@ public class LockActivity extends AppCompatActivity {
     }
 
     private void onSuccessUnlock(){
-        VibratorUtil.Vibrate(LockActivity.this, 50);
+        VibratorUtil.Vibrate(LockActivity.this, 20);
         Intent intent = new Intent(LockActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
