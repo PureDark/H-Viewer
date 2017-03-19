@@ -8,6 +8,9 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+	  android:paddingLeft="@dimen/uni_padding"
+	  android:paddingRight="@dimen/uni_padding"
+	  android:paddingTop="@dimen/uni_padding"
       android:orientation="vertical" >
 	  <ProgressBar
 	  	android:id="@+id/progress"
@@ -27,7 +30,8 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentRight="true"
-          android:layout_marginRight="10dp"
+          android:layout_marginRight="@dimen/margin"
+		  android:layout_marginBottom="@dimen/half_margin"
           android:textSize="12sp"
           android:textColor="@color/grey"
           android:text="0KB/0KB" />

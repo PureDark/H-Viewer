@@ -89,6 +89,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha5'
+    compile 'com.android.support:support-compat:25.2.0'
     //umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
     //material widget
@@ -129,6 +130,10 @@ dependencies {
     compile 'com.github.PureDark:PhotoDraweeView:2c7b7f65b1'
     //    compile project (':photodraweeview')
     compile 'com.nineoldandroids:library:2.4.0'
+    //animation
+    compile 'com.daimajia.easing:library:2.0@aar'
+    compile 'com.daimajia.androidanimations:library:2.2@aar'
+
     //http
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.lzy.net:okgo:2.1.4'
@@ -159,5 +164,6 @@ dependencies {
     compile 'com.andrognito.pinlockview:pinlockview:2.0.1'
     compile 'com.zwh:RxFingerPrinter:1.0.1'
     compile 'me.zhanghai.android.patternlock:library:2.0.4'
-    compile 'jp.wasabeef:blurry:2.1.0'
+    compile 'com.eightbitlab:blurview:1.3.2'
+
 }

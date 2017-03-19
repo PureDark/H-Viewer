@@ -64,13 +64,18 @@ public class DocumentUtil {
 
     public static DocumentFile createDirIfNotExist(DocumentFile root, String... subDirs) {
         DocumentFile parent = root;
-        for (int i = 0; i < subDirs.length; i++) {
-            String subDirName = filenameFilter(Uri.decode(subDirs[i]));
-            DocumentFile subDir = parent.findFile(subDirName);
-            if (subDir == null) {
-                subDir = parent.createDirectory(subDirName);
+        try {
+            for (int i = 0; i < subDirs.length; i++) {
+                String subDirName = filenameFilter(Uri.decode(subDirs[i]));
+                DocumentFile subDir = parent.findFile(subDirName);
+                if (subDir == null) {
+                    subDir = parent.createDirectory(subDirName);
+                }
+                parent = subDir;
             }
-            parent = subDir;
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
         return parent;
     }

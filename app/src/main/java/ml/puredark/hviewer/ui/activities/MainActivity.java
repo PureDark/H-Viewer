@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
@@ -38,10 +39,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -56,6 +61,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -278,41 +284,52 @@ public class MainActivity extends BaseActivity {
         UpdateManager.checkUpdate(this);
     }
 
-    private void initHeaderImage(){
+    private void initHeaderImage() {
         final String rootDir = mContext.getExternalCacheDir().getAbsolutePath();
-        String[] exts = new String[]{"jpg", "jpeg", "png", "gif", "bmp", "webp"};
-        String currHeaderUrl = "drawable://backdrop";
-        for (String ext : exts) {
-            File headerFile = new File(rootDir + "/image/header." + ext);
-            if (headerFile.exists()) {
-                currHeaderUrl = "file://" + headerFile.getAbsolutePath();
-                break;
-            }
-        }
+        File headerFile = new File(rootDir + "/image/header.jpg");
+        String currHeaderUrl = (headerFile.exists()) ? "file://" + headerFile.getAbsolutePath() : "drawable://backdrop";
         Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
 
         supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, currHeaderUrl, null, null, true,
                 new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
-                        Animatable animatable = ((SimpleDraweeView)backdrop).getController().getAnimatable();
+                        Animatable animatable = ((SimpleDraweeView) backdrop).getController().getAnimatable();
                         if (animatable != null)
                             animatable.start();
-                        if (headerImageUri == null || headerImageUri.getPath().matches("header\\.(?:jpg|jpeg|png|gif|bmp|webp)"))
+                        if (headerImageUri == null || headerImageUri.getPath().endsWith("header.jpg"))
                             return;
-                        Logger.d("HeaderImage", "headerImageUrl : " + headerImageUri.toString());
-                        DocumentFile imageFile = DocumentFile.fromSingleUri(mContext, headerImageUri);
-                        String name = imageFile.getName();
-                        int lastIndex = name.lastIndexOf(".");
-                        String posfix = (lastIndex >= 0) ? name.substring(name.lastIndexOf(".") + 1) : "jpg";
-                        DocumentFile documentFile = FileHelper.createFileIfNotExist("header." + posfix, rootDir, "image");
-                        try {
-                            InputStream in = DocumentUtil.getFileInputSteam(MainActivity.this, imageFile);
-                            FileHelper.writeFromInputStream(in, documentFile);
-                            Logger.d("HeaderImage", "Header image saved!");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Logger.d("HeaderImage", "Header image save failed!");
+                        if (headerImageUri.getScheme().startsWith("http")) {
+                            ImageLoader.loadBitmapFromUrl(MainActivity.this, headerImageUri.toString(), null, null, new BaseBitmapDataSubscriber() {
+                                @Override
+                                protected void onNewResultImpl(Bitmap bitmap) {
+                                    DocumentFile documentFile = FileHelper.createFileIfNotExist("header.jpg", rootDir, "image");
+                                    try {
+                                        FileHelper.saveBitmapToFile(bitmap, documentFile);
+                                        Logger.d("HeaderImage", "Header image saved!");
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        Logger.d("HeaderImage", "Header image save failed!");
+                                    }
+                                }
+
+                                @Override
+                                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                                    Logger.d("HeaderImage", "Header image save failed!");
+                                }
+                            });
+                        } else {
+                            Logger.d("HeaderImage", "headerImageUrl : " + headerImageUri.toString());
+                            DocumentFile imageFile = DocumentFile.fromSingleUri(mContext, headerImageUri);
+                            DocumentFile documentFile = FileHelper.createFileIfNotExist("header.jpg", rootDir, "image");
+                            try {
+                                InputStream in = DocumentUtil.getFileInputSteam(MainActivity.this, imageFile);
+                                FileHelper.writeFromInputStream(in, documentFile);
+                                Logger.d("HeaderImage", "Header image saved!");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Logger.d("HeaderImage", "Header image save failed!");
+                            }
                         }
                     }
                 });

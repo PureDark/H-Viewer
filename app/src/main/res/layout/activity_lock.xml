@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ml.puredark.hviewer.ui.activities.LockActivity">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/dvBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:fitsSystemWindows="true"
+        app:actualImageScaleType="centerCrop"
+        app:placeholderImage="@drawable/backdrop"
+        app:placeholderImageScaleType="centerCrop"
+        app:failureImage="@drawable/backdrop"
+        app:failureImageScaleType="centerCrop"/>
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:blurOverlayColor="@color/colorPrimaryMask"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:background="@color/colorPrimaryMask"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="100dp"
+                android:gravity="center"
+                android:fontFamily="sans-serif-thin"
+                android:maxLines="1"
+                android:text="H-Viewer"
+                android:textColor="@color/white"
+                android:textSize="34sp" />
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:text="@string/pin_lock_message"
+                android:textColor="@color/white"
+                android:textSize="@dimen/default_text_size" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:minHeight="288dp"
+                android:layout_marginTop="36dp"
+                android:orientation="vertical">
+
+                <com.andrognito.pinlockview.IndicatorDots
+                    android:id="@+id/indicator_dots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"/>
+
+                <com.andrognito.pinlockview.PinLockView
+                    android:id="@+id/pin_lock_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="36dp"
+                    app:keypadDeleteButtonSize="24dp"
+                    app:keypadButtonSize="72dp"
+                    app:keypadShowDeleteButton="true"
+                    app:keypadTextColor="@color/white"
+                    app:keypadTextSize="24dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </eightbitlab.com.blurview.BlurView>
+
+
+</RelativeLayout>
