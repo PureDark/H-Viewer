@@ -20,6 +20,8 @@ android {
         versionName "0.9.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        renderscriptTargetApi 25
+        renderscriptSupportModeEnabled true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -155,4 +157,7 @@ dependencies {
 
     // unlock methods, such as pin, fingerprint, etc
     compile 'com.andrognito.pinlockview:pinlockview:2.0.1'
+    compile 'com.zwh:RxFingerPrinter:1.0.1'
+    compile 'me.zhanghai.android.patternlock:library:2.0.4'
+    compile 'jp.wasabeef:blurry:2.1.0'
 }

@@ -6,7 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -37,16 +38,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dpizarro.autolabel.library.AutoLabelUI;
-import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.gc.materialdesign.views.ButtonFlat;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -54,6 +55,8 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -75,14 +78,17 @@ import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.beans.Tag;
+import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.dataholders.AbstractTagHolder;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.UpdateManager;
+import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.adapters.CategoryAdapter;
 import ml.puredark.hviewer.ui.adapters.MySearchAdapter;
@@ -97,11 +103,14 @@ import ml.puredark.hviewer.ui.fragments.CollectionFragment;
 import ml.puredark.hviewer.ui.fragments.MyFragment;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.AppBarStateChangeListener;
+import ml.puredark.hviewer.utils.DocumentUtil;
 import ml.puredark.hviewer.utils.RegexValidateUtil;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
+import static ml.puredark.hviewer.HViewerApplication.mContext;
 import static ml.puredark.hviewer.HViewerApplication.searchHistoryHolder;
 import static ml.puredark.hviewer.HViewerApplication.temp;
+import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_CUSTOM_HEADER_IMAGE;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_FIRST_TIME;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_DOWNLOAD_PATH;
 
@@ -113,6 +122,7 @@ public class MainActivity extends BaseActivity {
     private static int RESULT_SITE_MARKET = 4;
     private static int RESULT_SETTING = 5;
     private static int RESULT_RDSQ = 6;
+    private static int RESULT_SET_HEADER_IMAGE = 7;
 
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
@@ -157,6 +167,11 @@ public class MainActivity extends BaseActivity {
     //当前搜索的查询关键字
     private String currQuery;
     private boolean isSuggestionEmpty = true;
+
+    //记录当前页头图url
+    private Uri headerImageUri;
+
+    private RetainingDataSourceSupplier supplier;
 
     private SiteHolder siteHolder;
     private SiteTagHolder siteTagHolder;
@@ -214,23 +229,10 @@ public class MainActivity extends BaseActivity {
             searchView.setLayoutParams(lp);
         }
 
-        //获取存储权限
+        //获取下载目录权限
         if ((boolean) SharedPreferencesUtil.getData(this, KEY_FIRST_TIME, true)) {
             initSetDefultDownloadPath();
         }
-
-        final RetainingDataSourceSupplier supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, "https://api.i-meto.com/bing", null, null, true, null);
-        supplier.get().subscribe(new BaseBitmapDataSubscriber() {
-            @Override
-            protected void onNewResultImpl(Bitmap bitmap) {
-                Logger.d("ImageTest", "onNewResultImpl");
-            }
-
-            @Override
-            protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-                Logger.d("ImageTest", "onFailureImpl");
-            }
-        }, CallerThreadExecutor.getInstance());
 
         backdrop.setOnLongClickListener(v -> {
             String[] options = new String[]{"自定义", "随机图片"};
@@ -238,15 +240,17 @@ public class MainActivity extends BaseActivity {
                     .setTitle("更改顶部图片")
                     .setItems(options, (dialogInterface, i) -> {
                         if (i == 0) {
-
+                            Intent intent = new Intent();
+                            if (Build.VERSION.SDK_INT < 19) {
+                                intent.setAction(Intent.ACTION_GET_CONTENT);
+                            } else {
+                                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                            }
+                            intent.setType("image/*");
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            startActivityForResult(intent, RESULT_SET_HEADER_IMAGE);
                         } else if (i == 1) {
-                            Uri uri = Uri.parse("https://api.i-meto.com/bing");
-                            Fresco.getImagePipeline().evictFromMemoryCache(uri);
-                            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                                    .setResizeOptions(new ResizeOptions(1080, 1920))
-                                    .disableDiskCache()
-                                    .build();
-                            supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, this, ImageRequest.RequestLevel.FULL_FETCH));
+                            getBingImage();
                         }
                     })
                     .setNegativeButton(getString(R.string.cancel), null)
@@ -256,6 +260,8 @@ public class MainActivity extends BaseActivity {
 
         downloadTaskHolder = new DownloadTaskHolder(this);
         downloadTaskHolder.setAllPaused();
+
+        initHeaderImage();
 
         initDrawer();
 
@@ -270,6 +276,82 @@ public class MainActivity extends BaseActivity {
         initBottomSheet();
 
         UpdateManager.checkUpdate(this);
+    }
+
+    private void initHeaderImage(){
+        final String rootDir = mContext.getExternalCacheDir().getAbsolutePath();
+        String[] exts = new String[]{"jpg", "jpeg", "png", "gif", "bmp", "webp"};
+        String currHeaderUrl = "drawable://backdrop";
+        for (String ext : exts) {
+            File headerFile = new File(rootDir + "/image/header." + ext);
+            if (headerFile.exists()) {
+                currHeaderUrl = "file://" + headerFile.getAbsolutePath();
+                break;
+            }
+        }
+        Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
+
+        supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, currHeaderUrl, null, null, true,
+                new BaseControllerListener<ImageInfo>() {
+                    @Override
+                    public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
+                        Animatable animatable = ((SimpleDraweeView)backdrop).getController().getAnimatable();
+                        if (animatable != null)
+                            animatable.start();
+                        if (headerImageUri == null || headerImageUri.getPath().matches("header\\.(?:jpg|jpeg|png|gif|bmp|webp)"))
+                            return;
+                        Logger.d("HeaderImage", "headerImageUrl : " + headerImageUri.toString());
+                        DocumentFile imageFile = DocumentFile.fromSingleUri(mContext, headerImageUri);
+                        String name = imageFile.getName();
+                        int lastIndex = name.lastIndexOf(".");
+                        String posfix = (lastIndex >= 0) ? name.substring(name.lastIndexOf(".") + 1) : "jpg";
+                        DocumentFile documentFile = FileHelper.createFileIfNotExist("header." + posfix, rootDir, "image");
+                        try {
+                            InputStream in = DocumentUtil.getFileInputSteam(MainActivity.this, imageFile);
+                            FileHelper.writeFromInputStream(in, documentFile);
+                            Logger.d("HeaderImage", "Header image saved!");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Logger.d("HeaderImage", "Header image save failed!");
+                        }
+                    }
+                });
+
+        boolean hasCustomHeader = (boolean) SharedPreferencesUtil.getData(mContext, SettingFragment.KEY_CUSTOM_HEADER_IMAGE, false);
+        if (!hasCustomHeader || "drawable://backdrop".equals(currHeaderUrl)) {
+            getBingImage();
+        }
+    }
+
+    private void getBingImage() {
+        HViewerHttpClient.get(UrlConfig.getBingAPIUrl(), null, new HViewerHttpClient.OnResponseListener() {
+            @Override
+            public void onSuccess(String contentType, Object result) {
+                if (!(result instanceof String))
+                    return;
+                try {
+                    String text = (String) result;
+                    JsonObject jsonObject = new JsonParser().parse(text).getAsJsonObject();
+                    String url = "http://www.bing.com";
+                    url += jsonObject.get("images").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+                    Uri uri = Uri.parse(url);
+                    headerImageUri = uri;
+                    //Fresco.getImagePipeline().evictFromMemoryCache(uri);
+                    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                            .setResizeOptions(new ResizeOptions(1080, 1920))
+                            .disableDiskCache()
+                            .build();
+                    supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, this, ImageRequest.RequestLevel.FULL_FETCH));
+                    SharedPreferencesUtil.saveData(mContext, SettingFragment.KEY_CUSTOM_HEADER_IMAGE, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(HViewerHttpClient.HttpError error) {
+            }
+        });
     }
 
     private void initDrawer() {
@@ -1150,6 +1232,15 @@ public class MainActivity extends BaseActivity {
                 }
                 String path = uriTree.toString();
                 SharedPreferencesUtil.saveData(this, KEY_PREF_DOWNLOAD_PATH, path);
+            } else if (requestCode == RESULT_SET_HEADER_IMAGE) {
+                Uri uri = data.getData();
+                headerImageUri = uri;
+                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                        .setResizeOptions(new ResizeOptions(1080, 1920))
+                        .disableDiskCache()
+                        .build();
+                supplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, this, ImageRequest.RequestLevel.FULL_FETCH));
+                SharedPreferencesUtil.saveData(mContext, KEY_CUSTOM_HEADER_IMAGE, true);
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == RESULT_RDSQ) {

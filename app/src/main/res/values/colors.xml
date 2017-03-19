@@ -186,6 +186,8 @@
     <color name="colorAccentLight">#20e1bb</color>
     <color name="colorAccentDark">#16a085</color>
 
+    <color name="colorPrimaryMask">#cc1abc9c</color>
+
     <color name="statusBar">#30000000</color>
 
     <color name="dialog_bg_color_gray">#424242</color>

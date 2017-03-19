@@ -152,14 +152,20 @@ public class ImageLoader {
         if(TextUtils.isEmpty(url))
             return;
         Uri uri = Uri.parse(url);
-        JsonObject header = new JsonObject();
-        header.addProperty("Cookie", cookie);
-        header.addProperty("Referer", referer);
-        if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
-            HProxy proxy = new HProxy(url);
-            header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-        }
-        MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
+        loadResourceFromUrl(context, uri, cookie, referer, dataSubscriber);
+    }
+
+    public static void loadResourceFromUrl(Context context, Uri uri, String cookie, String referer, BaseDataSubscriber dataSubscriber) {
+       if(uri.getScheme().startsWith("http")) {
+           JsonObject header = new JsonObject();
+           header.addProperty("Cookie", cookie);
+           header.addProperty("Referer", referer);
+           if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
+               HProxy proxy = new HProxy(uri.toString());
+               header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+           }
+           MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
+       }
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
         ImageRequest request = builder.build();
