@@ -2,7 +2,6 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,13 +41,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import eightbitlab.com.blurview.BlurView;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.Comment;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Rule;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.beans.Video;
@@ -135,6 +134,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private FavouriteHolder favouriteHolder;
     private SiteTagHolder siteTagHolder;
 
+    private String currGalleryUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,6 +170,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         }
         myCollection = new LocalCollection(collection, site);
 
+        currGalleryUrl = site.galleryUrl;
+
         toolbar.setTitle(collection.title);
         setSupportActionBar(toolbar);
 
@@ -178,6 +181,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
         //解析URL模板
         parseUrl(site.galleryUrl);
+
+        onePage &= !site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY);
 
         initCover(myCollection.cover);
         initTabAndViewPager();
@@ -425,7 +430,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             return;
         }
         Log.d("CollectionActivity", "myCollection.idCode:" + myCollection.idCode);
-        final String url = site.getGalleryUrl(myCollection.idCode, page, pictureVideoAdapter.getPictureDataProvider().getItems());
+        final String url = site.getGalleryUrl(currGalleryUrl, myCollection.idCode, page, myCollection.pictures);
         Logger.d("CollectionActivity", "site.getGalleryUrl:" + url);
         Logger.d("CollectionActivity", "starPage:" + startPage + " page:" + page);
         //如果需要执行JS才能获取完整数据，则不得不使用webView来载入页面
@@ -486,7 +491,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
-            myCollection = RuleParser.getCollectionDetail(myCollection, html, site.galleryRule, url);
+            Rule applyRule = (site.galleryUrl.equals(currGalleryUrl))? site.galleryRule : site.extraRule;
+            myCollection = RuleParser.getCollectionDetail(myCollection, html, applyRule, url);
+            Logger.d("CollectionActivity", "myCollection.pictures.size:" + myCollection.pictures.size());
+
             if (myCollection.videos != null && myCollection.videos.size() > 0) {
                 Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
                 Logger.d("CollectionActivity", "myCollection.videos.get(0):" + myCollection.videos.get(0));
@@ -509,29 +517,33 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
                 // 当前页获取到的第一个图片
                 final Picture picture = myCollection.pictures.get(0);
+                Logger.d("CollectionActivity", "picture.url:" + picture.url);
                 // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
-                if (site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY) && !Picture.hasPicPosfix(picture.url) && site.extraRule != null) {
-                    HViewerHttpClient.get(picture.url, site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
-                        @Override
-                        public void onSuccess(String contentType, Object result) {
-                            myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
-                            int preSize = pictureVideoAdapter.getPictureSize();
-                            if (preSize > 0) {
-                                pictureVideoAdapter.getPictureDataProvider().clear();
-                                pictureVideoAdapter.notifyItemRangeRemoved(0, preSize);
-                            }
-                            pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
-                            pictureVideoAdapter.notifyItemRangeInserted(0, myCollection.pictures.size());
-                            isIndexComplete = true;
-                            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
-                        }
-
-                        @Override
-                        public void onFailure(HViewerHttpClient.HttpError error) {
-                            showSnackBar(error.getErrorString());
-                            rvIndex.setPullLoadMoreCompleted();
-                        }
-                    });
+                if (site.isFirstLoadSecondLevelGallery(myCollection.pictures)) {
+                    Logger.d("CollectionActivity", "site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY)");
+                    currGalleryUrl = picture.url;
+                    getCollectionDetail(currPage);
+//                    HViewerHttpClient.get(picture.url, site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
+//                        @Override
+//                        public void onSuccess(String contentType, Object result) {
+//                            myCollection = RuleParser.getCollectionDetail(myCollection, (String) result, site.extraRule, picture.url);
+//                            int preSize = pictureVideoAdapter.getPictureSize();
+//                            if (preSize > 0) {
+//                                pictureVideoAdapter.getPictureDataProvider().clear();
+//                                pictureVideoAdapter.notifyItemRangeRemoved(0, preSize);
+//                            }
+//                            pictureVideoAdapter.getPictureDataProvider().addAll(myCollection.pictures);
+//                            pictureVideoAdapter.notifyItemRangeInserted(0, myCollection.pictures.size());
+//                            isIndexComplete = true;
+//                            myCollection.pictures = pictureVideoAdapter.getPictureDataProvider().getItems();
+//                        }
+//
+//                        @Override
+//                        public void onFailure(HViewerHttpClient.HttpError error) {
+//                            showSnackBar(error.getErrorString());
+//                            rvIndex.setPullLoadMoreCompleted();
+//                        }
+//                    });
                 } else {
                     // 没有flag的话
                     if (page == startPage) {

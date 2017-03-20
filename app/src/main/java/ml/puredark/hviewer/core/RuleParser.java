@@ -201,13 +201,32 @@ public class RuleParser {
                     }
                 }
             } else {
+                items = new JsonArray();
                 ReadContext ctx = JsonPath.parse(text);
-                JsonElement element = ctx.read(rule.item.path, JsonElement.class);
-                if (element instanceof JsonArray)
-                    items = element.getAsJsonArray();
-                else {
-                    items = new JsonArray();
-                    ((JsonArray) items).add(element);
+                String[] paths = rule.item.path.split(",");
+                for (int i = 0; i < paths.length; i++) {
+                    JsonElement element;
+                    try {
+                        element = ctx.read(paths[i], JsonElement.class);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        try {
+                            if (paths.length > i + 1) {
+                                element = ctx.read(paths[i] + paths[i + 1], JsonElement.class);
+                                i++;
+                            }else
+                                break;
+                        } catch (Exception e1) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
+                    if (element instanceof JsonArray)
+                        ((JsonArray) items).addAll(element.getAsJsonArray());
+                    else {
+                        items = new JsonArray();
+                        ((JsonArray) items).add(element);
+                    }
                 }
                 Logger.d("RuleParser", items.toString());
                 for (Object item : items) {

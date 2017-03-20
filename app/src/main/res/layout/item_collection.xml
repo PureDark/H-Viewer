@@ -74,7 +74,6 @@
                             android:id="@+id/tv_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
                             android:maxLines="1"
                             android:textColor="@color/black"
                             android:textSize="14sp"

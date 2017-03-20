@@ -123,8 +123,17 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
     }
 
     public String getGalleryUrl(String idCode, int page, List<Picture> pictures) {
+        return getGalleryUrl(galleryUrl, idCode, page, pictures);
+    }
+
+    public String getGalleryUrl(String inUrl, String idCode, int page, List<Picture> pictures) {
         Object[] array = (pictures != null) ? pictures.toArray() : null;
-        return RuleParser.parseUrl(galleryUrl, page, idCode, "", array);
+        return RuleParser.parseUrl(inUrl, page, idCode, "", array);
+    }
+
+    public boolean isFirstLoadSecondLevelGallery(List<Picture> pictures){
+        return (pictures != null && pictures.size() > 0 && this.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY)
+                && !Picture.hasPicPosfix(pictures.get(0).url) && this.extraRule != null);
     }
 
     public void replace(Site site) {
