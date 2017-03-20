@@ -82,7 +82,12 @@ public class LockActivity extends AppCompatActivity {
         initBlurryBackground();
 
         FingerprintManagerCompat manager = FingerprintManagerCompat.from(this);
-        boolean isFingerPrintLock = manager.hasEnrolledFingerprints();
+        boolean isFingerPrintLock;
+        try{
+            isFingerPrintLock = manager.hasEnrolledFingerprints();
+        } catch (Exception e) {
+            isFingerPrintLock = false;
+        }
         boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PATTERN;
         boolean isPinLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PIN;
 

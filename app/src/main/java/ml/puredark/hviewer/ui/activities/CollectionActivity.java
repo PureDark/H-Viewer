@@ -14,6 +14,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
@@ -491,7 +492,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
-            Rule applyRule = (site.galleryUrl.equals(currGalleryUrl))? site.galleryRule : site.extraRule;
+            Rule applyRule = (site.galleryUrl.equals(currGalleryUrl)) ? site.galleryRule : site.extraRule;
             myCollection = RuleParser.getCollectionDetail(myCollection, html, applyRule, url);
             Logger.d("CollectionActivity", "myCollection.pictures.size:" + myCollection.pictures.size());
 
@@ -663,10 +664,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);
-        intent.setData(content_url);
-        startActivity(intent);
-        // 统计打开浏览器访问次数
-        MobclickAgent.onEvent(HViewerApplication.mContext, "SwitchToBrowser");
+        if (content_url != null && !TextUtils.isEmpty(url)) {
+            intent.setData(content_url);
+            startActivity(intent);
+            // 统计打开浏览器访问次数
+            MobclickAgent.onEvent(HViewerApplication.mContext, "SwitchToBrowser");
+        } else {
+            showSnackBar("网址为空！");
+        }
     }
 
     @OnClick(R.id.fab_favor)
