@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
 
 import org.jsoup.Jsoup;
@@ -149,6 +148,35 @@ public class RuleParser {
         return string.startsWith("{") || string.startsWith("[");
     }
 
+    public static JsonArray getJsonArray(ReadContext ctx, String jsonPaths) {
+        JsonArray items = new JsonArray();
+        String[] paths = jsonPaths.split(",");
+        for (int i = 0; i < paths.length; i++) {
+            JsonElement element;
+            try {
+                element = ctx.read(paths[i], JsonElement.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    if (paths.length > i + 1) {
+                        element = ctx.read(paths[i] + paths[i + 1], JsonElement.class);
+                        i++;
+                    } else
+                        break;
+                } catch (Exception e1) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+            if (element instanceof JsonArray)
+                items.addAll(element.getAsJsonArray());
+            else {
+                items.add(element);
+            }
+        }
+        return items;
+    }
+
     public static List<Collection> getCollections(List<Collection> collections, String text, Rule rule, String sourceUrl) {
         return getCollections(collections, text, rule, sourceUrl, false);
     }
@@ -201,33 +229,8 @@ public class RuleParser {
                     }
                 }
             } else {
-                items = new JsonArray();
                 ReadContext ctx = JsonPath.parse(text);
-                String[] paths = rule.item.path.split(",");
-                for (int i = 0; i < paths.length; i++) {
-                    JsonElement element;
-                    try {
-                        element = ctx.read(paths[i], JsonElement.class);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        try {
-                            if (paths.length > i + 1) {
-                                element = ctx.read(paths[i] + paths[i + 1], JsonElement.class);
-                                i++;
-                            }else
-                                break;
-                        } catch (Exception e1) {
-                            e.printStackTrace();
-                            break;
-                        }
-                    }
-                    if (element instanceof JsonArray)
-                        ((JsonArray) items).addAll(element.getAsJsonArray());
-                    else {
-                        items = new JsonArray();
-                        ((JsonArray) items).add(element);
-                    }
-                }
+                items = getJsonArray(ctx, rule.item.path);
                 Logger.d("RuleParser", items.toString());
                 for (Object item : items) {
                     String itemStr;
@@ -342,13 +345,7 @@ public class RuleParser {
                 temp = ((Element) source).select(rule.tagRule.item.selector);
             else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                JsonElement element = ctx.read(rule.tagRule.item.path, JsonElement.class);
-                if (element instanceof JsonArray)
-                    temp = element.getAsJsonArray();
-                else {
-                    temp = new JsonArray();
-                    ((JsonArray) temp).add(element);
-                }
+                temp = getJsonArray(ctx, rule.tagRule.item.path);
             } else
                 return collection;
             for (Object element : temp) {
@@ -396,13 +393,7 @@ public class RuleParser {
                     temp = ((Element) source).select(pictureItem.selector);
                 else if (source instanceof JsonElement) {
                     ReadContext ctx = JsonPath.parse(source.toString());
-                    JsonElement element = ctx.read(pictureItem.path, JsonElement.class);
-                    if (element instanceof JsonArray)
-                        temp = element.getAsJsonArray();
-                    else {
-                        temp = new JsonArray();
-                        ((JsonArray) temp).add(element);
-                    }
+                    temp = getJsonArray(ctx, pictureItem.path);
                 } else
                     return collection;
                 for (Object element : temp) {
@@ -455,13 +446,7 @@ public class RuleParser {
                 temp = ((Element) source).select(rule.videoRule.item.selector);
             else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                JsonElement element = ctx.read(rule.videoRule.item.path, JsonElement.class);
-                if (element instanceof JsonArray)
-                    temp = element.getAsJsonArray();
-                else {
-                    temp = new JsonArray();
-                    ((JsonArray) temp).add(element);
-                }
+                temp = getJsonArray(ctx, rule.videoRule.item.path);
             } else
                 return collection;
             for (Object element : temp) {
@@ -508,13 +493,7 @@ public class RuleParser {
                 temp = ((Element) source).select(commentItem.selector);
             } else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                JsonElement element = ctx.read(commentItem.path, JsonElement.class);
-                if (element instanceof JsonArray)
-                    temp = element.getAsJsonArray();
-                else {
-                    temp = new JsonArray();
-                    ((JsonArray) temp).add(element);
-                }
+                temp = getJsonArray(ctx, commentItem.path);
             } else
                 return collection;
             for (Object element : temp) {
@@ -595,15 +574,19 @@ public class RuleParser {
                         try {
                             for (int i = 0; i < props.size(); i++) {
                                 prop = props.get(i);
-                                Object tempItem = JsonPath.parse(prop).read(selector.path);
-                                if (tempItem instanceof JsonPrimitive)
-                                    prop = ((JsonPrimitive) tempItem).getAsString();
-                                else
-                                    prop = tempItem.toString();
-                                if (!TextUtils.isEmpty(prop)) {
-                                    if (isUrl)
-                                        prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
-                                    props.set(i, prop);
+                                ReadContext ctx = JsonPath.parse(prop);
+                                JsonArray tempArray = getJsonArray(ctx, selector.path);
+                                if (tempArray.size() > 0) {
+                                    JsonElement tempItem = tempArray.get(0);
+                                    if (tempItem instanceof JsonPrimitive)
+                                        prop = tempItem.getAsString();
+                                    else
+                                        prop = tempItem.toString();
+                                    if (!TextUtils.isEmpty(prop)) {
+                                        if (isUrl)
+                                            prop = RegexValidateUtil.getAbsoluteUrlFromRelative(prop, sourceUrl);
+                                        props.set(i, prop);
+                                    }
                                 }
                             }
                         } catch (Exception e) {
@@ -613,16 +596,7 @@ public class RuleParser {
                 }
             } else if (source instanceof JsonElement) {
                 ReadContext ctx = JsonPath.parse(source.toString());
-                Iterable<JsonElement> temp = new ArrayList<>();
-                try {
-                    JsonElement elem = ctx.read(selector.path);
-                    if (elem instanceof JsonArray)
-                        temp = (JsonArray) elem;
-                    else
-                        ((List) temp).add(elem);
-                } catch (PathNotFoundException e) {
-                }
-
+                JsonArray temp = getJsonArray(ctx, selector.path);
                 if (temp != null) {
                     for (JsonElement item : temp) {
                         if (item instanceof JsonPrimitive)
