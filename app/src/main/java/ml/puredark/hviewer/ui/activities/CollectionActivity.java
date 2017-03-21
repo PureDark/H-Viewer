@@ -492,7 +492,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
-            Rule applyRule = (site.galleryUrl.equals(currGalleryUrl)) ? site.galleryRule : site.extraRule;
+            Rule applyRule = (currGalleryUrl != null && currGalleryUrl.equals(site.galleryUrl)) ? site.galleryRule : site.extraRule;
             myCollection = RuleParser.getCollectionDetail(myCollection, html, applyRule, url);
 
             if (myCollection.videos != null && myCollection.videos.size() > 0) {

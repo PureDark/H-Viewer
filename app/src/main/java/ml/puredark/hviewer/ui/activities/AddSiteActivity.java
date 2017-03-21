@@ -170,7 +170,7 @@ public class AddSiteActivity extends BaseActivity {
     private Site parseSite(String json) {
         try {
             Site site = new Gson().fromJson(json, Site.class);
-            if (site == null || site.indexUrl == null || site.galleryUrl == null ||
+            if (site == null || site.indexUrl == null || site.galleryUrl == null || site.indexRule == null ||
                     site.indexRule.item == null || site.indexRule.idCode == null)
                 showSnackBar("输入的规则缺少信息");
             return site;

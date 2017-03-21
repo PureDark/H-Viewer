@@ -104,6 +104,8 @@
     <string name="setting_title_set_pin">数字密码</string>
     <string name="setting_summary_set_pin_none">[ 未设置密码 ]</string>
     <string name="setting_summary_set_pin_has">[ 已设置密码 ]</string>
+    <string name="setting_title_fingerprint_lock">指纹解锁</string>
+    <string name="setting_summary_fingerprint_lock">设置数字或图案解锁后自动启用</string>
     <string name="setting_title_clear_lock_methods">清除所有解锁方式</string>
     <string name="setting_dialog_message_clear_lock_methods">要清除所有解锁方式吗？</string>
     <string name="setting_lock_methods_cleared">已清除所有解锁方式</string>
