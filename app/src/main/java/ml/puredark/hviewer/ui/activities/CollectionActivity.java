@@ -494,7 +494,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             Rule applyRule = (site.galleryUrl.equals(currGalleryUrl)) ? site.galleryRule : site.extraRule;
             myCollection = RuleParser.getCollectionDetail(myCollection, html, applyRule, url);
-            Logger.d("CollectionActivity", "myCollection.pictures.size:" + myCollection.pictures.size());
 
             if (myCollection.videos != null && myCollection.videos.size() > 0) {
                 Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
@@ -518,7 +517,6 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
                 // 当前页获取到的第一个图片
                 final Picture picture = myCollection.pictures.get(0);
-                Logger.d("CollectionActivity", "picture.url:" + picture.url);
                 // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
                 if (site.isFirstLoadSecondLevelGallery(myCollection.pictures)) {
                     Logger.d("CollectionActivity", "site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY)");
