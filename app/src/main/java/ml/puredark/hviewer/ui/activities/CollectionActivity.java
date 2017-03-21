@@ -290,12 +290,12 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         rvIndex.getRecyclerView().addOnScrollListener(new PictureVideoAdapter.ScrollDetector() {
             @Override
             public void onScrollUp() {
-                fabMenu.showMenu(true);
+                fabMenu.hideMenu(true);
             }
 
             @Override
             public void onScrollDown() {
-                fabMenu.hideMenu(true);
+                fabMenu.showMenu(true);
             }
         });
 
