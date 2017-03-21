@@ -55,7 +55,7 @@ public class ImageLoader {
     }
 
     public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
-        if(TextUtils.isEmpty(url)) {
+        if (TextUtils.isEmpty(url)) {
             imageView.setImageURI(null);
         }
         Uri uri = Uri.parse(url);
@@ -73,7 +73,7 @@ public class ImageLoader {
             SimpleDraweeView draweeView = ((SimpleDraweeView) imageView);
             ImageRequestBuilder requestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
                     .setResizeOptions(new ResizeOptions(1080, 1920));
-            if(noCache)
+            if (noCache)
                 requestBuilder.disableDiskCache();
             ImageRequest request = requestBuilder.build();
             DraweeController controller = Fresco.newDraweeControllerBuilder()
@@ -89,7 +89,7 @@ public class ImageLoader {
     }
 
     public static RetainingDataSourceSupplier loadImageFromUrlRetainingImage(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
-        if(TextUtils.isEmpty(url)) {
+        if (TextUtils.isEmpty(url)) {
             imageView.setImageURI(null);
             return null;
         }
@@ -119,7 +119,7 @@ public class ImageLoader {
             draweeView.setController(controller);
             ImageRequestBuilder requestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
                     .setResizeOptions(new ResizeOptions(1080, 1920));
-            if(noCache)
+            if (noCache)
                 requestBuilder.disableDiskCache();
             ImageRequest request = requestBuilder.build();
             retainingSupplier.setSupplier(Fresco.getImagePipeline().getDataSourceSupplier(request, null, ImageRequest.RequestLevel.FULL_FETCH));
@@ -129,7 +129,7 @@ public class ImageLoader {
     }
 
     public static void loadBitmapFromUrl(Context context, String url, String cookie, String referer, BaseBitmapDataSubscriber dataSubscriber) {
-        if(TextUtils.isEmpty(url))
+        if (TextUtils.isEmpty(url))
             return;
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();
@@ -149,23 +149,23 @@ public class ImageLoader {
     }
 
     public static void loadResourceFromUrl(Context context, String url, String cookie, String referer, BaseDataSubscriber dataSubscriber) {
-        if(TextUtils.isEmpty(url))
+        if (TextUtils.isEmpty(url))
             return;
         Uri uri = Uri.parse(url);
         loadResourceFromUrl(context, uri, cookie, referer, dataSubscriber);
     }
 
     public static void loadResourceFromUrl(Context context, Uri uri, String cookie, String referer, BaseDataSubscriber dataSubscriber) {
-       if(uri.getScheme().startsWith("http")) {
-           JsonObject header = new JsonObject();
-           header.addProperty("Cookie", cookie);
-           header.addProperty("Referer", referer);
-           if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
-               HProxy proxy = new HProxy(uri.toString());
-               header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
-           }
-           MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
-       }
+        if (uri.getScheme().startsWith("http")) {
+            JsonObject header = new JsonObject();
+            header.addProperty("Cookie", cookie);
+            header.addProperty("Referer", referer);
+            if (HProxy.isEnabled() && HProxy.isAllowPicture()) {
+                HProxy proxy = new HProxy(uri.toString());
+                header.addProperty(proxy.getHeaderKey(), proxy.getHeaderValue());
+            }
+            MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
+        }
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
         ImageRequest request = builder.build();
@@ -188,7 +188,7 @@ public class ImageLoader {
     }
 
     public static void loadThumbFromUrl(Context context, ImageView imageView, int resizeWidthDp, int resizeHeightDp, String url, String cookie, String referer, ControllerListener controllerListener) {
-        if(TextUtils.isEmpty(url)) {
+        if (TextUtils.isEmpty(url)) {
             imageView.setImageURI(null);
             return;
         }

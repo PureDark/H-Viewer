@@ -2,11 +2,9 @@ package ml.puredark.hviewer.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Comment;
-import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.HtmlContentParser;
-import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.URLImageParser;
 import ml.puredark.hviewer.http.ImageLoader;
@@ -50,7 +46,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         try {
             v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_comment, parent, false);
-        } catch (OutOfMemoryError error){
+        } catch (OutOfMemoryError error) {
             error.printStackTrace();
             v = new LinearLayout(parent.getContext());
         }
@@ -70,17 +66,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.tvAuthor.setText(comment.author);
         holder.tvDatetime.setText(comment.datetime);
         if (comment.content != null) {
-            try{
+            try {
                 Document content = Jsoup.parse(comment.content);
                 Elements imgs = content.select("img[data-src]");
-                for(Element img : imgs){
+                for (Element img : imgs) {
                     String imgUrl = img.attr("data-src");
-                    if(!TextUtils.isEmpty(imgUrl)){
+                    if (!TextUtils.isEmpty(imgUrl)) {
                         img.attr("src", imgUrl);
                     }
                 }
                 comment.content = content.toString();
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             holder.tvContent.setText(HtmlContentParser.getClickableHtml(context, comment.content, comment.referer, new URLImageParser(context, holder.tvContent, cookie, comment.referer), null));
@@ -141,7 +137,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                 if (mItemClickListener != null && getAdapterPosition() >= 0)
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-            tvContent.setAutoLinkMask(Linkify.EMAIL_ADDRESSES|Linkify.WEB_URLS);
+            tvContent.setAutoLinkMask(Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
             tvContent.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }

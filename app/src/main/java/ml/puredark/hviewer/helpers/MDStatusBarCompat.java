@@ -38,6 +38,7 @@ public class MDStatusBarCompat {
             setKKStatusBar(activity, R.color.colorPrimaryDark);
         }
     }
+
     /**
      * 简单型状态栏(ToolBar)
      *
@@ -102,8 +103,7 @@ public class MDStatusBarCompat {
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
             coordinatorLayout.setFitsSystemWindows(true);
             setKKStatusBar(activity, R.color.statusBar);
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }
@@ -118,8 +118,7 @@ public class MDStatusBarCompat {
             ViewGroup contentLayout = (ViewGroup) activity.findViewById(android.R.id.content);
             contentLayout.getChildAt(0).setFitsSystemWindows(false);
             setKKStatusBar(activity, R.color.statusBar);
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }
@@ -146,8 +145,7 @@ public class MDStatusBarCompat {
             toolbar.setLayoutParams(lp);
             setKKStatusBar(activity, R.color.statusBar);
             setCollapsingToolbarStatus(appBarLayout);
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
         }
     }

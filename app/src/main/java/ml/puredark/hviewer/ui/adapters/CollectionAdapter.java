@@ -106,10 +106,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 adapter.setOnItemClickListener(mTagClickListener);
                 holder.rvTags.setAdapter(adapter);
             } else {
-                if(TextUtils.isEmpty(collection.uploader)){
+                if (TextUtils.isEmpty(collection.uploader)) {
                     holder.tvUploader.setVisibility(View.GONE);
                     holder.tvTitle.setLines(2);
-                } else if(TextUtils.isEmpty(collection.category)) {
+                } else if (TextUtils.isEmpty(collection.category)) {
                     holder.tvCategory.setVisibility(View.GONE);
                     holder.tvTitle.setLines(2);
                 } else {
@@ -137,7 +137,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (collection instanceof LocalCollection) {
                 cookie = ((LocalCollection) collection).site.cookie;
             }
-            if(TextUtils.isEmpty(collection.cover))
+            if (TextUtils.isEmpty(collection.cover))
                 checkSiteFlags(position, site, collection);
             else
                 ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);

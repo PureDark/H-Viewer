@@ -2,8 +2,6 @@ package ml.puredark.hviewer.ui.customs;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -27,7 +25,7 @@ public class WrappedPullLoadMoreRecyclerView extends PullLoadMoreRecyclerView {
     protected void onDetachedFromWindow() {
         try {
             super.onDetachedFromWindow();
-        }catch (Exception e){
+        } catch (Exception e) {
         }
     }
 }

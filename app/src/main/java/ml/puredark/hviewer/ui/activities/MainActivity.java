@@ -287,8 +287,8 @@ public class MainActivity extends BaseActivity {
     private void initHeaderImage() {
         final String rootDir = mContext.getExternalCacheDir().getAbsolutePath();
         File headerFile = new File(rootDir + "/image/header.jpg");
-                String currHeaderUrl = (headerFile.exists()) ? "file://" + headerFile.getAbsolutePath() : "drawable://backdrop";
-                Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
+        String currHeaderUrl = (headerFile.exists()) ? "file://" + headerFile.getAbsolutePath() : "drawable://backdrop";
+        Logger.d("HeaderImage", "currHeaderUrl : " + currHeaderUrl);
 
         supplier = ImageLoader.loadImageFromUrlRetainingImage(this, backdrop, currHeaderUrl, null, null, true,
                 new BaseControllerListener<ImageInfo>() {
@@ -902,125 +902,6 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    class TagTabViewHolder {
-        @BindView(R.id.label_view)
-        AutoLabelUI labelView;
-        @BindView(R.id.btn_tag_1)
-        ButtonFlat btnTag1;
-        @BindView(R.id.btn_tag_2)
-        ButtonFlat btnTag2;
-        @BindView(R.id.btn_tag_3)
-        ButtonFlat btnTag3;
-        @BindView(R.id.btn_tag_4)
-        ButtonFlat btnTag4;
-
-        private SiteTagAdapter mSiteTagAdapter;
-
-        TagTabViewHolder(View view, SiteTagAdapter siteTagAdapter) {
-            ButterKnife.bind(this, view);
-            siteTagAdapter.setLabelView(labelView);
-            mSiteTagAdapter = siteTagAdapter;
-        }
-
-        public void setButtonText(String text1, String text2, String text3, String text4) {
-            btnTag1.setText(text1);
-            btnTag2.setText(text2);
-            btnTag3.setText(text3);
-            btnTag4.setText(text4);
-        }
-
-        private void searchTags() {
-            if (currFragment == null) return;
-            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
-            List<Tag> selectedTags = new ArrayList<>();
-            for (Tag tag : tags) {
-                if (tag.selected)
-                    selectedTags.add(tag);
-            }
-            if (selectedTags.size() == 1) {
-                Tag tag = selectedTags.get(0);
-                Site currSite = currFragment.getCurrSite();
-                if (tag.url != null && currSite != null) {
-                    String domin1 = RegexValidateUtil.getDominFromUrl(tag.url);
-                    String domin2 = RegexValidateUtil.getDominFromUrl(currFragment.getCurrSite().indexUrl);
-                    if (domin1.equals(domin2)) {
-                        currFragment.onLoadUrl(tag.url);
-                    } else
-                        currFragment.onSearch(tag.title);
-                } else
-                    currFragment.onSearch(tag.title);
-                HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
-                historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
-                historyTagAdapter.notifyDataSetChanged();
-                search(tag.title, false);
-                new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
-            } else if (selectedTags.size() > 1) {
-                String keyword = "";
-                for (Tag tag : selectedTags) {
-                    keyword += tag.title + " ";
-                    HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
-                }
-                historyTagAdapter.notifyDataSetChanged();
-                keyword = keyword.trim();
-                currFragment.onSearch(keyword);
-                historyTagAdapter.getDataProvider().setDataSet(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag());
-                historyTagAdapter.notifyDataSetChanged();
-                search(keyword, true);
-                new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
-            }
-        }
-
-        private void favorTags() {
-            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
-            for (Tag tag : tags) {
-                if (tag.selected)
-                    favorTagHolder.addTag(tag);
-            }
-            favorTagAdapter.getDataProvider().setDataSet(favorTagHolder.getTags(0));
-            favorTagAdapter.notifyDataSetChanged();
-            Toast.makeText(MainActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
-        }
-
-        private void addTags(int sid, AbstractTagHolder tagHolder) {
-            View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
-            MaterialEditText inputTagTitle = (MaterialEditText) view.findViewById(R.id.input_text);
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("TAG名")
-                    .setView(view)
-                    .setNegativeButton(getString(R.string.cancel), null)
-                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        String title = inputTagTitle.getText().toString();
-                        Tag tag = new Tag(0, title);
-                        tagHolder.addTag(sid, tag);
-                        refreshTags(sid, tagHolder);
-                    }).show();
-        }
-
-        private void deleteTags(int sid, AbstractTagHolder tagHolder) {
-            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
-            for (Tag tag : tags) {
-                if (tag.selected)
-                    tagHolder.deleteTag(sid, tag);
-            }
-            refreshTags(sid, tagHolder);
-        }
-
-        private void refreshTags(int sid, AbstractTagHolder tagHolder) {
-            mSiteTagAdapter.getDataProvider().setDataSet(tagHolder.getTags(sid));
-            mSiteTagAdapter.notifyDataSetChanged();
-        }
-
-        private void clearTags(int sid, AbstractTagHolder tagHolder) {
-            new AlertDialog.Builder(MainActivity.this).setTitle("是否清空？")
-                    .setMessage("清空后将无法恢复")
-                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        tagHolder.clear(sid);
-                        mSiteTagAdapter.getDataProvider().clear();
-                        mSiteTagAdapter.notifyDataSetChanged();
-                    }).setNegativeButton(getString(R.string.cancel), null).show();
-        }
-    }
-
     private void showBottomSheet(ViewPagerBottomSheetBehavior behavior, boolean show) {
         if (show) {
             if (currFragment != null && siteAdapter.selectedSid != 0) {
@@ -1036,7 +917,6 @@ public class MainActivity extends BaseActivity {
     public void setTitle(String title) {
         collapsingToolbarLayout.setTitle(title);
     }
-
 
     public void replaceFragment(MyFragment fragment, String tag) {
         try {
@@ -1351,6 +1231,125 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.btn_exit)
     void exit() {
         finish();
+    }
+
+    class TagTabViewHolder {
+        @BindView(R.id.label_view)
+        AutoLabelUI labelView;
+        @BindView(R.id.btn_tag_1)
+        ButtonFlat btnTag1;
+        @BindView(R.id.btn_tag_2)
+        ButtonFlat btnTag2;
+        @BindView(R.id.btn_tag_3)
+        ButtonFlat btnTag3;
+        @BindView(R.id.btn_tag_4)
+        ButtonFlat btnTag4;
+
+        private SiteTagAdapter mSiteTagAdapter;
+
+        TagTabViewHolder(View view, SiteTagAdapter siteTagAdapter) {
+            ButterKnife.bind(this, view);
+            siteTagAdapter.setLabelView(labelView);
+            mSiteTagAdapter = siteTagAdapter;
+        }
+
+        public void setButtonText(String text1, String text2, String text3, String text4) {
+            btnTag1.setText(text1);
+            btnTag2.setText(text2);
+            btnTag3.setText(text3);
+            btnTag4.setText(text4);
+        }
+
+        private void searchTags() {
+            if (currFragment == null) return;
+            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
+            List<Tag> selectedTags = new ArrayList<>();
+            for (Tag tag : tags) {
+                if (tag.selected)
+                    selectedTags.add(tag);
+            }
+            if (selectedTags.size() == 1) {
+                Tag tag = selectedTags.get(0);
+                Site currSite = currFragment.getCurrSite();
+                if (tag.url != null && currSite != null) {
+                    String domin1 = RegexValidateUtil.getDominFromUrl(tag.url);
+                    String domin2 = RegexValidateUtil.getDominFromUrl(currFragment.getCurrSite().indexUrl);
+                    if (domin1.equals(domin2)) {
+                        currFragment.onLoadUrl(tag.url);
+                    } else
+                        currFragment.onSearch(tag.title);
+                } else
+                    currFragment.onSearch(tag.title);
+                HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
+                historyTagAdapter.setDataProvider(new ListDataProvider(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag()));
+                historyTagAdapter.notifyDataSetChanged();
+                search(tag.title, false);
+                new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
+            } else if (selectedTags.size() > 1) {
+                String keyword = "";
+                for (Tag tag : selectedTags) {
+                    keyword += tag.title + " ";
+                    HViewerApplication.searchHistoryHolder.addSearchHistory(tag.title);
+                }
+                historyTagAdapter.notifyDataSetChanged();
+                keyword = keyword.trim();
+                currFragment.onSearch(keyword);
+                historyTagAdapter.getDataProvider().setDataSet(HViewerApplication.searchHistoryHolder.getSearchHistoryAsTag());
+                historyTagAdapter.notifyDataSetChanged();
+                search(keyword, true);
+                new Handler().postDelayed(() -> searchView.dismissSuggestions(), 200);
+            }
+        }
+
+        private void favorTags() {
+            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
+            for (Tag tag : tags) {
+                if (tag.selected)
+                    favorTagHolder.addTag(tag);
+            }
+            favorTagAdapter.getDataProvider().setDataSet(favorTagHolder.getTags(0));
+            favorTagAdapter.notifyDataSetChanged();
+            Toast.makeText(MainActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
+        }
+
+        private void addTags(int sid, AbstractTagHolder tagHolder) {
+            View view = getLayoutInflater().inflate(R.layout.view_input_text, null);
+            MaterialEditText inputTagTitle = (MaterialEditText) view.findViewById(R.id.input_text);
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("TAG名")
+                    .setView(view)
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                        String title = inputTagTitle.getText().toString();
+                        Tag tag = new Tag(0, title);
+                        tagHolder.addTag(sid, tag);
+                        refreshTags(sid, tagHolder);
+                    }).show();
+        }
+
+        private void deleteTags(int sid, AbstractTagHolder tagHolder) {
+            List<Tag> tags = mSiteTagAdapter.getDataProvider().getItems();
+            for (Tag tag : tags) {
+                if (tag.selected)
+                    tagHolder.deleteTag(sid, tag);
+            }
+            refreshTags(sid, tagHolder);
+        }
+
+        private void refreshTags(int sid, AbstractTagHolder tagHolder) {
+            mSiteTagAdapter.getDataProvider().setDataSet(tagHolder.getTags(sid));
+            mSiteTagAdapter.notifyDataSetChanged();
+        }
+
+        private void clearTags(int sid, AbstractTagHolder tagHolder) {
+            new AlertDialog.Builder(MainActivity.this).setTitle("是否清空？")
+                    .setMessage("清空后将无法恢复")
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                        tagHolder.clear(sid);
+                        mSiteTagAdapter.getDataProvider().clear();
+                        mSiteTagAdapter.notifyDataSetChanged();
+                    }).setNegativeButton(getString(R.string.cancel), null).show();
+        }
     }
 
 }

@@ -1,55 +1,28 @@
 package ml.puredark.hviewer.ui.adapters;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Animatable;
 import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.support.v4.view.PagerAdapter;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.drawee.controller.BaseControllerListener;
-import com.facebook.imagepipeline.image.ImageInfo;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.relex.photodraweeview.PhotoDraweeView;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
-import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.core.RuleParser;
-import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.http.ImageLoader;
-import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
 import ml.puredark.hviewer.ui.customs.AreaClickHelper;
-import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
-import ml.puredark.hviewer.utils.RegexValidateUtil;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
-import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_LEFT_TO_RIGHT;
 import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_TO_LEFT;
 
@@ -60,13 +33,10 @@ import static ml.puredark.hviewer.ui.fragments.SettingFragment.DIREACTION_RIGHT_
 
 public class PicturePagerAdapter extends PagerAdapter {
 
-    private String viewDirection = DIREACTION_LEFT_TO_RIGHT;
-
-    private PictureViewerActivity activity;
-
-    private Site site;
-
     public List<Picture> pictures;
+    private String viewDirection = DIREACTION_LEFT_TO_RIGHT;
+    private PictureViewerActivity activity;
+    private Site site;
     private List<PictureViewHolder> viewHolders = new ArrayList<>();
 
     private OnItemLongClickListener mOnItemLongClickListener;
@@ -83,28 +53,12 @@ public class PicturePagerAdapter extends PagerAdapter {
         areaClickHelper = new AreaClickHelper(activity);
     }
 
-    public class PictureViewHolder {
-        View view;
-        @BindView(R.id.iv_picture)
-        public PhotoDraweeView ivPicture;
-        @BindView(R.id.progress_bar)
-        public ProgressBarCircularIndeterminate progressBar;
-        @BindView(R.id.btn_refresh)
-        public ImageView btnRefresh;
-
-        public PictureViewHolder(View view) {
-            ButterKnife.bind(this, view);
-            this.view = view;
-            ivPicture.setOrientation(LinearLayout.HORIZONTAL);
-        }
+    public String getViewDirection() {
+        return viewDirection;
     }
 
     public void setViewDirection(String viewDirection) {
         this.viewDirection = viewDirection;
-    }
-
-    public String getViewDirection() {
-        return viewDirection;
     }
 
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
@@ -135,8 +89,8 @@ public class PicturePagerAdapter extends PagerAdapter {
         return position;
     }
 
-    public PictureViewHolder getViewHolderAt(int position){
-        if(position >= 0 && position < viewHolders.size())
+    public PictureViewHolder getViewHolderAt(int position) {
+        if (position >= 0 && position < viewHolders.size())
             return viewHolders.get(getPicturePostion(position));
         else
             return null;
@@ -203,6 +157,22 @@ public class PicturePagerAdapter extends PagerAdapter {
         viewHolders.set(position, viewHolder);
         container.addView(viewHolder.view, 0);
         return viewHolder.view;
+    }
+
+    public class PictureViewHolder {
+        @BindView(R.id.iv_picture)
+        public PhotoDraweeView ivPicture;
+        @BindView(R.id.progress_bar)
+        public ProgressBarCircularIndeterminate progressBar;
+        @BindView(R.id.btn_refresh)
+        public ImageView btnRefresh;
+        View view;
+
+        public PictureViewHolder(View view) {
+            ButterKnife.bind(this, view);
+            this.view = view;
+            ivPicture.setOrientation(LinearLayout.HORIZONTAL);
+        }
     }
 
 

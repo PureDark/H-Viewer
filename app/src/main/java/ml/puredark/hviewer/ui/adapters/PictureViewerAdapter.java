@@ -1,54 +1,24 @@
 package ml.puredark.hviewer.ui.adapters;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Animatable;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.drawee.controller.BaseControllerListener;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.image.ImageInfo;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.relex.photodraweeview.PhotoDraweeView;
-import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Picture;
-import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.core.RuleParser;
-import ml.puredark.hviewer.helpers.Logger;
-import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.activities.PictureViewerActivity;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
-import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.OnItemLongClickListener;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-
-import static android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
 
 public class PictureViewerAdapter extends RecyclerView.Adapter<PictureViewerAdapter.PictureViewHolder> {
     private PictureViewerActivity activity;

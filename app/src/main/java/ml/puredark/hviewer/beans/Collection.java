@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
-import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 
 public class Collection extends AbstractExpandableDataProvider.ChildData {
     public int cid;

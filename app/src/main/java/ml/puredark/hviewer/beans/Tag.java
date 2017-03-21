@@ -14,6 +14,7 @@ public class Tag extends AbstractDataProvider.Data implements Serializable {
         this.tid = tid;
         this.title = title;
     }
+
     public Tag(int tid, String title, String url) {
         this.tid = tid;
         this.title = title;

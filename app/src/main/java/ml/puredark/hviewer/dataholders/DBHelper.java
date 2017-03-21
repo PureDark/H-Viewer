@@ -121,8 +121,8 @@ public class DBHelper {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Logger.d("SQLiteHelper", "onUpgrade: oldVersion=" + oldVersion + " newVersion=" + newVersion);
-            for(int currVer = oldVersion; currVer < newVersion; currVer++){
-                upgrade(db, currVer, currVer+1);
+            for (int currVer = oldVersion; currVer < newVersion; currVer++) {
+                upgrade(db, currVer, currVer + 1);
             }
         }
 

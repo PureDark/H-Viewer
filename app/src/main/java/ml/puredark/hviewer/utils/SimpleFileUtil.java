@@ -6,7 +6,6 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +25,7 @@ public class SimpleFileUtil {
      */
     public static String createIfNotExist(String path) {
         File file = new File(path);
-        if(!file.getParentFile().exists())
+        if (!file.getParentFile().exists())
             file.getParentFile().mkdirs();
         if (!file.exists()) {
             try {
@@ -37,6 +36,7 @@ public class SimpleFileUtil {
         }
         return path;
     }
+
     /**
      * 如果文件夹不存在，就创建文件夹
      *
@@ -45,7 +45,7 @@ public class SimpleFileUtil {
      */
     public static String createDirIfNotExist(String path) {
         File file = new File(path);
-        if(!file.exists()) {
+        if (!file.exists()) {
             boolean success = file.mkdirs();
             Log.d("SimpleFileUtil", "success:" + success);
         }
@@ -147,19 +147,20 @@ public class SimpleFileUtil {
         String line = "";
         String Result = "";
         while ((line = bufReader.readLine()) != null)
-            Result += "\n"+line;
+            Result += "\n" + line;
         return Result;
     }
 
     /**
      * 获取指定文件大小
+     *
      * @param file
      * @return
      * @throws Exception
      */
-    public static long getFileSize(File file){
+    public static long getFileSize(File file) {
         long size = 0;
-        if (file.exists()){
+        if (file.exists()) {
             FileInputStream fis;
             try {
                 fis = new FileInputStream(file);

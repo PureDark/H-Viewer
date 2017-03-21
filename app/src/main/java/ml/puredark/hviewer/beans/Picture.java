@@ -20,6 +20,10 @@ public class Picture extends AbstractDataProvider.Data {
         this.referer = referer;
     }
 
+    public static boolean hasPicPosfix(String url) {
+        return url != null && (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".bmp") || url.endsWith(".gif") || url.endsWith(".webp"));
+    }
+
     @Override
     public int getId() {
         return pid;
@@ -42,9 +46,5 @@ public class Picture extends AbstractDataProvider.Data {
             return false;
         }
         return obj1.equals(obj2);
-    }
-
-    public static boolean hasPicPosfix(String url) {
-        return url != null && (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".bmp") || url.endsWith(".gif") || url.endsWith(".webp"));
     }
 }

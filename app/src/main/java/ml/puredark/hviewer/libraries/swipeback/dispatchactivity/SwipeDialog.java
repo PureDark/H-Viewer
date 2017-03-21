@@ -23,7 +23,7 @@ public class SwipeDialog extends Dialog {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(mSwipeWindowHelper == null) {
+        if (mSwipeWindowHelper == null) {
             mSwipeWindowHelper = new SwipeWindowHelper(getWindow());
         }
         return mSwipeWindowHelper.processTouchEvent(ev) || super.dispatchTouchEvent(ev);

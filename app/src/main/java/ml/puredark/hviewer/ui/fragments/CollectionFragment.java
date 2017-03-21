@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
@@ -74,6 +73,8 @@ public class CollectionFragment extends MyFragment {
     private int currPage;
 
     private boolean noTouch = false;
+    // 记录使用js进行scroll的次数，每5秒检测一次，如果没有获得新item，则+1，达到3次判定已获取完毕
+    private int scrollTimes = 0;
 
     public CollectionFragment() {
     }
@@ -211,9 +212,6 @@ public class CollectionFragment extends MyFragment {
         }
     }
 
-    // 记录使用js进行scroll的次数，每5秒检测一次，如果没有获得新item，则+1，达到3次判定已获取完毕
-    private int scrollTimes = 0;
-
     private void getCollections(String keyword, final int page) {
         if (onePage && page > startPage && !site.hasFlag(Site.FLAG_JS_SCROLL)) {
             // 如果URL中根本没有page参数的位置，则肯定只有1页，无需多加载一次
@@ -254,23 +252,23 @@ public class CollectionFragment extends MyFragment {
         } else
             HViewerHttpClient.get(url, site.disableHProxy, site.getHeaders(), site.hasFlag(Site.FLAG_POST_INDEX) || site.hasFlag(Site.FLAG_POST_ALL),
                     new HViewerHttpClient.OnResponseListener() {
-                @Override
-                public void onSuccess(String contentType, final Object result) {
-                    if (!(result instanceof String))
-                        return;
-                    String html = (String) result;
-                    onResultGot(html, url, page);
-                }
+                        @Override
+                        public void onSuccess(String contentType, final Object result) {
+                            if (!(result instanceof String))
+                                return;
+                            String html = (String) result;
+                            onResultGot(html, url, page);
+                        }
 
-                @Override
-                public void onFailure(HViewerHttpClient.HttpError error) {
-                    BaseActivity activity = (BaseActivity) getActivity();
-                    if (activity != null)
-                        activity.showSnackBar(error.getErrorString());
-                    rvCollection.setPullLoadMoreCompleted();
-                    noTouch = false;
-                }
-            });
+                        @Override
+                        public void onFailure(HViewerHttpClient.HttpError error) {
+                            BaseActivity activity = (BaseActivity) getActivity();
+                            if (activity != null)
+                                activity.showSnackBar(error.getErrorString());
+                            rvCollection.setPullLoadMoreCompleted();
+                            noTouch = false;
+                        }
+                    });
     }
 
     @JavascriptInterface

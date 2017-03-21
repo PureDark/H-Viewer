@@ -3,7 +3,6 @@ package ml.puredark.hviewer.ui.fragments;
 
 import android.support.v4.app.Fragment;
 
-import ml.puredark.hviewer.beans.Category;
 import ml.puredark.hviewer.beans.Site;
 
 /**

@@ -24,14 +24,13 @@ import java.util.ArrayList;
 
 public class UriUtil {
 
-    static String TAG="TAG";
     private static final String PRIMARY_VOLUME_NAME = "primary";
-
-
+    static String TAG = "TAG";
 
     public static boolean isKitkat() {
         return Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
     }
+
     public static boolean isAndroid5() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
@@ -43,8 +42,7 @@ public class UriUtil {
 
         try {
             sdCardDirectory = new File(sdCardDirectory).getCanonicalPath();
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             Log.e(TAG, "Could not get SD directory", ioe);
         }
         return sdCardDirectory;
@@ -60,13 +58,11 @@ public class UriUtil {
                 int index = file.getAbsolutePath().lastIndexOf("/Android/data");
                 if (index < 0) {
                     Log.w("", "Unexpected external file dir: " + file.getAbsolutePath());
-                }
-                else {
+                } else {
                     String path = file.getAbsolutePath().substring(0, index);
                     try {
                         path = new File(path).getCanonicalPath();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // Keep non-canonical path.
                     }
                     paths.add(path);
@@ -81,7 +77,7 @@ public class UriUtil {
         if (treeUri == null) {
             return null;
         }
-        String volumePath = getVolumePath(getVolumeIdFromTreeUri(treeUri),con);
+        String volumePath = getVolumePath(getVolumeIdFromTreeUri(treeUri), con);
         if (volumePath == null) {
             return File.separator;
         }
@@ -97,12 +93,10 @@ public class UriUtil {
         if (documentPath.length() > 0) {
             if (documentPath.startsWith(File.separator)) {
                 return volumePath + documentPath;
-            }
-            else {
+            } else {
                 return volumePath + File.separator + documentPath;
             }
-        }
-        else {
+        } else {
             return volumePath;
         }
     }
@@ -146,8 +140,7 @@ public class UriUtil {
 
             // not found.
             return null;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return null;
         }
     }
@@ -159,8 +152,7 @@ public class UriUtil {
 
         if (split.length > 0) {
             return split[0];
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -172,8 +164,7 @@ public class UriUtil {
         final String[] split = docId.split(":");
         if ((split.length >= 2) && (split[1] != null)) {
             return split[1];
-        }
-        else {
+        } else {
             return File.separator;
         }
     }

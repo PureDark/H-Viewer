@@ -17,7 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 
 public class AppUtils {
 
-    private AppUtils() {}
+    private AppUtils() {
+    }
 
     public static PackageInfo getPackageInfo(Context context) {
         try {
@@ -41,7 +42,7 @@ public class AppUtils {
                 TaskStackBuilder.create(activity)
                         // Add all of this activity's parents to the back stack.
                         .addNextIntentWithParentStack(upIntent)
-                                // Navigate up to the closest parent.
+                        // Navigate up to the closest parent.
                         .startActivities();
             } else {
                 // This activity is part of this app's task, so simply

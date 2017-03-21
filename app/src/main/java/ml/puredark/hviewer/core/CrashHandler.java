@@ -34,13 +34,13 @@ import ml.puredark.hviewer.utils.SimpleFileUtil;
  */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
     /**
-     * 系统默认的UncaughtException处理类
-     */
-    private Thread.UncaughtExceptionHandler mDefaultHandler;
-    /**
      * CrashHandler实例
      */
     private static CrashHandler INSTANCE;
+    /**
+     * 系统默认的UncaughtException处理类
+     */
+    private Thread.UncaughtExceptionHandler mDefaultHandler;
     /**
      * 程序的Context对象
      */
@@ -85,10 +85,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if(!HViewerApplication.DEBUG) {
+                        if (!HViewerApplication.DEBUG) {
                             EmailUtil.sendEmail(EmailUtil.fromEmail, "v" + HViewerApplication.getVersionName() + " " + file.getName(),
                                     SimpleFileUtil.readString(filePath, "utf-8"));
-                        }else
+                        } else
                             SharedPreferencesUtil.saveData(mContext, "unupload_log", false);
                     }
                 }).start();

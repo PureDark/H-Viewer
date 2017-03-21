@@ -3,7 +3,6 @@ package ml.puredark.hviewer.http;
 import android.net.Uri;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.imagepipeline.image.EncodedImage;
@@ -37,29 +36,14 @@ import okhttp3.ResponseBody;
 public class MyOkHttpNetworkFetcher extends
         BaseNetworkFetcher<MyOkHttpNetworkFetcher.OkHttpNetworkFetchState> {
 
-    public static class OkHttpNetworkFetchState extends FetchState {
-        public long submitTime;
-        public long responseTime;
-        public long fetchCompleteTime;
-
-        public OkHttpNetworkFetchState(
-                Consumer<EncodedImage> consumer,
-                ProducerContext producerContext) {
-            super(consumer, producerContext);
-        }
-    }
-
     private static final String TAG = "OkHttpNetworkFetchProducer";
     private static final String QUEUE_TIME = "queue_time";
     private static final String FETCH_TIME = "fetch_time";
     private static final String TOTAL_TIME = "total_time";
     private static final String IMAGE_SIZE = "image_size";
-
     //为了Fresco请求时可以根据不同Uri加不同的header，必须要得有一个全局变量（Fresco的硬伤）
     public static WeakHashMap<Uri, String> headers = new WeakHashMap<>();
-
     private final OkHttpClient mOkHttpClient;
-
     private Executor mCancellationExecutor;
 
     /**
@@ -83,16 +67,16 @@ public class MyOkHttpNetworkFetcher extends
         final Uri uri = fetchState.getUri();
         String headerStr = headers.get(uri);
         Request.Builder builder = new Request.Builder();
-        try{
-            if(headerStr!=null&&!"".equals(headerStr)){
+        try {
+            if (headerStr != null && !"".equals(headerStr)) {
                 JsonObject object = new JsonParser().parse(headerStr).getAsJsonObject();
-                for (Map.Entry<String,JsonElement> entry : object.entrySet()) {
+                for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
                     String header = entry.getKey();
                     String value = entry.getValue().getAsString();
                     builder.addHeader(header, value);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
         final Request request = builder
                 .cacheControl(new CacheControl.Builder().noStore().build())
@@ -169,7 +153,7 @@ public class MyOkHttpNetworkFetcher extends
 
     /**
      * Handles exceptions.
-     *
+     * <p>
      * <p> OkHttp notifies callers of cancellations via an IOException. If IOException is caught
      * after request cancellation, then the exception is interpreted as successful cancellation
      * and onCancellation is called. Otherwise onFailure is called.
@@ -179,6 +163,18 @@ public class MyOkHttpNetworkFetcher extends
             callback.onCancellation();
         } else {
             callback.onFailure(e);
+        }
+    }
+
+    public static class OkHttpNetworkFetchState extends FetchState {
+        public long submitTime;
+        public long responseTime;
+        public long fetchCompleteTime;
+
+        public OkHttpNetworkFetchState(
+                Consumer<EncodedImage> consumer,
+                ProducerContext producerContext) {
+            super(consumer, producerContext);
         }
     }
 }

@@ -24,12 +24,6 @@ import android.util.SparseArray;
 import android.widget.FrameLayout;
 
 public class ExpandableItemIndicator extends FrameLayout {
-    static abstract class Impl {
-        public abstract void onInit(Context context, AttributeSet attrs, int defStyleAttr, ExpandableItemIndicator thiz);
-
-        public abstract void setExpandedState(boolean isExpanded, boolean animate);
-    }
-
     private Impl mImpl;
 
     public ExpandableItemIndicator(Context context) {
@@ -75,5 +69,11 @@ public class ExpandableItemIndicator extends FrameLayout {
 
     public void setExpandedState(boolean isExpanded, boolean animate) {
         mImpl.setExpandedState(isExpanded, animate);
+    }
+
+    static abstract class Impl {
+        public abstract void onInit(Context context, AttributeSet attrs, int defStyleAttr, ExpandableItemIndicator thiz);
+
+        public abstract void setExpandedState(boolean isExpanded, boolean animate);
     }
 }

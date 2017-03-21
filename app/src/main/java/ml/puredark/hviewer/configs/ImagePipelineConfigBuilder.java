@@ -43,28 +43,23 @@ public class ImagePipelineConfigBuilder {
 
     //小图低磁盘空间缓存的最大值（特性：可将大量的小图放到额外放在另一个磁盘空间防止大图占用磁盘空间而删除了大量的小图）
     private static final int MAX_SMALL_DISK_LOW_CACHE_SIZE = 100 * ByteConstants.MB;
-
-    //默认图极低磁盘空间缓存的最大值
-    private static int MAX_DISK_CACHE_VERYLOW_SIZE = 60 * ByteConstants.MB;
-
-    //默认图低磁盘空间缓存的最大值
-    private static int MAX_DISK_CACHE_LOW_SIZE = 180 * ByteConstants.MB;
-
-    //默认图磁盘缓存的最大值
-    private static int MAX_DISK_CACHE_SIZE = 300 * ByteConstants.MB;
-
     //小图所放路径的文件夹名
     private static final String IMAGE_PIPELINE_SMALL_CACHE_DIR = "ImagePipelineCacheSmall";
-
     //默认图所放路径的文件夹名
     private static final String IMAGE_PIPELINE_CACHE_DIR = "ImagePipelineCacheDefault";
+    //默认图极低磁盘空间缓存的最大值
+    private static int MAX_DISK_CACHE_VERYLOW_SIZE = 60 * ByteConstants.MB;
+    //默认图低磁盘空间缓存的最大值
+    private static int MAX_DISK_CACHE_LOW_SIZE = 180 * ByteConstants.MB;
+    //默认图磁盘缓存的最大值
+    private static int MAX_DISK_CACHE_SIZE = 300 * ByteConstants.MB;
 
     public static ImagePipelineConfig getDefaultImagePipelineConfig(Context context) {
         final int cacheSize = (int) SharedPreferencesUtil.getData(HViewerApplication.mContext,
                 SettingFragment.KEY_PREF_CACHE_SIZE, 300);
-        MAX_DISK_CACHE_VERYLOW_SIZE = cacheSize / 5  * ByteConstants.MB;
-        MAX_DISK_CACHE_LOW_SIZE = cacheSize * 3/5  * ByteConstants.MB;
-        MAX_DISK_CACHE_SIZE = cacheSize  * ByteConstants.MB;
+        MAX_DISK_CACHE_VERYLOW_SIZE = cacheSize / 5 * ByteConstants.MB;
+        MAX_DISK_CACHE_LOW_SIZE = cacheSize * 3 / 5 * ByteConstants.MB;
+        MAX_DISK_CACHE_SIZE = cacheSize * ByteConstants.MB;
 
         //内存配置
         final MemoryCacheParams bitmapCacheParams = new MemoryCacheParams(
@@ -138,6 +133,7 @@ public class ImagePipelineConfigBuilder {
 
         return configBuilder.build();
     }
+
     public static File getDiskCacheDir(Context context) {
         File cacheDir;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())

@@ -9,14 +9,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.ui.activities.SetPatternActivity;
 import ml.puredark.hviewer.ui.activities.SetPinActivity;
 import ml.puredark.hviewer.ui.fragments.LockMethodFragment;
-import ml.puredark.hviewer.ui.fragments.SettingFragment;
-import ml.puredark.hviewer.utils.PatternLockUtils;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-
-import static ml.puredark.hviewer.utils.SharedPreferencesUtil.getData;
 
 /**
  * Created by PureDark on 2016/10/9.

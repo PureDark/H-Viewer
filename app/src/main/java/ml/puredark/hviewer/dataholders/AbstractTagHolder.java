@@ -1,11 +1,5 @@
 package ml.puredark.hviewer.dataholders;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.text.TextUtils;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Tag;

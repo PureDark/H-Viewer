@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 
 public class SubRule {
 
-    public void replace(SubRule rule){
+    public void replace(SubRule rule) {
         if (rule == null)
             return;
         Field[] fs = getClass().getDeclaredFields();

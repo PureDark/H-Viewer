@@ -11,7 +11,7 @@ public class FavGroup extends AbstractExpandableDataProvider.GroupData {
     public int gid, index;
     public String title;
 
-    public FavGroup(int gid, String title){
+    public FavGroup(int gid, String title) {
         this.gid = gid;
         this.title = title;
     }

@@ -4,10 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -22,7 +19,6 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,7 +35,6 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.VibratorUtil;
 import rx.Subscriber;
 import rx.Subscription;
-import zwh.com.lib.CodeException;
 import zwh.com.lib.FPerException;
 import zwh.com.lib.RxFingerPrinter;
 
@@ -81,18 +76,10 @@ public class LockActivity extends AppCompatActivity {
 
         initBlurryBackground();
 
-        FingerprintManagerCompat manager = FingerprintManagerCompat.from(this);
-        boolean isFingerPrintLock;
-        try{
-            isFingerPrintLock = manager.hasEnrolledFingerprints();
-        } catch (Exception e) {
-            isFingerPrintLock = false;
-        }
         boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PATTERN;
         boolean isPinLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PIN;
 
-        if(isFingerPrintLock)
-            initFingerPrintLock();
+        initFingerPrintLock();
 
         correctPin = (String) SharedPreferencesUtil.getData(this, LockMethodFragment.KEY_PREF_PIN_LOCK, "");
 
@@ -143,7 +130,7 @@ public class LockActivity extends AppCompatActivity {
 
             @Override
             public void onPatternDetected(List<PatternView.Cell> list) {
-                if(success)
+                if (success)
                     return;
                 if (PatternLockUtils.isPatternCorrect(LockActivity.this, list)) {
                     mPatternView.setDisplayMode(PatternView.DisplayMode.Correct);
@@ -163,7 +150,7 @@ public class LockActivity extends AppCompatActivity {
         mPinLockView.setPinLockListener(new PinLockListener() {
             @Override
             public void onComplete(String pin) {
-                if(success)
+                if (success)
                     return;
                 if (pin.equals(correctPin)) {
                     onSuccessUnlock();
@@ -207,7 +194,7 @@ public class LockActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onNext(Boolean aBoolean) {
-                                    if(success)
+                                    if (success)
                                         return;
                                     if (aBoolean) {
                                         onSuccessUnlock();
@@ -229,7 +216,7 @@ public class LockActivity extends AppCompatActivity {
     }
 
     private void showErrorMessage(String message, boolean vibrate) {
-        if(vibrate)
+        if (vibrate)
             vibrate(50, false);
         tvMessage.setText(message);
         YoYo.with(Techniques.BounceInUp)
@@ -237,11 +224,11 @@ public class LockActivity extends AppCompatActivity {
                 .playOn(tvMessage);
     }
 
-    private synchronized void vibrate(int milliseconds, boolean success){
-        if(!this.success) {
+    private synchronized void vibrate(int milliseconds, boolean success) {
+        if (!this.success) {
             VibratorUtil.Vibrate(LockActivity.this, milliseconds);
         }
-        if(success)
+        if (success)
             this.success = success;
     }
 

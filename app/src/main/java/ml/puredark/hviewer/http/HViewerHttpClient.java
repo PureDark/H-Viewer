@@ -166,6 +166,30 @@ public class HViewerHttpClient {
         get(url, disableHProxy, headers, true, requestBody, callback);
     }
 
+    /**
+     * 获得字符集
+     */
+    public static String getCharset(String html) {
+        Document doc = Jsoup.parse(html);
+        Elements eles = doc.select("meta[http-equiv=Content-Type]");
+        Iterator<Element> itor = eles.iterator();
+        while (itor.hasNext())
+            return matchCharset(itor.next().toString());
+        return "utf-8";
+    }
+
+    /**
+     * 获得页面字符
+     */
+    public static String matchCharset(String content) {
+        String chs = "utf-8";
+        Pattern p = Pattern.compile("(?<=charset=)(.+)(?=\")");
+        Matcher m = p.matcher(content);
+        if (m.find())
+            return m.group();
+        return chs;
+    }
+
     public interface OnResponseListener {
         void onSuccess(String contentType, Object result);
 
@@ -199,30 +223,6 @@ public class HViewerHttpClient {
             }
             mHandler.post(() -> onResponse(contentType, body));
         }
-    }
-
-    /**
-     * 获得字符集
-     */
-    public static String getCharset(String html) {
-        Document doc = Jsoup.parse(html);
-        Elements eles = doc.select("meta[http-equiv=Content-Type]");
-        Iterator<Element> itor = eles.iterator();
-        while (itor.hasNext())
-            return matchCharset(itor.next().toString());
-        return "utf-8";
-    }
-
-    /**
-     * 获得页面字符
-     */
-    public static String matchCharset(String content) {
-        String chs = "utf-8";
-        Pattern p = Pattern.compile("(?<=charset=)(.+)(?=\")");
-        Matcher m = p.matcher(content);
-        if (m.find())
-            return m.group();
-        return chs;
     }
 
     // Pre-define error code

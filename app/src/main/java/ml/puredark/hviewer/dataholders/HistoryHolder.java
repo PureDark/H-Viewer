@@ -36,7 +36,7 @@ public class HistoryHolder {
         dbHelper.insert(dbName, contentValues);
     }
 
-    public void clear(){
+    public void clear() {
         dbHelper.delete(dbName, "", null);
     }
 

@@ -13,7 +13,6 @@ import java.util.List;
 import me.zhanghai.android.patternlock.PatternUtils;
 import me.zhanghai.android.patternlock.PatternView;
 import ml.puredark.hviewer.ui.fragments.LockMethodFragment;
-import ml.puredark.hviewer.ui.fragments.SettingFragment;
 
 public class PatternLockUtils {
     public static void setPattern(Context context, List<PatternView.Cell> pattern) {

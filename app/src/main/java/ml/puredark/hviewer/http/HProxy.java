@@ -5,7 +5,7 @@ import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class HProxy {
-//    private static final String PROXY_DEFAULT_SERVER = "https://h-viewer-proxy.herokuapp.com";
+    //    private static final String PROXY_DEFAULT_SERVER = "https://h-viewer-proxy.herokuapp.com";
     private static final String PROXY_DEFAULT_SERVER = null;
     private String mTarget;
     private String mProxyUrl;
@@ -21,7 +21,7 @@ public class HProxy {
         }
 
         this.mProxyUrl = getProxyServer() + target.substring(hostEndPos);
-        if(!mProxyUrl.startsWith("http"))
+        if (!mProxyUrl.startsWith("http"))
             mProxyUrl = mTarget;
     }
 

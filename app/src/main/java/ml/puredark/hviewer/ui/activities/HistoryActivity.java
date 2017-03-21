@@ -117,8 +117,8 @@ public class HistoryActivity extends BaseActivity {
     }
 
     @Override
-    public void onDestroy(){
-        if(historyHolder!=null)
+    public void onDestroy() {
+        if (historyHolder != null)
             historyHolder.onDestroy();
         super.onDestroy();
     }

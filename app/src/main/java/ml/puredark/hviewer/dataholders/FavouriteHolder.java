@@ -13,8 +13,6 @@ import java.util.List;
 import ml.puredark.hviewer.beans.Collection;
 import ml.puredark.hviewer.beans.FavGroup;
 import ml.puredark.hviewer.beans.LocalCollection;
-import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.beans.SiteGroup;
 
 /**
  * Created by PureDark on 2016/8/12.

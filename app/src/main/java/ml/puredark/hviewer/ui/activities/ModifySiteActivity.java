@@ -29,8 +29,6 @@ import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
-import ml.puredark.hviewer.beans.SiteGroup;
-import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.configs.PasteEEConfig;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.download.DownloadManager;
@@ -227,7 +225,7 @@ public class ModifySiteActivity extends BaseActivity {
             showSnackBar("请选择一个分类，如无请先创建分类");
             return;
         }
-        
+
         newSite.sid = site.sid;
         newSite.index = site.index;
         HViewerApplication.temp = newSite;

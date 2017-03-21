@@ -25,7 +25,7 @@ public class QRCodeUtil {
      * @param widthPix  图片宽度
      * @param heightPix 图片高度
      * @param logoBm    二维码中心的Logo图标（可以为null）
-     * @param fos  用于存储二维码图片的文件输出流
+     * @param fos       用于存储二维码图片的文件输出流
      * @return 生成二维码及保存文件是否成功
      */
     public static boolean createQRImage(String content, int widthPix, int heightPix, Bitmap logoBm, OutputStream fos) {

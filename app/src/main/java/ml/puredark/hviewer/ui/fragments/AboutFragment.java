@@ -93,7 +93,7 @@ public class AboutFragment extends PreferenceFragment {
             Intent it = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(it);
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_QQ_GROUP)) {
-            if(!joinQQGroup("xphJHB9LFttGePEHhca0-RiSvdmBINdC")){
+            if (!joinQQGroup("xphJHB9LFttGePEHhca0-RiSvdmBINdC")) {
                 ClipboardManager myClipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
                 myClipboard.setPrimaryClip(ClipData.newPlainText("qq_group", preference.getSummary().toString()));
                 activity.showSnackBar("群号已复制到剪贴板");
@@ -110,7 +110,6 @@ public class AboutFragment extends PreferenceFragment {
     }
 
     /****************
-     *
      * 发起添加群流程。群号：H-Viewer内测群(590668841) 的 key 为： xphJHB9LFttGePEHhca0-RiSvdmBINdC
      * 调用 joinQQGroup(xphJHB9LFttGePEHhca0-RiSvdmBINdC) 即可发起手Q客户端申请加群 H-Viewer内测群(590668841)
      *

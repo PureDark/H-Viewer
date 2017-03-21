@@ -144,6 +144,30 @@ public class PictureVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         void onItemClick(View v, int position);
     }
 
+    public static abstract class ScrollDetector extends RecyclerView.OnScrollListener {
+        private int mScrollThreshold;
+
+        public abstract void onScrollUp();
+
+        public abstract void onScrollDown();
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            boolean isSignificantDelta = Math.abs(dy) > mScrollThreshold;
+            if (isSignificantDelta) {
+                if (dy > 0) {
+                    onScrollUp();
+                } else {
+                    onScrollDown();
+                }
+            }
+        }
+
+        public void setScrollThreshold(int scrollThreshold) {
+            mScrollThreshold = scrollThreshold;
+        }
+    }
+
     public class PictureViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.iv_picture)
         public ImageView ivPicture;
@@ -169,30 +193,6 @@ public class PictureVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (mItemClickListener != null && getAdapterPosition() >= 0 && getAdapterPosition() < getItemCount())
                     mItemClickListener.onItemClick(v, getAdapterPosition());
             });
-        }
-    }
-
-    public static abstract class ScrollDetector extends RecyclerView.OnScrollListener {
-        private int mScrollThreshold;
-
-        public abstract void onScrollUp();
-
-        public abstract void onScrollDown();
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            boolean isSignificantDelta = Math.abs(dy) > mScrollThreshold;
-            if (isSignificantDelta) {
-                if (dy > 0) {
-                    onScrollUp();
-                } else {
-                    onScrollDown();
-                }
-            }
-        }
-
-        public void setScrollThreshold(int scrollThreshold) {
-            mScrollThreshold = scrollThreshold;
         }
     }
 }

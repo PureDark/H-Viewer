@@ -26,8 +26,8 @@ import static ml.puredark.hviewer.HViewerApplication.mContext;
  */
 
 public class DataRestore {
-    private SiteHolder siteHolder = new SiteHolder(mContext);
     int sid;
+    private SiteHolder siteHolder = new SiteHolder(mContext);
 
     public String DoRestore() {
         String settingRestore = SettingRestore();
@@ -98,8 +98,8 @@ public class DataRestore {
                 sites = siteGroupListPair.second;
                 SiteGroup existSiteGroup = siteHolder.getGroupByTitle(siteGroup.title);
                 siteGroup.gid = (existSiteGroup == null)
-                        ?siteHolder.addSiteGroup(siteGroup)
-                        :existSiteGroup.gid;
+                        ? siteHolder.addSiteGroup(siteGroup)
+                        : existSiteGroup.gid;
                 for (int j = 0; j < sites.size(); j++) {
                     site = sites.get(j);
                     site.gid = siteGroup.gid;

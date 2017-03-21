@@ -1,4 +1,5 @@
 package ml.puredark.hviewer.ui.customs;
+
 import android.support.annotation.Nullable;
 
 import com.facebook.common.executors.CallerThreadExecutor;
@@ -34,7 +35,7 @@ public class RetainingDataSourceSupplier<T> implements Supplier<DataSource<T>> {
 
     public void setSupplier(Supplier<DataSource<T>> supplier) {
         mCurrentDataSourceSupplier = supplier;
-        for (RetainingDataSource dataSource: mDataSources) {
+        for (RetainingDataSource dataSource : mDataSources) {
             dataSource.setSupplier(supplier);
         }
     }

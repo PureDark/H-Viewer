@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.widget.BaseAdapter;
@@ -15,8 +14,6 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
 import ml.puredark.hviewer.utils.PatternLockUtils;
 import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-
-import static ml.puredark.hviewer.R.string.refresh;
 
 /**
  * Created by PureDark on 2016/9/25.
@@ -39,6 +36,17 @@ public class LockMethodFragment extends PreferenceFragment {
     @SuppressLint("ValidFragment")
     public LockMethodFragment(BaseActivity activity) {
         this.activity = activity;
+    }
+
+    public static int getCurrentLockMethod(Context context) {
+        boolean isPatternLock = PatternLockUtils.hasPattern(context);
+        String pin = (String) SharedPreferencesUtil.getData(context, LockMethodFragment.KEY_PREF_PIN_LOCK, "");
+        boolean isPinLock = !TextUtils.isEmpty(pin);
+        String lastSet = (String) SharedPreferencesUtil.getData(context, LockMethodFragment.KEY_PREF_CURR_LOCK_METHOD, "");
+        if (!TextUtils.isEmpty(lastSet) && "pin".equals(lastSet))
+            return (isPinLock) ? METHOD_PIN : (isPatternLock) ? METHOD_PIN : METHOD_NONE;
+        else
+            return (isPatternLock) ? METHOD_PATTERN : (isPinLock) ? METHOD_PIN : METHOD_NONE;
     }
 
     @Override
@@ -71,19 +79,8 @@ public class LockMethodFragment extends PreferenceFragment {
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
-    private void refresh(PreferenceScreen preferenceScreen){
-        ((BaseAdapter)preferenceScreen.getRootAdapter()).notifyDataSetChanged();
-    }
-
-    public static int getCurrentLockMethod(Context context){
-        boolean isPatternLock = PatternLockUtils.hasPattern(context);
-        String pin = (String) SharedPreferencesUtil.getData(context, LockMethodFragment.KEY_PREF_PIN_LOCK, "");
-        boolean isPinLock = !TextUtils.isEmpty(pin);
-        String lastSet = (String) SharedPreferencesUtil.getData(context, LockMethodFragment.KEY_PREF_CURR_LOCK_METHOD, "");
-        if(!TextUtils.isEmpty(lastSet) && "pin".equals(lastSet))
-            return (isPinLock) ? METHOD_PIN : (isPatternLock) ? METHOD_PIN : METHOD_NONE;
-        else
-            return (isPatternLock) ? METHOD_PATTERN : (isPinLock) ? METHOD_PIN : METHOD_NONE;
+    private void refresh(PreferenceScreen preferenceScreen) {
+        ((BaseAdapter) preferenceScreen.getRootAdapter()).notifyDataSetChanged();
     }
 
 }

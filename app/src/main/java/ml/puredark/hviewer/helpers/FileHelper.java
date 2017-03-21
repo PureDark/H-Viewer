@@ -2,7 +2,6 @@ package ml.puredark.hviewer.helpers;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 
@@ -15,10 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ml.puredark.hviewer.HViewerApplication;
-import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.utils.DocumentUtil;
-
-import static android.R.attr.data;
 
 
 /**
@@ -27,11 +23,11 @@ import static android.R.attr.data;
 
 public class FileHelper {
 
-    public static boolean isFileExist(String fileName, String rootPath, String... subDirs){
+    public static boolean isFileExist(String fileName, String rootPath, String... subDirs) {
         return DocumentUtil.isFileExist(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
-    public static DocumentFile getDirDocument(String rootPath, String...subDirs){
+    public static DocumentFile getDirDocument(String rootPath, String... subDirs) {
         return DocumentUtil.getDirDocument(HViewerApplication.mContext, rootPath, subDirs);
     }
 
@@ -50,17 +46,17 @@ public class FileHelper {
         return DocumentUtil.createDirIfNotExist(HViewerApplication.mContext, path, subDirs);
     }
 
-    public static boolean deleteFile(String fileName, String rootPath, String... subDirs){
+    public static boolean deleteFile(String fileName, String rootPath, String... subDirs) {
         if (!rootPath.startsWith("content://"))
             rootPath = "file://" + Uri.decode(rootPath);
         return DocumentUtil.deleteFile(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
-    public static boolean writeString(String string, DocumentFile file){
+    public static boolean writeString(String string, DocumentFile file) {
         return DocumentUtil.writeBytes(HViewerApplication.mContext, string.getBytes(), file);
     }
 
-    public static boolean writeString(String string, String fileName, String rootPath, String... subDirs){
+    public static boolean writeString(String string, String fileName, String rootPath, String... subDirs) {
         if (!rootPath.startsWith("content://"))
             rootPath = "file://" + Uri.decode(rootPath);
         return DocumentUtil.writeBytes(HViewerApplication.mContext, string.getBytes(), fileName, rootPath, subDirs);
@@ -88,7 +84,7 @@ public class FileHelper {
         return string;
     }
 
-    public static boolean writeBytes(byte[] data, String fileName, String rootPath, String... subDirs){
+    public static boolean writeBytes(byte[] data, String fileName, String rootPath, String... subDirs) {
         if (!rootPath.startsWith("content://"))
             rootPath = "file://" + Uri.decode(rootPath);
         return DocumentUtil.writeBytes(HViewerApplication.mContext, data, fileName, rootPath, subDirs);
@@ -128,23 +124,23 @@ public class FileHelper {
         out.close();
     }
 
-    public static OutputStream getFileOutputSteam(String fileName, String rootPath, String... subDirs){
+    public static OutputStream getFileOutputSteam(String fileName, String rootPath, String... subDirs) {
         if (!rootPath.startsWith("content://"))
             rootPath = "file://" + Uri.decode(rootPath);
         return DocumentUtil.getFileOutputSteam(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
-    public static InputStream getFileInputSteam(String fileName, String rootPath, String... subDirs){
+    public static InputStream getFileInputSteam(String fileName, String rootPath, String... subDirs) {
         if (!rootPath.startsWith("content://"))
             rootPath = "file://" + Uri.decode(rootPath);
         return DocumentUtil.getFileInputSteam(HViewerApplication.mContext, fileName, rootPath, subDirs);
     }
 
-    public static String filenameFilter(String str){
+    public static String filenameFilter(String str) {
         return DocumentUtil.filenameFilter(str);
     }
 
-    public static byte[] getBytes(File file){
+    public static byte[] getBytes(File file) {
         byte[] buffer = null;
         try {
             FileInputStream fis = new FileInputStream(file);

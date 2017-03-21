@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 public class DocumentUtil {
 
+    private static Pattern FilePattern = Pattern.compile("[\\\\/:*?\"<>|]");
+
     public static boolean isFileExist(Context context, String fileName, String rootPath, String... subDirs) {
         Uri rootUri;
         if (rootPath.startsWith("content"))
@@ -73,7 +75,7 @@ public class DocumentUtil {
                 }
                 parent = subDir;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -203,7 +205,6 @@ public class DocumentUtil {
         }
         return false;
     }
-
 
     public static byte[] readBytes(Context context, String fileName, String rootPath, String... subDirs) {
         DocumentFile parent = getDirDocument(context, rootPath, subDirs);
@@ -376,8 +377,6 @@ public class DocumentUtil {
         }
         return null;
     }
-
-    private static Pattern FilePattern = Pattern.compile("[\\\\/:*?\"<>|]");
 
     public static String filenameFilter(String str) {
         return str == null ? null : FilePattern.matcher(str).replaceAll("_");

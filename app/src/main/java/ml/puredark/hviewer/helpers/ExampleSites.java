@@ -1547,7 +1547,7 @@ public class ExampleSites {
                 "https://solarian.hanime.tv/do_search?q={keyword:}&search_by=all&search_from={page:0:48}&page_size=48",
                 "https://hanime.tv/log-in",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_RATING + "|" + Site.FLAG_POST_INDEX + "|" + Site.FLAG_JS_NEEDED_GALLERY+"|"+Site.FLAG_WATERFALL_AS_GRID));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_POST_INDEX + "|" + Site.FLAG_JS_NEEDED_GALLERY + "|" + Site.FLAG_WATERFALL_AS_GRID));
         categories = new ArrayList<>();
         categories.add(new Category(categories.size() + 1, "全部", "https://solarian.hanime.tv/do_search?q=&search_by=all&search_from={page:0:48}&page_size=48"));
         categories.add(new Category(categories.size() + 1, "最多观看", "https://solarian.hanime.tv/do_search?q=&search_by=all&sort_by=views&search_from={page:0:48}&page_size=48"));
@@ -1579,7 +1579,7 @@ public class ExampleSites {
                 "http://hentaiplay.net/page/{page:1}/?s={keyword:}",
                 "http://hentaiplay.net/wp-login.php",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_NO_RATING+"|"+Site.FLAG_WATERFALL_AS_GRID));
+                Site.FLAG_NO_RATING + "|" + Site.FLAG_WATERFALL_AS_GRID));
         categories = new ArrayList<>();
         categories.add(new Category(categories.size() + 1, "最新", "http://hentaiplay.net/hentai/episodes/new-releases/page/{page:1}/"));
         categories.add(new Category(categories.size() + 1, "英语字幕", "http://hentaiplay.net/hentai/episodes/english-subbed/page/{page:1}/"));
@@ -1612,7 +1612,7 @@ public class ExampleSites {
                 "http://www.pornhub.com/video/search?search={keyword:}&page={page:1}",
                 "http://www.pornhub.com/login",
                 indexRule, galleryRule, null, null,
-                Site.FLAG_PRELOAD_GALLERY+"|"+Site.FLAG_WATERFALL_AS_GRID));
+                Site.FLAG_PRELOAD_GALLERY + "|" + Site.FLAG_WATERFALL_AS_GRID));
         categories = new ArrayList<>();
         categories.add(new Category(categories.size() + 1, "首页", "http://www.pornhub.com/video?page={page:1}"));
         categories.add(new Category(categories.size() + 1, "推荐", "http://www.pornhub.com/recommended?page={page:1}"));

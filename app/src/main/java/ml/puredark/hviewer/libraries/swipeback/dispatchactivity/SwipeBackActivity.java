@@ -15,11 +15,11 @@ public class SwipeBackActivity extends AppCompatActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(!supportSlideBack()) {
+        if (!supportSlideBack()) {
             return super.dispatchTouchEvent(ev);
         }
 
-        if(mSwipeWindowHelper == null) {
+        if (mSwipeWindowHelper == null) {
             mSwipeWindowHelper = new SwipeWindowHelper(getWindow());
         }
         return mSwipeWindowHelper.processTouchEvent(ev) || super.dispatchTouchEvent(ev);
@@ -34,7 +34,7 @@ public class SwipeBackActivity extends AppCompatActivity {
         return swipeEnable;
     }
 
-    public void setSwipeBackEnable(boolean enable){
+    public void setSwipeBackEnable(boolean enable) {
         swipeEnable = enable;
     }
 }

@@ -5,7 +5,6 @@ import android.preference.Preference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -13,7 +12,7 @@ import android.widget.ListView;
  * Created by PureDark on 2016/10/9.
  */
 
-public class LongClickPreference extends Preference implements View.OnLongClickListener{
+public class LongClickPreference extends Preference implements View.OnLongClickListener {
     private View.OnLongClickListener onLongClickListener;
 
     public LongClickPreference(Context context) {
@@ -28,7 +27,7 @@ public class LongClickPreference extends Preference implements View.OnLongClickL
         super(context, attrs);
     }
 
-    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener){
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
         this.onLongClickListener = onLongClickListener;
     }
 
@@ -52,6 +51,6 @@ public class LongClickPreference extends Preference implements View.OnLongClickL
 
     @Override
     public boolean onLongClick(View v) {
-        return onLongClickListener!=null && onLongClickListener.onLongClick(v);
+        return onLongClickListener != null && onLongClickListener.onLongClick(v);
     }
 }

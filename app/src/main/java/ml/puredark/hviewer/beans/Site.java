@@ -131,7 +131,7 @@ public class Site extends AbstractExpandableDataProvider.ChildData {
         return RuleParser.parseUrl(inUrl, page, idCode, "", array);
     }
 
-    public boolean isFirstLoadSecondLevelGallery(List<Picture> pictures){
+    public boolean isFirstLoadSecondLevelGallery(List<Picture> pictures) {
         return (pictures != null && pictures.size() > 0 && this.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY)
                 && !Picture.hasPicPosfix(pictures.get(0).url) && this.extraRule != null);
     }

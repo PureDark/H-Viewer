@@ -10,13 +10,13 @@ import ml.puredark.hviewer.HViewerApplication;
 
 public class Logger {
 
-    public static void d(String tag, String message){
-        if(HViewerApplication.DEBUG)
+    public static void d(String tag, String message) {
+        if (HViewerApplication.DEBUG)
             Log.d(tag, message);
     }
 
-    public static void e(String tag, String message, Throwable e){
-        if(HViewerApplication.DEBUG)
+    public static void e(String tag, String message, Throwable e) {
+        if (HViewerApplication.DEBUG)
             Log.e(tag, message, e);
     }
 }

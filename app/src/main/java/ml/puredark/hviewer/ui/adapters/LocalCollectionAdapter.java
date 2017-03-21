@@ -110,7 +110,7 @@ public class LocalCollectionAdapter
     public void onBindChildViewHolder(final CollectionViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
         LocalCollection collection = mProvider.getChildItem(groupPosition, childPosition);
         String cookie = (collection.site == null) ? "" : collection.site.cookie;
-        if(holder.ivCover!=null)
+        if (holder.ivCover != null)
             ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
         holder.tvTitle.setText(collection.title);
         holder.tvUploader.setText(collection.uploader);
@@ -350,6 +350,25 @@ public class LocalCollectionAdapter
 
     }
 
+    public interface OnItemEventListener {
+        void onGroupMove(int fromGroupPosition, int toGroupPosition);
+
+        void onItemMove(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition);
+
+        void onItemRemoved(int groupPosition, int childPosition);
+    }
+
+    public interface OnItemClickListener {
+
+        void onGroupClick(View v, int groupPosition);
+
+        boolean onGroupLongClick(View v, int groupPosition);
+
+        void onItemClick(View v, int groupPosition, int childPosition);
+
+        boolean onItemLongClick(View v, int groupPosition, int childPosition);
+    }
+
     private class ChildSwipeResultAction extends SwipeResultActionRemoveItem {
         private final int mGroupPosition;
         private final int mChildPosition;
@@ -379,25 +398,6 @@ public class LocalCollectionAdapter
         }
     }
 
-    public interface OnItemEventListener {
-        void onGroupMove(int fromGroupPosition, int toGroupPosition);
-
-        void onItemMove(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition);
-
-        void onItemRemoved(int groupPosition, int childPosition);
-    }
-
-    public interface OnItemClickListener {
-
-        void onGroupClick(View v, int groupPosition);
-
-        boolean onGroupLongClick(View v, int groupPosition);
-
-        void onItemClick(View v, int groupPosition, int childPosition);
-
-        boolean onItemLongClick(View v, int groupPosition, int childPosition);
-    }
-
     public class GroupViewHolder extends AbstractDraggableSwipeableItemViewHolder
             implements ExpandableItemViewHolder {
         @BindView(R.id.iv_icon)
@@ -422,13 +422,13 @@ public class LocalCollectionAdapter
         }
 
         @Override
-        public void setExpandStateFlags(int flag) {
-            mExpandStateFlags = flag;
+        public int getExpandStateFlags() {
+            return mExpandStateFlags;
         }
 
         @Override
-        public int getExpandStateFlags() {
-            return mExpandStateFlags;
+        public void setExpandStateFlags(int flag) {
+            mExpandStateFlags = flag;
         }
     }
 

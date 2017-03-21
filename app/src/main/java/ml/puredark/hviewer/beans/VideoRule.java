@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
  * Created by PureDark on 2016/10/11.
  */
 
-public class VideoRule extends SubRule{
+public class VideoRule extends SubRule {
     public Selector id, item, thumbnail, content;
 
     public boolean isEmpty() {

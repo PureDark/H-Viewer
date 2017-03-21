@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.ui.fragments.LockMethodFragment;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 /**
  * Created by PureDark on 2016/10/9.

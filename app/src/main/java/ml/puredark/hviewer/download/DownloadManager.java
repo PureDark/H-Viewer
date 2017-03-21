@@ -54,6 +54,31 @@ public class DownloadManager {
         checkNoMediaFile();
     }
 
+    public static File getAlbumStorageDir() {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Names.appdirname);
+        return file;
+    }
+
+    public static String getDownloadPath() {
+        String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
+        if (downloadPath == null)
+            return DEFAULT_PATH;
+        else
+            return downloadPath;
+    }
+
+    public static String generateDirName(LocalCollection collection, int i) {
+        final int limit = 255;
+        String posfix = (i == 0) ? "" : "_" + i;
+        String dirName = FileHelper.filenameFilter(collection.title + "_" + collection.site.title + "_" + collection.idCode + posfix);
+        if (dirName.length() > limit) {
+            dirName = FileHelper.filenameFilter(collection.title + posfix);
+            if (dirName.length() > limit)
+                dirName = dirName.substring(0, limit - 3 - posfix.length()) + "..." + posfix;
+        }
+        return dirName;
+    }
+
     private void checkNoMediaFile() {
         boolean nomedia = (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_NOMEDIA, true);
         String path = Uri.decode(getDownloadPath());
@@ -65,23 +90,11 @@ public class DownloadManager {
             }
         } else {
             DocumentFile file = FileHelper.createDirIfNotExist(getDownloadPath());
-            Logger.d("DownloadManager", "file:" + file + " file.getName:" + ((file!=null)?file.getName():"null"));
+            Logger.d("DownloadManager", "file:" + file + " file.getName:" + ((file != null) ? file.getName() : "null"));
             Logger.d("DownloadManager", "file.exists():" + file.exists());
             if (file == null || !file.exists())
                 SimpleFileUtil.createDirIfNotExist(path);
         }
-    }
-
-    public static File getAlbumStorageDir() {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Names.appdirname);
-        return file;
-    }
-    public static String getDownloadPath() {
-        String downloadPath = (String) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_PATH, DEFAULT_PATH);
-        if (downloadPath == null)
-            return DEFAULT_PATH;
-        else
-            return downloadPath;
     }
 
     public boolean isDownloading() {
@@ -107,7 +120,7 @@ public class DownloadManager {
             dirName = generateDirName(collection, i++);
         }
         DocumentFile dir = FileHelper.createDirIfNotExist(getDownloadPath(), dirName);
-        if(dir==null){
+        if (dir == null) {
             holder.deleteDownloadTask(task);
             return false;
         }
@@ -120,18 +133,6 @@ public class DownloadManager {
         if (!isDownloading())
             startDownload(task);
         return true;
-    }
-
-    public static String generateDirName(LocalCollection collection, int i) {
-        final int limit = 255;
-        String posfix = (i == 0) ? "" : "_" + i;
-        String dirName = FileHelper.filenameFilter(collection.title + "_" + collection.site.title + "_" + collection.idCode + posfix);
-        if (dirName.length() > limit) {
-            dirName = FileHelper.filenameFilter(collection.title + posfix);
-            if (dirName.length() > limit)
-                dirName = dirName.substring(0, limit - 3 - posfix.length()) + "..." + posfix;
-        }
-        return dirName;
     }
 
     public void startDownload(DownloadTask task) {
@@ -148,7 +149,7 @@ public class DownloadManager {
 
     public void deleteDownloadTask(DownloadTask downloadTask) {
         holder.deleteDownloadTask(downloadTask);
-        if(binder.getCurrTask() == downloadTask)
+        if (binder.getCurrTask() == downloadTask)
             binder.stop();
     }
 

@@ -37,13 +37,12 @@ import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.libraries.swipeback.common.SwipeBackApplication;
 
 public class HViewerApplication extends SwipeBackApplication {
-    public static Context mContext;
     /**
      * 是否开启日志输出,在Debug状态下开启,
      * 在Release状态下关闭以提示程序性能
      */
     public final static boolean DEBUG = false;
-
+    public static Context mContext;
     // 全局变量，用于跨Activity传递复杂对象的引用
     public static Object temp, temp2, temp3, temp4;
 

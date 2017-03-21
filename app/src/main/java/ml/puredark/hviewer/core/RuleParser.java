@@ -156,16 +156,16 @@ public class RuleParser {
             try {
                 element = ctx.read(paths[i], JsonElement.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 try {
                     if (paths.length > i + 1) {
                         element = ctx.read(paths[i] + paths[i + 1], JsonElement.class);
                         i++;
                     } else
-                        break;
+                        continue;
                 } catch (Exception e1) {
-                    e.printStackTrace();
-                    break;
+                    //e.printStackTrace();
+                    continue;
                 }
             }
             if (element instanceof JsonArray)
@@ -256,6 +256,7 @@ public class RuleParser {
                         }
                     }
                     if (rule.item.selector != null && !isJson(itemStr)) {
+                        Logger.d("RuleParser", "isJson : false");
                         collections = getCollections(collections, itemStr, rule, sourceUrl, true);
                     } else {
                         Collection collection = new Collection(collections.size() + 1);
@@ -276,8 +277,9 @@ public class RuleParser {
         try {
             if (rule.item != null && rule.pictureRule != null && rule.pictureRule.item != null) {
                 List<Collection> collections = new ArrayList<>();
-                collections.add(collection);
-                collection = getCollections(collections, text, rule, sourceUrl).get(0);
+                Collection newCollection = getCollections(collections, text, rule, sourceUrl).get(0);
+                newCollection.fillEmpty(collection);
+                collection = newCollection;
             } else {
                 if (!isJson(text)) {
                     Document element = Jsoup.parse(text);

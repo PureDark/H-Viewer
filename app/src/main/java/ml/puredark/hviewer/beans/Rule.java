@@ -33,7 +33,7 @@ public class Rule {
         return !notEmpty;
     }
 
-    public void replace(Rule rule){
+    public void replace(Rule rule) {
         if (rule == null)
             return;
         Field[] fs = Rule.class.getDeclaredFields();
@@ -48,7 +48,7 @@ public class Rule {
                     else
                         oldProp.replace(newProp);
                     f.set(this, oldProp);
-                }else if(f.get(rule) instanceof SubRule){
+                } else if (f.get(rule) instanceof SubRule) {
                     SubRule oldProp = (SubRule) f.get(this);
                     SubRule newProp = (SubRule) f.get(rule);
                     if (oldProp == null)

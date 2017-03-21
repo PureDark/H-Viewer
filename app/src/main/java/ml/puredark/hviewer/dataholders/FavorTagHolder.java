@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import ml.puredark.hviewer.helpers.Logger;
  * Created by PureDark on 2016/10/12.
  */
 
-public class FavorTagHolder extends AbstractTagHolder{
+public class FavorTagHolder extends AbstractTagHolder {
     private final static String dbName = "favorSiteTags";
     private DBHelper dbHelper;
 
@@ -26,7 +25,7 @@ public class FavorTagHolder extends AbstractTagHolder{
     }
 
     public void addTag(Tag item) {
-        Logger.d("FavorTagHolder", "tagExist("+item+"):" + tagExist(item));
+        Logger.d("FavorTagHolder", "tagExist(" + item + "):" + tagExist(item));
         if (item == null || tagExist(item)) return;
         ContentValues contentValues = new ContentValues();
         contentValues.put("title", item.title);
@@ -69,7 +68,7 @@ public class FavorTagHolder extends AbstractTagHolder{
                 return false;
             else
                 return true;
-        }finally {
+        } finally {
             if (cursor != null)
                 cursor.close();
         }

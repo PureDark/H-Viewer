@@ -6,7 +6,6 @@ import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import ml.puredark.hviewer.utils.DensityUtil;
 
@@ -23,7 +22,7 @@ public class DragMarginDrawerLayout extends DrawerLayout {
         disablePeekOnEdgeTouch();
     }
 
-    private void disablePeekOnEdgeTouch(){
+    private void disablePeekOnEdgeTouch() {
         try {
             Field leftCallbackField = getDeclaredField("mLeftCallback");
             leftCallbackField.setAccessible(true);
@@ -44,7 +43,7 @@ public class DragMarginDrawerLayout extends DrawerLayout {
 
     public void setDrawerEdgeSize(float displayWidthPercentage, boolean left) {
         try {
-            Field draggerField = getDeclaredField(left?"mLeftDragger":"mRightDragger");
+            Field draggerField = getDeclaredField(left ? "mLeftDragger" : "mRightDragger");
             draggerField.setAccessible(true);
             ViewDragHelper dragger = (ViewDragHelper) draggerField.get(this);
             Field edgeSizeField = dragger.getClass().getDeclaredField("mEdgeSize");

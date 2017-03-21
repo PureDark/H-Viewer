@@ -95,7 +95,7 @@ public class SiteFlagHandler {
                 new Thread(() -> {
                     RuleParser.getCollectionDetail(collection, (String) result, site.galleryRule, url);
                     collection.preloaded = true;
-                    synchronized(context) {
+                    synchronized (context) {
                         if (collection.tags != null) {
                             for (Tag tag : collection.tags) {
                                 HViewerApplication.searchSuggestionHolder.addSearchSuggestion(tag.title);

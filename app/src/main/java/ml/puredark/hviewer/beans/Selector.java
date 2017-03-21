@@ -1,7 +1,5 @@
 package ml.puredark.hviewer.beans;
 
-import android.util.Log;
-
 import java.lang.reflect.Field;
 
 public class Selector {
@@ -50,7 +48,7 @@ public class Selector {
                 f.setAccessible(true);
                 if ("path".equals(f.getName())) {
                     String newPath = (String) f.get(selector);
-                    if(newPath!=null)
+                    if (newPath != null)
                         f.set(this, newPath);
                 } else
                     f.set(this, f.get(selector));

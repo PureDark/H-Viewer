@@ -89,7 +89,7 @@ public class ImageScaleUtil {
         return Bitmap.createBitmap(bitmap, retX, retY, wh, wh, null, false);
     }
 
-    public static void saveToFile(Context context, Bitmap bitmap, String destPath) throws IOException{
+    public static void saveToFile(Context context, Bitmap bitmap, String destPath) throws IOException {
         ImageView iv = new ImageView(context);
         iv.setImageBitmap(bitmap);
         File file = new File(destPath);

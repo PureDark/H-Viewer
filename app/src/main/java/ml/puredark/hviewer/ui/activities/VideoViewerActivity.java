@@ -82,7 +82,7 @@ public class VideoViewerActivity extends BaseActivity {
                 if (!mLoaded || url.contains("mp4") || url.contains("webm")) {
                     Logger.d("VideoViewerActivity", "shouldOverrideUrlLoading: true");
                     webView.loadUrl(url);
-                }else{
+                } else {
                     Logger.d("VideoViewerActivity", "shouldOverrideUrlLoading: false");
                 }
                 return true;

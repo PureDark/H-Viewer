@@ -11,7 +11,7 @@ public class SiteGroup extends AbstractExpandableDataProvider.GroupData {
     public int gid, index;
     public String title;
 
-    public SiteGroup(int gid, String title){
+    public SiteGroup(int gid, String title) {
         this.gid = gid;
         this.title = title;
     }

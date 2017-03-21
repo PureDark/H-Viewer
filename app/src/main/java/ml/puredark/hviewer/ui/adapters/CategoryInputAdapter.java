@@ -114,7 +114,7 @@ public class CategoryInputAdapter extends RecyclerView.Adapter<RecyclerView.View
                 @Override
                 public void afterTextChanged(Editable editable) {
                     int position = getAdapterPosition();
-                    if (position >=0 && position < mProvider.getCount()) {
+                    if (position >= 0 && position < mProvider.getCount()) {
                         Category category = mProvider.getItem(position);
                         category.title = editable.toString();
                     }

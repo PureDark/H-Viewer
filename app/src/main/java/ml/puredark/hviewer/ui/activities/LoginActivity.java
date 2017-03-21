@@ -100,7 +100,7 @@ public class LoginActivity extends BaseActivity {
                 CookieManager cookieManager = CookieManager.getInstance();
                 String cookies = cookieManager.getCookie(url);
                 site.cookie = cookies;
-                if(checking)
+                if (checking)
                     back();
                 else
                     showSnackBar("登录成功后请点击右上角图标进行首页访问测试");
@@ -120,7 +120,7 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.btn_visit_index)
     void check() {
-        if(checking)
+        if (checking)
             return;
         checking = true;
         showSnackBar("正在打开首页，成功自动返回主界面");

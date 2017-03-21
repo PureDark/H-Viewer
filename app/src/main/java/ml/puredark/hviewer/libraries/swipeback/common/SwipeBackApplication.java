@@ -23,11 +23,11 @@ public class SwipeBackApplication extends Application {
     }
 
     public void onSlideBack(boolean isReset, float distance) {
-        if(mActivityLifecycleHelper != null) {
+        if (mActivityLifecycleHelper != null) {
             Activity lastActivity = mActivityLifecycleHelper.getPreActivity();
-            if(lastActivity != null) {
+            if (lastActivity != null) {
                 View contentView = lastActivity.findViewById(android.R.id.content);
-                if(isReset) {
+                if (isReset) {
                     contentView.setX(contentView.getLeft());
                 } else {
                     final int width = getResources().getDisplayMetrics().widthPixels;

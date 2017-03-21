@@ -40,20 +40,16 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 
 public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOffsetChangedListener {
 
+    protected boolean isCategoryEnable = false;
+    protected boolean isStatusBarEnabled = true;
+    protected boolean isDoubleBackExitEnabled = false;
     private DrawerArrowDrawable btnReturnIcon;
-
     private View container;
     private DrawerLayout drawerLayout;
     private ImageView btnReturn;
     private AppBarLayout appBar;
     private FloatingActionMenu fabMenu;
-
     private DownloadReceiver receiver;
-
-    protected boolean isCategoryEnable = false;
-    protected boolean isStatusBarEnabled = true;
-
-    protected boolean isDoubleBackExitEnabled = false;
     //按下返回键次数
     private int backCount = 0;
 
@@ -65,6 +61,7 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
 
     //是否开始页面统计
     private boolean analyze = true;
+    private int lastOffset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,12 +134,12 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         isDoubleBackExitEnabled = doubleBackExitEnabled;
     }
 
-    public void setAnimating(boolean animating) {
-        this.animating = animating;
-    }
-
     public boolean isAnimating() {
         return animating;
+    }
+
+    public void setAnimating(boolean animating) {
+        this.animating = animating;
     }
 
     public void setAllowExit(boolean allow) {
@@ -245,7 +242,6 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -283,8 +279,6 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         if (appBar != null)
             appBar.removeOnOffsetChangedListener(this);
     }
-
-    private int lastOffset;
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {

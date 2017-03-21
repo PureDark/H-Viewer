@@ -19,11 +19,11 @@ public class HttpDns implements Dns {
 
     @Override
     public List<InetAddress> lookup(String hostname) throws UnknownHostException {
-        DomainInfo[] infoList = DNSCache.getInstance().getDomainServerIp(hostname) ;
+        DomainInfo[] infoList = DNSCache.getInstance().getDomainServerIp(hostname);
         if (infoList != null) {
             DomainInfo domainModel = infoList[0];
             String ip = Tools.getHostName(domainModel.url);
-            if(Tools.isIPV4(ip)) {
+            if (Tools.isIPV4(ip)) {
                 List<InetAddress> inetAddresses;
                 try {
                     inetAddresses = Arrays.asList(InetAddress.getAllByName(ip));

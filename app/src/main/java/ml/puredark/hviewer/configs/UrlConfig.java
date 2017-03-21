@@ -1,7 +1,5 @@
 package ml.puredark.hviewer.configs;
 
-import java.util.Random;
-
 /**
  * Created by PureDark on 2016/9/27.
  */

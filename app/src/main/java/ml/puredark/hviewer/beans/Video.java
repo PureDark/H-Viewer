@@ -43,9 +43,9 @@ public class Video extends AbstractDataProvider.Data {
     }
 
     @Override
-    public String toString(){
-        return "vid="+vid+"\n"+
-                "thumbnail="+thumbnail+"\n"+
-                "content="+content+"\n";
+    public String toString() {
+        return "vid=" + vid + "\n" +
+                "thumbnail=" + thumbnail + "\n" +
+                "content=" + content + "\n";
     }
 }

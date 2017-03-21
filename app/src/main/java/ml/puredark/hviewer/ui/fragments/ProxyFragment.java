@@ -15,7 +15,7 @@ import static ml.puredark.hviewer.ui.fragments.SettingFragment.KEY_PREF_PROXY_SE
  * Created by PureDark on 2016/9/25.
  */
 public class ProxyFragment extends PreferenceFragment
-        implements Preference.OnPreferenceChangeListener{
+        implements Preference.OnPreferenceChangeListener {
 
     private BaseActivity activity;
 

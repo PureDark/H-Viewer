@@ -32,11 +32,14 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.http.HViewerHttpClient;
-import ml.puredark.hviewer.utils.SharedPreferencesUtil;
-import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 public class UpdateManager {
 
+    private static final int DOWN_UPDATE = 1;
+    private static final int DOWN_OVER = 2;
+    /* 下载包安装路径 */
+    private static String savePath = Environment.getDownloadCacheDirectory().getAbsolutePath();
+    private static final String saveFileName = savePath + "Update.apk";
     private Context mContext;
     //标题
     private String title = "新版本";
@@ -46,15 +49,10 @@ public class UpdateManager {
     private String apkUrl = null;
     private Dialog noticeDialog;
     private Dialog downloadDialog;
-    /* 下载包安装路径 */
-    private static String savePath = Environment.getDownloadCacheDirectory().getAbsolutePath();
-    private static final String saveFileName = savePath + "Update.apk";
     /* 进度条与通知ui刷新的handler和msg常量 */
     private ProgressBar mProgress;
     private TextView fileSize;
     private String fileString;
-    private static final int DOWN_UPDATE = 1;
-    private static final int DOWN_OVER = 2;
     private int progress;
     private Thread downLoadThread;
     private boolean interceptFlag = false;
@@ -75,101 +73,6 @@ public class UpdateManager {
 
         ;
     };
-
-    public static void checkUpdate(final Context context) {
-        String url = UrlConfig.updateUrl;
-        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, Object result) {
-                try {
-                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
-                    boolean prerelease = version.get("prerelease").getAsBoolean();
-                    if (prerelease)
-                        return;
-                    JsonArray assets = version.get("assets").getAsJsonArray();
-                    if (assets.size() > 0) {
-                        String oldVersion = HViewerApplication.getVersionName();
-                        String newVersion = version.get("tag_name").getAsString().substring(1);
-                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
-                        String detail = version.get("body").getAsString();
-                        new UpdateManager(context, url, newVersion + "版本更新", detail)
-                                .checkUpdateInfo(oldVersion, newVersion);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-            }
-        });
-    }
-
-    public UpdateManager(Context context, String apkUrl, String title, String updateMsg) {
-        this.mContext = context;
-        this.apkUrl = apkUrl;
-        this.title = title;
-        this.updateMsg = updateMsg;
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            savePath = mContext.getCacheDir().getAbsolutePath();
-        }
-    }
-
-    //外部接口让主Activity调用
-    public boolean checkUpdateInfo(String oldVersion, String newVersion) {
-        boolean update = compareVersion(oldVersion, newVersion);
-        if(update)
-            showNoticeDialog();
-        return update;
-    }
-
-
-    private void showNoticeDialog() {
-        AlertDialog.Builder builder = new Builder(mContext);
-        builder.setTitle(title);
-        builder.setMessage(updateMsg);
-        builder.setPositiveButton("下载", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                showDownloadDialog();
-            }
-        });
-        builder.setNegativeButton("以后再说", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        noticeDialog = builder.create();
-        noticeDialog.show();
-    }
-
-    private void showDownloadDialog() {
-        AlertDialog.Builder builder = new Builder(mContext);
-        builder.setTitle("软件版本更新");
-        builder.setMessage("正在下载");
-
-        final LayoutInflater inflater = LayoutInflater.from(mContext);
-        View v = inflater.inflate(R.layout.dialog_update, null);
-        mProgress = (ProgressBar) v.findViewById(R.id.progress);
-        fileSize = (TextView) v.findViewById(R.id.fileSize);
-
-        builder.setView(v);
-        builder.setNegativeButton("取消", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                interceptFlag = true;
-            }
-        });
-        downloadDialog = builder.create();
-        downloadDialog.show();
-
-        downloadApk();
-    }
-
     private Runnable mdownApkRunnable = new Runnable() {
         @Override
         public void run() {
@@ -220,6 +123,116 @@ public class UpdateManager {
         }
     };
 
+    public UpdateManager(Context context, String apkUrl, String title, String updateMsg) {
+        this.mContext = context;
+        this.apkUrl = apkUrl;
+        this.title = title;
+        this.updateMsg = updateMsg;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            savePath = mContext.getCacheDir().getAbsolutePath();
+        }
+    }
+
+    public static void checkUpdate(final Context context) {
+        String url = UrlConfig.updateUrl;
+        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
+            @Override
+            public void onSuccess(String contentType, Object result) {
+                try {
+                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
+                    boolean prerelease = version.get("prerelease").getAsBoolean();
+                    if (prerelease)
+                        return;
+                    JsonArray assets = version.get("assets").getAsJsonArray();
+                    if (assets.size() > 0) {
+                        String oldVersion = HViewerApplication.getVersionName();
+                        String newVersion = version.get("tag_name").getAsString().substring(1);
+                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
+                        String detail = version.get("body").getAsString();
+                        new UpdateManager(context, url, newVersion + "版本更新", detail)
+                                .checkUpdateInfo(oldVersion, newVersion);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(HViewerHttpClient.HttpError error) {
+            }
+        });
+    }
+
+    public static boolean compareVersion(String oldVersion, String newVersion) {
+        if (newVersion == null || "".equals(newVersion)) return false;
+        String[] l1 = newVersion.split("\\.");
+        String[] l2 = oldVersion.split("\\.");
+        int len = Math.max(l1.length, l2.length);
+        for (int i = 0; i < len; i++) {
+            int n1 = (l1.length > i) ? Integer.parseInt(l1[i]) : 0;
+            int n2 = (l2.length > i) ? Integer.parseInt(l2[i]) : 0;
+            if (n1 > n2) {
+                return true;//需要更新
+            } else if (n1 < n2) {
+                return false;//不需要更新
+            }
+        }
+        return false;
+    }
+
+    //外部接口让主Activity调用
+    public boolean checkUpdateInfo(String oldVersion, String newVersion) {
+        boolean update = compareVersion(oldVersion, newVersion);
+        if (update)
+            showNoticeDialog();
+        return update;
+    }
+
+    private void showNoticeDialog() {
+        AlertDialog.Builder builder = new Builder(mContext);
+        builder.setTitle(title);
+        builder.setMessage(updateMsg);
+        builder.setPositiveButton("下载", new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                showDownloadDialog();
+            }
+        });
+        builder.setNegativeButton("以后再说", new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        noticeDialog = builder.create();
+        noticeDialog.show();
+    }
+
+    private void showDownloadDialog() {
+        AlertDialog.Builder builder = new Builder(mContext);
+        builder.setTitle("软件版本更新");
+        builder.setMessage("正在下载");
+
+        final LayoutInflater inflater = LayoutInflater.from(mContext);
+        View v = inflater.inflate(R.layout.dialog_update, null);
+        mProgress = (ProgressBar) v.findViewById(R.id.progress);
+        fileSize = (TextView) v.findViewById(R.id.fileSize);
+
+        builder.setView(v);
+        builder.setNegativeButton("取消", new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                interceptFlag = true;
+            }
+        });
+        downloadDialog = builder.create();
+        downloadDialog.show();
+
+        downloadApk();
+    }
+
     /**
      * 下载apk
      */
@@ -243,23 +256,5 @@ public class UpdateManager {
                 "application/vnd.android.package-archive");
         mContext.startActivity(i);
 
-    }
-
-
-    public static boolean compareVersion(String oldVersion, String newVersion) {
-        if(newVersion==null||"".equals(newVersion))return false;
-        String[] l1  = newVersion.split("\\.");
-        String[] l2  = oldVersion.split("\\.");
-        int len = Math.max(l1.length, l2.length);
-        for (int i = 0; i < len; i++) {
-            int n1 = (l1.length > i) ? Integer.parseInt(l1[i]) : 0;
-            int n2 = (l2.length > i) ? Integer.parseInt(l2[i]) : 0;
-            if (n1 > n2) {
-                return true;//需要更新
-            } else if (n1 < n2) {
-                return false;//不需要更新
-            }
-        }
-        return false;
     }
 }

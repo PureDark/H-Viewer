@@ -43,11 +43,11 @@ public class ExPagerBottomTabLayout extends PagerBottomTabLayout {
         final String tabStrArr = a.getString(R.styleable.ExPagerBottomTabLayout_bottomTabTitleArray);
         final String[] tabRealStrArr = getTabRealStrArr(tabStrArr);
         TypedValue typedValue = new TypedValue();
-        TypedArray colorType = context.obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorPrimaryDark });
+        TypedArray colorType = context.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
         int color = colorType.getColor(0, 0);
         a.recycle();
         TabStripBuild builder = this.builder();
-        for(int i = 0; i < tabRealStrArr.length; i++){
+        for (int i = 0; i < tabRealStrArr.length; i++) {
             String tabTitle = tabRealStrArr[i];
             Drawable icon = null;
             switch (i) {

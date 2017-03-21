@@ -69,6 +69,7 @@ public class MarketActivity extends BaseActivity {
     private List<MarketSiteAdapter> siteAdapters;
 
     private boolean getting = false;
+    private int sourceCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,6 @@ public class MarketActivity extends BaseActivity {
         tabLayout.setVisibility(View.GONE);
         getAllSites();
     }
-
 
     private void initTabAndViewPager(Set<MarketSiteCategory> siteCategories) {
         //初始化Tab和ViewPager
@@ -183,8 +183,6 @@ public class MarketActivity extends BaseActivity {
                     }
                 }).show();
     }
-
-    private int sourceCount = 0;
 
     public void getAllSites() {
         HViewerHttpClient.get(UrlConfig.siteSourceUrl, null, new HViewerHttpClient.OnResponseListener() {
@@ -289,7 +287,7 @@ public class MarketActivity extends BaseActivity {
             }
             if (cPos == -1 || sPos == -1 || marketSite == null) {
                 showSnackBar("站点全部更新完成！");
-                if(siteAdapters!=null) {
+                if (siteAdapters != null) {
                     for (MarketSiteAdapter adapter : siteAdapters) {
                         adapter.notifyDataSetChanged();
                     }

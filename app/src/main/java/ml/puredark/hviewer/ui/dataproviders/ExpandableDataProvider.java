@@ -30,7 +30,7 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
 
     public int getAllChildCount() {
         int size = 0;
-        for(Pair<G, List<C>> pair : mData){
+        for (Pair<G, List<C>> pair : mData) {
             size += pair.second.size();
         }
         return size;
@@ -123,7 +123,7 @@ public class ExpandableDataProvider<G extends AbstractExpandableDataProvider.Gro
                 }
             } else {
                 insertedGroupPosition = mData.size();
-                insertedChildPosition = mData.get(mData.size()-1).second.size();
+                insertedChildPosition = mData.get(mData.size() - 1).second.size();
             }
 
             mData.get(insertedGroupPosition).second.add(insertedChildPosition, mLastRemovedItem);
