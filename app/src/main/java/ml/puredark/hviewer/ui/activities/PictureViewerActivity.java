@@ -935,35 +935,31 @@ public class PictureViewerActivity extends BaseActivity {
                     .setTitle("操作")
                     .setItems(new String[]{"保存", "分享"}, (dialogInterface, i) -> {
                         if (i == 0) {
-                            new AlertDialog.Builder(PictureViewerActivity.this).setTitle("保存图片？")
-                                    .setMessage("是否保存当前图片")
-                                    .setPositiveButton("确定", (dialog, which) -> new AlertDialog.Builder(PictureViewerActivity.this).setTitle("是否直接保存到下载目录？")
-                                            .setMessage("否则另存到其他目录")
-                                            .setPositiveButton("是", (dialog1, which1) ->
-                                                    onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath())))
-                                            .setNegativeButton("否", (dialog12, which12) -> {
-                                                final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                                        .initialDirectory(lastPath)
-                                                        .newDirectoryName("download")
-                                                        .allowNewDirectoryNameModification(true)
-                                                        .build();
-                                                mDialog = DirectoryChooserFragment.newInstance(config);
-                                                mDialog.setDirectoryChooserListener(onFragmentInteractionListener);
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                                                    intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                                                    try {
-                                                        startActivityForResult(intent, PictureViewerActivity.RESULT_CHOOSE_DIRECTORY);
-                                                    } catch (ActivityNotFoundException e) {
-                                                        e.printStackTrace();
-                                                        mDialog.show(getFragmentManager(), null);
-                                                    }
-                                                } else {
-                                                    mDialog.show(getFragmentManager(), null);
-                                                }
-                                            }).show())
-                                    .setNegativeButton("取消", null)
-                                    .show();
+                            new AlertDialog.Builder(PictureViewerActivity.this).setTitle("是否直接保存到下载目录？")
+                                    .setMessage("或者另存到其他目录")
+                                    .setPositiveButton("保存", (dialog1, which1) ->
+                                            onSelectDirectory(Uri.parse(DownloadManager.getDownloadPath())))
+                                    .setNegativeButton("选择目录", (dialog12, which12) -> {
+                                        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                .initialDirectory(lastPath)
+                                                .newDirectoryName("download")
+                                                .allowNewDirectoryNameModification(true)
+                                                .build();
+                                        mDialog = DirectoryChooserFragment.newInstance(config);
+                                        mDialog.setDirectoryChooserListener(onFragmentInteractionListener);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                                            try {
+                                                startActivityForResult(intent, PictureViewerActivity.RESULT_CHOOSE_DIRECTORY);
+                                            } catch (ActivityNotFoundException e) {
+                                                e.printStackTrace();
+                                                mDialog.show(getFragmentManager(), null);
+                                            }
+                                        } else {
+                                            mDialog.show(getFragmentManager(), null);
+                                        }
+                                    }).show();
                         } else if (i == 1) {
                             loadPicture(pictureToBeSaved, DownloadManager.getDownloadPath(), ACTION_SHARE);
                         }

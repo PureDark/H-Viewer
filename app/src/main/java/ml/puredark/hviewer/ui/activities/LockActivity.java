@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -39,6 +40,12 @@ import zwh.com.lib.FPerException;
 import zwh.com.lib.RxFingerPrinter;
 
 import static ml.puredark.hviewer.HViewerApplication.mContext;
+import static zwh.com.lib.CodeException.FINGERPRINTERS_FAILED_ERROR;
+import static zwh.com.lib.CodeException.HARDWARE_MISSIING_ERROR;
+import static zwh.com.lib.CodeException.KEYGUARDSECURE_MISSIING_ERROR;
+import static zwh.com.lib.CodeException.NO_FINGERPRINTERS_ENROOLED_ERROR;
+import static zwh.com.lib.CodeException.PERMISSION_DENIED_ERROE;
+import static zwh.com.lib.CodeException.SYSTEM_API_ERROR;
 
 public class LockActivity extends AppCompatActivity {
 
@@ -175,7 +182,7 @@ public class LockActivity extends AppCompatActivity {
     }
 
     private void initFingerPrintLock() {
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= 23 && getSystemService(Context.FINGERPRINT_SERVICE) != null) {
             RxFingerPrinter rxFingerPrinter = new RxFingerPrinter(this);
             Subscription subscription =
                     rxFingerPrinter
@@ -188,7 +195,17 @@ public class LockActivity extends AppCompatActivity {
                                 @Override
                                 public void onError(Throwable e) {
                                     if (e instanceof FPerException) {
-                                        showErrorMessage(((FPerException) e).getDisplayMessage(), false);
+                                        switch (((FPerException) e).getCode()) {
+                                            case SYSTEM_API_ERROR:
+                                            case PERMISSION_DENIED_ERROE:
+                                            case HARDWARE_MISSIING_ERROR:
+                                            case KEYGUARDSECURE_MISSIING_ERROR:
+                                            case NO_FINGERPRINTERS_ENROOLED_ERROR:
+                                                break;
+                                            case FINGERPRINTERS_FAILED_ERROR:
+                                            default:
+                                                showErrorMessage(((FPerException) e).getDisplayMessage(), false);
+                                        }
                                     }
                                 }
 

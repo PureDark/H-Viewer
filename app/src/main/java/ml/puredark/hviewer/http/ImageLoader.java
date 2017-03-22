@@ -1,7 +1,11 @@
 package ml.puredark.hviewer.http;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
@@ -12,8 +16,11 @@ import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ImageDecodeOptions;
+import com.facebook.imagepipeline.common.ImageDecodeOptionsBuilder;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
@@ -23,6 +30,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.JsonObject;
 
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.ui.customs.RetainingDataSourceSupplier;
 import ml.puredark.hviewer.utils.DensityUtil;
 
@@ -205,13 +213,19 @@ public class ImageLoader {
             MyOkHttpNetworkFetcher.headers.put(uri, getGson().toJson(header));
         }
         if (imageView instanceof SimpleDraweeView) {
+            ImageDecodeOptions imageDecodeOptions = new ImageDecodeOptionsBuilder()
+                    .setForceStaticImage(true)
+                    .setDecodePreviewFrame(true)
+                    .build();
             ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                     .setResizeOptions(new ResizeOptions(DensityUtil.dp2px(context, resizeWidthDp), DensityUtil.dp2px(context, resizeHeightDp)))
+                    .setImageDecodeOptions(imageDecodeOptions)
+                    .setLocalThumbnailPreviewsEnabled(true)
                     .build();
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setCallerContext(context)
                     .setTapToRetryEnabled(true)
-                    .setAutoPlayAnimations(true)
+                    .setAutoPlayAnimations(false)
                     .setOldController(((SimpleDraweeView) imageView).getController())
                     .setControllerListener(controllerListener)
                     .setImageRequest(request)
@@ -219,4 +233,30 @@ public class ImageLoader {
             ((SimpleDraweeView) imageView).setController(controller);
         }
     }
+
+    public static void loadThumbnailForVideo(Context context, ImageView imageView, int resizeWidthDp, int resizeHeightDp, String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            imageView.setImageURI(null);
+            return;
+        }
+        new Thread(() -> {
+            try {
+                String rootPath = filePath.substring(0, filePath.lastIndexOf("/"));
+                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf("."));
+                fileName += ".jpg";
+                DocumentFile documentFile = FileHelper.getDocumentFile(fileName, rootPath);
+                if (documentFile == null || !documentFile.exists()) {
+                    Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.MINI_KIND);
+                    documentFile = FileHelper.createFileIfNotExist(fileName, rootPath);
+                    if(documentFile!=null)
+                        FileHelper.saveBitmapToFile(bitmap, documentFile);
+                }
+                if(documentFile!=null)
+                    loadThumbFromUrl(context, imageView, resizeWidthDp, resizeHeightDp, documentFile.getUri().toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 }

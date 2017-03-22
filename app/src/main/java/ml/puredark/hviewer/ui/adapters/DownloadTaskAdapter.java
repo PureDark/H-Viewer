@@ -62,6 +62,7 @@ public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapte
         checkSiteFlags(viewHolder, task.collection.site);
         if (viewHolder instanceof DownloadingTaskViewHolder) {
             DownloadingTaskViewHolder holder = (DownloadingTaskViewHolder) viewHolder;
+            holder.ivCover.setTag("");
             ImageLoader.loadImageFromUrl(context, holder.ivCover, task.collection.cover, null);
             holder.tvTitle.setText(task.collection.title);
             holder.tvUploader.setText(task.collection.uploader);

@@ -21,6 +21,8 @@ Note that this app is still in alpha stage, and so bugs and crashes you may ofte
 
 ### [【查看所有站点】](https://github.com/H-Viewer-Sites/Index)
 
+### [【All Sites】](https://github.com/H-Viewer-Sites/Index)
+
 ## Preview
 
 ![](https://github.com/PureDark/H-Viewer/raw/master/images/1.png)
@@ -40,21 +42,21 @@ Note that this app is still in alpha stage, and so bugs and crashes you may ofte
 
 1.Slide to open drawer
 
-2.Click to add a site
+2.Click + to add a site
 
 3.Click on the top-right corner
 
-4.Scan QR codes below
+4.Scan QR codes from [Site Index](https://github.com/H-Viewer-Sites/Index)
 
 ### Only cellphone in hand
 
 1.Slide to open drawer
 
-2.Click to add a site
+2.Click + to add a site
 
 3.Click the icon left of the Qr scan icon
 
-4.Paste all content from below link
+4.Paste all content from [Site Index](https://github.com/H-Viewer-Sites/Index)
 
 ## 使用说明
 
@@ -81,7 +83,7 @@ Check our wiki
 
 [怎么自定义新的站点规则](https://github.com/PureDark/H-Viewer/wiki/%E6%80%8E%E4%B9%88%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E7%AB%99%E7%82%B9%E8%A7%84%E5%88%99)
 
-If anyone had created a new rule to share, please post a issue, I shall add it in README with your credit.
+If anyone had created a new rule to share, please post a issue to [H-Viewer-Sites/Apply](https://github.com/H-Viewer-Sites/Apply/issues), I shall add it in README with your credit.
 
 如果谁创建了新的站点想要分享，请至 [H-Viewer-Sites/Apply](https://github.com/H-Viewer-Sites/Apply/issues) 提交一条 issues 以获得 Organization 的协作权，或者直接请求添加新站点。
 

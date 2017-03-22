@@ -258,6 +258,30 @@ public class DocumentUtil {
         return null;
     }
 
+    public static DocumentFile getDocumentFile(Context context, String fileName, String rootPath, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootPath, subDirs);
+        DocumentFile file = null;
+        if (parent != null)
+            file = parent.findFile(fileName);
+        return file;
+    }
+
+    public static DocumentFile getDocumentFile(Context context, String fileName, Uri rootUri, String... subDirs) {
+        DocumentFile parent = getDirDocument(context, rootUri, subDirs);
+        DocumentFile file = null;
+        if (parent != null)
+            file = parent.findFile(fileName);
+        return file;
+    }
+
+    public static DocumentFile getDocumentFile(String fileName, DocumentFile root, String... subDirs) {
+        DocumentFile parent = getDirDocument(root, subDirs);
+        DocumentFile file = null;
+        if (parent != null)
+            file = parent.findFile(fileName);
+        return file;
+    }
+
     public static DocumentFile getDirDocument(Context context, String rootPath, String... subDirs) {
         Uri rootUri;
         if (rootPath.startsWith("content"))
@@ -311,9 +335,9 @@ public class DocumentUtil {
 
     public static OutputStream getFileOutputSteam(Context context, String fileName, DocumentFile root, String... subDirs) {
         DocumentFile parent = getDirDocument(root, subDirs);
-        if (parent == null)
-            return null;
-        DocumentFile file = parent.findFile(fileName);
+        DocumentFile file = null;
+        if (parent != null)
+            file = parent.findFile(fileName);
         if (file == null)
             return null;
         return getFileOutputSteam(context, file.getUri());

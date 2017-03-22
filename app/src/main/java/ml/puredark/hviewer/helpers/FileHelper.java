@@ -31,6 +31,10 @@ public class FileHelper {
         return DocumentUtil.getDirDocument(HViewerApplication.mContext, rootPath, subDirs);
     }
 
+    public static DocumentFile getDocumentFile(String filename, String rootPath, String... subDirs) {
+        return DocumentUtil.getDocumentFile(HViewerApplication.mContext, filename, rootPath, subDirs);
+    }
+
     public static DocumentFile createFileIfNotExist(String fileName, String path, String... subDirs) {
         Logger.d("FileHelper", "fileName:" + fileName);
         Logger.d("FileHelper", "path:" + path);

@@ -519,14 +519,16 @@ public class MainActivity extends BaseActivity {
                                             siteAdapter.notifyDataSetChanged();
                                         }).show();
                             } else if (i == 1) {
-                                new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
-                                        .setMessage("删除后将无法恢复")
-                                        .setNegativeButton("取消", null)
-                                        .setPositiveButton("确定", (dialog, which) -> {
-                                            siteHolder.deleteSiteGroup(group);
-                                            siteAdapter.getDataProvider().removeGroupItem(groupPosition);
-                                            siteAdapter.notifyDataSetChanged();
-                                        }).show();
+                                if (groupPosition < siteAdapter.getDataProvider().getGroupCount()) {
+                                    new AlertDialog.Builder(MainActivity.this).setTitle("是否删除？")
+                                            .setMessage("删除后将无法恢复")
+                                            .setNegativeButton("取消", null)
+                                            .setPositiveButton("确定", (dialog, which) -> {
+                                                siteHolder.deleteSiteGroup(group);
+                                                siteAdapter.getDataProvider().removeGroupItem(groupPosition);
+                                                siteAdapter.notifyDataSetChanged();
+                                            }).show();
+                                }
                             }
                         })
                         .setNegativeButton("取消", null)

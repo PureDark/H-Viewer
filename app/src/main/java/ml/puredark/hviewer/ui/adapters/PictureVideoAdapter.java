@@ -64,7 +64,12 @@ public class PictureVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Video video = videos.getItem(position - getPictureSize());
             VideoViewHolder holder = (VideoViewHolder) viewHolder;
             Logger.d("PictureVideoAdapter", "video.thumbnail:" + video.thumbnail);
-            ImageLoader.loadThumbFromUrl(context, holder.ivVideo, 100, 140, video.thumbnail, cookie);
+
+            if (video.vlink != null && !video.vlink.startsWith("content://") && !video.vlink.startsWith("file://")) {
+                ImageLoader.loadThumbFromUrl(context, holder.ivVideo, 100, 140, video.thumbnail, cookie);
+            } else {
+                ImageLoader.loadThumbnailForVideo(context, holder.ivVideo, 100, 140, video.vlink);
+            }
         }
     }
 

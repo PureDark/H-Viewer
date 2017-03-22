@@ -107,15 +107,19 @@ public class RuleParser {
         if (matchResult.containsKey("date")) {
             String dateStr = matchResult.get("date");
             int index = dateStr.lastIndexOf(':');
-            String firstParam = dateStr.substring(0, index);
-            String lastParam = dateStr.substring(index + 1);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat;
             try {
-                int offset = Integer.parseInt(lastParam);
-                dateFormat = new SimpleDateFormat(firstParam);
-                calendar.add(Calendar.DAY_OF_MONTH, offset);
-            } catch (NumberFormatException e) {
+                if(index>0){
+                    String firstParam = dateStr.substring(0, index);
+                    String lastParam = dateStr.substring(index + 1);
+                    int offset = Integer.parseInt(lastParam);
+                    calendar.add(Calendar.DAY_OF_MONTH, offset);
+                    dateFormat = new SimpleDateFormat(firstParam);
+                }else{
+                    dateFormat = new SimpleDateFormat(dateStr);
+                }
+            } catch (Exception e) {
                 dateFormat = new SimpleDateFormat(dateStr);
             }
             String currDate = dateFormat.format(calendar.getTime());
@@ -124,14 +128,18 @@ public class RuleParser {
         if (matchResult.containsKey("time")) {
             String timeStr = matchResult.get("time");
             int index = timeStr.lastIndexOf(':');
-            String firstParam = timeStr.substring(0, index);
-            String lastParam = timeStr.substring(index + 1);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat;
             try {
-                int offset = Integer.parseInt(lastParam);
-                dateFormat = new SimpleDateFormat(firstParam);
-                calendar.add(Calendar.SECOND, offset);
+                if(index>0){
+                    String firstParam = timeStr.substring(0, index);
+                    String lastParam = timeStr.substring(index + 1);
+                    int offset = Integer.parseInt(lastParam);
+                    dateFormat = new SimpleDateFormat(firstParam);
+                    calendar.add(Calendar.SECOND, offset);
+                }else{
+                    dateFormat = new SimpleDateFormat(timeStr);
+                }
             } catch (NumberFormatException e) {
                 dateFormat = new SimpleDateFormat(timeStr);
             }
