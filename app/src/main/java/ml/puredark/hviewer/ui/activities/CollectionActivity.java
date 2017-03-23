@@ -106,7 +106,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     private Site site;
 
     private Collection collection;
-    private Collection myCollection;
+    private LocalCollection myCollection;
 
     private PullLoadMoreRecyclerView rvIndex;
     private RecyclerView rvComment;
@@ -178,11 +178,10 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
         manager = new DownloadManager(this);
 
-        onePic = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_ONE_PIC_GALLERY, false);
-
         //解析URL模板
         parseUrl(site.galleryUrl);
 
+        onePic = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_ONE_PIC_GALLERY, false);
         onePage &= !site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY);
 
         initCover(myCollection.cover);
@@ -212,7 +211,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
         favouriteHolder = new FavouriteHolder(this);
         siteTagHolder = new SiteTagHolder(this);
         //加入历史记录
-        historyHolder.addHistory((LocalCollection) myCollection);
+        historyHolder.addHistory(myCollection);
 
         if (onePic && site.hasFlag(Site.FLAG_ONE_PIC_GALLERY)) {
             openPictureViewerActivity(0);
@@ -493,7 +492,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             Rule applyRule = (currGalleryUrl != null && currGalleryUrl.equals(site.galleryUrl)) ? site.galleryRule : site.extraRule;
-            myCollection = RuleParser.getCollectionDetail(myCollection, html, applyRule, url);
+            myCollection = new LocalCollection(RuleParser.getCollectionDetail(myCollection, html, applyRule, url), myCollection.site);
 
             if (myCollection.videos != null && myCollection.videos.size() > 0) {
                 Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
@@ -674,7 +673,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        favouriteHolder.addFavourite((LocalCollection) myCollection);
+        favouriteHolder.addFavourite(myCollection);
         showSnackBar("收藏成功！");
         // 统计收藏次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "FavorCollection");
@@ -683,7 +682,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
     @OnClick(R.id.fab_download)
     void download() {
         if (isIndexComplete) {
-            if (!manager.createDownloadTask((LocalCollection) myCollection))
+            if (!manager.createDownloadTask(myCollection))
                 showSnackBar("下载任务创建失败，请重新选择下载目录");
             else
                 showSnackBar("下载任务已添加");

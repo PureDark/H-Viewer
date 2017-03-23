@@ -85,10 +85,10 @@ public class HViewerHttpClient {
                     builder.addHeader(header.first, header.second);
                 }
             }
-            Request request = builder
-                    .url(url)
-                    .build();
             try {
+                Request request = builder
+                        .url(url)
+                        .build();
                 Response response = mClient.newCall(request).execute();
                 String contentType = response.header("Content-Type");
                 Object body;
@@ -102,6 +102,8 @@ public class HViewerHttpClient {
                 response.close();
                 return body;
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
         }
@@ -128,27 +130,31 @@ public class HViewerHttpClient {
             return;
         }
         if (HViewerApplication.isNetworkAvailable()) {
-            HRequestBuilder builder = new HRequestBuilder(disableHProxy);
-            if (headers != null) {
-                for (Pair<String, String> header : headers) {
-                    builder.addHeader(header.first, header.second);
+            try {
+                HRequestBuilder builder = new HRequestBuilder(disableHProxy);
+                if (headers != null) {
+                    for (Pair<String, String> header : headers) {
+                        builder.addHeader(header.first, header.second);
+                    }
                 }
-            }
-            if (post)
-                builder.post(body);
-            builder.url(url);
-            Request request = builder.build();
-            mClient.newCall(request).enqueue(new HCallback() {
-                @Override
-                void onFailure(IOException e) {
-                    callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
-                }
+                if (post)
+                    builder.post(body);
+                builder.url(url);
+                Request request = builder.build();
+                mClient.newCall(request).enqueue(new HCallback() {
+                    @Override
+                    void onFailure(IOException e) {
+                        callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
+                    }
 
-                @Override
-                void onResponse(String contentType, Object body) {
-                    callback.onSuccess(contentType, body);
-                }
-            });
+                    @Override
+                    void onResponse(String contentType, Object body) {
+                        callback.onSuccess(contentType, body);
+                    }
+                });
+            } catch (IllegalArgumentException e){
+                callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
+            }
         } else {
             callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
         }
