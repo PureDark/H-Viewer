@@ -1,6 +1,7 @@
 package ml.puredark.hviewer.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -90,8 +91,14 @@ public class AboutFragment extends PreferenceFragment {
                 || preference.getKey().equals(KEY_PREF_ABOUT_CHANGELOG)) {
             String url = preference.getSummary().toString();
             Uri uri = Uri.parse(url);
-            Intent it = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(it);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            try {
+                startActivity(intent);
+            }catch (ActivityNotFoundException e){
+                ClipboardManager myClipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
+                myClipboard.setPrimaryClip(ClipData.newPlainText("github_url", preference.getSummary().toString()));
+                activity.showSnackBar("没有可调用的浏览器，网址已复制到剪贴板");
+            }
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_QQ_GROUP)) {
             if (!joinQQGroup("xphJHB9LFttGePEHhca0-RiSvdmBINdC")) {
                 ClipboardManager myClipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
@@ -100,11 +107,15 @@ public class AboutFragment extends PreferenceFragment {
             }
         } else if (preference.getKey().equals(KEY_PREF_ABOUT_DONATE)) {
             final String url = "https://qr.alipay.com/a6x076685fa21yei9s5zbd5";
-            Intent intent = new Intent();
-            intent.setAction("android.intent.action.VIEW");
             Uri content_url = Uri.parse(url);
-            intent.setData(content_url);
-            startActivity(intent);
+            Intent intent = new Intent(Intent.ACTION_VIEW, content_url);
+            try {
+                startActivity(intent);
+            }catch (ActivityNotFoundException e){
+                ClipboardManager myClipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
+                myClipboard.setPrimaryClip(ClipData.newPlainText("donate_url", preference.getSummary().toString()));
+                activity.showSnackBar("没有可调用的浏览器，网址已复制到剪贴板");
+            }
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }

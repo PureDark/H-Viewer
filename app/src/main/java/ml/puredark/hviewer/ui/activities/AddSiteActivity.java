@@ -25,6 +25,7 @@ import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.helpers.SitePropViewHolder;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -170,13 +171,13 @@ public class AddSiteActivity extends BaseActivity {
     private Site parseSite(String json) {
         try {
             Site site = new Gson().fromJson(json, Site.class);
-            if (site == null || site.indexUrl == null || site.galleryUrl == null || site.indexRule == null ||
+            if (site == null || site.indexUrl == null || site.indexRule == null ||
                     site.indexRule.item == null || site.indexRule.idCode == null)
                 showSnackBar("输入的规则缺少信息");
             return site;
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
-            Log.d("AddSiteActivity", json);
+            Logger.d("AddSiteActivity", json);
             showSnackBar("输入规则格式错误");
             return null;
         }
