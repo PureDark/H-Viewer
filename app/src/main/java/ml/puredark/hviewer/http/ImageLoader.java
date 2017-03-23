@@ -2,7 +2,6 @@ package ml.puredark.hviewer.http;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -29,16 +28,11 @@ import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.JsonObject;
-import com.pavlospt.rxfile.RxFile;
 
 import ml.puredark.hviewer.helpers.FileHelper;
-import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.customs.RetainingDataSourceSupplier;
 import ml.puredark.hviewer.utils.DensityUtil;
 import ml.puredark.hviewer.utils.MyThumbnailUtils;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static ml.puredark.hviewer.HViewerApplication.getGson;
 

@@ -7,11 +7,8 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.pavlospt.rxfile.Constants;
-
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Created by PureDark on 2017/3/24.
@@ -25,7 +22,7 @@ public class MyThumbnailUtils extends ThumbnailUtils {
         Bitmap bitmap = null;
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
-            FileDescriptor fd = context.getContentResolver().openFileDescriptor(uri, Constants.READ_MODE).getFileDescriptor();
+            FileDescriptor fd = context.getContentResolver().openFileDescriptor(uri, "r").getFileDescriptor();
             retriever.setDataSource(fd, 0, 0x7ffffffffffffffL);
             bitmap = retriever.getFrameAtTime(-1);
         } catch (IllegalArgumentException ex) {
