@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
@@ -16,7 +17,6 @@ import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ImageDecodeOptions;
@@ -29,10 +29,16 @@ import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.JsonObject;
+import com.pavlospt.rxfile.RxFile;
 
 import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.ui.customs.RetainingDataSourceSupplier;
 import ml.puredark.hviewer.utils.DensityUtil;
+import ml.puredark.hviewer.utils.MyThumbnailUtils;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static ml.puredark.hviewer.HViewerApplication.getGson;
 
@@ -239,24 +245,40 @@ public class ImageLoader {
             imageView.setImageURI(null);
             return;
         }
-        new Thread(() -> {
+
+        new Thread(()->{
+            DocumentFile thumbnailFile = null;
             try {
-                String rootPath = filePath.substring(0, filePath.lastIndexOf("/"));
-                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf("."));
-                fileName += ".jpg";
-                DocumentFile documentFile = FileHelper.getDocumentFile(fileName, rootPath);
-                if (documentFile == null || !documentFile.exists()) {
-                    Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.MINI_KIND);
-                    documentFile = FileHelper.createFileIfNotExist(fileName, rootPath);
-                    if(documentFile!=null)
-                        FileHelper.saveBitmapToFile(bitmap, documentFile);
+                final String decodedPath = Uri.decode(filePath);
+                int lastSlash = decodedPath.lastIndexOf("/");
+                int last2ndSlash = decodedPath.substring(0, lastSlash).lastIndexOf("/");
+                final String rootPath = filePath.substring(0, filePath.lastIndexOf("/"));
+                String dirName = decodedPath.substring(last2ndSlash + 1, lastSlash);
+                final String fileName = decodedPath.substring(lastSlash + 1);
+                final String thumbnailName = decodedPath.substring(lastSlash + 1, decodedPath.lastIndexOf(".")) + ".jpg";
+                DocumentFile videoFile = FileHelper.getDocumentFile(fileName, rootPath, dirName);
+                thumbnailFile = FileHelper.getDocumentFile(thumbnailName, rootPath, dirName);
+                if ((thumbnailFile == null || !thumbnailFile.exists()) && videoFile != null) {
+                    Bitmap bitmap = MyThumbnailUtils.createVideoThumbnail(context, videoFile.getUri(), MediaStore.Images.Thumbnails.MINI_KIND);
+                    thumbnailFile = FileHelper.createFileIfNotExist(thumbnailName, rootPath, dirName);
+                    if (thumbnailFile != null) {
+                        FileHelper.saveBitmapToFile(bitmap, thumbnailFile);
+                        final String tempPath = thumbnailFile.getUri().toString();
+                        new Handler(context.getMainLooper()).post(()->
+                                loadThumbFromUrl(context, imageView, resizeWidthDp, resizeHeightDp, tempPath));
+                    }
+                } else if (thumbnailFile != null) {
+                    final String tempPath = thumbnailFile.getUri().toString();
+                    new Handler(context.getMainLooper()).post(()->
+                            loadThumbFromUrl(context, imageView, resizeWidthDp, resizeHeightDp, tempPath));
                 }
-                if(documentFile!=null)
-                    loadThumbFromUrl(context, imageView, resizeWidthDp, resizeHeightDp, documentFile.getUri().toString());
             } catch (Exception e) {
                 e.printStackTrace();
+                if(thumbnailFile!=null)
+                    thumbnailFile.delete();
             }
         }).start();
+
     }
 
 }

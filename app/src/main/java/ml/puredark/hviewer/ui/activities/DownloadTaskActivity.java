@@ -1,5 +1,8 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -328,7 +331,13 @@ public class DownloadTaskActivity extends BaseActivity {
         intent.setAction("android.intent.action.VIEW");
         Uri content_url = Uri.parse(url);
         intent.setData(content_url);
-        startActivity(intent);
+        try {
+            startActivity(intent);
+        }catch (ActivityNotFoundException e){
+            ClipboardManager myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            myClipboard.setPrimaryClip(ClipData.newPlainText("url", url));
+            showSnackBar("没有可调用的浏览器，网址已复制到剪贴板");
+        }
         // 统计打开浏览器访问次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "SwitchToBrowser");
     }

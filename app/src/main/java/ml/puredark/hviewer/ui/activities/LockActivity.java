@@ -86,8 +86,6 @@ public class LockActivity extends AppCompatActivity {
         boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PATTERN;
         boolean isPinLock = LockMethodFragment.getCurrentLockMethod(this) == LockMethodFragment.METHOD_PIN;
 
-        initFingerPrintLock();
-
         correctPin = (String) SharedPreferencesUtil.getData(this, LockMethodFragment.KEY_PREF_PIN_LOCK, "");
 
         if (isPatternLock) {
@@ -98,7 +96,10 @@ public class LockActivity extends AppCompatActivity {
             Intent intent = new Intent(LockActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
+
+        initFingerPrintLock();
     }
 
     private void initBlurryBackground() {
@@ -183,44 +184,48 @@ public class LockActivity extends AppCompatActivity {
 
     private void initFingerPrintLock() {
         if (Build.VERSION.SDK_INT >= 23 && getSystemService(Context.FINGERPRINT_SERVICE) != null) {
-            RxFingerPrinter rxFingerPrinter = new RxFingerPrinter(this);
-            Subscription subscription =
-                    rxFingerPrinter
-                            .begin()
-                            .subscribe(new Subscriber<Boolean>() {
-                                @Override
-                                public void onCompleted() {
-                                }
+            try {
+                RxFingerPrinter rxFingerPrinter = new RxFingerPrinter(this);
+                Subscription subscription =
+                        rxFingerPrinter
+                                .begin()
+                                .subscribe(new Subscriber<Boolean>() {
+                                    @Override
+                                    public void onCompleted() {
+                                    }
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    if (e instanceof FPerException) {
-                                        switch (((FPerException) e).getCode()) {
-                                            case SYSTEM_API_ERROR:
-                                            case PERMISSION_DENIED_ERROE:
-                                            case HARDWARE_MISSIING_ERROR:
-                                            case KEYGUARDSECURE_MISSIING_ERROR:
-                                            case NO_FINGERPRINTERS_ENROOLED_ERROR:
-                                                break;
-                                            case FINGERPRINTERS_FAILED_ERROR:
-                                            default:
-                                                showErrorMessage(((FPerException) e).getDisplayMessage(), false);
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        if (e instanceof FPerException) {
+                                            switch (((FPerException) e).getCode()) {
+                                                case SYSTEM_API_ERROR:
+                                                case PERMISSION_DENIED_ERROE:
+                                                case HARDWARE_MISSIING_ERROR:
+                                                case KEYGUARDSECURE_MISSIING_ERROR:
+                                                case NO_FINGERPRINTERS_ENROOLED_ERROR:
+                                                    break;
+                                                case FINGERPRINTERS_FAILED_ERROR:
+                                                default:
+                                                    showErrorMessage(((FPerException) e).getDisplayMessage(), false);
+                                            }
                                         }
                                     }
-                                }
 
-                                @Override
-                                public void onNext(Boolean aBoolean) {
-                                    if (success)
-                                        return;
-                                    if (aBoolean) {
-                                        onSuccessUnlock();
-                                    } else {
-                                        showErrorMessage(LockActivity.this.getString(R.string.finger_print_lock_wrong), true);
+                                    @Override
+                                    public void onNext(Boolean aBoolean) {
+                                        if (success)
+                                            return;
+                                        if (aBoolean) {
+                                            onSuccessUnlock();
+                                        } else {
+                                            showErrorMessage(LockActivity.this.getString(R.string.finger_print_lock_wrong), true);
+                                        }
                                     }
-                                }
-                            });
-            rxFingerPrinter.addSubscription(this, subscription);
+                                });
+                rxFingerPrinter.addSubscription(this, subscription);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
