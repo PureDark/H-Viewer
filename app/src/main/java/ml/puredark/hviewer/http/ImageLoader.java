@@ -65,6 +65,7 @@ public class ImageLoader {
     public static void loadImageFromUrl(Context context, ImageView imageView, String url, String cookie, String referer, boolean noCache, ControllerListener controllerListener) {
         if (TextUtils.isEmpty(url)) {
             imageView.setImageURI(null);
+            return;
         }
         Uri uri = Uri.parse(url);
         JsonObject header = new JsonObject();

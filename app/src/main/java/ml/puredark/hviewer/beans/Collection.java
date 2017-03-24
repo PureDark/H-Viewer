@@ -37,6 +37,7 @@ public class Collection extends AbstractExpandableDataProvider.ChildData {
         this.referer = referer;
         this.tags = tags;
         this.pictures = pictures;
+        this.videos = videos;
         this.comments = comments;
         this.preloaded = preloaded;
     }
