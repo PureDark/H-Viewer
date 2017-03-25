@@ -86,32 +86,37 @@ public class DataRestore {
         if (json == null) {
             return "未在下载目录中找到站点备份";
         } else {
-            List<Pair<SiteGroup, List<Site>>> siteGroups = new Gson().fromJson(json, new TypeToken<List<Pair<SiteGroup, List<Site>>>>() {
-            }.getType());
-            Pair<SiteGroup, List<Site>> siteGroupListPair;
-            SiteGroup siteGroup;
-            List<Site> sites;
-            Site site;
-            for (int i = 0; i < siteGroups.size(); i++) {
-                siteGroupListPair = siteGroups.get(i);
-                siteGroup = siteGroupListPair.first;
-                sites = siteGroupListPair.second;
-                SiteGroup existSiteGroup = siteHolder.getGroupByTitle(siteGroup.title);
-                siteGroup.gid = (existSiteGroup == null)
-                        ? siteHolder.addSiteGroup(siteGroup)
-                        : existSiteGroup.gid;
-                for (int j = 0; j < sites.size(); j++) {
-                    site = sites.get(j);
-                    site.gid = siteGroup.gid;
-                    if (siteHolder.getSiteByTitle(site.title) == null) {
-                        sid = siteHolder.addSite(site);
-                        if (sid < 0) {
-                            return "插入数据库失败";
+            try {
+                List<Pair<SiteGroup, List<Site>>> siteGroups = new Gson().fromJson(json, new TypeToken<List<Pair<SiteGroup, List<Site>>>>() {
+                }.getType());
+                Pair<SiteGroup, List<Site>> siteGroupListPair;
+                SiteGroup siteGroup;
+                List<Site> sites;
+                Site site;
+                for (int i = 0; i < siteGroups.size(); i++) {
+                    siteGroupListPair = siteGroups.get(i);
+                    siteGroup = siteGroupListPair.first;
+                    sites = siteGroupListPair.second;
+                    SiteGroup existSiteGroup = siteHolder.getGroupByTitle(siteGroup.title);
+                    siteGroup.gid = (existSiteGroup == null)
+                            ? siteHolder.addSiteGroup(siteGroup)
+                            : existSiteGroup.gid;
+                    for (int j = 0; j < sites.size(); j++) {
+                        site = sites.get(j);
+                        site.gid = siteGroup.gid;
+                        if (siteHolder.getSiteByTitle(site.title) == null) {
+                            sid = siteHolder.addSite(site);
+                            if (sid < 0) {
+                                return "插入数据库失败";
+                            }
+                            site.sid = sid;
+                            siteHolder.updateSiteIndex(site);
                         }
-                        site.sid = sid;
-                        siteHolder.updateSiteIndex(site);
                     }
                 }
+            }catch(Exception e){
+                e.printStackTrace();
+                return "读取备份失败";
             }
             return "站点还原成功";
         }
