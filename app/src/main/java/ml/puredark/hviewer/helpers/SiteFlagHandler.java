@@ -38,44 +38,48 @@ public class SiteFlagHandler {
                 if (resource == null)
                     return;
                 new Thread(() -> {
-                    int count = 0;
-                    for (Picture pic : pictures) {
-                        if (picture.thumbnail.equals(pic.thumbnail))
-                            count++;
-                    }
-                    final Bitmap bitmap;
-                    if (resource.getWidth() >= resource.getHeight()) {
-                        int width = resource.getWidth() / count;
-                        int height = resource.getHeight();
-                        int startX = width * (position % count);
-                        int startY = 0;
-                        if (width * 2 > height) {
-                            if (startX + width > resource.getWidth())
-                                width = resource.getWidth() - startX;
-                            bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
-                        } else {
-                            bitmap = resource;
+                    try {
+                        int count = 0;
+                        for (Picture pic : pictures) {
+                            if (picture.thumbnail.equals(pic.thumbnail))
+                                count++;
                         }
-                    } else {
-                        int width = resource.getWidth();
-                        int height = resource.getHeight() / count;
-                        int startX = 0;
-                        int startY = height * (position % count);
-                        if (height * 2 > width) {
-                            if (startY + height > resource.getHeight())
-                                height = resource.getHeight() - startY;
-                            bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                        final Bitmap bitmap;
+                        if (resource.getWidth() >= resource.getHeight()) {
+                            int width = resource.getWidth() / count;
+                            int height = resource.getHeight();
+                            int startX = width * (position % count);
+                            int startY = 0;
+                            if (width * 2 > height) {
+                                if (startX + width > resource.getWidth())
+                                    width = resource.getWidth() - startX;
+                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                            } else {
+                                bitmap = resource;
+                            }
                         } else {
-                            bitmap = resource;
+                            int width = resource.getWidth();
+                            int height = resource.getHeight() / count;
+                            int startX = 0;
+                            int startY = height * (position % count);
+                            if (height * 2 > width) {
+                                if (startY + height > resource.getHeight())
+                                    height = resource.getHeight() - startY;
+                                bitmap = Bitmap.createBitmap(resource, startX, startY, width, height);
+                            } else {
+                                bitmap = resource;
+                            }
                         }
-                    }
 
-                    new Handler(context.getMainLooper()).post(() -> {
-                        if (("pid=" + picture.pid).equals(holder.ivPicture.getTag())) {
-                            holder.ivPicture.setImageBitmap(bitmap);
-                            holder.ivPicture.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        }
-                    });
+                        new Handler(context.getMainLooper()).post(() -> {
+                            if (("pid=" + picture.pid).equals(holder.ivPicture.getTag())) {
+                                holder.ivPicture.setImageBitmap(bitmap);
+                                holder.ivPicture.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            }
+                        });
+                    } catch (Exception e){
+                        // prevent exception of trying to use a recycled bitmap
+                    }
                 }).start();
             }
 

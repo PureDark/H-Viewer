@@ -101,19 +101,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.tvUploader.setVisibility(View.VISIBLE);
             holder.tvCategory.setVisibility(View.VISIBLE);
             if (collection.tags == null) {
-                holder.tvTitle.setMaxLines(2);
                 CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()));
                 adapter.setOnItemClickListener(mTagClickListener);
                 holder.rvTags.setAdapter(adapter);
             } else {
                 if (TextUtils.isEmpty(collection.uploader)) {
                     holder.tvUploader.setVisibility(View.GONE);
-                    holder.tvTitle.setLines(2);
                 } else if (TextUtils.isEmpty(collection.category)) {
                     holder.tvCategory.setVisibility(View.GONE);
-                    holder.tvTitle.setLines(2);
-                } else {
-                    holder.tvTitle.setMaxLines(1);
                 }
                 CollectionTagAdapter adapter = new CollectionTagAdapter(new ListDataProvider<>(collection.tags));
                 adapter.setOnItemClickListener(mTagClickListener);
@@ -130,6 +125,19 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder.rvTags.setVisibility(View.VISIBLE);
                 checkSiteFlags(holder, ((LocalCollection) collection).site);
                 checkSiteFlags(position, ((LocalCollection) collection).site, collection);
+            }
+            int emptySpaceCount = (collection.tags==null)? 1 : 0;
+            emptySpaceCount += (collection.uploader==null)? 1 : 0;
+            emptySpaceCount += (collection.category==null)? 1 : 0;
+            switch (emptySpaceCount){
+                case 3:
+                case 2:
+                case 1:
+                    holder.tvTitle.setMaxLines(2);
+                    break;
+                case 0:
+                default:
+                    holder.tvTitle.setMaxLines(1);
             }
         } else if (viewHolder instanceof CollectionGridViewHolder) {
             CollectionGridViewHolder holder = (CollectionGridViewHolder) viewHolder;
@@ -269,7 +277,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.rbRating.setVisibility(View.GONE);
         }
         if (site.hasFlag(Site.FLAG_NO_TAG)) {
-            holder.tvTitle.setMaxLines(2);
             holder.rvTags.setVisibility(View.GONE);
             holder.rvTags.setAdapter(
                     new CollectionTagAdapter(new ListDataProvider<>(new ArrayList()))
