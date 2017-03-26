@@ -495,7 +495,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             Rule applyRule = (currGalleryUrl != null && currGalleryUrl.equals(site.galleryUrl)) ? site.galleryRule : site.extraRule;
-            myCollection = new LocalCollection(RuleParser.getCollectionDetail(myCollection, html, applyRule, url), myCollection.site);
+            myCollection = new LocalCollection(RuleParser.getCollectionDetail(myCollection, html, applyRule, url), site);
 
             if (myCollection.videos != null && myCollection.videos.size() > 0) {
                 Logger.d("CollectionActivity", "myCollection.videos.size():" + myCollection.videos.size());
@@ -682,7 +682,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        favouriteHolder.addFavourite(myCollection);
+        favouriteHolder.addFavourite(new LocalCollection(collection, site));
         showSnackBar("收藏成功！");
         // 统计收藏次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "FavorCollection");
