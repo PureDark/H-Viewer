@@ -28,21 +28,21 @@ public class SearchHistoryHolder extends AbstractTagHolder {
         removeDuplicate();
     }
 
-    public void removeDuplicate() {
+    public synchronized void removeDuplicate() {
         searchHistories = new ArrayList(new HashSet(searchHistories));
     }
 
-    public void clear() {
+    public synchronized void clear() {
         searchHistories = new ArrayList();
         saveSearchHistory();
     }
 
-    public void saveSearchHistory() {
+    public synchronized void saveSearchHistory() {
         removeDuplicate();
         SharedPreferencesUtil.saveData(mContext, "SearchHistory", new Gson().toJson(searchHistories));
     }
 
-    public void addSearchHistory(String item) {
+    public synchronized void addSearchHistory(String item) {
         if (item == null) return;
         deleteSearchHistory(item);
         searchHistories.add(0, item);
@@ -50,7 +50,7 @@ public class SearchHistoryHolder extends AbstractTagHolder {
         saveSearchHistory();
     }
 
-    public void deleteSearchHistory(String item) {
+    public synchronized void deleteSearchHistory(String item) {
         for (int i = 0, size = searchHistories.size(); i < size; i++) {
             if (searchHistories.get(i).equals(item)) {
                 searchHistories.remove(i);
@@ -61,7 +61,7 @@ public class SearchHistoryHolder extends AbstractTagHolder {
         saveSearchHistory();
     }
 
-    public void trimSearchHistory() {
+    public synchronized void trimSearchHistory() {
         while (searchHistories.size() > 50)
             searchHistories.remove(50);
     }

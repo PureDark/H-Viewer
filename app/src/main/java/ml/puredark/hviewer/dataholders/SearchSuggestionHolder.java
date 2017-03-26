@@ -31,15 +31,15 @@ public class SearchSuggestionHolder {
         trimSearchSuggestion();
     }
 
-    public void removeDuplicate() {
+    public synchronized void removeDuplicate() {
         searchSuggestions = new ArrayList(new HashSet(searchSuggestions));
     }
 
-    public void saveSearchSuggestion() {
+    public synchronized void saveSearchSuggestion() {
         SharedPreferencesUtil.saveData(mContext, "SearchSuggestion", new Gson().toJson(searchSuggestions));
     }
 
-    public void addSearchSuggestion(String item) {
+    public synchronized void addSearchSuggestion(String item) {
         if (item == null) return;
         if (!searchSuggestions.contains(item)) {
             searchSuggestions.add(0, item.trim());
@@ -47,7 +47,7 @@ public class SearchSuggestionHolder {
         }
     }
 
-    public void deleteSearchSuggestion(String item) {
+    public synchronized void deleteSearchSuggestion(String item) {
         for (int i = 0, size = searchSuggestions.size(); i < size; i++) {
             if (searchSuggestions.get(i).equals(item.trim())) {
                 searchSuggestions.remove(i);
@@ -57,7 +57,7 @@ public class SearchSuggestionHolder {
         }
     }
 
-    public void trimSearchSuggestion() {
+    public synchronized void trimSearchSuggestion() {
         try {
             while (searchSuggestions.size() > 500)
                 searchSuggestions.remove(searchSuggestions.size() - 1);

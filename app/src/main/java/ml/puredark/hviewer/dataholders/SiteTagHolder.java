@@ -24,7 +24,7 @@ public class SiteTagHolder extends AbstractTagHolder {
     }
 
     @Override
-    public void addTag(int sid, Tag item) {
+    public synchronized void addTag(int sid, Tag item) {
         if (item == null || tagExist(sid, item)) return;
         ContentValues contentValues = new ContentValues();
         contentValues.put("sid", sid);
@@ -34,12 +34,12 @@ public class SiteTagHolder extends AbstractTagHolder {
     }
 
     @Override
-    public void clear(int sid) {
+    public synchronized void clear(int sid) {
         dbHelper.delete(dbName, "`sid` = " + sid, null);
     }
 
     @Override
-    public void deleteTag(int sid, Tag item) {
+    public synchronized void deleteTag(int sid, Tag item) {
         dbHelper.delete(dbName, "`sid` = " + sid + " AND `title` = ?",
                 new String[]{item.title});
     }

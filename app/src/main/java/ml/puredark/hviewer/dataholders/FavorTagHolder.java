@@ -24,7 +24,7 @@ public class FavorTagHolder extends AbstractTagHolder {
         dbHelper.open(context);
     }
 
-    public void addTag(Tag item) {
+    public synchronized void addTag(Tag item) {
         Logger.d("FavorTagHolder", "tagExist(" + item + "):" + tagExist(item));
         if (item == null || tagExist(item)) return;
         ContentValues contentValues = new ContentValues();
@@ -34,11 +34,11 @@ public class FavorTagHolder extends AbstractTagHolder {
         Logger.d("FavorTagHolder", "inserted");
     }
 
-    public void clear() {
+    public synchronized void clear() {
         dbHelper.delete(dbName, "", null);
     }
 
-    public void deleteTag(Tag item) {
+    public synchronized void deleteTag(Tag item) {
         dbHelper.delete(dbName, "`title` = ?",
                 new String[]{item.title});
     }

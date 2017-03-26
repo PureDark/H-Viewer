@@ -25,7 +25,7 @@ public class HistoryHolder {
         dbHelper.open(context);
     }
 
-    public void addHistory(LocalCollection item) {
+    public synchronized void addHistory(LocalCollection item) {
         if (item == null) return;
         deleteHistory(item);
         ContentValues contentValues = new ContentValues();
@@ -36,16 +36,16 @@ public class HistoryHolder {
         dbHelper.insert(dbName, contentValues);
     }
 
-    public void clear() {
+    public synchronized void clear() {
         dbHelper.delete(dbName, "", null);
     }
 
-    public void deleteHistory(Collection item) {
+    public synchronized void deleteHistory(Collection item) {
         dbHelper.delete(dbName, "`idCode` = ? AND `title` = ? AND `referer` = ?",
                 new String[]{item.idCode, item.title, item.referer});
     }
 
-    public void trimHistory() {
+    public synchronized void trimHistory() {
         dbHelper.nonQuery("DELETE FROM " + dbName + " WHERE `hid` NOT IN (SELECT `hid` FROM " + dbName + " ORDER BY `hid` DESC LIMIT 0, 20)");
     }
 

@@ -28,7 +28,7 @@ public class SiteHolder {
         checkNoGroupSites();
     }
 
-    public int addSiteGroup(SiteGroup item) {
+    public synchronized int addSiteGroup(SiteGroup item) {
         if (item == null) return 0;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
@@ -36,7 +36,7 @@ public class SiteHolder {
         return (int) dbHelper.insert(groupDbName, contentValues);
     }
 
-    public int addSite(Site item) {
+    public synchronized int addSite(Site item) {
         if (item == null) return -1;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
@@ -48,19 +48,19 @@ public class SiteHolder {
         return (int) dbHelper.insert(dbName, contentValues);
     }
 
-    public void deleteSiteGroup(SiteGroup item) {
+    public synchronized void deleteSiteGroup(SiteGroup item) {
         dbHelper.delete(groupDbName, "`gid` = ?",
                 new String[]{item.gid + ""});
         dbHelper.delete(dbName, "`gid` = ?",
                 new String[]{item.gid + ""});
     }
 
-    public void deleteSite(Site item) {
+    public synchronized void deleteSite(Site item) {
         dbHelper.delete(dbName, "`sid` = ?",
                 new String[]{item.sid + ""});
     }
 
-    public void updateSiteGroup(SiteGroup item) {
+    public synchronized void updateSiteGroup(SiteGroup item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`index`", item.index);
@@ -68,7 +68,7 @@ public class SiteHolder {
                 new String[]{item.gid + ""});
     }
 
-    public void updateSite(Site item) {
+    public synchronized void updateSite(Site item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`indexUrl`", item.indexUrl);
@@ -80,14 +80,14 @@ public class SiteHolder {
                 new String[]{item.sid + ""});
     }
 
-    public void updateSiteGroupIndex(SiteGroup item) {
+    public synchronized void updateSiteGroupIndex(SiteGroup item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`index`", item.index);
         dbHelper.update(groupDbName, contentValues, "gid = ?",
                 new String[]{item.gid + ""});
     }
 
-    public void updateSiteIndex(Site item) {
+    public synchronized void updateSiteIndex(Site item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`index`", item.index);
         dbHelper.update(dbName, contentValues, "sid = ?",

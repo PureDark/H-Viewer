@@ -29,7 +29,7 @@ public class FavouriteHolder {
         checkNoGroupFavs();
     }
 
-    public int addFavGroup(FavGroup item) {
+    public synchronized int addFavGroup(FavGroup item) {
         if (item == null) return 0;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
@@ -37,7 +37,7 @@ public class FavouriteHolder {
         return (int) dbHelper.insert(groupDbName, contentValues);
     }
 
-    public void addFavourite(LocalCollection item) {
+    public synchronized void addFavourite(LocalCollection item) {
         if (item == null) return;
         deleteFavourite(item);
         ContentValues contentValues = new ContentValues();
@@ -50,19 +50,19 @@ public class FavouriteHolder {
         dbHelper.insert(dbName, contentValues);
     }
 
-    public void deleteFavGroup(FavGroup item) {
+    public synchronized void deleteFavGroup(FavGroup item) {
         dbHelper.delete(groupDbName, "`gid` = ?",
                 new String[]{item.gid + ""});
         dbHelper.delete(dbName, "`gid` = ?",
                 new String[]{item.gid + ""});
     }
 
-    public void deleteFavourite(Collection item) {
+    public synchronized void deleteFavourite(Collection item) {
         dbHelper.delete(dbName, "`idCode` = ? AND `title` = ? AND `referer` = ?",
                 new String[]{item.idCode, item.title, item.referer});
     }
 
-    public void updateFavGroup(FavGroup item) {
+    public synchronized void updateFavGroup(FavGroup item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`index`", item.index);
@@ -70,14 +70,14 @@ public class FavouriteHolder {
                 new String[]{item.gid + ""});
     }
 
-    public void updateFavGroupIndex(FavGroup item) {
+    public synchronized void updateFavGroupIndex(FavGroup item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`index`", item.index);
         dbHelper.update(groupDbName, contentValues, "gid = ?",
                 new String[]{item.gid + ""});
     }
 
-    public void updateFavouriteIndex(LocalCollection item) {
+    public synchronized void updateFavouriteIndex(LocalCollection item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`gid`", item.gid);
         contentValues.put("`index`", item.index);
@@ -161,7 +161,7 @@ public class FavouriteHolder {
         }
     }
 
-    public void clear() {
+    public synchronized void clear() {
         dbHelper.delete(dbName, "", null);
     }
 

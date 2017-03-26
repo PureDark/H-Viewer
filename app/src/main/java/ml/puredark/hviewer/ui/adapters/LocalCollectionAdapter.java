@@ -155,6 +155,8 @@ public class LocalCollectionAdapter
     }
 
     private void checkSiteFlags(CollectionViewHolder holder, Site site) {
+        if(site==null)
+            return;
         if (site.hasFlag(Site.FLAG_NO_COVER)) {
             holder.layoutCover.setVisibility(View.GONE);
         }
