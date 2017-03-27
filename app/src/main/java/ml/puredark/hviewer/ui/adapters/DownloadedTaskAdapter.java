@@ -45,18 +45,18 @@ import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 import ml.puredark.hviewer.utils.ViewUtil;
 
-public class LocalCollectionAdapter
-        extends AbstractExpandableItemAdapter<LocalCollectionAdapter.GroupViewHolder, LocalCollectionAdapter.CollectionViewHolder>
-        implements ExpandableDraggableItemAdapter<LocalCollectionAdapter.GroupViewHolder, LocalCollectionAdapter.CollectionViewHolder>,
-        ExpandableSwipeableItemAdapter<LocalCollectionAdapter.GroupViewHolder, LocalCollectionAdapter.CollectionViewHolder> {
+public class DownloadedTaskAdapter
+        extends AbstractExpandableItemAdapter<DownloadedTaskAdapter.GroupViewHolder, DownloadedTaskAdapter.CollectionViewHolder>
+        implements ExpandableDraggableItemAdapter<DownloadedTaskAdapter.GroupViewHolder, DownloadedTaskAdapter.CollectionViewHolder>,
+        ExpandableSwipeableItemAdapter<DownloadedTaskAdapter.GroupViewHolder, DownloadedTaskAdapter.CollectionViewHolder> {
     private Context context;
-    private ExpandableDataProvider<CollectionGroup, LocalCollection> mProvider;
+    private ExpandableDataProvider<CollectionGroup, DownloadTask> mProvider;
     private RecyclerViewExpandableItemManager mExpandableItemManager;
     private OnItemClickListener mItemClickListener;
     private OnItemEventListener onItemEventListener;
     private CollectionTagAdapter.OnItemClickListener mTagClickListener;
 
-    public LocalCollectionAdapter(Context context, ExpandableDataProvider<CollectionGroup, LocalCollection> mProvider) {
+    public DownloadedTaskAdapter(Context context, ExpandableDataProvider<CollectionGroup, DownloadTask> mProvider) {
         this.mProvider = mProvider;
         this.context = context;
         setHasStableIds(true);
@@ -109,7 +109,7 @@ public class LocalCollectionAdapter
 
     @Override
     public void onBindChildViewHolder(final CollectionViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
-        LocalCollection collection = mProvider.getChildItem(groupPosition, childPosition);
+        LocalCollection collection = mProvider.getChildItem(groupPosition, childPosition).collection;
         String cookie = (collection.site == null) ? "" : collection.site.cookie;
         if (holder.ivCover != null)
             ImageLoader.loadImageFromUrl(context, holder.ivCover, collection.cover, cookie, collection.referer);
@@ -301,11 +301,11 @@ public class LocalCollectionAdapter
         this.mTagClickListener = listener;
     }
 
-    public ExpandableDataProvider<CollectionGroup, LocalCollection> getDataProvider() {
+    public ExpandableDataProvider<CollectionGroup, DownloadTask> getDataProvider() {
         return mProvider;
     }
 
-    public void setDataProvider(ExpandableDataProvider<CollectionGroup, LocalCollection> mProvider) {
+    public void setDataProvider(ExpandableDataProvider<CollectionGroup, DownloadTask> mProvider) {
         this.mProvider = mProvider;
     }
 

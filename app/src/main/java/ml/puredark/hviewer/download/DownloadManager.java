@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.provider.DocumentFile;
+import android.support.v4.util.Pair;
 
 import com.umeng.analytics.MobclickAgent;
 
@@ -17,8 +18,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.beans.CollectionGroup;
 import ml.puredark.hviewer.beans.DownloadTask;
 import ml.puredark.hviewer.beans.LocalCollection;
+import ml.puredark.hviewer.beans.Picture;
+import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.helpers.FileHelper;
@@ -28,6 +32,8 @@ import ml.puredark.hviewer.utils.SharedPreferencesUtil;
 import ml.puredark.hviewer.utils.SimpleFileUtil;
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_DOWNLOADING;
+import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_WAITING;
 
 /**
  * Created by PureDark on 2016/8/15.
@@ -37,6 +43,7 @@ public class DownloadManager {
     public final static String DEFAULT_PATH = Uri.encode(getAlbumStorageDir().getAbsolutePath());
     private DownloadTaskHolder holder;
     private DownloadService.DownloadBinder binder;
+    private static List<DownloadTask> downloadingTasks;
 
     private ServiceConnection conn = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -101,8 +108,14 @@ public class DownloadManager {
         return (binder.getCurrTask() != null && binder.getCurrTask().status == DownloadTask.STATUS_GETTING);
     }
 
-    public List<DownloadTask> getDownloadTasks() {
-        return holder.getDownloadTasks();
+    public List<DownloadTask> getDownloadingTasks() {
+        if (downloadingTasks == null)
+            downloadingTasks = holder.getDownloadingTasksFromDB();
+        return downloadingTasks;
+    }
+
+    public List<Pair<CollectionGroup, List<DownloadTask>>> getDownloadedTasks() {
+        return holder.getDownloadedTasksFromDB();
     }
 
     public boolean createDownloadTask(LocalCollection collection) {
@@ -111,7 +124,9 @@ public class DownloadManager {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         collection.datetime = dateFormat.format(calendar.getTime());
-        DownloadTask task = new DownloadTask(holder.getDownloadTasks().size() + 1, collection, path);
+        // -1 标明为下载中item
+        collection.gid = -1;
+        DownloadTask task = new DownloadTask(getDownloadingTasks().size() + 1, collection, path);
         if (binder == null)
             //||holder.isInList(task))
             return false;
@@ -128,11 +143,44 @@ public class DownloadManager {
         path = getDownloadPath() + "/" + Uri.encode(dirName);
         task.path = path;
         holder.addDownloadTask(task);
+        downloadingTasks.add(task);
         // 统计添加下载次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "DownloadTaskCreated");
         if (!isDownloading())
             startDownload(task);
         return true;
+    }
+
+    public void saveDownloadingTasks() {
+        if (downloadingTasks == null)
+            return;
+        for(DownloadTask item : downloadingTasks){
+            holder.updateDownloadTasks(item);
+        }
+    }
+
+    public void setAllPaused() {
+        if (downloadingTasks == null)
+            return;
+        for (DownloadTask task : downloadingTasks) {
+            if (task.status == DownloadTask.STATUS_GETTING) {
+                task.status = DownloadTask.STATUS_PAUSED;
+            }
+            if (task.collection.pictures != null) {
+                for (Picture picture : task.collection.pictures) {
+                    if (picture.status == STATUS_DOWNLOADING) {
+                        picture.status = STATUS_WAITING;
+                    }
+                }
+            }
+            if (task.collection.videos != null) {
+                for (Video video : task.collection.videos) {
+                    if (video.status == STATUS_DOWNLOADING) {
+                        video.status = STATUS_WAITING;
+                    }
+                }
+            }
+        }
     }
 
     public void startDownload(DownloadTask task) {
@@ -149,6 +197,7 @@ public class DownloadManager {
 
     public void deleteDownloadTask(DownloadTask downloadTask) {
         holder.deleteDownloadTask(downloadTask);
+        downloadingTasks.remove(downloadTask);
         if (binder.getCurrTask() == downloadTask)
             binder.stop();
     }

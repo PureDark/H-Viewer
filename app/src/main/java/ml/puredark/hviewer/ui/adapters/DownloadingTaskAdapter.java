@@ -29,14 +29,14 @@ import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.http.ImageLoader;
 import ml.puredark.hviewer.ui.dataproviders.ListDataProvider;
 
-public class DownloadTaskAdapter extends RecyclerView.Adapter<DownloadTaskAdapter.DownloadTaskViewHolder> {
+public class DownloadingTaskAdapter extends RecyclerView.Adapter<DownloadingTaskAdapter.DownloadTaskViewHolder> {
     private final static int VIEW_TYPE_DOWNLOADING = 1;
     private final static int VIEW_TYPE_DOWNLOADED = 2;
     private Context context;
     private ListDataProvider<DownloadTask> mProvider;
     private OnItemClickListener mItemClickListener;
 
-    public DownloadTaskAdapter(Context context, ListDataProvider<DownloadTask> mProvider) {
+    public DownloadingTaskAdapter(Context context, ListDataProvider<DownloadTask> mProvider) {
         this.mProvider = mProvider;
         setHasStableIds(false);
         this.context = context;

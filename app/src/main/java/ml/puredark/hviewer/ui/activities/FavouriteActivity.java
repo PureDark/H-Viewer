@@ -29,7 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
-import ml.puredark.hviewer.beans.FavGroup;
+import ml.puredark.hviewer.beans.CollectionGroup;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
@@ -76,7 +76,7 @@ public class FavouriteActivity extends BaseActivity {
 
         favouriteHolder = new FavouriteHolder(this);
 
-        final List<Pair<FavGroup, List<LocalCollection>>> favGroups = favouriteHolder.getFavourites();
+        final List<Pair<CollectionGroup, List<LocalCollection>>> favGroups = favouriteHolder.getFavourites();
 
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(favGroups);
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
@@ -146,7 +146,7 @@ public class FavouriteActivity extends BaseActivity {
                             .setNegativeButton("取消", null)
                             .setPositiveButton("确定", (dialog, which) -> {
                                 String title = inputGroupTitle.getText().toString();
-                                FavGroup group = new FavGroup(0, title);
+                                CollectionGroup group = new CollectionGroup(0, title);
                                 int gid = favouriteHolder.addFavGroup(group);
                                 group.gid = gid;
                                 group.index = gid;
@@ -164,7 +164,7 @@ public class FavouriteActivity extends BaseActivity {
                 if (mRecyclerViewDragDropManager.isDragging())
                     return true;
                 // 分类上长按，选择操作
-                final FavGroup group = adapter.getDataProvider().getGroupItem(groupPosition);
+                final CollectionGroup group = adapter.getDataProvider().getGroupItem(groupPosition);
                 new AlertDialog.Builder(FavouriteActivity.this)
                         .setTitle("操作")
                         .setItems(new String[]{"重命名", "删除"}, (dialogInterface, i) -> {
@@ -221,7 +221,7 @@ public class FavouriteActivity extends BaseActivity {
             public void onGroupMove(int fromGroupPosition, int toGroupPosition) {
                 int groupCount = adapter.getGroupCount() - 1;
                 for (int m = 0; m < groupCount; m++) {
-                    FavGroup group = adapter.getDataProvider().getGroupItem(m);
+                    CollectionGroup group = adapter.getDataProvider().getGroupItem(m);
                     group.index = m + 1;
                     favouriteHolder.updateFavGroupIndex(group);
                 }
@@ -229,7 +229,7 @@ public class FavouriteActivity extends BaseActivity {
 
             @Override
             public void onItemMove(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
-                FavGroup group = adapter.getDataProvider().getGroupItem(toGroupPosition);
+                CollectionGroup group = adapter.getDataProvider().getGroupItem(toGroupPosition);
                 LocalCollection collection = adapter.getDataProvider().getChildItem(toGroupPosition, toChildPosition);
                 collection.gid = group.gid;
                 favouriteHolder.updateFavouriteIndex(collection);

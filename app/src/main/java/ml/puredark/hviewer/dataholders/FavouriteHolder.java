@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ml.puredark.hviewer.beans.Collection;
-import ml.puredark.hviewer.beans.FavGroup;
+import ml.puredark.hviewer.beans.CollectionGroup;
 import ml.puredark.hviewer.beans.LocalCollection;
 
 /**
@@ -29,7 +29,7 @@ public class FavouriteHolder {
         checkNoGroupFavs();
     }
 
-    public synchronized int addFavGroup(FavGroup item) {
+    public synchronized int addFavGroup(CollectionGroup item) {
         if (item == null) return 0;
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
@@ -50,7 +50,7 @@ public class FavouriteHolder {
         dbHelper.insert(dbName, contentValues);
     }
 
-    public synchronized void deleteFavGroup(FavGroup item) {
+    public synchronized void deleteFavGroup(CollectionGroup item) {
         dbHelper.delete(groupDbName, "`gid` = ?",
                 new String[]{item.gid + ""});
         dbHelper.delete(dbName, "`gid` = ?",
@@ -62,7 +62,7 @@ public class FavouriteHolder {
                 new String[]{item.idCode, item.title, item.referer});
     }
 
-    public synchronized void updateFavGroup(FavGroup item) {
+    public synchronized void updateFavGroup(CollectionGroup item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`title`", item.title);
         contentValues.put("`index`", item.index);
@@ -70,7 +70,7 @@ public class FavouriteHolder {
                 new String[]{item.gid + ""});
     }
 
-    public synchronized void updateFavGroupIndex(FavGroup item) {
+    public synchronized void updateFavGroupIndex(CollectionGroup item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("`index`", item.index);
         dbHelper.update(groupDbName, contentValues, "gid = ?",
@@ -85,8 +85,8 @@ public class FavouriteHolder {
                 new String[]{item.cid + ""});
     }
 
-    public List<Pair<FavGroup, List<LocalCollection>>> getFavourites() {
-        List<Pair<FavGroup, List<LocalCollection>>> favGroups = new ArrayList<>();
+    public List<Pair<CollectionGroup, List<LocalCollection>>> getFavourites() {
+        List<Pair<CollectionGroup, List<LocalCollection>>> favGroups = new ArrayList<>();
 
         Cursor groupCursor = dbHelper.query("SELECT * FROM " + groupDbName + " ORDER BY `index` ASC");
 
@@ -95,7 +95,7 @@ public class FavouriteHolder {
             int gid = groupCursor.getInt(0);
             if (i >= 0) {
                 String title = groupCursor.getString(i);
-                FavGroup group = new FavGroup(gid, title);
+                CollectionGroup group = new CollectionGroup(gid, title);
                 List<LocalCollection> favourites = new ArrayList<>();
                 Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = " + group.gid + " ORDER BY `fid` DESC");
                 while (cursor.moveToNext()) {
@@ -117,8 +117,8 @@ public class FavouriteHolder {
         return favGroups;
     }
 
-    public List<FavGroup> getGroups() {
-        List<FavGroup> favGroups = new ArrayList<>();
+    public List<CollectionGroup> getGroups() {
+        List<CollectionGroup> collectionGroups = new ArrayList<>();
 
         Cursor groupCursor = dbHelper.query("SELECT * FROM " + groupDbName + " ORDER BY `index` ASC");
 
@@ -127,32 +127,32 @@ public class FavouriteHolder {
             int gid = groupCursor.getInt(0);
             if (i >= 0) {
                 String title = groupCursor.getString(i);
-                FavGroup group = new FavGroup(gid, title);
-                favGroups.add(group);
+                CollectionGroup group = new CollectionGroup(gid, title);
+                collectionGroups.add(group);
             }
         }
         groupCursor.close();
 
-        return favGroups;
+        return collectionGroups;
     }
 
     public void checkNoGroupFavs() {
         // 检测是否有gid为0，无法显示的收藏，如有则全部添加到新建的“未分类”组别中
         Cursor cursor = dbHelper.query("SELECT 1 FROM " + dbName + " WHERE `gid` = 0");
         if (cursor.moveToNext()) {
-            FavGroup group = getGroupByTitle("未分类");
-            int gid = (group != null) ? group.gid : addFavGroup(new FavGroup(0, "未分类"));
+            CollectionGroup group = getGroupByTitle("未分类");
+            int gid = (group != null) ? group.gid : addFavGroup(new CollectionGroup(0, "未分类"));
             dbHelper.nonQuery("UPDATE " + dbName + " SET `gid` = " + gid + " WHERE `gid` = 0");
         }
         cursor.close();
     }
 
-    public FavGroup getGroupByTitle(String title) {
+    public CollectionGroup getGroupByTitle(String title) {
         Cursor cursor = dbHelper.query("SELECT * FROM " + groupDbName + " WHERE `title` = '" + title + "' ORDER BY `index` ASC LIMIT 1");
         try {
             if (cursor.moveToNext()) {
                 int gid = cursor.getInt(0);
-                FavGroup group = new FavGroup(gid, title);
+                CollectionGroup group = new CollectionGroup(gid, title);
                 return group;
             }
             return null;

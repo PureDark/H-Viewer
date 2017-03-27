@@ -41,6 +41,7 @@ import ml.puredark.hviewer.beans.Selector;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.core.RuleParser;
+import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
@@ -70,7 +71,10 @@ public class DownloadService extends Service {
     public static final String ON_PROGRESS = ".services.DownloadService.onProgress";
     public static final String ON_COMPLETE = ".services.DownloadService.onComplete";
     public static final String ON_FAILURE = ".services.DownloadService.onFailure";
+
     private DownloadBinder binder;
+
+    private DownloadTaskHolder holder = new DownloadTaskHolder(mContext);
 
     private DownloadTask currTask;
     //    private BaseDownloadTask videoTask;
@@ -131,6 +135,7 @@ public class DownloadService extends Service {
                 for (Video video : currTask.collection.videos)
                     video.status = STATUS_WAITING;
             }
+            holder.updateDownloadTasks(currTask);
             currTask = null;
             Intent intent = new Intent(ON_PAUSE);
             sendBroadcast(intent);
@@ -148,6 +153,7 @@ public class DownloadService extends Service {
                 for (Video video : currTask.collection.videos)
                     video.status = STATUS_WAITING;
             }
+            holder.updateDownloadTasks(currTask);
             currTask = null;
         }
     }
@@ -190,6 +196,7 @@ public class DownloadService extends Service {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 task.collection.datetime = dateFormat.format(calendar.getTime());
+                holder.updateDownloadTasks(task);
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);
                 // 统计下载完成次数
@@ -218,6 +225,7 @@ public class DownloadService extends Service {
             Response response = HViewerHttpClient.getResponseHeader(video.content, task.collection.site.getHeaders());
             if (response == null) {
                 task.status = STATUS_PAUSED;
+                holder.updateDownloadTasks(task);
                 Intent intent = new Intent(ON_FAILURE);
                 intent.putExtra("message", "视频地址获取失败，请检查网络连接");
                 sendBroadcast(intent);
@@ -279,6 +287,7 @@ public class DownloadService extends Service {
                     @Override
                     public void onFailure(HViewerHttpClient.HttpError error) {
                         task.status = STATUS_PAUSED;
+                        holder.updateDownloadTasks(task);
                         Intent intent = new Intent(ON_FAILURE);
                         intent.putExtra("message", "视频地址获取失败，请检查网络连接");
                         Logger.d("DownloadService", "video.content : " + video.content);
@@ -345,6 +354,7 @@ public class DownloadService extends Service {
                         video.retries = 0;
                         task.status = STATUS_PAUSED;
                         video.status = STATUS_WAITING;
+                        holder.updateDownloadTasks(task);
                         Intent intent = new Intent(ON_FAILURE);
                         intent.putExtra("message", errorMsg);
                         Logger.d("DownloadService", "video.content : " + video.content);
@@ -369,6 +379,7 @@ public class DownloadService extends Service {
         if (documentFile == null || !FileHelper.writeFromFile(file, documentFile)) {
             task.status = STATUS_PAUSED;
             video.status = STATUS_WAITING;
+            holder.updateDownloadTasks(task);
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "保存失败，请重新设置下载目录");
             sendBroadcast(intent);
@@ -377,11 +388,13 @@ public class DownloadService extends Service {
         Logger.d("DownloadService", "saveVideo : done : " + documentFile.getUri().toString());
         video.vlink = documentFile.getUri().toString();
         video.status = STATUS_DOWNLOADED;
+        holder.updateDownloadTasks(task);
     }
 
     private void downloadNewPage(final DownloadTask task) {
         if (task.collection.pictures == null) {
             task.status = STATUS_PAUSED;
+            holder.updateDownloadTasks(task);
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "图册中不含有任何图片");
             sendBroadcast(intent);
@@ -406,6 +419,7 @@ public class DownloadService extends Service {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 task.collection.datetime = dateFormat.format(calendar.getTime());
+                holder.updateDownloadTasks(task);
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);
                 // 统计下载完成次数
@@ -509,6 +523,7 @@ public class DownloadService extends Service {
                     public void onFailure(HViewerHttpClient.HttpError error) {
                         task.status = STATUS_PAUSED;
                         picture.status = STATUS_WAITING;
+                        holder.updateDownloadTasks(task);
                         Intent intent = new Intent(ON_FAILURE);
                         intent.putExtra("message", "图片地址获取失败，请检查网络连接");
                         Logger.d("DownloadService", "picture.url : " + picture.url);
@@ -538,6 +553,7 @@ public class DownloadService extends Service {
         } else {
             currTask.status = STATUS_PAUSED;
             picture.status = STATUS_WAITING;
+            holder.updateDownloadTasks(currTask);
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "图片地址获取失败，请检查网络连接");
             Logger.d("DownloadService", "apiUrl : " + picture.url);
@@ -581,6 +597,7 @@ public class DownloadService extends Service {
                             picture.retries = 0;
                             task.status = STATUS_PAUSED;
                             picture.status = STATUS_WAITING;
+                            holder.updateDownloadTasks(task);
                             Intent intent = new Intent(ON_FAILURE);
                             intent.putExtra("message", "图片下载失败，也许您需要代理");
                             sendBroadcast(intent);
@@ -634,6 +651,7 @@ public class DownloadService extends Service {
             e.printStackTrace();
             task.status = STATUS_PAUSED;
             picture.status = STATUS_WAITING;
+            holder.updateDownloadTasks(task);
             Intent intent = new Intent(ON_FAILURE);
             intent.putExtra("message", "保存失败，请重新设置下载目录");
             sendBroadcast(intent);

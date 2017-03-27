@@ -7,11 +7,11 @@ import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpanda
  * Created by PureDark on 2016/9/21.
  */
 
-public class FavGroup extends AbstractExpandableDataProvider.GroupData {
+public class CollectionGroup extends AbstractExpandableDataProvider.GroupData {
     public int gid, index;
     public String title;
 
-    public FavGroup(int gid, String title) {
+    public CollectionGroup(int gid, String title) {
         this.gid = gid;
         this.title = title;
     }

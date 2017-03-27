@@ -1,5 +1,6 @@
 package ml.puredark.hviewer.beans;
 
+import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 import ml.puredark.hviewer.ui.dataproviders.AbstractDataProvider;
 
 import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_DOWNLOADED;
@@ -8,7 +9,7 @@ import static ml.puredark.hviewer.beans.DownloadItemStatus.STATUS_DOWNLOADED;
  * Created by PureDark on 2016/8/15.
  */
 
-public class DownloadTask extends AbstractDataProvider.Data {
+public class DownloadTask  extends AbstractExpandableDataProvider.ChildData {
     public final static int STATUS_PAUSED = 1;
     public final static int STATUS_IN_QUEUE = 2;
     public final static int STATUS_GETTING = 3;
@@ -60,5 +61,15 @@ public class DownloadTask extends AbstractDataProvider.Data {
                 count++;
         }
         return count;
+    }
+
+    @Override
+    public long getChildId() {
+        return did;
+    }
+
+    @Override
+    public String getText() {
+        return (collection!=null)?collection.title:"";
     }
 }

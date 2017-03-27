@@ -90,6 +90,7 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.dataholders.FavorTagHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
+import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
@@ -182,7 +183,7 @@ public class MainActivity extends BaseActivity {
     private SiteHolder siteHolder;
     private SiteTagHolder siteTagHolder;
     private FavorTagHolder favorTagHolder;
-    private DownloadTaskHolder downloadTaskHolder;
+    private DownloadManager downloadManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,8 +265,8 @@ public class MainActivity extends BaseActivity {
             return true;
         });
 
-        downloadTaskHolder = new DownloadTaskHolder(this);
-        downloadTaskHolder.setAllPaused();
+        downloadManager = new DownloadManager(this);
+        downloadManager.setAllPaused();
 
         initHeaderImage();
 
@@ -1184,8 +1185,9 @@ public class MainActivity extends BaseActivity {
         HViewerApplication.searchSuggestionHolder.saveSearchSuggestion();
 
         if (mRecyclerViewDragDropManager != null) {
-            downloadTaskHolder.setAllPaused();
-            downloadTaskHolder = null;
+            downloadManager.setAllPaused();
+            downloadManager.saveDownloadingTasks();
+            downloadManager = null;
         }
 
         if (mRecyclerViewDragDropManager != null) {

@@ -17,7 +17,7 @@ public class DBHelper {
 
     public synchronized void open(Context context) {
         close();
-        mSqliteHelper = new SQLiteHelper(context, dbName, null, 6);
+        mSqliteHelper = new SQLiteHelper(context, dbName, null, 7);
     }
 
     public synchronized void insert(String sql) {
@@ -112,7 +112,8 @@ public class DBHelper {
             db.execSQL("CREATE TABLE `histories`(`hid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
             db.execSQL("CREATE TABLE `favourites`(`fid` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer, `gid` integer)");
             db.execSQL("CREATE TABLE `favGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
-            db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer)");
+            db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer, `gid` integer)");
+            db.execSQL("CREATE TABLE `dlGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
             db.execSQL("CREATE TABLE `searchSuggestions`(`title` text primary key)");
             db.execSQL("CREATE TABLE `siteTags`(`sid` integer, `title` text, `url` text, FOREIGN KEY(`sid`) REFERENCES `sites`(`sid`), PRIMARY KEY(`sid`,`title`))");
             db.execSQL("CREATE TABLE `favorSiteTags`(`tid` integer primary key autoincrement, `title` text, `url` text, `index` integer)");
@@ -152,6 +153,13 @@ public class DBHelper {
                 db.execSQL("INSERT INTO `favGroups` VALUES(1, \"未分类\", 1);");
                 db.execSQL("INSERT INTO `favourites` SELECT `fid`, `idCode`, `title`, `referer`, `json`, 0 AS `index`, 1 AS `gid` FROM `_temp_favourites`;");
                 db.execSQL("DROP TABLE `_temp_favourites`;");
+            } else if (oldVersion == 6 && newVersion == 7) {
+                db.execSQL("ALTER TABLE `downloads` RENAME TO `_temp_downloads`;");
+                db.execSQL("CREATE TABLE `downloads`(`did` integer primary key autoincrement, `idCode`, `title`, `referer`, `json` text, `index` integer, `gid` integer)");
+                db.execSQL("CREATE TABLE `dlGroups`(`gid` integer primary key autoincrement, `title`, `index` integer)");
+                db.execSQL("INSERT INTO `dlGroups` VALUES(1, \"未分类\", 1);");
+                db.execSQL("INSERT INTO `downloads` SELECT `did`, `idCode`, `title`, `referer`, `json`, 0 AS `index`, 1 AS `gid` FROM `_temp_downloads`;");
+                db.execSQL("DROP TABLE `_temp_downloads`;");
             }
         }
 
