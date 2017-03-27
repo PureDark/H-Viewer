@@ -58,7 +58,10 @@ public class DownloadManager {
     public DownloadManager(Context context) {
         holder = new DownloadTaskHolder(context);
         context.bindService(new Intent(context, DownloadService.class), conn, BIND_AUTO_CREATE);
-        checkNoMediaFile();
+        new Thread(()->{
+            checkDownloadedTask();
+            checkNoMediaFile();
+        }).start();
     }
 
     public static File getAlbumStorageDir() {
@@ -86,7 +89,22 @@ public class DownloadManager {
         return dirName;
     }
 
-    private void checkNoMediaFile() {
+    public synchronized void checkDownloadedTask(){
+        List<DownloadTask> tasks = getDownloadingTasks();
+        for(int i = 0; i < tasks.size(); i++){
+            DownloadTask task = tasks.get(i);
+            if(task.status==DownloadTask.STATUS_COMPLETED){
+                if(task.collection.gid == -1) {
+                    task.collection.gid = 0;
+                    holder.updateDownloadTasks(task);
+                }
+                tasks.remove(i--);
+            }
+        }
+        holder.checkNoGroupDLItems();
+    }
+
+    private synchronized void checkNoMediaFile() {
         boolean nomedia = (boolean) SharedPreferencesUtil.getData(HViewerApplication.mContext, SettingFragment.KEY_PREF_DOWNLOAD_NOMEDIA, true);
         String path = Uri.decode(getDownloadPath());
         if (nomedia) {

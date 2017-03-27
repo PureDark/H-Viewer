@@ -196,6 +196,7 @@ public class DownloadService extends Service {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 task.collection.datetime = dateFormat.format(calendar.getTime());
+                task.collection.gid = 0;
                 holder.updateDownloadTasks(task);
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);
@@ -419,6 +420,7 @@ public class DownloadService extends Service {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 task.collection.datetime = dateFormat.format(calendar.getTime());
+                task.collection.gid = 0;
                 holder.updateDownloadTasks(task);
                 Intent intent = new Intent(ON_COMPLETE);
                 sendBroadcast(intent);

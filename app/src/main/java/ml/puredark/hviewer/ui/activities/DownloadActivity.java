@@ -104,10 +104,113 @@ public class DownloadActivity extends BaseActivity {
         holder = new DownloadTaskHolder(this);
 
         initTabAndViewPager();
+        initDownloadedTask();
+        distinguishDownloadTasks();
 
-        final List<Pair<CollectionGroup, List<DownloadTask>>> dlGroups = manager.getDownloadedTasks();
+    }
 
-        ExpandableDataProvider dataProvider = new ExpandableDataProvider(dlGroups);
+    @OnClick(R.id.btn_return)
+    void back() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        distinguishDownloadTasks();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            if (manager != null) {
+                manager.unbindService(this);
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    private void initTabAndViewPager() {
+        //初始化Tab和ViewPager
+        List<View> views = new ArrayList<>();
+        View viewDownloading = getLayoutInflater().inflate(R.layout.view_collection_list, null);
+        View viewDownloaded = getLayoutInflater().inflate(R.layout.view_collection_list, null);
+
+        views.add(viewDownloading);
+        views.add(viewDownloaded);
+        List<String> titles = new ArrayList<>();
+        titles.add("当前任务");
+        titles.add("已完成　");
+
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        rvDownloading = (RecyclerView) viewDownloading.findViewById(R.id.rv_collection);
+        rvDownloaded = (RecyclerView) viewDownloaded.findViewById(R.id.rv_collection);
+
+        downloadingTaskAdapter = new DownloadingTaskAdapter(this, new ListDataProvider(new ArrayList<DownloadTask>()));
+        rvDownloading.setAdapter(downloadingTaskAdapter);
+
+        downloadingTaskAdapter.setOnItemClickListener(new DownloadingTaskAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
+                if (task.status == DownloadTask.STATUS_GETTING) {
+                    manager.pauseDownload();
+                } else if (task.status == DownloadTask.STATUS_IN_QUEUE) {
+                    task.status = DownloadTask.STATUS_PAUSED;
+                } else if (task.status == DownloadTask.STATUS_PAUSED) {
+                    task.status = DownloadTask.STATUS_IN_QUEUE;
+                    if (!manager.isDownloading())
+                        startNextTaskInQueue();
+                }
+                downloadingTaskAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public boolean onItemLongClick(View v, int position) {
+                final DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
+                String[] options = (task.collection.videos != null && task.collection.videos.size() > 0)
+                        ? new String[]{"重新下载", "删除"}
+                        : new String[]{"浏览", "删除"};
+                new AlertDialog.Builder(DownloadActivity.this)
+                        .setTitle("操作")
+                        .setItems(options, (dialogInterface, i) -> {
+                            if (i == 0) {
+                                if (task.collection.videos != null && task.collection.videos.size() > 0) {
+                                    manager.restartDownload(task);
+                                } else {
+                                    HViewerApplication.temp = task;
+                                    Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
+                                    startActivity(intent);
+                                }
+                            } else if (i == 1) {
+                                View view = LayoutInflater.from(DownloadActivity.this).inflate(R.layout.dialog_delete_confirm, null);
+                                AppCompatCheckBox checkBoxDeleteFile = (AppCompatCheckBox) view.findViewById(R.id.checkbox_delete_file);
+                                new AlertDialog.Builder(DownloadActivity.this)
+                                        .setView(view)
+                                        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                                            manager.deleteDownloadTask(task);
+                                            distinguishDownloadTasks();
+                                            if (checkBoxDeleteFile.isChecked()) {
+                                                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                                                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
+                                                FileHelper.deleteFile(dirName, rootPath);
+                                            }
+                                        }).setNegativeButton(getString(R.string.cancel), null).show();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show();
+                return true;
+            }
+        });
+    }
+
+    private void initDownloadedTask(){
+        ExpandableDataProvider dataProvider = new ExpandableDataProvider(new ArrayList<>());
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
 
         // touch guard manager  (this class is required to suppress scrolling while swipe-dismiss animation is running)
@@ -158,9 +261,6 @@ public class DownloadActivity extends BaseActivity {
         mRecyclerViewSwipeManager.attachRecyclerView(rvDownloaded);
         mRecyclerViewDragDropManager.attachRecyclerView(rvDownloaded);
         mRecyclerViewExpandableItemManager.attachRecyclerView(rvDownloaded);
-
-        if (downloadedTaskAdapter.getDataProvider().getGroupCount() > 0)
-            mRecyclerViewExpandableItemManager.expandGroup(0);
 
         downloadedTaskAdapter.setOnItemClickListener(new DownloadedTaskAdapter.OnItemClickListener() {
             @Override
@@ -290,10 +390,10 @@ public class DownloadActivity extends BaseActivity {
                                 FileHelper.deleteFile(dirName, rootPath);
                             }
                         }).setNegativeButton("撤销", (dialog, which) -> {
-                            DownloadTask recoveredItem = provider.undoLastRemoval();
-                            mRecyclerViewExpandableItemManager.notifyChildItemInserted(groupPosition, childPosition);
-                            holder.addDownloadTask(recoveredItem);
-                        }).show();
+                    DownloadTask recoveredItem = provider.undoLastRemoval();
+                    mRecyclerViewExpandableItemManager.notifyChildItemInserted(groupPosition, childPosition);
+                    holder.addDownloadTask(recoveredItem);
+                }).show();
             }
 
             private void updateGroupItemIndex(int groupPosition) {
@@ -308,114 +408,18 @@ public class DownloadActivity extends BaseActivity {
         });
     }
 
-    @OnClick(R.id.btn_return)
-    void back() {
-        onBackPressed();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        distinguishDownloadTasks();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        try {
-            if (manager != null) {
-                manager.unbindService(this);
-            }
-        } catch (Exception e) {
-        }
-    }
-
-    private void initTabAndViewPager() {
-        //初始化Tab和ViewPager
-        List<View> views = new ArrayList<>();
-        View viewDownloading = getLayoutInflater().inflate(R.layout.view_collection_list, null);
-        View viewDownloaded = getLayoutInflater().inflate(R.layout.view_collection_list, null);
-
-        views.add(viewDownloading);
-        views.add(viewDownloaded);
-        List<String> titles = new ArrayList<>();
-        titles.add("当前任务");
-        titles.add("已完成　");
-
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views, titles);
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-
-        rvDownloading = (RecyclerView) viewDownloading.findViewById(R.id.rv_collection);
-        rvDownloaded = (RecyclerView) viewDownloaded.findViewById(R.id.rv_collection);
-
-        downloadingTaskAdapter = new DownloadingTaskAdapter(this, new ListDataProvider(new ArrayList<DownloadTask>()));
-        rvDownloading.setAdapter(downloadingTaskAdapter);
-
-        downloadingTaskAdapter.setOnItemClickListener(new DownloadingTaskAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
-                if (task.status == DownloadTask.STATUS_GETTING) {
-                    manager.pauseDownload();
-                } else if (task.status == DownloadTask.STATUS_IN_QUEUE) {
-                    task.status = DownloadTask.STATUS_PAUSED;
-                } else if (task.status == DownloadTask.STATUS_PAUSED) {
-                    task.status = DownloadTask.STATUS_IN_QUEUE;
-                    if (!manager.isDownloading())
-                        startNextTaskInQueue();
-                }
-                downloadingTaskAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public boolean onItemLongClick(View v, int position) {
-                final DownloadTask task = (DownloadTask) downloadingTaskAdapter.getDataProvider().getItem(position);
-                String[] options = (task.collection.videos != null && task.collection.videos.size() > 0)
-                        ? new String[]{"重新下载", "删除"}
-                        : new String[]{"浏览", "删除"};
-                new AlertDialog.Builder(DownloadActivity.this)
-                        .setTitle("操作")
-                        .setItems(options, (dialogInterface, i) -> {
-                            if (i == 0) {
-                                if (task.collection.videos != null && task.collection.videos.size() > 0) {
-                                    manager.restartDownload(task);
-                                } else {
-                                    HViewerApplication.temp = task;
-                                    Intent intent = new Intent(DownloadActivity.this, DownloadTaskActivity.class);
-                                    startActivity(intent);
-                                }
-                            } else if (i == 1) {
-                                View view = LayoutInflater.from(DownloadActivity.this).inflate(R.layout.dialog_delete_confirm, null);
-                                AppCompatCheckBox checkBoxDeleteFile = (AppCompatCheckBox) view.findViewById(R.id.checkbox_delete_file);
-                                new AlertDialog.Builder(DownloadActivity.this)
-                                        .setView(view)
-                                        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                                            manager.deleteDownloadTask(task);
-                                            distinguishDownloadTasks();
-                                            if (checkBoxDeleteFile.isChecked()) {
-                                                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
-                                                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
-                                                FileHelper.deleteFile(dirName, rootPath);
-                                            }
-                                        }).setNegativeButton(getString(R.string.cancel), null).show();
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .show();
-                return true;
-            }
-        });
-
-    }
-
     private void distinguishDownloadTasks() {
-        List<DownloadTask> downloadingTasks = manager.getDownloadingTasks();
-        List<Pair<CollectionGroup, List<DownloadTask>>> downloadedTasks = manager.getDownloadedTasks();
-        downloadingTaskAdapter.getDataProvider().setDataSet(downloadingTasks);
-        downloadedTaskAdapter.getDataProvider().setDataSet(downloadedTasks);
-        downloadingTaskAdapter.notifyDataSetChanged();
-        downloadedTaskAdapter.notifyDataSetChanged();
+        new Thread(()->{
+            manager.checkDownloadedTask();
+            List<DownloadTask> downloadingTasks = manager.getDownloadingTasks();
+            List<Pair<CollectionGroup, List<DownloadTask>>> downloadedTasks = manager.getDownloadedTasks();
+            downloadingTaskAdapter.getDataProvider().setDataSet(downloadingTasks);
+            downloadedTaskAdapter.getDataProvider().setDataSet(downloadedTasks);
+            runOnUiThread(()->{
+                downloadingTaskAdapter.notifyDataSetChanged();
+                downloadedTaskAdapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 
     private void startNextTaskInQueue() {
