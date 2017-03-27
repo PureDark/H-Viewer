@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.util.Pair;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,6 +34,7 @@ import okhttp3.Response;
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static OkHttpClient mClient = new OkHttpClient.Builder()
+            .addNetworkInterceptor(new StethoInterceptor())
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .dns(new HttpDns())

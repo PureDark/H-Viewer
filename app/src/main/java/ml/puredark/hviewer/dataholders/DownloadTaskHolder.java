@@ -147,6 +147,7 @@ public class DownloadTaskHolder {
                         String json = cursor.getString(j);
                         DownloadTask downloadTask = new Gson().fromJson(json, DownloadTask.class);
                         downloadTask.did = id;
+                        downloadTask.collection.gid = group.gid;
                         downloadTasks.add(downloadTask);
                     }
                 }

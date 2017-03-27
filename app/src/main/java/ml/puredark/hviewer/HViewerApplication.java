@@ -12,6 +12,8 @@ import android.os.Build;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Option;
@@ -35,6 +37,7 @@ import ml.puredark.hviewer.dataholders.SearchHistoryHolder;
 import ml.puredark.hviewer.dataholders.SearchSuggestionHolder;
 import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.libraries.swipeback.common.SwipeBackApplication;
+import okhttp3.OkHttpClient;
 
 public class HViewerApplication extends SwipeBackApplication {
     /**
@@ -97,6 +100,8 @@ public class HViewerApplication extends SwipeBackApplication {
         super.onCreate();
         mContext = this;
         Fresco.initialize(this, ImagePipelineConfigBuilder.getDefaultImagePipelineConfig(this));
+
+        Stetho.initializeWithDefaults(this);
 
         searchHistoryHolder = new SearchHistoryHolder(this);
         searchSuggestionHolder = new SearchSuggestionHolder(this);
