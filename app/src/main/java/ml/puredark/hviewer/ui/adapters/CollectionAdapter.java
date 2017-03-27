@@ -127,8 +127,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 checkSiteFlags(position, ((LocalCollection) collection).site, collection);
             }
             int emptySpaceCount = (collection.tags==null)? 1 : 0;
-            emptySpaceCount += (collection.uploader==null)? 1 : 0;
-            emptySpaceCount += (collection.category==null)? 1 : 0;
+            emptySpaceCount += (TextUtils.isEmpty(collection.uploader))? 1 : 0;
+            emptySpaceCount += (TextUtils.isEmpty(collection.category))? 1 : 0;
+            Logger.d("CollectionAdapter", "emptySpaceCount : " + emptySpaceCount);
             switch (emptySpaceCount){
                 case 3:
                 case 2:

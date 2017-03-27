@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_70"
-    tools:context=".ui.activities.CollectionActivity">
+    tools:context=".ui.activities.VideoViewerActivity">
 
     <WebView
         android:id="@+id/web_view"
@@ -14,6 +14,11 @@
         android:layout_height="match_parent"
         android:background="@color/transparent">
     </WebView>
+
+    <com.shuyu.gsyvideoplayer.video.CustomGSYVideoPlayer
+        android:id="@+id/video_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
         android:id="@+id/progress_bar"

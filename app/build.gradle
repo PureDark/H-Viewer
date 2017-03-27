@@ -23,6 +23,9 @@ android {
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
         multiDexEnabled true
+        ndk{
+            abiFilters 'armeabi', 'armeabi-v7a'
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -84,15 +87,15 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    //Google offical
+    // Google offical
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:cardview-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'com.android.support:support-compat:25.2.0'
-    //umeng analytics
+    // umeng analytics
     compile 'com.umeng.analytics:analytics:latest.integration'
-    //material widget
+    // material widget
     compile 'com.github.vajro:MaterialDesignLibrary:1.6'
     compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.3.1'
     compile 'com.github.rengwuxian:MaterialEditText:2.1.4'
@@ -111,7 +114,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
     compile "biz.laenger.android:vpbs:0.0.4"
-    //Pull Load More
+    // Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.1.2') {
         exclude group: 'com.android.support'
     }
@@ -119,9 +122,9 @@ dependencies {
 
     //    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
 
-    //butter knife
+    // butter knife
     compile 'com.jakewharton:butterknife:8.2.1'
-    //image
+    // image
     compile 'com.facebook.fresco:fresco:0.13.0'
     compile 'com.facebook.fresco:animated-gif:0.13.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0+'
@@ -130,28 +133,28 @@ dependencies {
     compile 'com.github.PureDark:PhotoDraweeView:2c7b7f65b1'
     //    compile project (':photodraweeview')
     compile 'com.nineoldandroids:library:2.4.0'
-    //animation
+    // animation
     compile 'com.daimajia.easing:library:2.0@aar'
     compile 'com.daimajia.androidanimations:library:2.2@aar'
 
-    //http
+    // http
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.lzy.net:okgo:2.1.4'
     compile 'com.lzy.net:okserver:1.1.3'
-    //httpdns
+    // httpdns
     compile project(':httpdns')
-    //email
+    // email
     compile files('libs/activation.jar')
     compile files('libs/additionnal.jar')
     compile files('libs/mail.jar')
     compile files('libs/commons-email-1.4.jar')
-    //format, gson, jsoup, etc
+    // format, gson, jsoup, etc
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.jhy:jsoup:jsoup-1.9.2'
     compile('com.jayway.jsonpath:json-path:2.2.0') {
         exclude group: 'org.ow2.asm'
     }
-    //zxing
+    // zxing
     compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     compile 'com.google.zxing:core:3.2.0'
     // directory chooser
@@ -159,6 +162,9 @@ dependencies {
     compile 'net.rdrei.android.dirchooser:library:3.2@aar'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'net.jcip:jcip-annotations:1.0'
+
+    // video player
+    compile 'com.github.CarGuo:GSYVideoPlayer:v1.6.1'
 
     // unlock methods, such as pin, fingerprint, etc
     compile 'com.andrognito.pinlockview:pinlockview:2.0.1'
