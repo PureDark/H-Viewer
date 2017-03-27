@@ -273,15 +273,27 @@ public class DownloadActivity extends BaseActivity {
             @Override
             public void onItemRemoved(int groupPosition, int childPosition) {
                 final ExpandableDataProvider<CollectionGroup, DownloadTask> provider = downloadedTaskAdapter.getDataProvider();
-                DownloadTask task = provider.getChildItem(groupPosition, childPosition);
+                final DownloadTask task = provider.getChildItem(groupPosition, childPosition);
                 holder.deleteDownloadTask(task);
                 downloadedTaskAdapter.getDataProvider().removeChildItem(groupPosition, childPosition);
                 mRecyclerViewExpandableItemManager.notifyChildItemRemoved(groupPosition, childPosition);
-                showSnackBar("移除了一项收藏", "撤销", v -> {
-                    DownloadTask recoveredItem = provider.undoLastRemoval();
-                    mRecyclerViewExpandableItemManager.notifyChildItemInserted(groupPosition, childPosition);
-                    holder.addDownloadTask(recoveredItem);
-                });
+                View view = LayoutInflater.from(DownloadActivity.this).inflate(R.layout.dialog_delete_confirm, null);
+                AppCompatCheckBox checkBoxDeleteFile = (AppCompatCheckBox) view.findViewById(R.id.checkbox_delete_file);
+                new AlertDialog.Builder(DownloadActivity.this)
+                        .setView(view)
+                        .setPositiveButton("确定", (dialog, which) -> {
+                            manager.deleteDownloadTask(task);
+                            distinguishDownloadTasks();
+                            if (checkBoxDeleteFile.isChecked()) {
+                                String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
+                                String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
+                                FileHelper.deleteFile(dirName, rootPath);
+                            }
+                        }).setNegativeButton("撤销", (dialog, which) -> {
+                            DownloadTask recoveredItem = provider.undoLastRemoval();
+                            mRecyclerViewExpandableItemManager.notifyChildItemInserted(groupPosition, childPosition);
+                            holder.addDownloadTask(recoveredItem);
+                        }).show();
             }
 
             private void updateGroupItemIndex(int groupPosition) {
