@@ -147,7 +147,6 @@ dependencies {
     //If you want to add a network helper
     compile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
 
-
     // httpdns
     compile project(':httpdns')
     // email
