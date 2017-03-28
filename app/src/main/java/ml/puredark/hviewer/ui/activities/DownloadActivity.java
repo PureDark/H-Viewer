@@ -41,6 +41,7 @@ import ml.puredark.hviewer.dataholders.DownloadTaskHolder;
 import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.download.DownloadService;
 import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.libraries.advrecyclerview.common.data.AbstractExpandableDataProvider;
 import ml.puredark.hviewer.ui.adapters.DownloadedTaskAdapter;
@@ -99,6 +100,22 @@ public class DownloadActivity extends BaseActivity {
 
         receiver = new MyDownloadReceiver();
         setDownloadReceiver(receiver);
+
+        reportShortcutUsed(this, "scdownload");
+
+        Intent intent = getIntent();
+        if(intent!=null){
+            Logger.d("ShortcutTest", "DownloadActivity");
+            Logger.d("ShortcutTest", intent.toString());
+            String action = intent.getAction();
+            if(HViewerApplication.INTENT_SHORTCUT.equals(action) && LockActivity.isSetLockMethod(this)){
+                Intent lockIntent = new Intent(DownloadActivity.this, LockActivity.class);
+                lockIntent.setAction(HViewerApplication.INTENT_FROM_DOWNLOAD);
+                startActivity(lockIntent);
+                finish();
+                return;
+            }
+        }
 
         manager = new DownloadManager(this);
         holder = new DownloadTaskHolder(this);

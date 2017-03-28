@@ -31,6 +31,7 @@
         <activity
             android:name=".ui.activities.LockActivity"
             android:launchMode="singleTask"
+            android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -75,6 +75,22 @@ public class FavouriteActivity extends BaseActivity {
 
         tvTitle.setText("收藏夹");
 
+        reportShortcutUsed(this, "scfavorites");
+
+        Intent intent = getIntent();
+        if(intent!=null){
+            Logger.d("ShortcutTest", "FavouriteActivity");
+            Logger.d("ShortcutTest", intent.toString());
+            String action = intent.getAction();
+            if(HViewerApplication.INTENT_SHORTCUT.equals(action) && LockActivity.isSetLockMethod(this)){
+                Intent lockIntent = new Intent(FavouriteActivity.this, LockActivity.class);
+                lockIntent.setAction(HViewerApplication.INTENT_FROM_FAVOURITE);
+                startActivity(lockIntent);
+                finish();
+                return;
+            }
+        }
+
         favouriteHolder = new FavouriteHolder(this);
 
         final List<Pair<CollectionGroup, List<LocalCollection>>> favGroups = favouriteHolder.getFavourites();

@@ -1,12 +1,15 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ShortcutManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -188,6 +191,13 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
             attr.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
             getWindow().setAttributes(attr);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.N_MR1)
+    public static void reportShortcutUsed(Context context, String shortcutId) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            context.getSystemService(ShortcutManager.class).reportShortcutUsed(shortcutId);
         }
     }
 

@@ -53,6 +53,10 @@ public class HViewerApplication extends SwipeBackApplication {
     public static SearchSuggestionHolder searchSuggestionHolder;
     public static Gson gson;
 
+    public final static String INTENT_SHORTCUT = "ml.puredark.hviewer.intent.action.SHORTCUT";
+    public final static String INTENT_FROM_DOWNLOAD = "ml.puredark.hviewer.intent.action.FROMDOWNLOAD";
+    public final static String  INTENT_FROM_FAVOURITE = "ml.puredark.hviewer.intent.action.FROMFAVOURITE";
+
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
@@ -98,7 +102,9 @@ public class HViewerApplication extends SwipeBackApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+
         mContext = this;
+
         Fresco.initialize(this, ImagePipelineConfigBuilder.getDefaultImagePipelineConfig(this));
 
         Stetho.initializeWithDefaults(this);

@@ -23,6 +23,9 @@ android {
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
         multiDexEnabled true
+        ndk{
+            abiFilters 'armeabi', 'armeabi-v7a'
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -30,19 +33,18 @@ android {
     }
     buildTypes {
         debug {
-            applicationIdSuffix '.debug'
+            //applicationIdSuffix '.debug'
             resValue "string", "app_name", "H-Viewer-debug"
+            resValue "string", "app_package", "ml.puredark.hviewer.debug"
             ndk{
                 abiFilters 'armeabi', 'armeabi-v7a', 'x86'
             }
         }
         release {
+            resValue "string", "app_package", "ml.puredark.hviewer"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
             zipAlignEnabled true
-            ndk{
-                abiFilters 'armeabi', 'armeabi-v7a'
-            }
         }
     }
     lintOptions {

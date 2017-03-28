@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import me.zhanghai.android.patternlock.PatternView;
+import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
@@ -100,6 +101,12 @@ public class LockActivity extends AppCompatActivity {
         }
 
         initFingerPrintLock();
+    }
+
+    public static boolean isSetLockMethod(Context context){
+        boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PATTERN;
+        boolean isPinLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PIN;
+        return isPatternLock || isPinLock;
     }
 
     private void initBlurryBackground() {
@@ -232,8 +239,25 @@ public class LockActivity extends AppCompatActivity {
     private void onSuccessUnlock() {
         vibrate(20, true);
         success = true;
-        Intent intent = new Intent(LockActivity.this, MainActivity.class);
-        startActivity(intent);
+
+        Intent intent = getIntent();
+        Class activityClass;
+        if(intent!=null){
+            Logger.d("ShortcutTest", "LockActivity");
+            Logger.d("ShortcutTest", intent.toString());
+            String action = intent.getAction();
+            if(HViewerApplication.INTENT_FROM_DOWNLOAD.equals(action)){
+                activityClass = DownloadActivity.class;
+            } else if(HViewerApplication.INTENT_FROM_FAVOURITE.equals(action)) {
+                activityClass = FavouriteActivity.class;
+            } else{
+                activityClass = MainActivity.class;
+            }
+        } else {
+            activityClass = MainActivity.class;
+        }
+        Intent openIntent = new Intent(LockActivity.this, activityClass);
+        startActivity(openIntent);
         finish();
     }
 

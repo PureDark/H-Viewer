@@ -225,12 +225,17 @@ public class VideoViewerActivity extends BaseActivity {
                 super.onPrepared(url, objects);
                 //开始播放了才能旋转和全屏
                 orientationUtils.setEnable(true);
+                webView.removeAllViews();
+                webView.destroy();
+                webView = null;
             }
             @Override
             public void onPlayError(String s, Object... objects) {
                 videoPlayer.setVisibility(View.GONE);
                 shouldInterceptVideo = false;
-                webView.reload();
+                if(webView!=null) {
+                    webView.reload();
+                }
             }
 
             @Override
@@ -264,20 +269,27 @@ public class VideoViewerActivity extends BaseActivity {
 
     @Override
     public void onResume() {
-        webView.onResume();
+        if(webView!=null) {
+            webView.onResume();
+        }
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        webView.onPause();
+        if(webView!=null) {
+            webView.onPause();
+        }
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        webView.loadUrl("");
-        webView.destroy();
+        if(webView!=null) {
+            webView.loadUrl("");
+            webView.removeAllViews();
+            webView.destroy();
+        }
         GSYVideoPlayer.releaseAllVideos();
         GSYPreViewManager.instance().releaseMediaPlayer();
         if (orientationUtils != null)
