@@ -31,7 +31,11 @@ public class LockMethodPreference extends Preference {
     public CharSequence getSummary() {
         Context context = getContext();
         FingerprintManagerCompat manager = FingerprintManagerCompat.from(context);
-        boolean isFingerPrintLock = manager.hasEnrolledFingerprints();
+        boolean isFingerPrintLock = false;
+        try {
+            isFingerPrintLock = manager.hasEnrolledFingerprints();
+        } catch (Exception e){
+        }
         boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PATTERN;
         boolean isPinLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PIN;
         String summary = (isPatternLock) ? "图案解锁" : (isPinLock) ? "数字解锁" : "";
