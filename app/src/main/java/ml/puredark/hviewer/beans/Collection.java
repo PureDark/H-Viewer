@@ -63,6 +63,21 @@ public class Collection extends AbstractExpandableDataProvider.ChildData {
         }
     }
 
+    public void replace(Collection collection) {
+        Field[] fs = Collection.class.getDeclaredFields();
+        try {
+            for (Field f : fs) {
+                f.setAccessible(true);
+                Object v1 = f.get(this);
+                Object v2 = f.get(collection);
+                if (v2 != null && !"".equals(v2))
+                    f.set(this, v2);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         if ((obj instanceof Collection)) {

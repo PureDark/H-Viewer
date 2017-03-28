@@ -286,8 +286,7 @@ public class RuleParser {
             if (rule.item != null && rule.pictureRule != null && rule.pictureRule.item != null) {
                 List<Collection> collections = new ArrayList<>();
                 Collection newCollection = getCollections(collections, text, rule, sourceUrl).get(0);
-                newCollection.fillEmpty(collection);
-                collection = newCollection;
+                collection.replace(newCollection);
             } else {
                 if (!isJson(text)) {
                     Document element = Jsoup.parse(text);

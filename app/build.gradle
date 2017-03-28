@@ -16,8 +16,8 @@ android {
         resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 80
-        versionName "0.10.3"
+        versionCode 81
+        versionName "0.10.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         renderscriptTargetApi 25
@@ -33,15 +33,13 @@ android {
     }
     buildTypes {
         debug {
-            //applicationIdSuffix '.debug'
+            applicationIdSuffix '.debug'
             resValue "string", "app_name", "H-Viewer-debug"
-            resValue "string", "app_package", "ml.puredark.hviewer.debug"
             ndk{
                 abiFilters 'armeabi', 'armeabi-v7a', 'x86'
             }
         }
         release {
-            resValue "string", "app_package", "ml.puredark.hviewer"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
             zipAlignEnabled true

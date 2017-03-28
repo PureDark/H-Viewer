@@ -339,6 +339,8 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             //初始化评论列表
             rvComment = (RecyclerView) viewComment.findViewById(R.id.rv_comment);
             List<Comment> comments = new ArrayList<>();
+            if (collection.comments != null)
+                comments.addAll(collection.comments);
             commentAdapter = new CommentAdapter(this, new ListDataProvider(comments));
             commentAdapter.setCookie(site.cookie);
             rvComment.setAdapter(commentAdapter);
@@ -503,7 +505,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             } else {
                 Logger.d("CollectionActivity", "myCollection.videos.size(): 0");
             }
-            Logger.d("CollectionActivity", "myCollection.comments:" + ((myCollection.comments != null) ? myCollection.comments.size() : myCollection.comments));
+            Logger.d("CollectionActivity", "myCollection.comments:" + ((myCollection.comments != null) ? myCollection.comments.size() : 0));
 
             if (myCollection.tags != null) {
                 for (Tag tag : myCollection.tags) {

@@ -55,7 +55,7 @@ public class HViewerApplication extends SwipeBackApplication {
 
     public final static String INTENT_SHORTCUT = "ml.puredark.hviewer.intent.action.SHORTCUT";
     public final static String INTENT_FROM_DOWNLOAD = "ml.puredark.hviewer.intent.action.FROMDOWNLOAD";
-    public final static String  INTENT_FROM_FAVOURITE = "ml.puredark.hviewer.intent.action.FROMFAVOURITE";
+    public final static String INTENT_FROM_FAVOURITE = "ml.puredark.hviewer.intent.action.FROMFAVOURITE";
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
