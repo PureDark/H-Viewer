@@ -97,7 +97,7 @@ public class FavouriteHolder {
                 String title = groupCursor.getString(i);
                 CollectionGroup group = new CollectionGroup(gid, title);
                 List<LocalCollection> favourites = new ArrayList<>();
-                Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = " + group.gid + " ORDER BY `fid` DESC");
+                Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = " + group.gid + " ORDER BY `index` ASC");
                 while (cursor.moveToNext()) {
                     int j = cursor.getColumnIndex("json");
                     int id = cursor.getInt(0);
@@ -105,6 +105,7 @@ public class FavouriteHolder {
                         String json = cursor.getString(j);
                         LocalCollection collection = new Gson().fromJson(json, LocalCollection.class);
                         collection.cid = id;
+                        collection.gid = group.gid;
                         favourites.add(collection);
                     }
                 }

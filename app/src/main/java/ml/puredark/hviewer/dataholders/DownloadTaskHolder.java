@@ -139,7 +139,7 @@ public class DownloadTaskHolder {
                 String title = groupCursor.getString(i);
                 CollectionGroup group = new CollectionGroup(gid, title);
                 List<DownloadTask> downloadTasks = new ArrayList<>();
-                Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = " + group.gid + " ORDER BY `did` DESC");
+                Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = " + group.gid + " ORDER BY `index` ASC");
                 while (cursor.moveToNext()) {
                     int j = cursor.getColumnIndex("json");
                     int id = cursor.getInt(0);

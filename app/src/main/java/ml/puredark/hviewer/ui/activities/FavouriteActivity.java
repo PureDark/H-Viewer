@@ -32,6 +32,7 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.CollectionGroup;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.dataholders.FavouriteHolder;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.adapters.LocalCollectionAdapter;
 import ml.puredark.hviewer.ui.dataproviders.ExpandableDataProvider;
@@ -229,8 +230,10 @@ public class FavouriteActivity extends BaseActivity {
 
             @Override
             public void onItemMove(int fromGroupPosition, int fromChildPosition, int toGroupPosition, int toChildPosition) {
+                Logger.d("FavouriteActivity", "fromGroupPosition:" + fromGroupPosition + " fromChildPosition:" + fromChildPosition + " toGroupPosition:" + toGroupPosition + " toChildPosition:" + toChildPosition);
                 CollectionGroup group = adapter.getDataProvider().getGroupItem(toGroupPosition);
                 LocalCollection collection = adapter.getDataProvider().getChildItem(toGroupPosition, toChildPosition);
+                Logger.d("FavouriteActivity", "collection.title:"+collection.title);
                 collection.gid = group.gid;
                 favouriteHolder.updateFavouriteIndex(collection);
                 updateGroupItemIndex(fromGroupPosition);
@@ -255,6 +258,7 @@ public class FavouriteActivity extends BaseActivity {
                 int childCount = adapter.getChildCount(groupPosition);
                 for (int i = 0; i < childCount; i++) {
                     LocalCollection collection = adapter.getDataProvider().getChildItem(groupPosition, i);
+                    Logger.d("FavouriteActivity", "collection.title:"+collection.title + "collection.gid:"+collection.gid);
                     collection.index = i + 1;
                     favouriteHolder.updateFavouriteIndex(collection);
                 }

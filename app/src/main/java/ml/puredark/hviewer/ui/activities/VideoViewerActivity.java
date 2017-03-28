@@ -2,6 +2,7 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
@@ -131,7 +132,7 @@ public class VideoViewerActivity extends BaseActivity {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 Logger.d("VideoViewerActivity", "shouldInterceptRequest:" + url);
-                if (shouldInterceptVideo && (url.contains(".mp4") || url.contains(".webm") || url.contains(".m3u8") || url.contains(".sdp"))) {
+                if (shouldInterceptVideo && isVideoUrl(Uri.decode(url))) {
                     try {
                         Logger.d("VideoViewerActivity", "Intercepted video");
                         runOnUiThread(()->{
@@ -241,6 +242,12 @@ public class VideoViewerActivity extends BaseActivity {
             //屏幕触摸锁定时禁止转屏
             orientationUtils.setEnable(!lock);
         });
+    }
+
+    private boolean isVideoUrl(String url){
+        boolean is = (url.contains(".mp4") || url.contains(".webm") || url.contains(".m3u8") || url.contains(".sdp"));
+        is |= (url.contains("video/mp4") || url.contains("video/webm") || url.contains("video/m3u8") || url.contains("video/sdp"));
+        return is;
     }
 
     @Override
