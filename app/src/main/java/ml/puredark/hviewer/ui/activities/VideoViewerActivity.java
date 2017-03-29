@@ -1,5 +1,7 @@
 package ml.puredark.hviewer.ui.activities;
 
+import android.app.ActionBar;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -30,7 +32,13 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Video;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
+import ml.puredark.hviewer.ui.fragments.SettingFragment;
 import ml.puredark.hviewer.ui.listeners.SimpleVideoListener;
+import ml.puredark.hviewer.utils.SharedPreferencesUtil;
+
+import static ml.puredark.hviewer.ui.fragments.SettingFragment.VIDEO_IJKPLAYER;
+import static ml.puredark.hviewer.ui.fragments.SettingFragment.VIDEO_H5PLAYER;
+import static ml.puredark.hviewer.ui.fragments.SettingFragment.VIDEO_OTHERPLAYER;
 
 public class VideoViewerActivity extends BaseActivity {
 
@@ -38,19 +46,20 @@ public class VideoViewerActivity extends BaseActivity {
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.web_view)
     WebView webView;
-    @BindView(R.id.video_player)
-    CustomGSYVideoPlayer videoPlayer;
     @BindView(R.id.progress_bar)
     ProgressBarCircularIndeterminate progressBar;
 
-    private Video video;
-
     private OrientationUtils orientationUtils;
+    private CustomGSYVideoPlayer videoPlayer;
+
+    private Video video;
 
     // 表示页面加载完毕，允许第一次重定向，加载完毕后阻止用户点击广告的跳转
     private boolean mLoaded = false;
     // 表示是否应该拦截视频，当嵌入播放器播放失败则尝试使用WebView播放，此时不拦截视频
     private boolean shouldInterceptVideo = true;
+    // 使用什么播放器
+    private String videoPlayerType = VIDEO_IJKPLAYER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +84,13 @@ public class VideoViewerActivity extends BaseActivity {
         }
         HViewerApplication.temp = null;
 
-        Logger.d("VideoViewerActivity", "video:" + video);
+        videoPlayerType = (String) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VIDEO_PLAYER, VIDEO_IJKPLAYER);
+        if (!VIDEO_IJKPLAYER.equals(videoPlayerType)
+                && !VIDEO_H5PLAYER.equals(videoPlayerType)
+                && !VIDEO_OTHERPLAYER.equals(videoPlayerType))
+            videoPlayerType = VIDEO_IJKPLAYER;
 
-        orientationUtils = new OrientationUtils(this, videoPlayer);
+        Logger.d("VideoViewerActivity", "video:" + video);
 
         initWebView();
         initVideoPlayer();
@@ -87,16 +100,15 @@ public class VideoViewerActivity extends BaseActivity {
         else
             webView.loadData(video.content, "text/html", "utf-8");
 
-
     }
 
-    private void initWebView(){
+    private void initWebView() {
         WebSettings settings = webView.getSettings();
-        settings.setSupportZoom(false);
+        settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(false);
-//        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-//        settings.setLoadWithOverviewMode(true);
-//        settings.setUseWideViewPort(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
         settings.setUserAgentString(getResources().getString(R.string.UA));
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
@@ -133,20 +145,32 @@ public class VideoViewerActivity extends BaseActivity {
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 Logger.d("VideoViewerActivity", "shouldInterceptRequest:" + url);
                 if (shouldInterceptVideo && isVideoUrl(Uri.decode(url))) {
-                    try {
-                        Logger.d("VideoViewerActivity", "Intercepted video");
-                        runOnUiThread(()->{
-                            videoPlayer.setVisibility(View.VISIBLE);
-                            boolean isCache = !(url.contains(".m3u8") || url.contains(".sdp"));
-                            //设置播放url
-                            videoPlayer.setUp(url, isCache , null, "");
-                            //立即播放
-                            videoPlayer.startPlayLogic();
-                            progressBar.setVisibility(View.GONE);
-                        });
-                        return new WebResourceResponse(null,null,null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    Logger.d("VideoViewerActivity", "Intercepted video");
+                    if (VIDEO_IJKPLAYER.equals(videoPlayerType)) {
+                        try {
+                            runOnUiThread(() -> {
+                                videoPlayer.setVisibility(View.VISIBLE);
+                                boolean isCache = !(url.contains(".m3u8") || url.contains(".sdp"));
+                                //设置播放url
+                                videoPlayer.setUp(url, isCache, null, "");
+                                //立即播放
+                                videoPlayer.startPlayLogic();
+                                progressBar.setVisibility(View.GONE);
+                            });
+                            return new WebResourceResponse(null, null, null);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (VIDEO_OTHERPLAYER.equals(videoPlayerType)) {
+                        try {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.parse(url), "video/*");
+                            startActivity(intent);
+                            finish();
+                            return new WebResourceResponse(null, null, null);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 return super.shouldInterceptRequest(view, url);//正常加载
@@ -193,65 +217,78 @@ public class VideoViewerActivity extends BaseActivity {
         });
     }
 
-    private void initVideoPlayer(){
-        videoPlayer.setVisibility(View.GONE);
-        //初始化不打开外部的旋转
-        orientationUtils.setEnable(false);
-        //关闭自动旋转
-        videoPlayer.setRotateViewAuto(false);
-        //全屏动画效果
-        videoPlayer.setShowFullAnimation(false);
-        //需要横屏锁屏播放按键
-        videoPlayer.setNeedLockFull(true);
-        //非全屏下，不显示title
-        videoPlayer.getTitleTextView().setVisibility(View.GONE);
-        //非全屏下不显示返回键
-        videoPlayer.getBackButton().setVisibility(View.GONE);
-        //打开非全屏下触摸效果
-        videoPlayer.setIsTouchWiget(true);
-        //关闭进度条小窗口预览（不完善）
-        videoPlayer.setOpenPreView(false);
-        videoPlayer.getFullscreenButton().setOnClickListener(v -> {
-            //直接横屏
-            orientationUtils.resolveByClick();
-            //第一个true是否需要隐藏actionbar，第二个true是否需要隐藏statusbar
-            GSYBaseVideoPlayer fullScreenPlayer = videoPlayer.startWindowFullscreen(VideoViewerActivity.this, true, true);
-            fullScreenPlayer.getBackButton().setOnClickListener((v1)->onBackPressed());
-        });
-        videoPlayer.getBackButton().setOnClickListener((v)->onBackPressed());
-        videoPlayer.setStandardVideoAllCallBack(new SimpleVideoListener() {
-            @Override
-            public void onPrepared(String url, Object... objects) {
-                super.onPrepared(url, objects);
-                //开始播放了才能旋转和全屏
-                orientationUtils.setEnable(true);
-                if(webView!=null) {
-                    webView.removeAllViews();
-                    webView.destroy();
-                    webView = null;
-                }
-            }
-            @Override
-            public void onPlayError(String s, Object... objects) {
-                videoPlayer.setVisibility(View.GONE);
-                shouldInterceptVideo = false;
-                if(webView!=null) {
-                    webView.reload();
-                }
-            }
+    private void initVideoPlayer() {
+        if (VIDEO_IJKPLAYER.equals(videoPlayerType)) {
+            videoPlayer = new CustomGSYVideoPlayer(this);
+            CoordinatorLayout.LayoutParams layoutParams = new CoordinatorLayout.LayoutParams(
+                    CoordinatorLayout.LayoutParams.MATCH_PARENT,
+                    CoordinatorLayout.LayoutParams.MATCH_PARENT);
+            videoPlayer.setLayoutParams(layoutParams);
+            coordinatorLayout.addView(videoPlayer);
 
-            @Override
-            public void onQuitFullscreen(String url, Object... objects) {
-                orientationUtils.backToProtVideo();
-            }
-        });
-        videoPlayer.setLockClickListener((view, lock) -> {
-            //屏幕触摸锁定时禁止转屏
-            orientationUtils.setEnable(!lock);
-        });
+            orientationUtils = new OrientationUtils(this, videoPlayer);
+
+            //初始化不打开外部的旋转
+            orientationUtils.setEnable(false);
+            //关闭自动旋转
+            videoPlayer.setRotateViewAuto(false);
+            //全屏动画效果
+            videoPlayer.setShowFullAnimation(false);
+            //需要横屏锁屏播放按键
+            videoPlayer.setNeedLockFull(true);
+            //非全屏下，不显示title
+            videoPlayer.getTitleTextView().setVisibility(View.GONE);
+            //非全屏下不显示返回键
+            videoPlayer.getBackButton().setVisibility(View.GONE);
+            //打开非全屏下触摸效果
+            videoPlayer.setIsTouchWiget(true);
+            //关闭进度条小窗口预览（不完善）
+            videoPlayer.setOpenPreView(false);
+            videoPlayer.getFullscreenButton().setOnClickListener(v -> {
+                //直接横屏
+                orientationUtils.resolveByClick();
+                //第一个true是否需要隐藏actionbar，第二个true是否需要隐藏statusbar
+                GSYBaseVideoPlayer fullScreenPlayer = videoPlayer.startWindowFullscreen(VideoViewerActivity.this, true, true);
+                fullScreenPlayer.getBackButton().setOnClickListener((v1) -> onBackPressed());
+            });
+            videoPlayer.getBackButton().setOnClickListener((v) -> onBackPressed());
+            videoPlayer.setStandardVideoAllCallBack(new SimpleVideoListener() {
+                @Override
+                public void onPrepared(String url, Object... objects) {
+                    super.onPrepared(url, objects);
+                    //开始播放了才能旋转和全屏
+                    orientationUtils.setEnable(true);
+                    if (webView != null) {
+                        webView.removeAllViews();
+                        webView.destroy();
+                        webView = null;
+                    }
+                }
+
+                @Override
+                public void onPlayError(String s, Object... objects) {
+                    videoPlayer.setVisibility(View.GONE);
+                    shouldInterceptVideo = false;
+                    if (webView != null) {
+                        webView.reload();
+                    }
+                }
+
+                @Override
+                public void onQuitFullscreen(String url, Object... objects) {
+                    if (orientationUtils != null)
+                        orientationUtils.backToProtVideo();
+                }
+            });
+            videoPlayer.setLockClickListener((view, lock) -> {
+                //屏幕触摸锁定时禁止转屏
+                if (orientationUtils != null)
+                    orientationUtils.setEnable(!lock);
+            });
+        }
     }
 
-    private boolean isVideoUrl(String url){
+    private boolean isVideoUrl(String url) {
         boolean is = (url.contains(".mp4") || url.contains(".webm") || url.contains(".m3u8") || url.contains(".sdp"));
         is |= (url.contains("video/mp4") || url.contains("video/webm") || url.contains("video/m3u8") || url.contains("video/sdp"));
         return is;
@@ -271,7 +308,7 @@ public class VideoViewerActivity extends BaseActivity {
 
     @Override
     public void onResume() {
-        if(webView!=null) {
+        if (webView != null) {
             webView.onResume();
         }
         super.onResume();
@@ -279,7 +316,7 @@ public class VideoViewerActivity extends BaseActivity {
 
     @Override
     public void onPause() {
-        if(webView!=null) {
+        if (webView != null) {
             webView.onPause();
         }
         super.onPause();
@@ -287,7 +324,7 @@ public class VideoViewerActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if(webView!=null) {
+        if (webView != null) {
             webView.loadUrl("");
             webView.removeAllViews();
             webView.destroy();

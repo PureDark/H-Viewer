@@ -78,10 +78,15 @@ public class SettingFragment extends PreferenceFragment
     public static final String KEY_PREF_VIEW_VOLUME_FLICK = "pref_view_volume_flick";
     public static final String KEY_PREF_VIEW_ONE_PIC_GALLERY = "pref_view_one_pic_gallery";
     public static final String KEY_PREF_VIEW_ONE_HAND = "pref_view_one_hand";
+    public static final String KEY_PREF_VIEW_VIDEO_PLAYER = "pref_view_video_player";
 
     public static final String DIREACTION_LEFT_TO_RIGHT = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[0];
     public static final String DIREACTION_RIGHT_TO_LEFT = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[1];
     public static final String DIREACTION_TOP_TO_BOTTOM = mContext.getResources().getStringArray(R.array.settings_view_direction_values)[2];
+
+    public static final String VIDEO_IJKPLAYER = mContext.getResources().getStringArray(R.array.settings_view_video_player_values)[0];
+    public static final String VIDEO_H5PLAYER = mContext.getResources().getStringArray(R.array.settings_view_video_player_values)[1];
+    public static final String VIDEO_OTHERPLAYER = mContext.getResources().getStringArray(R.array.settings_view_video_player_values)[2];
 
     public static final String KEY_PREF_DOWNLOAD_HIGH_RES = "pref_download_high_res";
     public static final String KEY_PREF_DOWNLOAD_NOMEDIA = "pref_download_nomedia";
@@ -141,12 +146,18 @@ public class SettingFragment extends PreferenceFragment
             String displayPath = Uri.decode(downloadPath);
             getPreferenceManager().findPreference(KEY_PREF_DOWNLOAD_PATH).setSummary(displayPath);
         }
-        ListPreference directionPreference = (ListPreference) getPreferenceManager().findPreference(KEY_PREF_VIEW_DIRECTION);
-        CharSequence[] entries = directionPreference.getEntries();
-        int i = directionPreference.findIndexOfValue(directionPreference.getValue());
+        ListPreference listPreference = (ListPreference) getPreferenceManager().findPreference(KEY_PREF_VIEW_DIRECTION);
+        CharSequence[] entries = listPreference.getEntries();
+        int i = listPreference.findIndexOfValue(listPreference.getValue());
         i = (i <= 0) ? 0 : i;
-        directionPreference.setSummary(entries[i]);
-        directionPreference.setOnPreferenceChangeListener(this);
+        listPreference.setSummary(entries[i]);
+        listPreference.setOnPreferenceChangeListener(this);
+        listPreference = (ListPreference) getPreferenceManager().findPreference(KEY_PREF_VIEW_VIDEO_PLAYER);
+        entries = listPreference.getEntries();
+        i = listPreference.findIndexOfValue(listPreference.getValue());
+        i = (i <= 0) ? 0 : i;
+        listPreference.setSummary(entries[i]);
+        listPreference.setOnPreferenceChangeListener(this);
 
         getPreferenceScreen().setOnPreferenceChangeListener(this);
         final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
@@ -224,6 +235,12 @@ public class SettingFragment extends PreferenceFragment
             int i = directionPreference.findIndexOfValue((String) newValue);
             i = (i <= 0) ? 0 : i;
             directionPreference.setSummary(entries[i]);
+        } else if (preference.getKey().equals(KEY_PREF_VIEW_VIDEO_PLAYER)) {
+            ListPreference videoPlayerPreference = (ListPreference) preference;
+            CharSequence[] entries = videoPlayerPreference.getEntries();
+            int i = videoPlayerPreference.findIndexOfValue((String) newValue);
+            i = (i <= 0) ? 0 : i;
+            videoPlayerPreference.setSummary(entries[i]);
         }
         return true;
     }

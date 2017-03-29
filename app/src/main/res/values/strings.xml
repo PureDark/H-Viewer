@@ -35,6 +35,9 @@
     <string name="settings_view_open_one_pic_gallery_summary">画册只有一张图时点击直接浏览</string>
     <string name="settings_view_one_hand">单手模式（下次生效）</string>
     <string name="settings_view_one_hand_summary">是否允许从屏幕中间拉出左右抽屉</string>
+    <string name="settings_view_video_player">视频播放器</string>
+    <string name="settings_view_video_player_summary">内置播放器</string>
+    <string name="settings_view_video_player_dialog_title">选择您喜欢的视频播放器</string>
 
     <string-array name="settings_view_direction_option">
         <item>从左到右</item>
@@ -45,6 +48,17 @@
         <item>left_to_right</item>
         <item>right_to_left</item>
         <item>top_to_bottom</item>
+    </string-array>
+
+    <string-array name="settings_view_video_player_option">
+        <item>内置播放器</item>
+        <item>HTML5播放器</item>
+        <item>第三方播放器</item>
+    </string-array>
+    <string-array name="settings_view_video_player_values">
+        <item>ijkplayer</item>
+        <item>h5player</item>
+        <item>otherplayer</item>
     </string-array>
 
     <string name="settings_download">下载设置</string>
