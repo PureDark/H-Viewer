@@ -114,8 +114,8 @@ public class DownloadTaskHolder {
         Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = -1 ORDER BY `did` DESC");
         while (cursor.moveToNext()) {
             int j = cursor.getColumnIndex("json");
-            int id = cursor.getInt(0);
             if (j >= 0) {
+                int id = cursor.getInt(0);
                 String json = cursor.getString(j);
                 DownloadTask downloadTask = new Gson().fromJson(json, DownloadTask.class);
                 downloadTask.did = id;
@@ -134,8 +134,8 @@ public class DownloadTaskHolder {
 
         while (groupCursor.moveToNext()) {
             int i = groupCursor.getColumnIndex("title");
-            int gid = groupCursor.getInt(0);
             if (i >= 0) {
+                int gid = groupCursor.getInt(0);
                 String title = groupCursor.getString(i);
                 CollectionGroup group = new CollectionGroup(gid, title);
                 List<DownloadTask> downloadTasks = new ArrayList<>();

@@ -225,9 +225,11 @@ public class VideoViewerActivity extends BaseActivity {
                 super.onPrepared(url, objects);
                 //开始播放了才能旋转和全屏
                 orientationUtils.setEnable(true);
-                webView.removeAllViews();
-                webView.destroy();
-                webView = null;
+                if(webView!=null) {
+                    webView.removeAllViews();
+                    webView.destroy();
+                    webView = null;
+                }
             }
             @Override
             public void onPlayError(String s, Object... objects) {

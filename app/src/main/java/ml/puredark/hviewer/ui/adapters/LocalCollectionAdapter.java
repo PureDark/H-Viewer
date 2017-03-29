@@ -150,7 +150,7 @@ public class LocalCollectionAdapter
     }
 
     private void checkSiteFlags(int position, Site site, Collection collection) {
-        if (site.hasFlag(Site.FLAG_PRELOAD_GALLERY) && !collection.preloaded) {
+        if (site != null && site.hasFlag(Site.FLAG_PRELOAD_GALLERY) && !collection.preloaded) {
             SiteFlagHandler.preloadGallery(context, this, position, site, collection, null);
         }
     }

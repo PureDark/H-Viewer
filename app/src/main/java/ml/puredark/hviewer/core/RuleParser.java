@@ -2,8 +2,10 @@ package ml.puredark.hviewer.core;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.jayway.jsonpath.JsonPath;
@@ -110,13 +112,13 @@ public class RuleParser {
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat;
             try {
-                if(index>0){
+                if (index > 0) {
                     String firstParam = dateStr.substring(0, index);
                     String lastParam = dateStr.substring(index + 1);
                     int offset = Integer.parseInt(lastParam);
                     calendar.add(Calendar.DAY_OF_MONTH, offset);
                     dateFormat = new SimpleDateFormat(firstParam);
-                }else{
+                } else {
                     dateFormat = new SimpleDateFormat(dateStr);
                 }
             } catch (Exception e) {
@@ -131,13 +133,13 @@ public class RuleParser {
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat;
             try {
-                if(index>0){
+                if (index > 0) {
                     String firstParam = timeStr.substring(0, index);
                     String lastParam = timeStr.substring(index + 1);
                     int offset = Integer.parseInt(lastParam);
                     dateFormat = new SimpleDateFormat(firstParam);
                     calendar.add(Calendar.SECOND, offset);
-                }else{
+                } else {
                     dateFormat = new SimpleDateFormat(timeStr);
                 }
             } catch (NumberFormatException e) {
@@ -164,6 +166,7 @@ public class RuleParser {
             try {
                 element = ctx.read(paths[i], JsonElement.class);
             } catch (Exception e) {
+                Logger.d("RuleParser", "path[" + i + "]:" + paths[i]);
                 //e.printStackTrace();
                 try {
                     if (paths.length > i + 1) {
@@ -176,9 +179,11 @@ public class RuleParser {
                     continue;
                 }
             }
-            if (element instanceof JsonArray)
+            if (element == null || element.isJsonNull())
+                continue;
+            if (element instanceof JsonArray) {
                 items.addAll(element.getAsJsonArray());
-            else {
+            } else {
                 items.add(element);
             }
         }
@@ -347,16 +352,11 @@ public class RuleParser {
         }
 
         Iterable temp;
+        JsonParser jsonParser = new JsonParser();
 
         List<Tag> tags = new ArrayList<>();
         if (rule.tagRule != null && rule.tagRule.item != null) {
-            if (source instanceof Element)
-                temp = ((Element) source).select(rule.tagRule.item.selector);
-            else if (source instanceof JsonElement) {
-                ReadContext ctx = JsonPath.parse(source.toString());
-                temp = getJsonArray(ctx, rule.tagRule.item.path);
-            } else
-                return collection;
+            temp = parseItemMatchAll(source, rule.tagRule.item, sourceUrl);
             for (Object element : temp) {
                 if (rule.tagRule.item.regex != null) {
                     Pattern pattern = Pattern.compile(rule.tagRule.item.regex);
@@ -398,13 +398,7 @@ public class RuleParser {
 
         if (pictureUrl != null && pictureThumbnail != null) {
             if (pictureItem != null) {
-                if (source instanceof Element)
-                    temp = ((Element) source).select(pictureItem.selector);
-                else if (source instanceof JsonElement) {
-                    ReadContext ctx = JsonPath.parse(source.toString());
-                    temp = getJsonArray(ctx, pictureItem.path);
-                } else
-                    return collection;
+                temp = parseItemMatchAll(source, pictureItem, sourceUrl);
                 for (Object element : temp) {
                     if (pictureItem.regex != null) {
                         Pattern pattern = Pattern.compile(pictureItem.regex);
@@ -413,6 +407,10 @@ public class RuleParser {
                             continue;
                         }
                     }
+                    if(isJson(element.toString()))
+                        element = jsonParser.parse(element.toString());
+                    else
+                        element = Jsoup.parse(element.toString());
                     String pId = parseSingleProperty(element, pictureId, sourceUrl, false);
                     int pid;
                     try {
@@ -451,13 +449,7 @@ public class RuleParser {
 
         List<Video> videos = new ArrayList<>();
         if (rule.videoRule != null && rule.videoRule.item != null) {
-            if (source instanceof Element)
-                temp = ((Element) source).select(rule.videoRule.item.selector);
-            else if (source instanceof JsonElement) {
-                ReadContext ctx = JsonPath.parse(source.toString());
-                temp = getJsonArray(ctx, rule.videoRule.item.path);
-            } else
-                return collection;
+            temp = parseItemMatchAll(source, rule.videoRule.item, sourceUrl);
             for (Object element : temp) {
                 if (rule.videoRule.item.regex != null) {
                     Pattern pattern = Pattern.compile(rule.videoRule.item.regex);
@@ -466,6 +458,10 @@ public class RuleParser {
                         continue;
                     }
                 }
+                if(isJson(element.toString()))
+                    element = jsonParser.parse(element.toString());
+                else
+                    element = Jsoup.parse(element.toString());
                 String vId = parseSingleProperty(element, rule.videoRule.id, sourceUrl, false);
                 int vid;
                 try {
@@ -498,13 +494,7 @@ public class RuleParser {
             commentContent = rule.commentContent;
         }
         if (commentItem != null && commentContent != null) {
-            if (source instanceof Element) {
-                temp = ((Element) source).select(commentItem.selector);
-            } else if (source instanceof JsonElement) {
-                ReadContext ctx = JsonPath.parse(source.toString());
-                temp = getJsonArray(ctx, commentItem.path);
-            } else
-                return collection;
+            temp = parseItemMatchAll(source, commentItem, sourceUrl);
             for (Object element : temp) {
                 if (commentItem.regex != null) {
                     Pattern pattern = Pattern.compile(commentItem.regex);
@@ -548,6 +538,80 @@ public class RuleParser {
         if (comments != null && comments.size() > 0)
             collection.comments = comments;
         return collection;
+    }
+
+    public static List<Object> parseItemMatchAll(Object source, Selector selector, String sourceUrl) throws Exception {
+        List<Object> items = new ArrayList<>();
+
+        if (selector != null) {
+            String prop;
+            if (source instanceof Element) {
+                Elements temp = ("this".equals(selector.selector)) ? new Elements((Element) source) : ((Element) source).select(selector.selector);
+                if (temp != null) {
+                    boolean doJsonParse = !TextUtils.isEmpty(selector.path);
+                    for (Element elem : temp) {
+                        if(doJsonParse){
+                            if ("attr".equals(selector.fun)) {
+                                prop = elem.attr(selector.param);
+                            } else if ("html".equals(selector.fun)) {
+                                prop = elem.html();
+                            } else if ("text".equals(selector.fun)) {
+                                prop = elem.text();
+                            } else {
+                                prop = elem.toString();
+                            }
+                            List<String> props = getPropertyAfterRegex(new ArrayList<>(), prop, selector, sourceUrl, false);
+                            for(String string : props){
+                                ReadContext ctx = JsonPath.parse(string);
+                                JsonArray jsonArray = getJsonArray(ctx, selector.path);
+                                for(JsonElement jsonElem : jsonArray){
+                                    items.add(jsonElem);
+                                }
+                            }
+                        } else {
+                            if (selector.regex != null) {
+                                Pattern pattern = Pattern.compile(selector.regex);
+                                Matcher matcher = pattern.matcher(elem.toString());
+                                if (!matcher.find()) {
+                                    continue;
+                                }
+                            }
+                            items.add(elem);
+                        }
+                    }
+                }
+            } else if (source instanceof JsonElement) {
+                ReadContext ctx = JsonPath.parse(source.toString());
+                JsonArray temp = getJsonArray(ctx, selector.path);
+                if (temp != null) {
+                    boolean doDocument = !TextUtils.isEmpty(selector.selector);
+                    for (JsonElement item : temp) {
+                        if (doDocument) {
+                            try {
+                                if (item instanceof JsonPrimitive)
+                                    prop = item.getAsString();
+                                else
+                                    continue;
+                                Elements elements = ("this".equals(selector.selector)) ? new Elements(Jsoup.parse(prop)) : Jsoup.parse(prop).select(selector.selector);
+                                items.addAll(elements);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else{
+                            if (selector.regex != null) {
+                                Pattern pattern = Pattern.compile(selector.regex);
+                                Matcher matcher = pattern.matcher(item.toString());
+                                if (!matcher.find()) {
+                                    continue;
+                                }
+                            }
+                            items.add(item);
+                        }
+                    }
+                }
+            }
+        }
+        return items;
     }
 
     public static String parseSingleProperty(Object source, Selector selector, String sourceUrl, boolean isUrl) throws Exception {
@@ -607,38 +671,36 @@ public class RuleParser {
                 ReadContext ctx = JsonPath.parse(source.toString());
                 JsonArray temp = getJsonArray(ctx, selector.path);
                 if (temp != null) {
+                    boolean doDocument = !TextUtils.isEmpty(selector.selector);
                     for (JsonElement item : temp) {
                         if (item instanceof JsonPrimitive)
                             prop = item.getAsString();
                         else
                             prop = item.toString();
-                        if (!TextUtils.isEmpty(selector.selector)) {
+                        if (doDocument) {
                             try {
-                                String newProp;
                                 Elements element = ("this".equals(selector.selector)) ? new Elements(Jsoup.parse(prop)) : Jsoup.parse(prop).select(selector.selector);
                                 if ("attr".equals(selector.fun)) {
-                                    newProp = element.attr(selector.param);
+                                    prop = element.attr(selector.param);
                                 } else if ("html".equals(selector.fun)) {
-                                    newProp = element.html();
+                                    prop = element.html();
                                 } else if ("text".equals(selector.fun)) {
-                                    newProp = element.text();
+                                    prop = element.text();
                                 } else {
-                                    newProp = element.toString();
+                                    prop = element.toString();
                                 }
-                                if (!TextUtils.isEmpty(newProp))
-                                    prop = newProp;
+                                if (!TextUtils.isEmpty(prop))
+                                    props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }
-                        if (!TextUtils.isEmpty(prop) && !"null".equals(prop.trim()))
+                        } else if (!TextUtils.isEmpty(prop) && !"null".equals(prop.trim())) {
                             props = getPropertyAfterRegex(props, prop, selector, sourceUrl, isUrl);
+                        }
                     }
                 }
             }
         }
-        if (props.size() == 0)
-            props.add("");
         return props;
     }
 

@@ -92,8 +92,8 @@ public class FavouriteHolder {
 
         while (groupCursor.moveToNext()) {
             int i = groupCursor.getColumnIndex("title");
-            int gid = groupCursor.getInt(0);
             if (i >= 0) {
+                int gid = groupCursor.getInt(0);
                 String title = groupCursor.getString(i);
                 CollectionGroup group = new CollectionGroup(gid, title);
                 List<LocalCollection> favourites = new ArrayList<>();
@@ -125,8 +125,8 @@ public class FavouriteHolder {
 
         while (groupCursor.moveToNext()) {
             int i = groupCursor.getColumnIndex("title");
-            int gid = groupCursor.getInt(0);
             if (i >= 0) {
+                int gid = groupCursor.getInt(0);
                 String title = groupCursor.getString(i);
                 CollectionGroup group = new CollectionGroup(gid, title);
                 collectionGroups.add(group);

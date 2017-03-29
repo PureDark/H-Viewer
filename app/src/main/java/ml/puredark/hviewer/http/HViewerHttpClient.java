@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.http;
 
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Looper;
