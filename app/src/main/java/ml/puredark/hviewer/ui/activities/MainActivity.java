@@ -1066,7 +1066,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if ("search".equals(intent.getAction())) {
+        if ("search".equals(intent.getAction()) && currFragment != null) {
             Tag tag = (Tag) intent.getSerializableExtra("tag");
             Site currSite = currFragment.getCurrSite();
             if (tag.url != null && currSite != null) {
