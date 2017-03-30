@@ -266,7 +266,9 @@ public class FavouriteActivity extends BaseActivity {
                 showSnackBar("移除了一项收藏", "撤销", v -> {
                     LocalCollection recoveredItem = adapter.getDataProvider().undoLastRemoval();
                     mRecyclerViewExpandableItemManager.notifyChildItemInserted(groupPosition, childPosition);
-                    favouriteHolder.addFavourite(recoveredItem);
+                    int cid = favouriteHolder.addFavourite(recoveredItem);
+                    if(cid >= 0)
+                        recoveredItem.cid = cid;
                 });
             }
 

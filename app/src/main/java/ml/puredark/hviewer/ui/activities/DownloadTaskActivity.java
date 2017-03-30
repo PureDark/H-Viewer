@@ -344,8 +344,13 @@ public class DownloadTaskActivity extends BaseActivity {
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        favouriteHolder.addFavourite(task.collection);
-        showSnackBar("收藏成功！");
+        int cid = favouriteHolder.addFavourite(task.collection);
+        if(cid>=0) {
+            task.collection.cid = cid;
+            showSnackBar("收藏成功！");
+        }else{
+            showSnackBar("图册已收藏！");
+        }
         // 统计收藏次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "FavorCollection");
     }

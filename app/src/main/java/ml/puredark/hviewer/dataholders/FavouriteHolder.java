@@ -37,9 +37,8 @@ public class FavouriteHolder {
         return (int) dbHelper.insert(groupDbName, contentValues);
     }
 
-    public synchronized void addFavourite(LocalCollection item) {
-        if (item == null) return;
-        deleteFavourite(item);
+    public synchronized int addFavourite(LocalCollection item) {
+        if (item == null || isFavourite(item)) return -1;
         ContentValues contentValues = new ContentValues();
         contentValues.put("idCode", item.idCode);
         contentValues.put("title", item.title);
@@ -47,7 +46,7 @@ public class FavouriteHolder {
         contentValues.put("`index`", item.index);
         contentValues.put("`gid`", item.gid);
         contentValues.put("json", new Gson().toJson(item));
-        dbHelper.insert(dbName, contentValues);
+        return (int) dbHelper.insert(dbName, contentValues);
     }
 
     public synchronized void deleteFavGroup(CollectionGroup item) {
@@ -58,8 +57,8 @@ public class FavouriteHolder {
     }
 
     public synchronized void deleteFavourite(Collection item) {
-        dbHelper.delete(dbName, "`idCode` = ? AND `title` = ? AND `referer` = ?",
-                new String[]{item.idCode, item.title, item.referer});
+        dbHelper.delete(dbName, "`cid` = ?",
+                new String[]{item.cid + ""});
     }
 
     public synchronized void updateFavGroup(CollectionGroup item) {

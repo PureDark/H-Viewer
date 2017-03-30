@@ -684,8 +684,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
 
     @OnClick(R.id.fab_favor)
     void favor() {
-        favouriteHolder.addFavourite(new LocalCollection(collection, site));
-        showSnackBar("收藏成功！");
+        int cid = favouriteHolder.addFavourite(new LocalCollection(collection, site));
+        if(cid>=0) {
+            collection.cid = cid;
+            myCollection.cid = cid;
+            showSnackBar("收藏成功！");
+        }else{
+            showSnackBar("图册已收藏！");
+        }
         // 统计收藏次数
         MobclickAgent.onEvent(HViewerApplication.mContext, "FavorCollection");
     }

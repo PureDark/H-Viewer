@@ -15,6 +15,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.beans.CollectionGroup;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.configs.Names;
 import ml.puredark.hviewer.configs.UrlConfig;
@@ -341,11 +343,19 @@ public class SettingFragment extends PreferenceFragment
                             activity.showSnackBar("未在下载目录中找到收藏夹备份");
                         } else {
                             try {
-                                List<LocalCollection> favourites = new Gson().fromJson(json, new TypeToken<ArrayList<LocalCollection>>() {
-                                }.getType());
+                                List<Pair<CollectionGroup, List<LocalCollection>>> favGroups =
+                                        new Gson().fromJson(json, new TypeToken<ArrayList<Pair<CollectionGroup, ArrayList<LocalCollection>>>>() {}.getType());
                                 FavouriteHolder holder = new FavouriteHolder(activity);
-                                for (LocalCollection collection : favourites) {
-                                    holder.addFavourite(collection);
+                                for(Pair<CollectionGroup, List<LocalCollection>> pair : favGroups){
+                                    CollectionGroup group = holder.getGroupByTitle(pair.first.title);
+                                    if(group==null) {
+                                        group = pair.first;
+                                        group.gid = holder.addFavGroup(group);
+                                    }
+                                    for (LocalCollection collection : pair.second) {
+                                        collection.gid = group.gid;
+                                        holder.addFavourite(collection);
+                                    }
                                 }
                                 holder.onDestroy();
                                 activity.showSnackBar("导入收藏夹成功");

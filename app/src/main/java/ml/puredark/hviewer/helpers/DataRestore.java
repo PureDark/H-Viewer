@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ml.puredark.hviewer.beans.CollectionGroup;
 import ml.puredark.hviewer.beans.LocalCollection;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
@@ -66,11 +67,19 @@ public class DataRestore {
             return "未在下载目录中找到收藏夹备份";
         } else {
             try {
-                List<LocalCollection> favourites = new Gson().fromJson(json, new TypeToken<ArrayList<LocalCollection>>() {
-                }.getType());
+                List<Pair<CollectionGroup, List<LocalCollection>>> favGroups =
+                        new Gson().fromJson(json, new TypeToken<ArrayList<Pair<CollectionGroup, ArrayList<LocalCollection>>>>() {}.getType());
                 FavouriteHolder holder = new FavouriteHolder(mContext);
-                for (LocalCollection collection : favourites) {
-                    holder.addFavourite(collection);
+                for(Pair<CollectionGroup, List<LocalCollection>> pair : favGroups){
+                    CollectionGroup group = holder.getGroupByTitle(pair.first.title);
+                    if(group==null) {
+                        group = pair.first;
+                        group.gid = holder.addFavGroup(group);
+                    }
+                    for (LocalCollection collection : pair.second) {
+                        collection.gid = group.gid;
+                        holder.addFavourite(collection);
+                    }
                 }
                 holder.onDestroy();
                 return "收藏夹还原成功";
@@ -116,7 +125,7 @@ public class DataRestore {
                 }
             }catch(Exception e){
                 e.printStackTrace();
-                return "读取备份失败";
+                return "站点读取备份失败";
             }
             return "站点还原成功";
         }
