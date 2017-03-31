@@ -11,9 +11,6 @@ import com.nineoldandroids.animation.ValueAnimator;
 
 public class AnimationOnActivity {
 
-    public AnimationOnActivity() {
-    }
-
     public static void start(DrawerArrowDrawable btnReturnIcon, Animator.AnimatorListener listener) {
         ValueAnimator arrow = getArrowAnimator(btnReturnIcon);
         arrow.addListener(listener);
@@ -31,12 +28,7 @@ public class AnimationOnActivity {
         float end = 1f;
         ValueAnimator animator = ValueAnimator.ofFloat(start, end);
         animator.setDuration(300);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                btnReturnIcon.setProgress((Float) animation.getAnimatedValue());
-            }
-        });
+        animator.addUpdateListener(animation -> btnReturnIcon.setProgress((Float) animation.getAnimatedValue()));
         return animator;
     }
 }

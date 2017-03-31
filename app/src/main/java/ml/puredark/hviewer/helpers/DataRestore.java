@@ -61,34 +61,6 @@ public class DataRestore {
 
     }
 
-    public String FavouriteRestore() {
-        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.backupdirname);
-        if (json == null) {
-            return "未在下载目录中找到收藏夹备份";
-        } else {
-            try {
-                List<Pair<CollectionGroup, List<LocalCollection>>> favGroups =
-                        new Gson().fromJson(json, new TypeToken<ArrayList<Pair<CollectionGroup, ArrayList<LocalCollection>>>>() {}.getType());
-                FavouriteHolder holder = new FavouriteHolder(mContext);
-                for(Pair<CollectionGroup, List<LocalCollection>> pair : favGroups){
-                    CollectionGroup group = holder.getGroupByTitle(pair.first.title);
-                    if(group==null) {
-                        group = pair.first;
-                        group.gid = holder.addFavGroup(group);
-                    }
-                    for (LocalCollection collection : pair.second) {
-                        collection.gid = group.gid;
-                        holder.addFavourite(collection);
-                    }
-                }
-                holder.onDestroy();
-                return "收藏夹还原成功";
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "收藏夹还原失败";
-            }
-        }
-    }
 
     public String SiteRestore() {
         String json = FileHelper.readString(Names.sitename, DownloadManager.getDownloadPath(), Names.backupdirname);
@@ -125,9 +97,38 @@ public class DataRestore {
                 }
             }catch(Exception e){
                 e.printStackTrace();
-                return "站点读取备份失败";
+                return "站点还原失败";
             }
             return "站点还原成功";
+        }
+    }
+
+    public String FavouriteRestore() {
+        String json = FileHelper.readString(Names.favouritesname, DownloadManager.getDownloadPath(), Names.backupdirname);
+        if (json == null) {
+            return "未在下载目录中找到收藏夹备份";
+        } else {
+            try {
+                List<Pair<CollectionGroup, List<LocalCollection>>> favGroups =
+                        new Gson().fromJson(json, new TypeToken<ArrayList<Pair<CollectionGroup, ArrayList<LocalCollection>>>>() {}.getType());
+                FavouriteHolder holder = new FavouriteHolder(mContext);
+                for(Pair<CollectionGroup, List<LocalCollection>> pair : favGroups){
+                    CollectionGroup group = holder.getGroupByTitle(pair.first.title);
+                    if(group==null) {
+                        group = pair.first;
+                        group.gid = holder.addFavGroup(group);
+                    }
+                    for (LocalCollection collection : pair.second) {
+                        collection.gid = group.gid;
+                        holder.addFavourite(collection);
+                    }
+                }
+                holder.onDestroy();
+                return "收藏夹还原成功";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "收藏夹还原失败";
+            }
         }
     }
 }

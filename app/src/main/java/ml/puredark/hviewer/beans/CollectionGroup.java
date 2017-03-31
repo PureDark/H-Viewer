@@ -35,4 +35,9 @@ public class CollectionGroup extends AbstractExpandableDataProvider.GroupData {
     public String getText() {
         return title;
     }
+
+    @Override
+    public String toString(){
+        return "gid="+gid+" title="+title;
+    }
 }

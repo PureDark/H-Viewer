@@ -50,6 +50,7 @@ import ml.puredark.hviewer.download.DownloadManager;
 import ml.puredark.hviewer.helpers.DataBackup;
 import ml.puredark.hviewer.helpers.DataRestore;
 import ml.puredark.hviewer.helpers.FileHelper;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.UpdateManager;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
@@ -322,7 +323,7 @@ public class SettingFragment extends PreferenceFragment
             new AlertDialog.Builder(activity).setTitle("确定要导出收藏夹？")
                     .setMessage("将导出至当前指定的下载目录")
                     .setPositiveButton("确定", (dialog, which) -> {
-                        DocumentFile file = FileHelper.createFileIfNotExist("favourites.json", DownloadManager.getDownloadPath(), Names.backupdirname);
+                        DocumentFile file = FileHelper.createFileIfNotExist(Names.favouritesname, DownloadManager.getDownloadPath(), Names.backupdirname);
                         if (file != null) {
                             FavouriteHolder holder = new FavouriteHolder(activity);
                             String json = new Gson().toJson(holder.getFavourites());
@@ -347,6 +348,7 @@ public class SettingFragment extends PreferenceFragment
                                         new Gson().fromJson(json, new TypeToken<ArrayList<Pair<CollectionGroup, ArrayList<LocalCollection>>>>() {}.getType());
                                 FavouriteHolder holder = new FavouriteHolder(activity);
                                 for(Pair<CollectionGroup, List<LocalCollection>> pair : favGroups){
+                                    Logger.d("DataStore", "" + pair.first);
                                     CollectionGroup group = holder.getGroupByTitle(pair.first.title);
                                     if(group==null) {
                                         group = pair.first;

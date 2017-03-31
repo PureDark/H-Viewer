@@ -57,7 +57,7 @@ public class FavouriteHolder {
     }
 
     public synchronized void deleteFavourite(Collection item) {
-        dbHelper.delete(dbName, "`cid` = ?",
+        dbHelper.delete(dbName, "`fid` = ?",
                 new String[]{item.cid + ""});
     }
 

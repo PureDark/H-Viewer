@@ -72,10 +72,11 @@ public class AppConfigUtil {
      * @return
      */
     public static String getDeviceId() {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        //TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         try {
-            String deviceId = tm.getDeviceId();
-            return deviceId;
+            //String deviceId = tm.getDeviceId();
+            //return deviceId;
+            return "";
         }catch (Exception e){
             e.printStackTrace();
             return "Failed";

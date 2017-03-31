@@ -16,8 +16,16 @@
 #   public *;
 #}
 
-#保留R下面的资源
--keep class **.R$* {*;}
+#混淆时不使用大小写混合类名
+-dontusemixedcaseclassnames
+#不跳过library中的非public的类
+-dontskipnonpubliclibraryclasses
+#打印混淆的详细信息
+-verbose
+#不进行优化
+-dontoptimize
+#不进行预校验，预校验是作用在Java平台上的，Android平台上不需要这项功能，去掉之后还可以加快混淆速度
+-dontpreverify
 
 -keep class org.apache.** { *; }
 -dontwarn org.apache.**
@@ -47,14 +55,14 @@
 -dontwarn com.umeng.**
 
 # Appcompat and support
--keep interface android.support.v7.** { *; }
--keep class android.support.v7.** { *; }
--keep interface android.support.v4.** { *; }
--keep class android.support.v4.** { *; }
--dontwarn android.app.Notification
+#-keep interface android.support.v7.** { *; }
+#-keep class android.support.v7.** { *; }
+#-keep interface android.support.v4.** { *; }
+#-keep class android.support.v4.** { *; }
+#-dontwarn android.app.Notification
+-keepclassmembernames class android.support.v4.util.Pair { *; }
 
 -dontwarn okhttp3.**
-
 
 -keepclassmembers class * {
    public <init>(org.json.JSONObject);

@@ -1,6 +1,5 @@
 package ml.puredark.hviewer.ui.activities;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -21,7 +20,6 @@ import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.shuyu.gsyvideoplayer.GSYPreViewManager;
 import com.shuyu.gsyvideoplayer.GSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
-import com.shuyu.gsyvideoplayer.video.CustomGSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.GSYBaseVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 
@@ -50,7 +48,7 @@ public class VideoViewerActivity extends BaseActivity {
     ProgressBarCircularIndeterminate progressBar;
 
     private OrientationUtils orientationUtils;
-    private CustomGSYVideoPlayer videoPlayer;
+    private StandardGSYVideoPlayer videoPlayer;
 
     private Video video;
 
@@ -219,7 +217,7 @@ public class VideoViewerActivity extends BaseActivity {
 
     private void initVideoPlayer() {
         if (VIDEO_IJKPLAYER.equals(videoPlayerType)) {
-            videoPlayer = new CustomGSYVideoPlayer(this);
+            videoPlayer = new StandardGSYVideoPlayer(this);
             CoordinatorLayout.LayoutParams layoutParams = new CoordinatorLayout.LayoutParams(
                     CoordinatorLayout.LayoutParams.MATCH_PARENT,
                     CoordinatorLayout.LayoutParams.MATCH_PARENT);
@@ -228,6 +226,7 @@ public class VideoViewerActivity extends BaseActivity {
 
             orientationUtils = new OrientationUtils(this, videoPlayer);
 
+            
             //初始化不打开外部的旋转
             orientationUtils.setEnable(false);
             //关闭自动旋转
@@ -242,8 +241,6 @@ public class VideoViewerActivity extends BaseActivity {
             videoPlayer.getBackButton().setVisibility(View.GONE);
             //打开非全屏下触摸效果
             videoPlayer.setIsTouchWiget(true);
-            //关闭进度条小窗口预览（不完善）
-            videoPlayer.setOpenPreView(false);
             videoPlayer.getFullscreenButton().setOnClickListener(v -> {
                 //直接横屏
                 orientationUtils.resolveByClick();

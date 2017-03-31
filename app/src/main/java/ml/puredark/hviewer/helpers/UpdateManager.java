@@ -5,7 +5,6 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -27,19 +26,21 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 
+import static ml.puredark.hviewer.HViewerApplication.mContext;
+
 public class UpdateManager {
 
     private static final int DOWN_UPDATE = 1;
     private static final int DOWN_OVER = 2;
-    /* 下载包安装路径 */
-    private static String savePath = Environment.getDownloadCacheDirectory().getAbsolutePath();
-    private static final String saveFileName = savePath + "Update.apk";
+
     private Context mContext;
     //标题
     private String title = "新版本";
@@ -73,26 +74,34 @@ public class UpdateManager {
 
         ;
     };
+
+    private static String getCacheDirPath() {
+        return HViewerApplication.mContext.getCacheDir().getAbsolutePath();
+    }
+
+    private static String getCacheFilePath() {
+        return getCacheDirPath() + "/Update.apk";
+    }
+
+
     private Runnable mdownApkRunnable = new Runnable() {
         @Override
         public void run() {
             try {
+                Logger.d("UpdateManager", "apkUrl: " + apkUrl);
                 URL url = new URL(apkUrl);
 
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection
-
-                        ();
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.connect();
                 int length = conn.getContentLength();
                 InputStream is = conn.getInputStream();
 
-                File file = new File(savePath);
+                File file = new File(getCacheDirPath());
                 if (!file.exists()) {
                     file.mkdir();
                 }
-                String apkFile = saveFileName;
-                File ApkFile = new File(apkFile);
-                FileOutputStream fos = new FileOutputStream(ApkFile);
+                File apkFile = new File(getCacheFilePath());
+                FileOutputStream fos = new FileOutputStream(apkFile);
 
                 int count = 0;
                 byte buf[] = new byte[1024];
@@ -101,7 +110,7 @@ public class UpdateManager {
                     int numread = is.read(buf);
                     count += numread;
                     progress = (int) (((float) count / length) * 100);
-                    fileString = (int) (count / (1024)) + "KB/" + (int) (length / (1024)) + "KB";
+                    fileString = (count / (1024)) + "KB/" + (length / (1024)) + "KB";
                     //更新进度
                     mHandler.sendEmptyMessage(DOWN_UPDATE);
                     if (numread <= 0) {
@@ -128,9 +137,6 @@ public class UpdateManager {
         this.apkUrl = apkUrl;
         this.title = title;
         this.updateMsg = updateMsg;
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            savePath = mContext.getCacheDir().getAbsolutePath();
-        }
     }
 
     public static void checkUpdate(final Context context) {
@@ -149,6 +155,14 @@ public class UpdateManager {
                         String newVersion = version.get("tag_name").getAsString().substring(1);
                         String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
                         String detail = version.get("body").getAsString();
+                        String regex = "\\[.*?\\]\\((.*?)\\)";
+                        Pattern pattern = Pattern.compile(regex);
+                        Matcher matcher = pattern.matcher(detail);
+                        Logger.d("UpdateManager", detail);
+                        if (matcher.find() && matcher.groupCount() > 0) {
+                            url = matcher.group(1);
+                            detail = detail.replaceAll(regex, "");
+                        }
                         new UpdateManager(context, url, newVersion + "版本更新", detail)
                                 .checkUpdateInfo(oldVersion, newVersion);
                     }
@@ -192,14 +206,14 @@ public class UpdateManager {
         AlertDialog.Builder builder = new Builder(mContext);
         builder.setTitle(title);
         builder.setMessage(updateMsg);
-        builder.setPositiveButton("下载", new OnClickListener() {
+        builder.setPositiveButton("下载", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 showDownloadDialog();
             }
         });
-        builder.setNegativeButton("以后再说", new OnClickListener() {
+        builder.setNegativeButton("以后再说", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -220,7 +234,7 @@ public class UpdateManager {
         fileSize = (TextView) v.findViewById(R.id.fileSize);
 
         builder.setView(v);
-        builder.setNegativeButton("取消", new OnClickListener() {
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -246,15 +260,12 @@ public class UpdateManager {
      * 安装apk
      */
     private void installApk() {
-        File apkfile = new File(saveFileName);
+        File apkfile = new File(getCacheFilePath());
         if (!apkfile.exists()) {
             return;
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
-
-                "application/vnd.android.package-archive");
+        i.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
         mContext.startActivity(i);
-
     }
 }
