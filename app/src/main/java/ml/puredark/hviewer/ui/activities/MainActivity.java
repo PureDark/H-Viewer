@@ -30,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -963,6 +964,12 @@ public class MainActivity extends BaseActivity {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
             currFragment.onLoadUrl(site.indexUrl);
         }
+        if(site.hasFlag(Site.FLAG_LOGIN_REQUIRED) && TextUtils.isEmpty(site.cookie)){
+            Toast.makeText(this, "该站点需要登录才能访问", Toast.LENGTH_SHORT);
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivityForResult(intent, RESULT_LOGIN);
+        }
+
     }
 
     @Override
