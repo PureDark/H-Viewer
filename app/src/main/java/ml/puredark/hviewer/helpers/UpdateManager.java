@@ -34,8 +34,6 @@ import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.configs.UrlConfig;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 
-import static ml.puredark.hviewer.HViewerApplication.mContext;
-
 public class UpdateManager {
 
     private static final int DOWN_UPDATE = 1;

@@ -25,6 +25,17 @@
       android:layout_height="match_parent"
       android:orientation="vertical" >
 
+	  <TextView
+		  android:id="@+id/fileCount"
+		  android:layout_width="wrap_content"
+		  android:layout_height="wrap_content"
+		  android:layout_alignParentLeft="true"
+		  android:layout_marginLeft="@dimen/margin"
+		  android:layout_marginBottom="@dimen/half_margin"
+		  android:textSize="12sp"
+		  android:textColor="@color/grey"
+		  android:text="0/1" />
+
       <TextView
           android:id="@+id/fileSize"
           android:layout_width="wrap_content"

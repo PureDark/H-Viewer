@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.v4.util.Pair;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.lzy.okgo.https.HttpsUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,6 +19,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.helpers.Logger;
@@ -32,12 +36,23 @@ import okhttp3.Response;
 
 public class HViewerHttpClient {
     private static Handler mHandler = new Handler(Looper.getMainLooper());
+    private static DownloadUtil downloadUtil;
+    private static HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null, null);
     private static OkHttpClient mClient = new OkHttpClient.Builder()
             .addNetworkInterceptor(new StethoInterceptor())
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .dns(new HttpDns())
+            .hostnameVerifier((hostname, session) -> true)
+            .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager)
             .build();
+
+    public static DownloadUtil getDownloadUtil(){
+        if(downloadUtil==null){
+            downloadUtil = new DownloadUtil(mClient);
+        }
+        return downloadUtil;
+    }
 
     public static MediaType getContentType(String url, List<Pair<String, String>> headers) {
         Response response = getResponseHeader(url, headers);

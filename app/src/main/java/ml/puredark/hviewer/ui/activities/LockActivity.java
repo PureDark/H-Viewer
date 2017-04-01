@@ -2,9 +2,13 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +107,7 @@ public class LockActivity extends AppCompatActivity {
         initFingerPrintLock();
     }
 
-    public static boolean isSetLockMethod(Context context){
+    public static boolean isSetLockMethod(Context context) {
         boolean isPatternLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PATTERN;
         boolean isPinLock = LockMethodFragment.getCurrentLockMethod(context) == LockMethodFragment.METHOD_PIN;
         return isPatternLock || isPinLock;
@@ -117,13 +121,15 @@ public class LockActivity extends AppCompatActivity {
 
         ImageLoader.loadImageFromUrl(this, dvBackground, currHeaderUrl, null, null, true);
 
-        View decorView = getWindow().getDecorView();
-        ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        Drawable windowBackground = decorView.getBackground();
+        if (Build.VERSION.SDK_INT > 17) {
+            View decorView = getWindow().getDecorView();
+            ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
+            Drawable windowBackground = decorView.getBackground();
 
-        mBlurView.setupWith(rootView)
-                .windowBackground(windowBackground)
-                .blurRadius(10);
+            mBlurView.setupWith(rootView)
+                    .windowBackground(windowBackground)
+                    .blurRadius(10);
+        }
     }
 
     private void initPatternLock() {
@@ -230,7 +236,7 @@ public class LockActivity extends AppCompatActivity {
                                     }
                                 });
                 rxFingerPrinter.addSubscription(this, subscription);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -242,15 +248,15 @@ public class LockActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Class activityClass;
-        if(intent!=null){
+        if (intent != null) {
             Logger.d("ShortcutTest", "LockActivity");
             Logger.d("ShortcutTest", intent.toString());
             String action = intent.getAction();
-            if(HViewerApplication.INTENT_FROM_DOWNLOAD.equals(action)){
+            if (HViewerApplication.INTENT_FROM_DOWNLOAD.equals(action)) {
                 activityClass = DownloadActivity.class;
-            } else if(HViewerApplication.INTENT_FROM_FAVOURITE.equals(action)) {
+            } else if (HViewerApplication.INTENT_FROM_FAVOURITE.equals(action)) {
                 activityClass = FavouriteActivity.class;
-            } else{
+            } else {
                 activityClass = MainActivity.class;
             }
         } else {

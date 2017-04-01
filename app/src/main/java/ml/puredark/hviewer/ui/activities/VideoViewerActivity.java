@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.Video;
+import ml.puredark.hviewer.helpers.DynamicIjkLibLoader;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.ui.fragments.SettingFragment;
@@ -144,7 +145,7 @@ public class VideoViewerActivity extends BaseActivity {
                 Logger.d("VideoViewerActivity", "shouldInterceptRequest:" + url);
                 if (shouldInterceptVideo && isVideoUrl(Uri.decode(url))) {
                     Logger.d("VideoViewerActivity", "Intercepted video");
-                    if (VIDEO_IJKPLAYER.equals(videoPlayerType)) {
+                    if (VIDEO_IJKPLAYER.equals(videoPlayerType) && DynamicIjkLibLoader.isLibrariesDownloaded()) {
                         try {
                             runOnUiThread(() -> {
                                 videoPlayer.setVisibility(View.VISIBLE);
@@ -216,7 +217,7 @@ public class VideoViewerActivity extends BaseActivity {
     }
 
     private void initVideoPlayer() {
-        if (VIDEO_IJKPLAYER.equals(videoPlayerType)) {
+        if (VIDEO_IJKPLAYER.equals(videoPlayerType) && DynamicIjkLibLoader.isLibrariesDownloaded()) {
             videoPlayer = new StandardGSYVideoPlayer(this);
             CoordinatorLayout.LayoutParams layoutParams = new CoordinatorLayout.LayoutParams(
                     CoordinatorLayout.LayoutParams.MATCH_PARENT,
@@ -226,7 +227,7 @@ public class VideoViewerActivity extends BaseActivity {
 
             orientationUtils = new OrientationUtils(this, videoPlayer);
 
-            
+            videoPlayer.setIjkLibLoader(new DynamicIjkLibLoader());
             //初始化不打开外部的旋转
             orientationUtils.setEnable(false);
             //关闭自动旋转
@@ -297,7 +298,7 @@ public class VideoViewerActivity extends BaseActivity {
             orientationUtils.backToProtVideo();
         }
 
-        if (StandardGSYVideoPlayer.backFromWindowFull(this)) {
+        if (videoPlayer!=null && StandardGSYVideoPlayer.backFromWindowFull(this)) {
             return;
         }
         super.onBackPressed();
@@ -326,10 +327,12 @@ public class VideoViewerActivity extends BaseActivity {
             webView.removeAllViews();
             webView.destroy();
         }
-        GSYVideoPlayer.releaseAllVideos();
-        GSYPreViewManager.instance().releaseMediaPlayer();
-        if (orientationUtils != null)
-            orientationUtils.releaseListener();
+        if(videoPlayer!=null) {
+            GSYVideoPlayer.releaseAllVideos();
+            GSYPreViewManager.instance().releaseMediaPlayer();
+            if (orientationUtils != null)
+                orientationUtils.releaseListener();
+        }
         super.onDestroy();
     }
 

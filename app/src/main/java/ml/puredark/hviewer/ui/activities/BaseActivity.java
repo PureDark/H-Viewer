@@ -16,6 +16,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
@@ -168,6 +169,12 @@ public class BaseActivity extends SwipeBackActivity implements AppBarLayout.OnOf
         snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.colorAccentDark));
         snackbar.setAction(actionText, listener);
         snackbar.show();
+    }
+
+    public void alert(String title, String message) {
+        new AlertDialog.Builder(this).setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok), null).show();
     }
 
     protected boolean isStatusBarEnabled() {

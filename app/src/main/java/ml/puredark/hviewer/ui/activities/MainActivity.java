@@ -1187,6 +1187,7 @@ public class MainActivity extends BaseActivity {
         if (mRecyclerViewDragDropManager != null) {
             downloadManager.setAllPaused();
             downloadManager.saveDownloadingTasks();
+            downloadManager.unbindService(this);
             downloadManager = null;
         }
 
