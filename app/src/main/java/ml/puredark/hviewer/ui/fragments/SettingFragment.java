@@ -260,7 +260,7 @@ public class SettingFragment extends PreferenceFragment
         if (preference.getKey().equals(KEY_PREF_ABOUT_UPGRADE)) {
             //检查新版本
             if (!checking)
-                checkUpdate();
+                UpdateManager.checkUpdate(activity);
         } else if (preference.getKey().equals(KEY_PREF_BKRS_BACKUP)) {
             //备份
             new AlertDialog.Builder(activity).setTitle("确认备份?")
@@ -459,45 +459,6 @@ public class SettingFragment extends PreferenceFragment
             activity.setAllowExit(true);
             dialog.dismiss();
         }).start();
-    }
-
-    public void checkUpdate() {
-        checking = true;
-        String url = UrlConfig.updateUrl;
-        HViewerHttpClient.get(url, null, new HViewerHttpClient.OnResponseListener() {
-            @Override
-            public void onSuccess(String contentType, Object result) {
-                try {
-                    JsonObject version = new JsonParser().parse((String) result).getAsJsonObject();
-                    boolean prerelease = version.get("prerelease").getAsBoolean();
-                    if (prerelease) {
-                        onFailure(null);
-                        return;
-                    }
-                    JsonArray assets = version.get("assets").getAsJsonArray();
-                    if (assets.size() > 0) {
-                        checking = false;
-                        String oldVersion = HViewerApplication.getVersionName();
-                        String newVersion = version.get("tag_name").getAsString().substring(1);
-                        String url = assets.get(0).getAsJsonObject().get("browser_download_url").getAsString();
-                        String detail = version.get("body").getAsString();
-                        new UpdateManager(activity, url, newVersion + "版本更新", detail)
-                                .checkUpdateInfo(oldVersion, newVersion);
-                    } else {
-                        onFailure(null);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    onFailure(null);
-                }
-            }
-
-            @Override
-            public void onFailure(HViewerHttpClient.HttpError error) {
-                activity.showSnackBar("当前已是最新版本！");
-                checking = false;
-            }
-        });
     }
 
 }

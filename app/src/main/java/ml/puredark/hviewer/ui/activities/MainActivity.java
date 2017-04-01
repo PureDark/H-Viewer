@@ -966,6 +966,7 @@ public class MainActivity extends BaseActivity {
         }
         if(site.hasFlag(Site.FLAG_LOGIN_REQUIRED) && TextUtils.isEmpty(site.cookie)){
             Toast.makeText(this, "该站点需要登录才能访问", Toast.LENGTH_SHORT);
+            temp = site;
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivityForResult(intent, RESULT_LOGIN);
         }
