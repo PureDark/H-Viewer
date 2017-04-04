@@ -1,8 +1,5 @@
 # H-Viewer
 
-[![Build Status](https://travis-ci.org/PureDark/H-Viewer.svg?branch=master)](https://travis-ci.org/PureDark/H-Viewer)
-
-
 <a href="http://www.coolapk.com/apk/ml.puredark.hviewer"><img src="https://github.com/PureDark/H-Viewer/raw/master/images/getitoncoolmarket.png" height="48"></a>
 
 *（iOS / UWP 版本开发同期进行中，时间周期可能会较长，但是敬请期待！）*
