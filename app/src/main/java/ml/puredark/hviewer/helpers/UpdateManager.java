@@ -31,104 +31,27 @@ import java.util.regex.Pattern;
 
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
+import ml.puredark.hviewer.configs.ImagePipelineConfigBuilder;
 import ml.puredark.hviewer.configs.UrlConfig;
+import ml.puredark.hviewer.http.DownloadUtil;
 import ml.puredark.hviewer.http.HViewerHttpClient;
+import ml.puredark.hviewer.ui.activities.BaseActivity;
 
 public class UpdateManager {
 
-    private static final int DOWN_UPDATE = 1;
-    private static final int DOWN_OVER = 2;
-
     private Context mContext;
-    //标题
     private String title = "新版本";
-    //提示语
     private String updateMsg = "应用更新了哦，亲快下载吧~";
-    //返回的安装包url
     private String apkUrl = null;
     private Dialog noticeDialog;
     private Dialog downloadDialog;
-    /* 进度条与通知ui刷新的handler和msg常量 */
-    private ProgressBar mProgress;
-    private TextView fileSize;
-    private String fileString;
-    private int progress;
-    private Thread downLoadThread;
+    private ProgressBar barProgress;
+    private TextView tvFileSize;
     private boolean interceptFlag = false;
-    private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case DOWN_UPDATE:
-                    mProgress.setProgress(progress);
-                    fileSize.setText(fileString);
-                    break;
-                case DOWN_OVER:
-                    installApk();
-                    break;
-                default:
-                    break;
-            }
-        }
 
-        ;
-    };
-
-    private static String getCacheDirPath() {
-        return HViewerApplication.mContext.getCacheDir().getAbsolutePath();
+    private String getCacheDirPath() {
+        return ImagePipelineConfigBuilder.getDiskCacheDir(mContext).getAbsolutePath();
     }
-
-    private static String getCacheFilePath() {
-        return getCacheDirPath() + "/Update.apk";
-    }
-
-
-    private Runnable mdownApkRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                Logger.d("UpdateManager", "apkUrl: " + apkUrl);
-                URL url = new URL(apkUrl);
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.connect();
-                int length = conn.getContentLength();
-                InputStream is = conn.getInputStream();
-
-                File file = new File(getCacheDirPath());
-                if (!file.exists()) {
-                    file.mkdir();
-                }
-                File apkFile = new File(getCacheFilePath());
-                FileOutputStream fos = new FileOutputStream(apkFile);
-
-                int count = 0;
-                byte buf[] = new byte[1024];
-
-                do {
-                    int numread = is.read(buf);
-                    count += numread;
-                    progress = (int) (((float) count / length) * 100);
-                    fileString = (count / (1024)) + "KB/" + (length / (1024)) + "KB";
-                    //更新进度
-                    mHandler.sendEmptyMessage(DOWN_UPDATE);
-                    if (numread <= 0) {
-                        //下载完成通知安装
-                        mHandler.sendEmptyMessage(DOWN_OVER);
-                        break;
-                    }
-                    fos.write(buf, 0, numread);
-                } while (!interceptFlag);//点击取消就停止下载.
-
-                fos.close();
-                is.close();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    };
 
     public UpdateManager(Context context, String apkUrl, String title, String updateMsg) {
         this.mContext = context;
@@ -228,8 +151,8 @@ public class UpdateManager {
 
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         View v = inflater.inflate(R.layout.dialog_update, null);
-        mProgress = (ProgressBar) v.findViewById(R.id.progress);
-        fileSize = (TextView) v.findViewById(R.id.fileSize);
+        barProgress = (ProgressBar) v.findViewById(R.id.progress);
+        tvFileSize = (TextView) v.findViewById(R.id.fileSize);
 
         builder.setView(v);
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -250,20 +173,47 @@ public class UpdateManager {
      */
 
     private void downloadApk() {
-        downLoadThread = new Thread(mdownApkRunnable);
-        downLoadThread.start();
+        HViewerHttpClient.getDownloadUtil().download(apkUrl, getCacheDirPath(), new DownloadUtil.OnDownloadListener() {
+            @Override
+            public void onDownloadSuccess(File file) {
+                Logger.d("UpdateManager", "file.getAbsolutePath():" + file.getAbsolutePath());
+                installApk(file);
+            }
+
+            @Override
+            public boolean onDownloading(int progress, long downloadedBytes, long totalBytes) {
+                new Handler(mContext.getMainLooper()).post(()->{
+                    String downloadedSize = (downloadedBytes / (1024)) + "KB/" + (totalBytes / (1024)) + "KB";
+                    tvFileSize.setText(downloadedSize);
+                    barProgress.setProgress(progress);
+                });
+                return !interceptFlag;
+            }
+
+            @Override
+            public void onDownloadFailed(Exception e) {
+                e.printStackTrace();
+                downloadDialog.dismiss();
+                new Handler(mContext.getMainLooper()).post(()->{
+                    Logger.d("UpdateManager", "apkUrl: " + apkUrl);
+                    if(mContext instanceof BaseActivity)
+                        ((BaseActivity)mContext).alert("下载失败", "网络错误");
+                });
+            }
+        });
     }
 
     /**
      * 安装apk
      */
-    private void installApk() {
-        File apkfile = new File(getCacheFilePath());
+    private void installApk(File apkfile) {
         if (!apkfile.exists()) {
             return;
         }
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
-        mContext.startActivity(i);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Logger.d("UpdateManager", apkfile.toString());
+        intent.setDataAndType(Uri.fromFile(apkfile), "application/vnd.android.package-archive");
+        mContext.startActivity(intent);
     }
 }

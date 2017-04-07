@@ -167,16 +167,22 @@ public class PictureViewerActivity extends BaseActivity {
         HViewerApplication.temp4 = null;
 
         volumeKeyEnabled = (boolean) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_VOLUME_FLICK, true);
-        viewDirection = (String) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_DIRECTION, DIREACTION_LEFT_TO_RIGHT);
-        if (!DIREACTION_LEFT_TO_RIGHT.equals(viewDirection)
-                && !DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)
-                && !DIREACTION_TOP_TO_BOTTOM.equals(viewDirection))
-            viewDirection = DIREACTION_LEFT_TO_RIGHT;
 
         currPos = getIntent().getIntExtra("position", 0);
 
         onItemLongClickListener = new MyOnItemLongClickListener();
 
+        initViewDirection();
+        initBottomBar();
+
+    }
+
+    private void initViewDirection() {
+        viewDirection = (String) SharedPreferencesUtil.getData(this, SettingFragment.KEY_PREF_VIEW_DIRECTION, DIREACTION_LEFT_TO_RIGHT);
+        if (!DIREACTION_LEFT_TO_RIGHT.equals(viewDirection)
+                && !DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)
+                && !DIREACTION_TOP_TO_BOTTOM.equals(viewDirection))
+            viewDirection = DIREACTION_LEFT_TO_RIGHT;
 
         if (DIREACTION_LEFT_TO_RIGHT.equals(viewDirection) || DIREACTION_RIGHT_TO_LEFT.equals(viewDirection)) {
             viewPager.setVisibility(View.VISIBLE);
@@ -299,6 +305,9 @@ public class PictureViewerActivity extends BaseActivity {
                     btnLoadHighRes.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    private void initBottomBar() {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_picture_exif, null);
         viewHolder = new InfoDialogViewHolder(view);
         Dialog dialog = new AlertDialog.Builder(PictureViewerActivity.this)

@@ -2,13 +2,9 @@ package ml.puredark.hviewer.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +25,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
 import me.zhanghai.android.patternlock.PatternView;
 import ml.puredark.hviewer.HViewerApplication;
 import ml.puredark.hviewer.R;
@@ -128,6 +125,7 @@ public class LockActivity extends AppCompatActivity {
 
             mBlurView.setupWith(rootView)
                     .windowBackground(windowBackground)
+                    .blurAlgorithm(new RenderScriptBlur(this))
                     .blurRadius(10);
         }
     }

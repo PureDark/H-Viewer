@@ -144,28 +144,23 @@ public class DocumentUtil {
     }
 
     public static boolean writeBytes(Context context, byte[] data, String fileName, String rootPath, String... subDirs) {
-        DocumentFile parent = getDirDocument(context, rootPath, subDirs);
-        if (parent == null)
+        DocumentFile file = createFileIfNotExist(context, fileName, rootPath, subDirs);
+        if (file == null)
             return false;
-        DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
 
     public static boolean writeBytes(Context context, byte[] data, String fileName, Uri rootUri, String... subDirs) {
-        DocumentFile parent = getDirDocument(context, rootUri, subDirs);
-        if (parent == null)
+        DocumentFile file = createFileIfNotExist(context, fileName, rootUri, subDirs);
+        if (file == null)
             return false;
-        fileName = filenameFilter(Uri.decode(fileName));
-        DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
 
     public static boolean writeBytes(Context context, byte[] data, String fileName, DocumentFile root, String... subDirs) {
-        DocumentFile parent = getDirDocument(root, subDirs);
-        if (parent == null)
+        DocumentFile file = createFileIfNotExist(context, fileName, root.getUri(), subDirs);
+        if (file == null)
             return false;
-        fileName = filenameFilter(Uri.decode(fileName));
-        DocumentFile file = parent.findFile(fileName);
         return writeBytes(context, data, file.getUri());
     }
 

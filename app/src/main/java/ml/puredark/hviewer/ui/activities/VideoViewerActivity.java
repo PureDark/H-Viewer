@@ -287,8 +287,8 @@ public class VideoViewerActivity extends BaseActivity {
     }
 
     private boolean isVideoUrl(String url) {
-        boolean is = (url.contains(".mp4") || url.contains(".webm") || url.contains(".m3u8") || url.contains(".sdp"));
-        is |= (url.contains("video/mp4") || url.contains("video/webm") || url.contains("video/m3u8") || url.contains("video/sdp"));
+        boolean is = (url.matches(".*?\\.(?:mp4|webm|m3u8|sdp)(?!\\.).*?"));
+        is |= (url.matches(".*?video/(?:mp4|webm|m3u8|sdp).*?"));
         return is;
     }
 

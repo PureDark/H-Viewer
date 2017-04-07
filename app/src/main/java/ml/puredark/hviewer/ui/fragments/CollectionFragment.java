@@ -36,6 +36,8 @@ import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.Tag;
 import ml.puredark.hviewer.core.RuleParser;
 import ml.puredark.hviewer.dataholders.SiteTagHolder;
+import ml.puredark.hviewer.download.DownloadManager;
+import ml.puredark.hviewer.helpers.FileHelper;
 import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.ui.activities.BaseActivity;
@@ -283,7 +285,7 @@ public class CollectionFragment extends MyFragment {
         noTouch = true;
         new Thread(() -> {
             if (HViewerApplication.DEBUG)
-                SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
+                FileHelper.writeString(html, "html.txt", DownloadManager.getDownloadPath());
             final Rule rule;
 
             rule = (keyword != null && site.searchRule != null && site.searchRule.item != null) ? site.searchRule : site.indexRule;

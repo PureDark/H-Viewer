@@ -118,11 +118,11 @@
         android:key="pref_cache_settings"
         android:title="@string/settings_cache">
 
-        <de.leonardarnold.numberpickerpreference.NumberPickerPreference
+        <ml.puredark.hviewer.ui.preferences.NumberPickerPreference
             android:defaultValue="300"
             android:key="pref_cache_size"
             app:MaxValue="600"
-            app:MinValue="100"
+            app:MinValue="0"
             android:title="@string/settings_cache_size"
             android:summary=" %s MB"/>
 

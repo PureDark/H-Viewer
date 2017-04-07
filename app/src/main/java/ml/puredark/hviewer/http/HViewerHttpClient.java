@@ -212,7 +212,7 @@ public class HViewerHttpClient {
      */
     public static String matchCharset(String content) {
         String chs = "utf-8";
-        Pattern p = Pattern.compile("charset.*?([\\w-]+)");
+        Pattern p = Pattern.compile("charset.*?([\\w-]+)", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(content);
         if (m.find() && m.groupCount()>0)
             return m.group(1);
