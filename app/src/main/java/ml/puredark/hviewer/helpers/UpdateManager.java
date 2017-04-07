@@ -182,10 +182,13 @@ public class UpdateManager {
 
             @Override
             public boolean onDownloading(int progress, long downloadedBytes, long totalBytes) {
-                new Handler(mContext.getMainLooper()).post(()->{
-                    String downloadedSize = (downloadedBytes / (1024)) + "KB/" + (totalBytes / (1024)) + "KB";
-                    tvFileSize.setText(downloadedSize);
-                    barProgress.setProgress(progress);
+                new Handler(mContext.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String downloadedSize = (downloadedBytes / (1024)) + "KB/" + (totalBytes / (1024)) + "KB";
+                        tvFileSize.setText(downloadedSize);
+                        barProgress.setProgress(progress);
+                    }
                 });
                 return !interceptFlag;
             }
@@ -194,10 +197,13 @@ public class UpdateManager {
             public void onDownloadFailed(Exception e) {
                 e.printStackTrace();
                 downloadDialog.dismiss();
-                new Handler(mContext.getMainLooper()).post(()->{
-                    Logger.d("UpdateManager", "apkUrl: " + apkUrl);
-                    if(mContext instanceof BaseActivity)
-                        ((BaseActivity)mContext).alert("下载失败", "网络错误");
+                new Handler(mContext.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.d("UpdateManager", "apkUrl: " + apkUrl);
+                        if (mContext instanceof BaseActivity)
+                            ((BaseActivity) mContext).alert("下载失败", "网络错误");
+                    }
                 });
             }
         });

@@ -224,6 +224,7 @@ public class VideoViewerActivity extends BaseActivity {
                     CoordinatorLayout.LayoutParams.MATCH_PARENT);
             videoPlayer.setLayoutParams(layoutParams);
             coordinatorLayout.addView(videoPlayer);
+            videoPlayer.setVisibility(View.GONE);
 
             orientationUtils = new OrientationUtils(this, videoPlayer);
 
