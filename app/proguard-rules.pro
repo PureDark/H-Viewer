@@ -48,8 +48,8 @@
 -keep class sun.misc.Unsafe { *; }
 -dontwarn sun.misc.Unsafe
 
--keep class ml.puredark.hviewer.beans.** { *; }
--dontwarn ml.puredark.hviewer.beans.**
+-keep class ml.puredark.hviewer.** { *; }
+-dontwarn ml.puredark.hviewer.**
 
 -keep class com.umeng.** {*; }
 -dontwarn com.umeng.**

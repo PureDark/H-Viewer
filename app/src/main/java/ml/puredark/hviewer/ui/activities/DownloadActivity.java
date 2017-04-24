@@ -104,11 +104,11 @@ public class DownloadActivity extends BaseActivity {
         reportShortcutUsed(this, "scdownload");
 
         Intent intent = getIntent();
-        if(intent!=null){
+        if (intent != null) {
             Logger.d("ShortcutTest", "DownloadActivity");
             Logger.d("ShortcutTest", intent.toString());
             String action = intent.getAction();
-            if(HViewerApplication.INTENT_SHORTCUT.equals(action) && LockActivity.isSetLockMethod(this)){
+            if (HViewerApplication.INTENT_SHORTCUT.equals(action) && LockActivity.isSetLockMethod(this)) {
                 Intent lockIntent = new Intent(DownloadActivity.this, LockActivity.class);
                 lockIntent.setAction(HViewerApplication.INTENT_FROM_DOWNLOAD);
                 startActivity(lockIntent);
@@ -122,7 +122,7 @@ public class DownloadActivity extends BaseActivity {
 
         initTabAndViewPager();
         initDownloadedTask();
-        distinguishDownloadTasks();
+        new Thread(() -> distinguishDownloadTasks()).start();
 
     }
 
@@ -134,7 +134,7 @@ public class DownloadActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        distinguishDownloadTasks();
+        new Thread(() -> distinguishDownloadTasks()).start();
     }
 
     @Override
@@ -210,7 +210,7 @@ public class DownloadActivity extends BaseActivity {
                                         .setView(view)
                                         .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                                             manager.deleteDownloadTask(task);
-                                            distinguishDownloadTasks();
+                                            new Thread(() -> distinguishDownloadTasks()).start();
                                             if (checkBoxDeleteFile.isChecked()) {
                                                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                                                 String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
@@ -226,7 +226,7 @@ public class DownloadActivity extends BaseActivity {
         });
     }
 
-    private void initDownloadedTask(){
+    private void initDownloadedTask() {
         ExpandableDataProvider dataProvider = new ExpandableDataProvider(new ArrayList<>());
         mRecyclerViewExpandableItemManager = new RecyclerViewExpandableItemManager(null);
 
@@ -400,7 +400,7 @@ public class DownloadActivity extends BaseActivity {
                         .setView(view)
                         .setPositiveButton("确定", (dialog, which) -> {
                             manager.deleteDownloadTask(task);
-                            distinguishDownloadTasks();
+                            new Thread(() -> distinguishDownloadTasks()).start();
                             if (checkBoxDeleteFile.isChecked()) {
                                 String rootPath = task.path.substring(0, task.path.lastIndexOf("/"));
                                 String dirName = task.path.substring(task.path.lastIndexOf("/") + 1, task.path.length());
@@ -425,18 +425,16 @@ public class DownloadActivity extends BaseActivity {
         });
     }
 
-    private void distinguishDownloadTasks() {
-        new Thread(()->{
-            manager.checkDownloadedTask();
-            List<DownloadTask> downloadingTasks = manager.getDownloadingTasks();
-            List<Pair<CollectionGroup, List<DownloadTask>>> downloadedTasks = manager.getDownloadedTasks();
-            downloadingTaskAdapter.getDataProvider().setDataSet(downloadingTasks);
-            downloadedTaskAdapter.getDataProvider().setDataSet(downloadedTasks);
-            runOnUiThread(()->{
-                downloadingTaskAdapter.notifyDataSetChanged();
-                downloadedTaskAdapter.notifyDataSetChanged();
-            });
-        }).start();
+    private synchronized void distinguishDownloadTasks() {
+        manager.checkDownloadedTask();
+        List<DownloadTask> downloadingTasks = manager.getDownloadingTasks();
+        List<Pair<CollectionGroup, List<DownloadTask>>> downloadedTasks = manager.getDownloadedTasks();
+        downloadingTaskAdapter.getDataProvider().setDataSet(downloadingTasks);
+        downloadedTaskAdapter.getDataProvider().setDataSet(downloadedTasks);
+        runOnUiThread(() -> {
+            downloadingTaskAdapter.notifyDataSetChanged();
+            downloadedTaskAdapter.notifyDataSetChanged();
+        });
     }
 
     private void startNextTaskInQueue() {
@@ -466,7 +464,7 @@ public class DownloadActivity extends BaseActivity {
                 downloadingTaskAdapter.notifyDataSetChanged();
             } else if (intent.getAction().equals(DownloadService.ON_COMPLETE)) {
                 showSnackBar("任务下载成功");
-                distinguishDownloadTasks();
+                new Thread(() -> distinguishDownloadTasks()).start();
                 startNextTaskInQueue();
             }
             Log.d("MyDownloadReceiver", intent.getAction());

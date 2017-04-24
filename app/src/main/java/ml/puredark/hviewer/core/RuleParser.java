@@ -60,11 +60,23 @@ public class RuleParser {
         while (matcher2.find()) {
             map.put(matcher2.group(1), matcher2.group(2));
         }
+        Pattern pattern3 = Pattern.compile("\\{(json):(.*)\\}", DOTALL);
+        Matcher matcher3 = pattern3.matcher(url);
+        while (matcher3.find()) {
+            map.put(matcher3.group(1), matcher3.group(2));
+        }
         return map;
     }
 
-    public static String parseUrl(String url, int page, String idCode, String keyword, Object[] objs) {
+    public static String parseUrl(String url, int page, String idCode, String keyword, Object[] objs){
+        return parseUrl(url, page, idCode, keyword, objs, false);
+    }
+
+    public static String parseUrl(String url, int page, String idCode, String keyword, Object[] objs, boolean getJsonParams) {
         Map<String, String> matchResult = RuleParser.parseUrl(url);
+        if(getJsonParams && !matchResult.containsKey("json"))
+            return null;
+        String result = (getJsonParams) ? matchResult.get("json") : url;
         String pageStr = matchResult.get("page");
         int startPage = 0;
         int pageStep = 1;
@@ -102,7 +114,7 @@ public class RuleParser {
         if (page < startPage)
             page = startPage;
         int realPage = page + (page - startPage) * (pageStep - 1);
-        url = url.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (realPage == startPage) ? "" : matchResult.get("pageStr"))
+        result = result.replaceAll("\\{pageStr:(.*?\\{.*?\\}.*?)\\}", (realPage == startPage) ? "" : matchResult.get("pageStr"))
                 .replaceAll("\\{page:.*?\\}", "" + realPage)
                 .replaceAll("\\{keyword:.*?\\}", keyword)
                 .replaceAll("\\{idCode:\\}", idCode);
@@ -125,7 +137,7 @@ public class RuleParser {
                 dateFormat = new SimpleDateFormat(dateStr);
             }
             String currDate = dateFormat.format(calendar.getTime());
-            url = url.replaceAll("\\{date:.*?\\}", currDate);
+            result = result.replaceAll("\\{date:.*?\\}", currDate);
         }
         if (matchResult.containsKey("time")) {
             String timeStr = matchResult.get("time");
@@ -146,9 +158,9 @@ public class RuleParser {
                 dateFormat = new SimpleDateFormat(timeStr);
             }
             String currTime = dateFormat.format(calendar.getTime());
-            url = url.replaceAll("\\{time:.*?\\}", currTime);
+            result = result.replaceAll("\\{time:.*?\\}", currTime);
         }
-        return url;
+        return result;
     }
 
     public static boolean isJson(String string) {

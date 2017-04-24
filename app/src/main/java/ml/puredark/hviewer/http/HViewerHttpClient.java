@@ -20,10 +20,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-
 import ml.puredark.hviewer.HViewerApplication;
+import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.helpers.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,6 +33,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class HViewerHttpClient {
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static DownloadUtil downloadUtil;
     private static HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null, null);
@@ -141,8 +140,9 @@ public class HViewerHttpClient {
         if (!post)
             get(url, disableHProxy, headers, false, null, callback);
         else {
-            String params = (url == null) ? "" : (url.indexOf('?') > 0) ? url.substring(url.indexOf('?')) : url;
-            post(url, disableHProxy, params, headers, callback);
+            String jsonParam = Site.getJsonParams(url, 0, "", null);
+            String params = (jsonParam != null) ? jsonParam : url.substring(url.indexOf('?'));
+            post(url, disableHProxy, params, (jsonParam != null), headers, callback);
         }
     }
 
@@ -183,15 +183,20 @@ public class HViewerHttpClient {
         }
     }
 
-    public static void post(String url, boolean disableHProxy, String paramsString, List<Pair<String, String>> headers, final OnResponseListener callback) {
-        String[] paramStrings = paramsString.split("&");
-        FormBody.Builder formBody = new FormBody.Builder();
-        for (String paramString : paramStrings) {
-            String[] pram = paramString.split("=");
-            if (pram.length != 2) continue;
-            formBody.add(pram[0], pram[1]);
+    public static void post(String url, boolean disableHProxy, String params, boolean isPostJson, List<Pair<String, String>> headers, final OnResponseListener callback) {
+        RequestBody requestBody;
+        if(isPostJson){
+            requestBody = RequestBody.create(JSON, params);
+        } else {
+            String[] paramStrings = params.split("&");
+            FormBody.Builder formBody = new FormBody.Builder();
+            for (String paramString : paramStrings) {
+                String[] pram = paramString.split("=");
+                if (pram.length != 2) continue;
+                formBody.add(pram[0], pram[1]);
+            }
+            requestBody = formBody.build();
         }
-        RequestBody requestBody = formBody.build();
         get(url, disableHProxy, headers, true, requestBody, callback);
     }
 
