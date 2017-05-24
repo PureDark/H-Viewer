@@ -104,7 +104,7 @@ public class HistoryActivity extends BaseActivity {
 
     @OnClick(R.id.btn_clear_all)
     void clear() {
-        new AlertDialog.Builder(HistoryActivity.this).setTitle("是否清空历史纪录？")
+        new AlertDialog.Builder(HistoryActivity.this).setTitle("是否清空历史记录？")
                 .setMessage("清空后将无法恢复")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override

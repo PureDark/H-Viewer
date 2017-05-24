@@ -103,23 +103,27 @@ public class DownloadTaskHolder {
                 new String[]{item.did + ""});
     }
 
-    public int getMaxTaskId() {
+    public synchronized int getMaxTaskId() {
         Cursor cursor = dbHelper.query("SELECT MAX(`did`) AS `maxid` FROM " + dbName);
         int maxId = (cursor.moveToNext()) ? cursor.getInt(0) : 0;
         return maxId;
     }
 
-    public List<DownloadTask> getDownloadingTasksFromDB() {
+    public synchronized List<DownloadTask> getDownloadingTasksFromDB() {
         List<DownloadTask> downloadingTasks = new ArrayList<>();
         Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = -1 ORDER BY `did` DESC");
         while (cursor.moveToNext()) {
             int j = cursor.getColumnIndex("json");
             if (j >= 0) {
-                int id = cursor.getInt(0);
-                String json = cursor.getString(j);
-                DownloadTask downloadTask = new Gson().fromJson(json, DownloadTask.class);
-                downloadTask.did = id;
-                downloadingTasks.add(downloadTask);
+                try {
+                    int id = cursor.getInt(0);
+                    String json = cursor.getString(j);
+                    DownloadTask downloadTask = new Gson().fromJson(json, DownloadTask.class);
+                    downloadTask.did = id;
+                    downloadingTasks.add(downloadTask);
+                } catch (Exception e){
+                    continue;
+                }
             }
         }
         cursor.close();
@@ -127,7 +131,7 @@ public class DownloadTaskHolder {
         return downloadingTasks;
     }
 
-    public List<Pair<CollectionGroup, List<DownloadTask>>> getDownloadedTasksFromDB() {
+    public synchronized List<Pair<CollectionGroup, List<DownloadTask>>> getDownloadedTasksFromDB() {
         List<Pair<CollectionGroup, List<DownloadTask>>> dlGroups = new ArrayList<>();
 
         Cursor groupCursor = dbHelper.query("SELECT * FROM " + groupDbName + " ORDER BY `index` ASC");
@@ -141,14 +145,18 @@ public class DownloadTaskHolder {
                 List<DownloadTask> downloadTasks = new ArrayList<>();
                 Cursor cursor = dbHelper.query("SELECT * FROM " + dbName + " WHERE `gid` = " + group.gid + " ORDER BY `index` ASC");
                 while (cursor.moveToNext()) {
-                    int j = cursor.getColumnIndex("json");
-                    int id = cursor.getInt(0);
-                    if (j >= 0) {
-                        String json = cursor.getString(j);
-                        DownloadTask downloadTask = new Gson().fromJson(json, DownloadTask.class);
-                        downloadTask.did = id;
-                        downloadTask.collection.gid = group.gid;
-                        downloadTasks.add(downloadTask);
+                    try {
+                        int j = cursor.getColumnIndex("json");
+                        int id = cursor.getInt(0);
+                        if (j >= 0) {
+                            String json = cursor.getString(j);
+                            DownloadTask downloadTask = new Gson().fromJson(json, DownloadTask.class);
+                            downloadTask.did = id;
+                            downloadTask.collection.gid = group.gid;
+                            downloadTasks.add(downloadTask);
+                        }
+                    } catch (Exception e){
+                        continue;
                     }
                 }
                 dlGroups.add(new Pair<>(group, downloadTasks));
@@ -160,7 +168,7 @@ public class DownloadTaskHolder {
         return dlGroups;
     }
 
-    public int scanPathForDownloadTask(String rootPath, String... subDirs) {
+    public synchronized int scanPathForDownloadTask(String rootPath, String... subDirs) {
         try {
             DocumentFile root = FileHelper.getDirDocument(rootPath, subDirs);
             DocumentFile[] dirs = root.listFiles();

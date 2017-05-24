@@ -448,8 +448,12 @@ public class PictureViewerActivity extends BaseActivity {
         String url = ((loadHighRes || picture.loadedHighRes || viewHighRes()) && !TextUtils.isEmpty(picture.highRes)) ? picture.highRes : picture.pic;
         if (url.equals(picture.highRes))
             picture.loadedHighRes = true;
-        if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE))
-            picture.referer = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
+        if (site.hasFlag(Site.FLAG_SINGLE_PAGE_BIG_PICTURE)) {
+            String galleryRefererHost = RegexValidateUtil.getHostFromUrl(site.galleryUrl);
+            String pictureRefererHost = RegexValidateUtil.getHostFromUrl(picture.referer);
+            if(!galleryRefererHost.equals(pictureRefererHost))
+                picture.referer = galleryRefererHost;
+        }
         Logger.d("PictureViewerActivity", "url:" + url + "\n picture.referer:" + picture.referer);
         if (site == null) return;
         DraweeView draweeView;
