@@ -456,7 +456,14 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
                         mWebView.loadUrl(js);
                         Logger.d("CollectionActivity", "FLAG_IFRAME_GALLERY");
                     }
-                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    if(!TextUtils.isEmpty(site.galleryRule.js)){
+                        mWebView.loadUrl("javascript:"+site.galleryRule.js);
+                        new Handler().postDelayed(()->{
+                            mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                        },1000);
+                    } else {
+                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    }
                     Logger.d("CollectionActivity", "onPageFinished");
                 }
             });

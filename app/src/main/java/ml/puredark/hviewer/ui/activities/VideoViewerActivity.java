@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -104,6 +108,7 @@ public class VideoViewerActivity extends BaseActivity {
     private void initWebView() {
         WebSettings settings = webView.getSettings();
         settings.setSupportZoom(true);
+        settings.setDisplayZoomControls(true);
         settings.setBuiltInZoomControls(false);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setLoadWithOverviewMode(true);
@@ -112,9 +117,13 @@ public class VideoViewerActivity extends BaseActivity {
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
+//        settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setSupportMultipleWindows(true);
         webView.setBackgroundColor(0); // 设置背景色
         webView.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255
         webView.setWebViewClient(new WebViewClient() {
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Logger.d("VideoViewerActivity", "shouldOverrideUrlLoading:" + url);
@@ -128,6 +137,12 @@ public class VideoViewerActivity extends BaseActivity {
             }
 
             @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                // let's ignore ssl error
+                handler.proceed();
+            }
+
+            @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 progressBar.setVisibility(View.VISIBLE);
                 super.onPageStarted(view, url, favicon);
@@ -137,6 +152,10 @@ public class VideoViewerActivity extends BaseActivity {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 mLoaded = true;
+                Logger.d("VideoViewerActivity", "onPageFinished: "+url);
+                new Handler().postDelayed(()->{
+                    Logger.d("VideoViewerActivity", "onPageFinished: "+url);
+                }, 5000);
                 super.onPageFinished(view, url);
             }
 
@@ -178,6 +197,18 @@ public class VideoViewerActivity extends BaseActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             private View myView = null;
             private CustomViewCallback myCallback = null;
+
+            @Override
+            public void onCloseWindow(WebView window) {
+                super.onCloseWindow(window);
+            }
+
+
+            @Override
+            public boolean onCreateWindow(WebView view, boolean isDialog,
+                                          boolean isUserGesture, Message resultMsg) {
+                return true;
+            }
 
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
@@ -288,7 +319,7 @@ public class VideoViewerActivity extends BaseActivity {
     }
 
     private boolean isVideoUrl(String url) {
-        boolean is = (url.matches(".*?\\.(?:mp4|webm|m3u8|sdp)(?!\\.).*?"));
+        boolean is = (url.matches("^(?!.*?googleapis.*?embed).*?\\.(?:mp4|webm|m3u8|sdp)(?!\\.).*?"));
         is |= (url.matches(".*?video/(?:mp4|webm|m3u8|sdp).*?"));
         return is;
     }

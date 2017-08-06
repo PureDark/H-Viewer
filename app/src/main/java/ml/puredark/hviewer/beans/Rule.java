@@ -15,6 +15,8 @@ public class Rule {
     public TagRule tagRule;
     public CommentRule commentRule;
 
+    public String js;
+
     public Rule() {
     }
 

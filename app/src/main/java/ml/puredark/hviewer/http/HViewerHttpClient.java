@@ -13,6 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -34,6 +36,7 @@ import okhttp3.Response;
 
 public class HViewerHttpClient {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType STEAM = MediaType.parse("application/octet-stream");
     private static Handler mHandler = new Handler(Looper.getMainLooper());
     private static DownloadUtil downloadUtil;
     private static HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null, null);
@@ -181,6 +184,12 @@ public class HViewerHttpClient {
         } else {
             callback.onFailure(new HttpError(HttpError.ERROR_NETWORK));
         }
+    }
+
+    public static void postFile(String url, File file){
+        RequestBody body = RequestBody.create(STEAM, file);
+
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(STEAM);
     }
 
     public static void post(String url, boolean disableHProxy, String params, boolean isPostJson, List<Pair<String, String>> headers, final OnResponseListener callback) {

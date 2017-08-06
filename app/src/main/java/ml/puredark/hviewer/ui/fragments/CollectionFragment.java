@@ -234,7 +234,14 @@ public class CollectionFragment extends MyFragment {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //Load HTML
-                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    if(!TextUtils.isEmpty(site.indexRule.js)){
+                        mWebView.loadUrl("javascript:"+site.indexRule.js);
+                        new Handler().postDelayed(()->{
+                            mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                        },1000);
+                    } else {
+                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    }
                     Logger.d("CollectionFragment", "onPageFinished");
                 }
             });
@@ -243,7 +250,14 @@ public class CollectionFragment extends MyFragment {
                 mWebView.loadUrl("javascript:document.body.scrollTop = document.body.scrollHeight;");
                 new Handler().postDelayed(() -> {
                     scrollTimes++;
-                    mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    if(!TextUtils.isEmpty(site.indexRule.js)){
+                        mWebView.loadUrl("javascript:"+site.indexRule.js);
+                        new Handler().postDelayed(()->{
+                            mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                        },1000);
+                    } else {
+                        mWebView.loadUrl("javascript:window.HtmlParser.onResultGot(document.documentElement.outerHTML, '" + url + "', " + page + ");");
+                    }
                     Logger.d("CollectionFragment", "onAjaxFinished");
                 }, 5000);
             } else {
