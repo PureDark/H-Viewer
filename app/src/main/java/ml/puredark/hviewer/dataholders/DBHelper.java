@@ -117,6 +117,7 @@ public class DBHelper {
             db.execSQL("CREATE TABLE `searchSuggestions`(`title` text primary key)");
             db.execSQL("CREATE TABLE `siteTags`(`sid` integer, `title` text, `url` text, FOREIGN KEY(`sid`) REFERENCES `sites`(`sid`), PRIMARY KEY(`sid`,`title`))");
             db.execSQL("CREATE TABLE `favorSiteTags`(`tid` integer primary key autoincrement, `title` text, `url` text, `index` integer)");
+            db.execSQL("CREATE TABLE `marketSources`(`msid` integer primary key autoincrement, `name` text, `jsonUrl` text)");
         }
 
         @Override
