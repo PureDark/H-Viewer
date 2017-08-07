@@ -5,18 +5,23 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -28,10 +33,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ml.puredark.hviewer.R;
 import ml.puredark.hviewer.beans.MarketSiteCategory;
+import ml.puredark.hviewer.beans.MarketSource;
 import ml.puredark.hviewer.beans.Site;
 import ml.puredark.hviewer.beans.SiteGroup;
 import ml.puredark.hviewer.configs.UrlConfig;
+import ml.puredark.hviewer.dataholders.MarketSourceHolder;
 import ml.puredark.hviewer.dataholders.SiteHolder;
+import ml.puredark.hviewer.helpers.Logger;
 import ml.puredark.hviewer.helpers.MDStatusBarCompat;
 import ml.puredark.hviewer.http.HViewerHttpClient;
 import ml.puredark.hviewer.ui.adapters.MarketSiteAdapter;
@@ -54,8 +62,8 @@ public class MarketActivity extends BaseActivity {
     Toolbar toolbar;
     @BindView(R.id.btn_return)
     ImageView btnReturn;
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
+    @BindView(R.id.spinner_source)
+    AppCompatSpinner spinnerSource;
     @BindView(R.id.tab_layout)
     ExTabLayout tabLayout;
     @BindView(R.id.view_pager)
@@ -65,11 +73,10 @@ public class MarketActivity extends BaseActivity {
 
     private SiteHolder siteHolder;
 
-    private LinkedHashMap<MarketSiteCategory, List<MarketSiteCategory.MarketSite>> siteCategories;
+    private LinkedHashMap<MarketSiteCategory, List<MarketSiteCategory.MarketSite>> siteCategories = new LinkedHashMap<>();
     private List<MarketSiteAdapter> siteAdapters;
 
     private boolean getting = false;
-    private int sourceCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +91,9 @@ public class MarketActivity extends BaseActivity {
 
         siteHolder = new SiteHolder(this);
 
-        siteCategories = new LinkedHashMap<>();
-
         tabLayout.setVisibility(View.GONE);
-        getAllSites();
+
+        getSourceList(0);
     }
 
     private void initTabAndViewPager(Set<MarketSiteCategory> siteCategories) {
@@ -184,60 +190,112 @@ public class MarketActivity extends BaseActivity {
                 }).show();
     }
 
-    public void getAllSites() {
-        HViewerHttpClient.get(UrlConfig.siteSourceUrl, null, new HViewerHttpClient.OnResponseListener() {
+    public void getSourceList(int selected) {
+        final MarketSourceHolder marketSourceHolder = new MarketSourceHolder(this);
+        final List<MarketSource> sources = marketSourceHolder.getMarketSources();
+        sources.add(0, new MarketSource(0, "官方市场", UrlConfig.siteSourceUrl));
+        sources.add(new MarketSource(-1, "添加来源", ""));
+
+        String[] names = new String[sources.size()];
+        for (int i = 0; i < sources.size(); i++) {
+            names[i] = sources.get(i).name;
+        }
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.item_source_spinner, names);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSource.setAdapter(adapter);
+        spinnerSource.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) view).setTextAppearance(MarketActivity.this, R.style.ActionBar_Title);
+                ((TextView) view).setTextColor(getResources().getColor(R.color.white));
+                MarketSource source = sources.get(position);
+                if (source.msid >= 0) {
+                    getSitesFromSource(sources.get(position));
+                } else {
+                    View viewInputSource = getLayoutInflater().inflate(R.layout.view_input_source, null);
+                    MaterialEditText inputName = (MaterialEditText) viewInputSource.findViewById(R.id.input_name);
+                    MaterialEditText inputUrl = (MaterialEditText) viewInputSource.findViewById(R.id.input_url);
+                    new AlertDialog.Builder(MarketActivity.this)
+                            .setView(viewInputSource)
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", (dialog, which) -> {
+                                String name = inputName.getText().toString();
+                                String url = inputUrl.getText().toString();
+                                url = (url.startsWith("http")) ? url : "http://" + url;
+                                MarketSource newSource = new MarketSource(0, name, url);
+                                int msid = marketSourceHolder.addSource(newSource);
+                                newSource.msid = msid;
+                                getSourceList(adapter.getCount()-1);
+                            }).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinnerSource.setOnLongClickListener(v -> {
+            final MarketSource source = sources.get(spinnerSource.getSelectedItemPosition());
+            if (source.msid > 0) {
+                new AlertDialog.Builder(MarketActivity.this).setTitle("是否删除站点来源？")
+                        .setMessage("删除后将无法恢复")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", (dialog, which) -> {
+                            marketSourceHolder.deleteSource(source);
+                            getSourceList(0);
+                        }).show();
+            }
+            return true;
+        });
+        if(selected < adapter.getCount()-1){
+            spinnerSource.setSelection(selected);
+        }
+    }
+
+    public void getSitesFromSource(MarketSource source) {
+        siteCategories.clear();
+        initTabAndViewPager(siteCategories.keySet());
+        tabLayout.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        Logger.d("MarketActivity", "getSitesFromSource: " + source.jsonUrl);
+        HViewerHttpClient.get(source.jsonUrl, null, new HViewerHttpClient.OnResponseListener() {
             @Override
             public void onSuccess(String contentType, Object result) {
                 if (result == null || result.equals(""))
                     return;
                 try {
                     JsonArray siteSources = new JsonParser().parse((String) result).getAsJsonArray();
-                    if (siteSources.size() > 0) {
-                        sourceCount = siteSources.size();
-                        final List<MarketSiteCategory>[] categories = new List[sourceCount];
-                        for (int i = 0; i < siteSources.size(); i++) {
-                            final int j = i;
-                            HViewerHttpClient.get(siteSources.get(i).getAsString(), null, new HViewerHttpClient.OnResponseListener() {
-                                @Override
-                                public void onSuccess(String contentType, Object result) {
-                                    try {
-                                        categories[j] = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
-                                        }.getType());
-                                        if ((--sourceCount) == 0) {
-                                            for (List<MarketSiteCategory> categoryList : categories) {
-                                                if (categoryList == null)
-                                                    continue;
-                                                for (MarketSiteCategory category : categoryList) {
-                                                    if (!siteCategories.containsKey(category))
-                                                        siteCategories.put(category, category.sites);
-                                                    else {
-                                                        List<MarketSiteCategory.MarketSite> sites = siteCategories.get(category);
-                                                        for (MarketSiteCategory.MarketSite site : category.sites) {
-                                                            if (!sites.contains(site))
-                                                                sites.add(site);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            initTabAndViewPager(siteCategories.keySet());
-                                            progressBar.setVisibility(View.GONE);
-                                        }
-                                    } catch (JsonSyntaxException e) {
-                                        e.printStackTrace();
-                                        onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(HViewerHttpClient.HttpError error) {
-                                    sourceCount = 0;
-                                    progressBar.setVisibility(View.GONE);
-                                    showSnackBar(error.getErrorString());
-                                }
-                            });
+                    if (siteSources.size() > 0 && siteSources.get(0).isJsonPrimitive()) {
+                        int size = siteSources.size();
+                        if (size > 0) {
+                            String[] sourceUrls = new String[size];
+                            for (int i = 0; i < size; i++) {
+                                sourceUrls[i] = siteSources.get(i).getAsString();
+                            }
+                            getSitesFromMutiUrl(sourceUrls, new List[size], 0, size);
+                        } else {
+                            onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK));
                         }
+                    } else if (siteSources.size() > 0 && siteSources.get(0).isJsonObject()) {
+                        List<MarketSiteCategory> categoryList = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
+                        }.getType());
+                        for (MarketSiteCategory category : categoryList) {
+                            if (!siteCategories.containsKey(category))
+                                siteCategories.put(category, category.sites);
+                            else {
+                                List<MarketSiteCategory.MarketSite> sites = siteCategories.get(category);
+                                for (MarketSiteCategory.MarketSite site : category.sites) {
+                                    if (!sites.contains(site))
+                                        sites.add(site);
+                                }
+                            }
+                        }
+                        initTabAndViewPager(siteCategories.keySet());
+                        progressBar.setVisibility(View.GONE);
                     } else {
-                        throw new Exception();
+                        onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_NETWORK));
                     }
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
@@ -250,6 +308,49 @@ public class MarketActivity extends BaseActivity {
 
             @Override
             public void onFailure(HViewerHttpClient.HttpError error) {
+                showSnackBar(error.getErrorString());
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    public void getSitesFromMutiUrl(String[] sourceUrls, final List<MarketSiteCategory>[] categories, int curr, int total) {
+        HViewerHttpClient.get(sourceUrls[curr], null, new HViewerHttpClient.OnResponseListener() {
+            @Override
+            public void onSuccess(String contentType, Object result) {
+                try {
+                    categories[curr] = new Gson().fromJson((String) result, new TypeToken<List<MarketSiteCategory>>() {
+                    }.getType());
+                    if (curr + 1 < total) {
+                        getSitesFromMutiUrl(sourceUrls, categories, curr + 1, total);
+                    } else {
+                        for (List<MarketSiteCategory> categoryList : categories) {
+                            if (categoryList == null)
+                                continue;
+                            for (MarketSiteCategory category : categoryList) {
+                                if (!siteCategories.containsKey(category))
+                                    siteCategories.put(category, category.sites);
+                                else {
+                                    List<MarketSiteCategory.MarketSite> sites = siteCategories.get(category);
+                                    for (MarketSiteCategory.MarketSite site : category.sites) {
+                                        if (!sites.contains(site))
+                                            sites.add(site);
+                                    }
+                                }
+                            }
+                        }
+                        initTabAndViewPager(siteCategories.keySet());
+                        progressBar.setVisibility(View.GONE);
+                    }
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                    onFailure(new HViewerHttpClient.HttpError(HViewerHttpClient.HttpError.ERROR_JSON));
+                }
+            }
+
+            @Override
+            public void onFailure(HViewerHttpClient.HttpError error) {
+                progressBar.setVisibility(View.GONE);
                 showSnackBar(error.getErrorString());
             }
         });

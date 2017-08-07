@@ -83,4 +83,9 @@
         <item name="pl_successColor">@color/colorPrimaryLightest</item>
     </style>
 
+    <style name="source_spinner" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@color/black_80</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

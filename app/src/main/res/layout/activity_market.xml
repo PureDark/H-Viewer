@@ -39,14 +39,22 @@
                     android:padding="16dp"
                     android:scaleType="fitXY" />
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/tv_title"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="站点市场"
-                    android:textAppearance="@style/ActionBar.Title" />
+                    android:textAppearance="@style/ActionBar.Title" /> !-->
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/spinner_source"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:popupBackground="@color/white"
+                    android:theme="@style/source_spinner"/>
 
                 <ImageView
                     android:id="@+id/btn_update_all"
