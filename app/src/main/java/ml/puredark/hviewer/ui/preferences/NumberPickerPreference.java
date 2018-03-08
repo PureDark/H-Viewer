@@ -11,7 +11,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 import android.widget.FrameLayout.LayoutParams;
-import de.leonardarnold.numberpickerpreference.R.styleable;
+
+import ml.puredark.hviewer.R;
 
 public class NumberPickerPreference extends DialogPreference {
     private static final String TAG = NumberPickerPreference.class.getSimpleName();
@@ -34,10 +35,10 @@ public class NumberPickerPreference extends DialogPreference {
     }
 
     private void init(AttributeSet attrs) {
-        TypedArray a = this.getContext().obtainStyledAttributes(attrs, styleable.NumberPickerPreference);
-        this.maxValue = a.getInt(styleable.NumberPickerPreference_MaxValue, this.maxValue);
-        this.minValue = a.getInt(styleable.NumberPickerPreference_MinValue, this.minValue);
-        this.summaryPattern = a.getString(styleable.NumberPickerPreference_android_summary);
+        TypedArray a = this.getContext().obtainStyledAttributes(attrs, R.styleable.NumberPickerPreference);
+        this.maxValue = a.getInt(R.styleable.NumberPickerPreference_MaxValue, this.maxValue);
+        this.minValue = a.getInt(R.styleable.NumberPickerPreference_MinValue, this.minValue);
+        this.summaryPattern = a.getString(R.styleable.NumberPickerPreference_android_summary);
         a.recycle();
     }
 

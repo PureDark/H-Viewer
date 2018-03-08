@@ -19,7 +19,7 @@
             android:title="@string/settings_view_high_res"
             android:summary="@string/settings_view_high_res_summary"/>
 
-        <de.leonardarnold.numberpickerpreference.NumberPickerPreference
+        <ml.puredark.hviewer.ui.preferences.NumberPickerPreference
             android:defaultValue="2"
             android:key="pref_view_preload_pages"
             app:MaxValue="10"

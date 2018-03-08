@@ -36,4 +36,13 @@
 
     </declare-styleable>
 
+    <declare-styleable name="ExAutoLabelUI">
+        <attr name="tagArray" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="NumberPickerPreference">
+        <attr name="MinValue" format="integer" />
+        <attr name="MaxValue" format="integer"/>
+        <attr name="android:summary"/>
+    </declare-styleable>
 </resources>

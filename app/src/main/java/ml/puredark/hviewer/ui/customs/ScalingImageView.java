@@ -16,7 +16,7 @@ import android.widget.ImageView;
  *   />
  * </pre>
  */
-public class ScalingImageView extends ImageView {
+public class ScalingImageView extends android.support.v7.widget.AppCompatImageView {
 
     public ScalingImageView(Context context) {
         super(context);

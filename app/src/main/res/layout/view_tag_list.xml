@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp"
         android:layout_weight="1">
-        <com.dpizarro.autolabel.library.AutoLabelUI
+        <ml.puredark.hviewer.ui.customs.ExAutoLabelUI
             android:id="@+id/label_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +20,8 @@
             app:text_size="@dimen/label_title_size"
             app:label_background_res="@color/dimgray"
             app:label_padding="@dimen/half_padding"
-            app:label_clickable="true"/>
+            app:label_clickable="true"
+            app:tagArray="吉他,钢琴,小提琴,钢琴,小提琴,钢琴,小提琴,小提琴,钢琴,小提琴"/>
     </android.support.v4.widget.NestedScrollView>
     <LinearLayout
         android:layout_width="50dp"

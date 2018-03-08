@@ -41,6 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.common.memory.PooledByteBuffer;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
@@ -49,7 +50,6 @@ import com.facebook.drawee.view.DraweeView;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.umeng.analytics.MobclickAgent;
 
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;

@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'AndResGuard'
 
 buildscript {
@@ -7,13 +6,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.3'
+        classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.11'
     }
 }
 
 ext {
     VERSION_DATE = new Date().format("yy-MM-dd", TimeZone.getTimeZone("UTC"))
-    BUILD_TOOLS = "25.0.2"
+    BUILD_TOOLS = "26.0.2"
 }
 
 android {
@@ -38,8 +37,9 @@ android {
         resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 89
-        versionName "0.12.1"
+        versionCode 90
+        versionName "0.12.2"
+        flavorDimensions "channel"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         //multiDexEnabled true
@@ -98,6 +98,7 @@ android {
         exclude 'lib/*/libRSSupport.so'
         exclude 'lib/*/librsjni.so'
     }
+    buildToolsVersion '26.0.2'
 }
 
 andResGuard {
@@ -116,19 +117,18 @@ andResGuard {
             "resources.arsc"
     ]
     sevenzip {
-        artifact = 'com.tencent.mm:SevenZip:1.2.0'
+        artifact = 'com.tencent.mm:SevenZip:1.2.11'
     }
 }
 
 
 repositories {
     mavenCentral()
+    jcenter()
     maven { url "https://jitpack.io" }
-    maven { url "http://kodbiro.github.io/repo/" }
     maven { url "http://dl.bintray.com/glomadrian/maven" }
     maven { url 'http://guardian.github.com/maven/repo-releases' }
     maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
-    jcenter()
 }
 
 dependencies {
@@ -145,7 +145,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     // umeng analytics
-    compile 'com.umeng.analytics:analytics:latest.integration'
+    compile 'com.umeng.analytics:analytics:6.1.4'
     // material widget
     compile 'com.github.vajro:MaterialDesignLibrary:1.6'
     compile 'com.github.opacapp:multiline-collapsingtoolbar:v1.3.1'
@@ -153,18 +153,23 @@ dependencies {
     compile 'com.github.clans:fab:1.6.1'
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.MiguelCatalan:MaterialSearchView:v1.4.0'
-    compile 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
+
+    //compile 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
+    compile 'com.github.glomadrian:material-animated-switch:50e3e2fcfc'
+
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.4@aar') {
         transitive = true
     }
-    compile 'com.github.leonardarnold:NumberPickerPreference:bea5996cc9'
     compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
     compile('com.github.smtchahal:MaterialSpinner:1.1.7') {
         exclude group: 'com.nineoldandroids', module: 'library'
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
-    compile 'biz.laenger.android:vpbs:0.0.4'
+
+    //compile 'biz.laenger.android:vpbs:0.0.4'
+    compile 'com.github.PureDark:ViewPagerBottomSheet:7db1b0a3e4'
+
     // Pull Load More
     compile('com.wuxiaolong.pullloadmorerecyclerview:library:1.1.2') {
         exclude group: 'com.android.support'
@@ -174,28 +179,30 @@ dependencies {
     //    compile 'me.majiajie:swipe-back:1.0.0-alpha2'
 
     // butter knife
-    compile 'com.jakewharton:butterknife:8.2.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.2.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     // image
-    compile 'com.facebook.fresco:fresco:0.13.0'
-    compile 'com.facebook.fresco:animated-gif:0.13.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0+'
+    implementation  'com.facebook.fresco:fresco:1.8.1'
+    implementation  'com.facebook.fresco:animated-gif:1.8.1'
+    implementation 'com.facebook.fresco:animated-webp:1.8.1'
+    implementation 'com.facebook.fresco:webpsupport:1.8.1'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.8.1'
     compile 'q.rorbin:FastImageSize:1.0.2'
-    //    compile 'me.relex:photodraweeview:1.1.0'
-    compile 'com.github.PureDark:PhotoDraweeView:2c7b7f65b1'
+    compile 'me.relex:photodraweeview:1.1.3'
+    //compile 'com.github.PureDark:PhotoDraweeView:2c7b7f65b1'
     //    compile project (':photodraweeview')
 
     // animation
     compile 'com.daimajia.easing:library:2.0@aar'
     compile 'com.daimajia.androidanimations:library:2.2@aar'
     // http
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
     compile 'com.lzy.net:okgo:2.1.4'
     compile 'com.lzy.net:okserver:1.1.3'
     // Stetho core
-    compile 'com.facebook.stetho:stetho:1.4.2'
+    compile 'com.facebook.stetho:stetho:1.5.0'
     //If you want to add a network helper
-    compile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
     // httpdns
     compile project(':httpdns')
     // email
@@ -227,5 +234,5 @@ dependencies {
     compile 'com.eightbitlab:blurview:1.3.3'
     //compile 'com.github.PureDark:BlurView:e26c60d30e'
     //mutidex
-    compile 'com.android.support:multidex:+'
+    //compile 'com.android.support:multidex:+'
 }
