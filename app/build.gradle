@@ -37,8 +37,8 @@ android {
         resValue "string", "app_name", "H-Viewer"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 90
-        versionName "0.12.2"
+        versionCode 91
+        versionName "0.12.3"
         flavorDimensions "channel"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

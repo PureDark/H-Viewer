@@ -8,9 +8,9 @@ public class UrlConfig {
     public final static String updateUrl = "https://api.github.com/repos/PureDark/H-Viewer/releases/latest";
     public final static String siteSourceUrl = "https://raw.githubusercontent.com/H-Viewer-Sites/Index/master/source.json";
     public final static String bingApiUrl = "https://bing.ioliu.cn/v1/rand?type=json";
-    public final static String libijkffmpegUrl = "https://raw.githubusercontent.com/CarGuo/GSYVideoPlayer/master/gsyVideoPlayer/libs/<ABIS>/libijkffmpeg.so";
-    public final static String libijkplayerUrl = "https://raw.githubusercontent.com/CarGuo/GSYVideoPlayer/master/gsyVideoPlayer/libs/<ABIS>/libijkplayer.so";
-    public final static String libijksdlUrl = "https://raw.githubusercontent.com/CarGuo/GSYVideoPlayer/master/gsyVideoPlayer/libs/<ABIS>/libijksdl.so";
+    public final static String libijkffmpegUrl = "https://raw.githubusercontent.com/PureDark/GSYVideoPlayer/master/gsyVideoPlayer/libs/<ABIS>/libijkffmpeg.so";
+    public final static String libijkplayerUrl = "https://raw.githubusercontent.com/PureDark/GSYVideoPlayer/master/gsyVideoPlayer/libs/<ABIS>/libijkplayer.so";
+    public final static String libijksdlUrl = "https://raw.githubusercontent.com/PureDark/GSYVideoPlayer/master/gsyVideoPlayer/libs/<ABIS>/libijksdl.so";
 
     public static String getBingAPIUrl() {
 //        Random random = new Random();

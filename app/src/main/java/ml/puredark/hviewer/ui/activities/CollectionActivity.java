@@ -504,6 +504,7 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (HViewerApplication.DEBUG)
                 SimpleFileUtil.writeString("/sdcard/html.txt", html, "utf-8");
             Rule applyRule = (currGalleryUrl != null && currGalleryUrl.equals(site.galleryUrl)) ? site.galleryRule : site.extraRule;
+            Logger.d("CollectionActivity", "applyRule:"+(applyRule.equals(site.galleryRule) ? "galleryRule" : "extraRule"));
             myCollection = new LocalCollection(RuleParser.getCollectionDetail(myCollection, html, applyRule, url), site);
 
             if (myCollection.videos != null && myCollection.videos.size() > 0) {
@@ -528,10 +529,12 @@ public class CollectionActivity extends BaseActivity implements AppBarLayout.OnO
             if (myCollection.pictures != null && myCollection.pictures.size() > 0) {
                 // 当前页获取到的第一个图片
                 final Picture picture = myCollection.pictures.get(0);
+                Logger.d("CollectionActivity", "picture.url:"+picture.url);
                 // 如果有FLAG_SECOND_LEVEL_GALLERY的特殊处理
                 if (site.isFirstLoadSecondLevelGallery(myCollection.pictures)) {
                     Logger.d("CollectionActivity", "site.hasFlag(Site.FLAG_SECOND_LEVEL_GALLERY)");
                     currGalleryUrl = picture.url;
+                    parseUrl(currGalleryUrl);
                     getCollectionDetail(currPage);
 //                    HViewerHttpClient.get(picture.url, site.getHeaders(), new HViewerHttpClient.OnResponseListener() {
 //                        @Override
