@@ -1,0 +1,158 @@
+<resources>
+
+    <string name="UA">Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36</string>
+
+    <string name="navigation_drawer_open">Open Drawer</string>
+    <string name="navigation_drawer_close">Close Drawer</string>
+
+    <string name="nav_category_title">Category</string>
+
+
+    <string name="settings_proxy">HProxy Settings</string>
+    <string name="settings_proxy_detail">Proxy Setup</string>
+    <string name="settings_proxy_detail_summary">For information on HProxy, see the app home page</string>
+    <string name="settings_proxy_enabled">Enable HProxy</string>
+    <string name="settings_proxy_enabled_summary">For information on HProxy, see the app home page</string>
+    <string name="settings_proxy_request">Search</string>
+    <string name="settings_proxy_request_summary">Use HProxy to Search</string>
+    <string name="settings_proxy_picture">Pictures</string>
+    <string name="settings_proxy_picture_summary">Use HProxy to download pictures</string>
+    <string name="settings_proxy_server">Change HProxy Server</string>
+
+    <string name="settings_view">Settings</string>
+    <string name="settings_view_rememberLastSite">Remember site</string>
+    <string name="settings_view_rememberLastSite_summary">When starting H-viewer, open the site that was last open</string>
+    <string name="settings_view_high_res">Download original image</string>
+    <string name="settings_view_high_res_summary">Downloading HD images may reduce loading speed</string>
+    <string name="settings_view_preload_pages">Preload pages</string>
+    <string name="settings_view_preload_pages_summary"> 3 pages</string>
+    <string name="settings_view_direction">Reading direction</string>
+    <string name="settings_view_direction_summary">Left to right</string>
+    <string name="settings_view_direction_dialog_title">Choose your reading direction</string>
+    <string name="settings_view_volume_flick">Use volume controls</string>
+    <string name="settings_view_volume_flick_summary">Use the volume controls to navigate pages</string>
+    <string name="settings_view_open_one_pic_gallery">Single Images</string>
+    <string name="settings_view_open_one_pic_gallery_summary">When the album only has one picture, open the picture directly</string>
+    <string name="settings_view_one_hand">One-handed mode</string>
+    <string name="settings_view_one_hand_summary">Pull left and right drawers from the middle of the screen</string>
+    <string name="settings_view_video_player">Video Player</string>
+    <string name="settings_view_video_player_summary">Built-in player</string>
+    <string name="settings_view_video_player_dialog_title">Choose video playback method</string>
+
+    <string-array name="settings_view_direction_option">
+        <item>Left to right</item>
+        <item>Right to left</item>
+        <item>Top to bottom</item>
+    </string-array>
+    <string-array name="settings_view_direction_values">
+        <item>left_to_right</item>
+        <item>right_to_left</item>
+        <item>top_to_bottom</item>
+    </string-array>
+
+    <string-array name="settings_view_video_player_option">
+        <item>Built-in player</item>
+        <item>HTML5 player</item>
+        <item>External player</item>
+    </string-array>
+    <string-array name="settings_view_video_player_values">
+        <item>ijkplayer</item>
+        <item>h5player</item>
+        <item>otherplayer</item>
+    </string-array>
+
+    <string name="settings_download">Download Settings</string>
+    <string name="settings_download_high_res">Download HD Artwork</string>
+    <string name="settings_download_high_res_summary">Always download artwork in HD</string>
+    <string name="settings_download_nomedia">Hide downloaded albums from gallery apps</string>
+    <string name="settings_download_nomedia_summary">Creates a .nomedia file in the download folder</string>
+    <string name="settings_download_path">Save location</string>
+    <string name="settings_download_path_summary">/sdcard/H-Viewer/download</string>
+    <string name="settings_download_import">Import downloaded album</string>
+    <string name="settings_download_import_summary">Import a downloaded album</string>
+
+    <string name="settings_favourite">Favourites</string>
+    <string name="settings_favourite_export">Export favourites</string>
+    <string name="settings_favourite_export_summary">Backup favourites to download directory</string>
+    <string name="settings_favourite_import">Import Favourites</string>
+    <string name="settings_favourite_import_summary">Import favourites backup </string>
+
+    <string name="settings_cache">Cache Management</string>
+    <string name="settings_cache_size">Cache size</string>
+    <string name="settings_cache_clean">Clear cache</string>
+    <string name="settings_cache_clean_summary">Clear cached images to free up space</string>
+
+    <string name="settings_about">About</string>
+    <string name="settings_about_upgrade">Check for updates</string>
+    <string name="settings_about_license">Open Source Agreement</string>
+    <string name="settings_about_privacy">Privacy Policy</string>
+    <string name="settings_about_h_viewer">About H-Viewer</string>
+
+    <string name="settings_bk_rs">Backup and Restore</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_summary">Backup sites, settings and favourites</string>
+    <string name="settings_restore">Restore</string>
+    <string name="settings_restore_summary">Recover sites, settings and favourites</string>
+
+    <string name="setting_about_author">Author</string>
+    <string name="setting_about_author_summary">PureDark</string>
+    <string name="setting_about_github">Github home</string>
+    <string name="setting_about_github_summary">https://github.com/PureDark/H-Viewer</string>
+    <string name="setting_about_changelog">Changelog</string>
+    <string name="setting_about_changelog_summary">https://github.com/PureDark/H-Viewer/releases</string>
+    <string name="setting_about_version">Version</string>
+    <string name="setting_about_version_summary">v0.1.0</string>
+    <string name="setting_about_qq_group">Join Group</string>
+    <string name="setting_about_qq_group_summary">590668841</string>
+    <string name="setting_about_donate">Donation - Alipay</string>
+    <string name="setting_about_donate_summary">&lt;bruce.lee.liang@gmail.com&gt;</string>
+
+    <string name="settings_lock_methods">App unlock method</string>
+    <string name="settings_lock_methods_detail">Set unlock method</string>
+    <string name="settings_lock_methods_detail_summary">Not set</string>
+
+    <string name="setting_pattern_lock_title">Unlock Pattern</string>
+    <string name="setting_title_set_pattern">Pattern unlock</string>
+    <string name="setting_summary_set_pattern_none">[ No pattern set ]</string>
+    <string name="setting_summary_set_pattern_has">[ Using pattern ]</string>
+    <string name="setting_title_set_pin">PIN unlock</string>
+    <string name="setting_summary_set_pin_none">[ No PIN set ]</string>
+    <string name="setting_summary_set_pin_has">[ Using PIN ]</string>
+    <string name="setting_title_fingerprint_lock">Fingerprint unlock</string>
+    <string name="setting_summary_fingerprint_lock">Use fingerprint to unlock app</string>
+    <string name="setting_title_clear_lock_methods">Clear unlocking methods</string>
+    <string name="setting_dialog_message_clear_lock_methods">Clear unlocking methods?</string>
+    <string name="setting_lock_methods_cleared">Unlocking methods cleared</string>
+
+    <string name="setting_set_pin_message">Please set a 4-digit PIN code</string>
+    <string name="setting_set_pin_confirm_message">Please re-enter to confirm</string>
+    <string name="setting_set_pin_confirm_error">Bad PIN, please try again</string>
+
+
+    <string name="restore_succes">Restored successfully</string>
+    <string name="authorization_failed">Authorization failed</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="jump_to_page">Go to the first page?</string>
+    <string name="site_loading_error">There was an error loading the site. Please try again</string>
+    <string name="search">Search</string>
+    <string name="favorite">Favourite</string>
+    <string name="refresh">Refresh</string>
+    <string name="clear">Clear</string>
+    <string name="add">Add</string>
+    <string name="delete">Remove</string>
+    <string name="favorites">Favourites</string>
+    <string name="hvfavorites">HV Favourites</string>
+    <string name="not_support_function">Your phone does not support this feature!</string>
+    <string name="download">Download</string>
+    <string name="hvdownload">HV Download</string>
+
+    <string name="pin_lock_message">Use fingerprint or enter PIN</string>
+    <string name="pin_lock_wrong">Incorrect PIN</string>
+    <string name="pattern_lock_message">Use fingerprint or pattern to unlock</string>
+    <string name="pattern_lock_wrong">Incorrect pattern</string>
+    <string name="finger_print_lock_wrong">No match</string>
+
+</resources>
