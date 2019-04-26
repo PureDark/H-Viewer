@@ -1,7 +1,5 @@
 # H-Viewer
 
-<a href="http://www.coolapk.com/apk/ml.puredark.hviewer"><img src="https://github.com/PureDark/H-Viewer/raw/master/images/getitoncoolmarket.png" height="48"></a>
-
 *重新建了个群，有兴趣的加一下*
 
 *群号：1019044749*
