@@ -2,9 +2,9 @@
 
 <a href="http://www.coolapk.com/apk/ml.puredark.hviewer"><img src="https://github.com/PureDark/H-Viewer/raw/master/images/getitoncoolmarket.png" height="48"></a>
 
-*（iOS / UWP 版本开发同期进行中，时间周期可能会较长，但是敬请期待！）*
+*重新建了个群，有兴趣的加一下*
 
-*对于即将启动开发的 iOS 版本，正在对外征集建议，[【查看详情】](https://github.com/PureDark/H-Viewer/issues/46)*
+*群号：1019044749*
 
 ---
 
